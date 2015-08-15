@@ -1,0 +1,36 @@
+#!/usr/local/bin/python3
+# -*- coding: utf-8 -*-
+
+from IkaInput_CVCapture import *
+from IkaOutput_CSV import *
+from IkaOutput_Console import *
+from IkaOutput_Fluentd import *
+from IkaOutput_Screenshot import *
+from IkaOutput_Slack import *
+from IkaOutput_Twitter import *
+
+class IkaConfig:
+	def config(self):
+		inputPlugin = IkaInput_CVCapture()
+
+		# 使いたい入力を選択
+		inputPlugin.startRecordedFile('video.avi')           # ファイルからの読み込み
+		# inputPlugin.startCamera(0)                         # 指定された番号のカメラ／キャプチャデバイスから
+
+		inputPlugin.need_resize = True                       # 720p でない場合はリサイズさせる
+
+		OutputPlugins = []
+
+		# 使いたいプラグインを適宜設定
+		OutputPlugins.append(IkaOutput_Console())
+		OutputPlugins.append(IkaOutput_CSV("ika.csv"))
+		OutputPlugins.append(IkaOutput_Screenshot("./screenshots/"))
+		#OutputPlugins.append(IkaOutput_Slack(url = "https://hooks.slack.com/services/(incoming hook endpoint"))
+		#OutputPlugins.append(IkaOutput_Twitter("ConsumerToken", "ConsumerSecret", "AccessToken", "AccessTokenSecret", attachImage = False))
+		OutputPlugins.append(IkaOutput_Fluentd(host = '127.0.0.1', port = 24224, username = "＜8ヨ", tag = "ikalog"))
+
+		return [ inputPlugin, OutputPlugins ]
+
+if __name__ == "__main__":
+	obj = IkaConfig()
+	print(obj.config())
