@@ -19,6 +19,18 @@ class IkaOutput_Slack:
 		finally:
 			pass
 
+	def checkImport(self):
+		try:
+			import slackweb
+		except:
+			print("モジュール slackweb がロードできませんでした。 Slack 投稿ができません。")
+			print("インストールするには以下のコマンドを利用してください。\n    pip install slackweb\n")
+		finally:
+			pass
+
 	def __init__(self, url = None, username = "＜8ヨ"):
 		self.url = url
 		self.username = username
+
+		self.checkImport()
+

@@ -25,11 +25,23 @@ class IkaOutput_Fluentd:
 		finally:
 			pass
 
+	def checkImport(self):
+		try:
+			from fluent import sender
+			from fluent import event
+		except:
+			print("モジュール fluent-logger がロードできませんでした。 Fluentd 連携ができません。")
+			print("インストールするには以下のコマンドを利用してください。\n    pip install fluent-logger\n")
+		finally:
+			pass
+
 	def __init__(self, tag = 'ikalog', username = 'ika', host = None, port = 24224):
 		self.tag = tag
 		self.username = username
 		self.host = host
 		self.port = port
+
+		self.checkImport()
 
 if __name__ == "__main__":
 	obj = IkaOutput_Fluentd()

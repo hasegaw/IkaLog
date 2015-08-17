@@ -52,12 +52,23 @@ class IkaOutput_Twitter:
 
 		self.tweet(s, media = media)
 
+	def checkImport(self):
+		try:
+			from requests_oauthlib import OAuth1Session
+		except:
+			print("モジュール requests_oauthlib がロードできませんでした。 Twitter 投稿ができません。")
+			print("インストールするには以下のコマンドを利用してください。\n    pip install requests_oauthlib\n")
+		finally:
+			pass
+
 	def __init__(self, ConsumerKey = None, ConsumerSecret = None, AccessToken = None, AccessTokenSecret = None, attachImage = False):
 		self.ConsumerKey = ConsumerKey
 		self.ConsumerSecret = ConsumerSecret
 		self.AccessToken = AccessToken
 		self.AccessTokenSecret = AccessTokenSecret
 		self.attachImage = attachImage
+
+		self.checkImport()
 
 if __name__ == "__main__":
 	import sys

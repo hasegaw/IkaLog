@@ -89,6 +89,8 @@ class IkaScene_ResultDetail:
 
 	def __init__(self):
 		winlose = cv2.imread('masks/result_detail.png')
+		if winlose is None:
+			print("勝敗画面のマスクデータが読み込めませんでした。")
 		self.winlose_gray = cv2.cvtColor(winlose, cv2.COLOR_BGR2GRAY)
 
 if __name__ == "__main__":

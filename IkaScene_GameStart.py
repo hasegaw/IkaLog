@@ -19,6 +19,9 @@ class IkaScene_GameStart:
 	modename_bottom = 310
 
 	def load_mapname_mask(self, frame, map_name):
+		if frame is None:
+			print("%s のマスクデータが読み込めませんでした。" % map_name)
+
 		gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		img_map = gray[self.mapname_top : self.mapname_height + self.mapname_top, 1280 - self.mapname_width:1280]
 
@@ -27,6 +30,8 @@ class IkaScene_GameStart:
 		return dict(zip(keys, values))
 
 	def load_modename_mask(self, frame, mode_name):
+		if frame is None:
+			print("%s のマスクデータが読み込めませんでした。" % mode_name)
 		gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		img_mode = gray[self.modename_top : self.modename_bottom, self.modename_left : self.modename_right]
 
