@@ -55,7 +55,7 @@ class IkaScene_GameStart:
 
 		self.map_list = []
 		self.map_list.append(self.load_mapname_mask(data1, 'タチウオパーキング'))
-		self.map_list.append(self.load_mapname_mask(data2, 'モズク農場'))
+		self.map_list.append(self.load_mapname_mask(data2, 'モズク農園'))
 		self.map_list.append(self.load_mapname_mask(data3, 'ネギトロ炭鉱'))
 		self.map_list.append(self.load_mapname_mask(data4, 'アロワナモール'))
 		self.map_list.append(self.load_mapname_mask(data5, 'デカライン高架下'))
@@ -63,7 +63,7 @@ class IkaScene_GameStart:
 		self.map_list.append(self.load_mapname_mask(data7, 'ハコフグ倉庫'))
 		self.map_list.append(self.load_mapname_mask(data8, 'シオノメ油田'))
 		self.map_list.append(self.load_mapname_mask(data9, 'モンガラキャンプ場'))
-		self.map_list.append(self.load_mapname_mask(data10, 'ホッケ埠頭'))
+		self.map_list.append(self.load_mapname_mask(data10, 'ホッケふ頭'))
 
 		self.mode_list = []
 		self.mode_list.append(self.load_modename_mask(data1, 'ガチエリア'))
