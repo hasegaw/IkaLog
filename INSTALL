@@ -1,0 +1,59 @@
+イカログ & Python インストール方法
+
+・64ビット版 Python のほか32ビット版でも動いている模様。ここでは32ビット版を前提とする。
+　64ビット版の場合は適宜アーカイブファイル名を読み替えること。
+・Python を C:\IkaLog\python34\ に新規インストールする
+
+■ インストール先ディレクトリの作成
+
+コマンドプロンプト(cmd.exe)を起動し、下記コマンドを実行
+
+mkdir c:\IkaLog
+mkdir c:\IkaLog\archives
+
+■ Python 3.4.3 のインストール    
+
+下記サイトから Python 3.4.3 を入手する
+https://www.python.org/downloads/release/python-343/
+
+https://www.python.org/ftp/python/3.4.3/python-3.4.3.msi
+上記MSIファイルを下記ディレクトリにインストールする
+   C:\IkaLog\Python34
+
+■ NumPy, OpenCV 3.0 のインストール
+
+以下のサイトから NumPy, OpenCV をダウンロードし、ファイルを c:\IkaLog\archives\ に配置する。
+
+URL:
+  http://www.lfd.uci.edu/~gohlke/pythonlibs/
+
+ダウンロードするファイル:
+  numpy‑1.9.2+mkl‑cp34‑none‑win32.whl
+  opencv_python‑3.0.0‑cp34‑none‑win32.whl
+
+※ cp34 は CPython 3.4, win32 は 32bit 版を示している
+
+■ インストール作業
+
+cd c:\IkaLog\Python34\Script
+pip install "C:\IkaLog\Archives\numpy-1.9.2+mkl-cp34-none-win32.whl"
+pip install "C:\IkaLog\Archives\opencv_python-3.0.0-cp34-none-win32.whl"
+pip install slackweb
+pip install fluent-logger
+pip install requests-oauthlib
+
+■ イカログ
+
+https://github.com/hasegaw/IkaLog/archive/master.zip をダウンロードし
+C:\IkaLog\IkaLog-master として展開
+
+C:\IkaLog\IkaLog-master\ の IkaConfig.py.sample を IkaConfig.py に
+リネームし、編集する
+
+■ 起動
+
+コマンドプロンプト(cmd.exe)を起動し、下記コマンドを実行
+
+c:
+cd \IkaLog\IkaLog-master
+..\python34\python IkaLog.py
