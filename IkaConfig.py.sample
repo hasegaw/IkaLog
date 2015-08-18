@@ -5,6 +5,7 @@ from IkaInput_CVCapture import *
 from IkaOutput_CSV import *
 from IkaOutput_Console import *
 from IkaOutput_Fluentd import *
+from IkaOutput_JSON import *
 from IkaOutput_Screenshot import *
 from IkaOutput_Slack import *
 from IkaOutput_Twitter import *
@@ -24,6 +25,7 @@ class IkaConfig:
 		# 使いたいプラグインを適宜設定
 		OutputPlugins.append(IkaOutput_Console())
 		OutputPlugins.append(IkaOutput_CSV("ika.csv"))
+		OutputPlugins.append(IkaOutput_JSON("ika.json"))
 		OutputPlugins.append(IkaOutput_Screenshot("./screenshots/"))
 		#OutputPlugins.append(IkaOutput_Slack(url = "https://hooks.slack.com/services/(incoming hook endpoint"))
 		#OutputPlugins.append(IkaOutput_Twitter("ConsumerToken", "ConsumerSecret", "AccessToken", "AccessTokenSecret", attachImage = False))
