@@ -1,11 +1,11 @@
-#!/usr/local/bin/python3
+#!python
 # -*- coding: utf-8 -*-
 import numpy as np
 import cv2
 import sys
+from IkaUtils import *
 
 class IkaScene_ResultDetail:
-
 	def isEntryMe(self, entry_img):
 		# ヒストグラムから、入力エントリが自分かを判断
 		me_img = entry_img[:, 0:43]
@@ -68,29 +68,13 @@ class IkaScene_ResultDetail:
 		return index and (index < 5)
 
 	def match(self, frame):
-		img_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-		added = cv2.add(img_gray, self.winlose_gray)
-		hist = cv2.calcHist([added], [0], None, [3], [0, 256])
-		total = np.sum(hist)
-
-		match = hist[2] / total * 100
-
-		if (match > 99.9):
-			# false-positive の可能性があるのでオリジナル画像の分布を確認
-			hist2 = cv2.calcHist([img_gray], [0], None, [3], [0, 256])
-			total2 = np.sum(hist2)
-			match2 = hist2[2] / total2 * 100
-			if (match2 > 20):
-				# false-positive
-				match = 0
-				#print("false-positive")
-
-		return match > 99.9
+		return IkaUtils.matchWithMask(frame, self.winlose_gray, 0.999, 0.20)
 
 	def __init__(self):
 		winlose = cv2.imread('masks/result_detail.png')
 		if winlose is None:
 			print("勝敗画面のマスクデータが読み込めませんでした。")
+
 		self.winlose_gray = cv2.cvtColor(winlose, cv2.COLOR_BGR2GRAY)
 
 if __name__ == "__main__":

@@ -1,29 +1,31 @@
-#!/usr/local/bin/python3
+#!python3
 # -*- coding: utf-8 -*-
 import numpy as np
 import cv2
 import time
 import sys
-import slackweb
+from IkaUtils import *
 
 class IkaScene_GameStart:
 
 	# 720p サイズでの値
 	mapname_width = 430
+	mapname_left = 1280 - mapname_width
 	mapname_top = 580
 	mapname_height = 640 - mapname_top
 
 	modename_left = 640 - 300
 	modename_right = 640 + 300
+	modename_width = modename_right - modename_left
 	modename_top = 250
 	modename_bottom = 310
+	modename_height = modename_bottom - modename_top
 
 	def load_mapname_mask(self, frame, map_name):
 		if frame is None:
 			print("%s のマスクデータが読み込めませんでした。" % map_name)
 
-		gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-		img_map = gray[self.mapname_top : self.mapname_height + self.mapname_top, 1280 - self.mapname_width:1280]
+		img_map = IkaUtils.cropImageGray(frame, self.mapname_left, self.mapname_top, self.mapname_width, self.mapname_height)
 
 		keys = [ 'name', 'mask' ]
 		values = [ map_name, img_map ]
@@ -32,8 +34,8 @@ class IkaScene_GameStart:
 	def load_modename_mask(self, frame, mode_name):
 		if frame is None:
 			print("%s のマスクデータが読み込めませんでした。" % mode_name)
-		gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-		img_mode = gray[self.modename_top : self.modename_bottom, self.modename_left : self.modename_right]
+
+		img_mode = IkaUtils.cropImageGray(frame, self.modename_left, self.modename_top, self.modename_width, self.modename_height)
 
 		keys = [ 'name', 'mask' ]
 		values = [ mode_name, img_mode ]
@@ -70,64 +72,33 @@ class IkaScene_GameStart:
 		self.mode_list.append(self.load_modename_mask(data9, 'ガチホコバトル'))
 
 	def guess_map(self, frame):
-		cropped = frame[self.mapname_top : self.mapname_height + self.mapname_top, 1280 - self.mapname_width:1280]
-		target_gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
-		#cv2.imshow('Scene', target_gray)
-		#k = cv2.waitKey(3000) # 1msec待つ
-		ret, thresh1 = cv2.threshold(target_gray, 230, 255, cv2.THRESH_BINARY)
+		target_gray = IkaUtils.cropImageGray(frame, self.mapname_left, self.mapname_top, self.mapname_width, self.mapname_height)
+		ret, src = cv2.threshold(target_gray, 230, 255, cv2.THRESH_BINARY)
 
 		# マップ名を判断
-		inp = thresh1
 		for map in self.map_list:
-			mask_img = map['mask']
-			out = inp + mask_img
-			hist = cv2.calcHist([out], [0], None, [3], [0, 256])
+			mask = map['mask']
 
-			match = hist[2] / np.sum(hist) * 100
-
-			if match > 99.0:
-				hist2 = cv2.calcHist([inp], [0], None, [3], [0, 256])
-				match2 = hist2[2] / np.sum(hist2) * 100
-				#print("false-positive チェック match2: %f" % match2)
-				if match2 > 90.0:
-					match = 0
-
-			if match > 99.0:
+			match = IkaUtils.matchWithMask(src, mask, 0.99, 0.80)
+			if match:
 				#print("マップ名 %s : %f" % (map['name'], match))
 				return map
 
-			#cv2.imshow('Scene', thresh1)
-			#k = cv2.waitKey(3000) # 1msec待つ
 		return None
 
 	def guess_mode(self, frame):
-		cropped = frame[self.modename_top : self.modename_bottom, self.modename_left : self.modename_right]
-		target_gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
-		#cv2.imshow('Scene', target_gray)
-		#k = cv2.waitKey(3000) # 1msec待つ
-		ret, thresh1 = cv2.threshold(target_gray, 230, 255, cv2.THRESH_BINARY)
+		target_gray = IkaUtils.cropImageGray(frame, self.modename_left, self.modename_top, self.modename_width, self.modename_height)
+		ret, src = cv2.threshold(target_gray, 230, 255, cv2.THRESH_BINARY)
 
 		# モード名を判断
-		inp = thresh1
 		for mode in self.mode_list:
-			mask_img = mode['mask']
-			out = inp + mask_img
-			hist = cv2.calcHist([out], [0], None, [3], [0, 256])
-			match = hist[2] / np.sum(hist) * 100
+			mask = mode['mask']
 
-			if match > 99.0:
-				hist2 = cv2.calcHist([inp], [0], None, [3], [0, 256])
-				match2 = hist2[2] / np.sum(hist2) * 100
-				#print("false-positive チェック match2: %f" % match2)
-				if match2 > 90.0:
-					match = 0
-
-			if match > 99.0:
+			match = IkaUtils.matchWithMask(src, mask, 0.99, 0.80)
+			if match:
 				#print("モード名 %s : %f" % (mode['name'], match))
 				return mode
 		
-			#cv2.imshow('Scene', thresh1)
-			#k = cv2.waitKey(3000) # 1msec待つ
 		return None
 
 	def match(self, frame):
