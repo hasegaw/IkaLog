@@ -6,6 +6,7 @@ import time
 
 from IkaScene_GameStart import *
 from IkaScene_ResultDetail import *
+from IkaScene_InGame import *
 from IkaConfig import *
 
 capture, OutputPlugins = IkaConfig().config()
@@ -14,11 +15,15 @@ def core():
 	last_capture = time.time() - 100;
 	last_gamestart = time.time() - 100;
 
+	_map = None
+	_mode = None
+
 	current_map = None
 	current_mode = None
 
 	scn_gamestart = IkaScene_GameStart()
 	scn_gameresult = IkaScene_ResultDetail()
+	scn_ingame = IkaScene_InGame()
 
 	while True:
 		# 0.5フレームおきに処理
@@ -29,11 +34,12 @@ def core():
 			cv2.waitKey(1000)
 			frame = capture.read()
 
+		thisFrame_InGameTimerIcon = scn_ingame.matchTimerIcon(frame = frame)
 
 		# GameStart (マップ名、ルール名が表示されている) ?
 
 		r = None
-		if (time.time() - last_gamestart) > 10:
+		if (not thisFrame_InGameTimerIcon) and (time.time() - last_gamestart) > 10:
 			r = scn_gamestart.match(frame)
 
 		if r:
@@ -61,7 +67,10 @@ def core():
 			continue
 		
 		# GameResult (勝敗の詳細が表示されている）?
-		r = scn_gameresult.match(frame)
+		r = False
+		if not thisFrame_InGameTimerIcon:
+			r = scn_gameresult.match(frame)
+
 		if r:
 			if ((time.time() - last_capture) > 60):
 				last_capture = time.time()	
