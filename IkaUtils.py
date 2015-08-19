@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import numpy as np
 import cv2
 
@@ -56,3 +57,16 @@ class IkaUtils:
 			mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
 
 		return mask 
+
+	def getWinLoseText(won, win_text = "勝ち", lose_text = "負け", unknown_text = "不明"):
+		if won is None:
+			return unknown_text
+		return win_text if won else lose_text
+
+	def writeScreenshot(destfile, frame):
+		try:
+			cv2.imwrite(destfile, frame)
+		except:
+			print("Screenshot: failed")
+		finally:
+			pass
