@@ -68,7 +68,7 @@ class IkaScene_ResultDetail:
 		return index and (index < 5)
 
 	def match(self, frame):
-		return IkaUtils.matchWithMask(frame, self.winlose_gray, 0.999, 0.20)
+		return IkaUtils.matchWithMask(frame, self.winlose_gray, 0.997, 0.20)
 
 	def __init__(self):
 		winlose = cv2.imread('masks/result_detail.png')
