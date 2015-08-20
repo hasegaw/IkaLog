@@ -4,6 +4,20 @@ import numpy as np
 import cv2
 
 class IkaUtils:
+	@staticmethod
+	def map2text(map, unknown = None, lang = "ja"):
+		if map is None:
+			if unknown is None:
+				unknown = "?"
+			return unknown
+		return map['name']
+
+	def rule2text(rule, unknown = None, lang = "ja"):
+		if rule is None:
+			if unknown is None:
+				unknown = "?"
+			return unknown
+		return rule['name']
 
 	@staticmethod
 	def cropImageGray(img, left, top, width, height):

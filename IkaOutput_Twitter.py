@@ -18,11 +18,12 @@ class IkaOutput_Twitter:
 	## API Endpoint for Medias (screenshots)
 	url_media = "https://upload.twitter.com/1.1/media/upload.json"
 
-	## Post a tweet
-	#
+	##
+	# Post a tweet
 	# @param self    The object pointer.
 	# @param s       Text to tweet
 	# @param media   Media ID
+	#
 	def tweet(self, s, media = None):
 		if media is None:
 			params = { "status": s }
@@ -38,11 +39,12 @@ class IkaOutput_Twitter:
 		finally:
 			pass
 
-	## Post a screenshot to Twitter
-	#
+	##
+	# Post a screenshot to Twitter
 	# @param  self    The object pointer.
 	# @param  frame   The image to be posted.
 	# @return media   The media ID
+	#
 	def postMedia(self, frame):
 		try:
 			from requests_oauthlib import OAuth1Session
@@ -59,45 +61,34 @@ class IkaOutput_Twitter:
 
 		return None
 
-	## GameStart Hook
-	#
-	# @param self      The Object Pointer
-	# @param frame     Screenshot image
-	# @param map_name  Map name.
-	# @param mode_name Mode name.
-	def onGameStart(self, frame, map_name, mode_name):
-		pass
-
-	## getRecordResultDetail
-	#
-	# Generate a message for ResultDetail.
+	##
+	# getTextGameIndividualResult
+	# Generate a record for onGameIndividualResult.
 	# @param self      The Object Pointer.
-	# @param map_name  Map name.
-	# @param mode_name Mode name.
-	# @param won       True is player's team won. Otherwise False.
-	def getRecordResultDetail(self, map_name, mode_name, won):
+	# @param context   IkaLog context
+	#
+	def getTextGameIndividualResult(self, context):
+		map = IkaUtils.map2text(context['game']['map'])
+		rule = IkaUtils.rule2text(context['game']['rule'])
+		won = IkaUtils.getWinLoseText(context['game']['won'], win_text ="勝ち", lose_text = "負け", unknown_text = "不明")
 		t = datetime.now().strftime("%Y/%m/%d %H:%M")
-		s_won = IkaUtils.getWinLoseText(won, win_text ="勝ち", lose_text = "負け", unknown_text = "不明")
-		return "%sで%sに%sました (%s) #IkaLog" % (map_name, mode_name, s_won, t)
+		return "%sで%sに%sました (%s) #IkaLog" % (map, rule, won, t)
 
-	## onResultDetail
-	#
-	# ResultDetail Hook
-	#
+	##
+	# onGameIndividualResult Hook
 	# @param self      The Object Pointer
-	# @param frame     Screenshot image
-	# @param map_name  Map name
-	# @param mode_name Mode name
-	# @param won       True if the player's team won. Otherwise False
-	def onResultDetail(self, frame, map_name, mode_name, won):
-		s = self.getRecordResultDetail(map_name, mode_name, won)
-		media = self.postMedia(frame) if self.attachImage else None
+	# @param context   IkaLog context
+	#
+	def onGameIndividualResult(self, context):
+		s = self.getTextGameIndividualResult(context)
+		media = self.postMedia(context['engine']['frame']) if self.attachImage else None
 		self.tweet(s, media = media)
 
-	## checkImport
-	#
+	##
+	# checkImport
 	# Check availability of modules this plugin depends on.
 	# @param self      The Object Pointer.
+	#
 	def checkImport(self):
 		try:
 			from requests_oauthlib import OAuth1Session
@@ -107,14 +98,15 @@ class IkaOutput_Twitter:
 		finally:
 			pass
 
-	## Constructor
-	#
+	##
+	# Constructor
 	# @param self            The Object Pointer.
 	# @param ConsumerKey     Consumer key of the application.
 	# @param ConsumerSecret  Comsumer secret.
 	# @param AuthToken       Authentication token of the user account.
 	# @param AuthTokenSecret Authentication token secret.
 	# @param attachImage     If true, post screenshots.
+	#
 	def __init__(self, ConsumerKey = None, ConsumerSecret = None, AccessToken = None, AccessTokenSecret = None, attachImage = False):
 		self.ConsumerKey = ConsumerKey
 		self.ConsumerSecret = ConsumerSecret
@@ -132,5 +124,9 @@ if __name__ == "__main__":
 		AccessToken=sys.argv[3],
 		AccessTokenSecret=sys.argv[4]
 	)
-	print(obj.getRecordResultDetail('map', 'mode', True))
+	print(obj.getTextGameIndividualResult( {
+			"game": {
+				"map": {"name": "map_name"},
+				"rule": {"name": "rule_name"},
+				"won": True, }}))
 	obj.tweet('＜8ヨ 〜〜')

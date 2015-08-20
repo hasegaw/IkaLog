@@ -7,6 +7,12 @@ from IkaUtils import *
 #
 class IkaOutput_Fluentd:
 
+	##
+	# Log a record to Fluentd.
+	# @param self       The Object Pointer.
+	# @param recordType Record Type (tag)
+	# @param record     Record
+	#
 	def submitRecord(self, recordType, record):
 		try:
 			from fluent import sender
@@ -20,45 +26,35 @@ class IkaOutput_Fluentd:
 		finally:
 			pass
 
-	## GameStart Hook
-	#
-	# @param self      The Object Pointer
-	# @param frame     Screenshot image
-	# @param map_name  Map name.
-	# @param mode_name Mode name.
-	def onGameStart(self, frame, map_name, mode_name):
-		pass
-
-	## getRecordResultDetail
-	#
-	# Generate a message for ResultDetail.
+	##
+	# Generate a record for onGameIndividualResult.
 	# @param self      The Object Pointer.
-	# @param map_name  Map name.
-	# @param mode_name Mode name.
-	# @param won       True is player's team won. Otherwise False.
-	def getRecordResultDetail(self, map_name, mode_name, won):
-		s_won = IkaUtils.getWinLoseText(won, win_text ="win", lose_text = "lose", unknown_text = "unknown")
+	# @param context   IkaLog context
+	#
+	def getRecordGameIndividualResult(self, context):
+		map = IkaUtils.map2text(context['game']['map'])
+		rule = IkaUtils.rule2text(context['game']['rule'])
+		won = IkaUtils.getWinLoseText(context['game']['won'], win_text ="win", lose_text = "lose", unknown_text = "unknown")
 		return {
 			'username': self.username,
-			'map': map_name,
-			'mode': mode_name,
-			'result': s_won
+			'map': map,
+			'rule': rule,
+			'result': won
 		}
 
-	## ResultDetail Hook
-	#
+	##
+	# onGameIndividualResult Hook
 	# @param self      The Object Pointer
-	# @param frame     Screenshot image
-	# @param map_name  Map name
-	# @param mode_name Mode name
-	def onResultDetail(self, frame, map_name, mode_name, won):
-		record = self.getRecordResultDetail(map_name, mode_name, won)
+	# @param context   IkaLog context
+	#
+	def onGameIndividualResult(self, context):
+		record = self.getRecordGameIndividualResult(context)
 		self.submitRecord('gameresult', record)
 
-	## checkImport
-	#
+	##
 	# Check availability of modules this plugin depends on.
 	# @param self      The Object Pointer.
+	#
 	def checkImport(self):
 		try:
 			from fluent import sender
@@ -69,14 +65,15 @@ class IkaOutput_Fluentd:
 		finally:
 			pass
 
-	## Constructor
-	#
+	##
+	# Constructor
 	# @param self     The Object Pointer.
 	# @param tag      tag
 	# @param username Username of the player.
 	# @param host     Fluentd host if Fluentd is on a different node
 	# @param port     Fluentd port
 	# @param username Name the bot use on Slack
+	#
 	def __init__(self, tag = 'ikalog', username = 'ika', host = None, port = 24224):
 		self.tag = tag
 		self.username = username
@@ -87,4 +84,3 @@ class IkaOutput_Fluentd:
 
 if __name__ == "__main__":
 	obj = IkaOutput_Fluentd()
-	obj.onResultDetail(None, 'mapName', 'modeName', True)

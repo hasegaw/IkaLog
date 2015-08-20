@@ -14,12 +14,12 @@ class IkaScene_GameStart:
 	mapname_top = 580
 	mapname_height = 640 - mapname_top
 
-	modename_left = 640 - 300
-	modename_right = 640 + 300
-	modename_width = modename_right - modename_left
-	modename_top = 250
-	modename_bottom = 310
-	modename_height = modename_bottom - modename_top
+	rulename_left = 640 - 300
+	rulename_right = 640 + 300
+	rulename_width = rulename_right - rulename_left
+	rulename_top = 250
+	rulename_bottom = 310
+	rulename_height = rulename_bottom - rulename_top
 
 	def load_mapname_mask(self, frame, map_name):
 		if frame is None:
@@ -31,14 +31,14 @@ class IkaScene_GameStart:
 		values = [ map_name, img_map ]
 		return dict(zip(keys, values))
 
-	def load_modename_mask(self, frame, mode_name):
+	def load_rulename_mask(self, frame, rule_name):
 		if frame is None:
-			print("%s のマスクデータが読み込めませんでした。" % mode_name)
+			print("%s のマスクデータが読み込めませんでした。" % rule_name)
 
-		img_mode = IkaUtils.cropImageGray(frame, self.modename_left, self.modename_top, self.modename_width, self.modename_height)
+		img_rule = IkaUtils.cropImageGray(frame, self.rulename_left, self.rulename_top, self.rulename_width, self.rulename_height)
 
 		keys = [ 'name', 'mask' ]
-		values = [ mode_name, img_mode ]
+		values = [ rule_name, img_rule ]
 		return dict(zip(keys, values))
 
 	def __init__(self):
@@ -65,11 +65,11 @@ class IkaScene_GameStart:
 		self.map_list.append(self.load_mapname_mask(data9, 'モンガラキャンプ場'))
 		self.map_list.append(self.load_mapname_mask(data10, 'ホッケふ頭'))
 
-		self.mode_list = []
-		self.mode_list.append(self.load_modename_mask(data1, 'ガチエリア'))
-		self.mode_list.append(self.load_modename_mask(data2, 'ナワバリバトル'))
-		self.mode_list.append(self.load_modename_mask(data5, 'ガチヤグラ'))
-		self.mode_list.append(self.load_modename_mask(data9, 'ガチホコバトル'))
+		self.rule_list = []
+		self.rule_list.append(self.load_rulename_mask(data1, 'ガチエリア'))
+		self.rule_list.append(self.load_rulename_mask(data2, 'ナワバリバトル'))
+		self.rule_list.append(self.load_rulename_mask(data5, 'ガチヤグラ'))
+		self.rule_list.append(self.load_rulename_mask(data9, 'ガチホコバトル'))
 
 	def guess_map(self, frame):
 		target_gray = IkaUtils.cropImageGray(frame, self.mapname_left, self.mapname_top, self.mapname_width, self.mapname_height)
@@ -86,33 +86,31 @@ class IkaScene_GameStart:
 
 		return None
 
-	def guess_mode(self, frame):
-		target_gray = IkaUtils.cropImageGray(frame, self.modename_left, self.modename_top, self.modename_width, self.modename_height)
+	def guess_rule(self, frame):
+		target_gray = IkaUtils.cropImageGray(frame, self.rulename_left, self.rulename_top, self.rulename_width, self.rulename_height)
 		ret, src = cv2.threshold(target_gray, 230, 255, cv2.THRESH_BINARY)
 
 		# モード名を判断
-		for mode in self.mode_list:
-			mask = mode['mask']
+		for rule in self.rule_list:
+			mask = rule['mask']
 
 			match = IkaUtils.matchWithMask(src, mask, 0.99, 0.80)
 			if match:
-				#print("モード名 %s : %f" % (mode['name'], match))
-				return mode
+				#print("モード名 %s : %f" % (rule['name'], match))
+				return rule
 		
 		return None
 
-	def match(self, frame):
-		#if not self.last_frame is None:		
+	def match(self, context):
+		map = self.guess_map(context['engine']['frame'])
+		rule = self.guess_rule(context['engine']['frame'])
 
-		map = self.guess_map(frame)
-		mode = self.guess_mode(frame)
+		if not map is None:
+			context['game']['map'] = map
+		if not rule is None:
+			context['game']['rule'] = rule
 
-		if (map or mode):
-			keys = [ 'map', 'mode' ]
-			values = [ map, mode ]	
-			return dict(zip(keys, values))
-
-		return None
+		return (map or rule)
 
 if __name__ == "__main__":
 	print(sys.argv)
@@ -122,17 +120,17 @@ if __name__ == "__main__":
 
 	r = obj.match(target)
 	map = r['map']
-	mode = r['mode']
+	rule = r['rule']
 
 	#map = obj.guess_map(target)
-	#mode = obj.guess_mode(target)
+	#rule = obj.guess_rule(target)
 
 	print(map)
-	print(mode)
+	print(rule)
 
 	#cv2.imshow('Scene', target)
 	#k = cv2.waitKey(3000) # 1msec待つ
 
-	if (map and mode):
-		s = "ゲーム画面検出。 マップ: %s モード: %s" % (map['name'], mode['name'])
+	if (map and rule):
+		s = "ゲーム画面検出。 マップ: %s モード: %s" % (map['name'], rule['name'])
 		print(s)

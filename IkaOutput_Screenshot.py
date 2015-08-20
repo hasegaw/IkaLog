@@ -10,33 +10,22 @@ import time
 # Save screenshots on certain events
 class IkaOutput_Screenshot:
 
-	## GameStart Hook
-	#
+	##
+	# onGameIndividualResult Hook
 	# @param self      The Object Pointer
-	# @param frame     Screenshot image
-	# @param map_name  Map name.
-	# @param mode_name Mode name.
-	def onGameStart(self, frame, map_name, mode_name):
-		pass
-
-	## onResultDetail
+	# @param context   IkaLog context
 	#
-	# ResultDetail Hook
-	#
-	# @param self      The Object Pointer
-	# @param frame     Screenshot image
-	# @param map_name  Map name
-	# @param mode_name Mode name
-	def onResultDetail(self, frame, map_name, mode_name, won):
+	def onGameIndividualResult(self, context):
 		basename = time.strftime("%Y%m%d_%H%M", time.localtime())
 		destfile = "%s/ikabattle_%s.png" % (self.dest_dir, basename)
 
-		IkaUtils.writeScreenshot(destfile, frame)
+		IkaUtils.writeScreenshot(destfile, context['engine']['frame'])
 		print("スクリーンショット %s を保存しました" % destfile)
 
-	## Constructor
-	#
+	##
+	# Constructor
 	# @param self         The Object Pointer.
 	# @param dest_dir     Destionation directory (Relative path, or absolute path)
+	#
 	def __init__(self, dest_dir):
 		self.dest_dir = dest_dir
