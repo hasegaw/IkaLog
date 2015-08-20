@@ -9,12 +9,19 @@ class IkaInput_CVCapture:
 	out_width = 1280
 	out_height = 720 
 	need_resize = False
+	need_deinterlace = False
 
 	def read(self):
 		ret, frame = self.cap.read()
 
 		if not ret:
 			return None
+
+		if self.need_deinterlace:
+			for y in range(frame.shape[0])[1::2]:
+				frame[y,:] = frame[y - 1, :]
+				
+
 
 		if self.need_resize:
 			return cv2.resize(frame, (self.out_width, self.out_height))
