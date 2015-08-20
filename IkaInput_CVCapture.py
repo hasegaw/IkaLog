@@ -20,8 +20,6 @@ class IkaInput_CVCapture:
 		if self.need_deinterlace:
 			for y in range(frame.shape[0])[1::2]:
 				frame[y,:] = frame[y - 1, :]
-				
-
 
 		if self.need_resize:
 			return cv2.resize(frame, (self.out_width, self.out_height))
