@@ -22,8 +22,8 @@ class IkaOutput_JSON:
 			json_file = open(self.json_filename, "a")
 			json_file.write(record)
 			json_file.close
-		finally:
-			pass
+		except:
+			print("JSON: Failed to write JSON file")
 
 	##
 	# Generate a record for onGameIndividualResult.

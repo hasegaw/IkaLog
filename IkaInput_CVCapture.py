@@ -40,6 +40,7 @@ class IkaInput_CVCapture:
 			os.uname()
 		except AttributeError:
 			return True
+
 		return False
 
 	def startCamera(self, source):

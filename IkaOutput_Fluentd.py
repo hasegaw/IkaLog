@@ -23,8 +23,8 @@ class IkaOutput_Fluentd:
 				sender.setup(self.tag, host = self.host, port = self.port)
 
 			event.Event(recordType, record)
-		finally:
-			pass
+		except:
+			printf("Fluentd: Failed to submit a record")
 
 	##
 	# Generate a record for onGameIndividualResult.
@@ -62,8 +62,6 @@ class IkaOutput_Fluentd:
 		except:
 			print("モジュール fluent-logger がロードできませんでした。 Fluentd 連携ができません。")
 			print("インストールするには以下のコマンドを利用してください。\n    pip install fluent-logger\n")
-		finally:
-			pass
 
 	##
 	# Constructor

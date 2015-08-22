@@ -19,9 +19,8 @@ class IkaOutput_Slack:
 			import slackweb
 			slack = slackweb.Slack(url = self.url)
 			slack.notify(text = text, username = self.username)
-		finally:
-			pass
-
+		except:
+			print("Slack: Failed to post a message to Slack")
 
 	##
 	# Generate a record for onGameIndividualResult.
@@ -58,8 +57,6 @@ class IkaOutput_Slack:
 		except:
 			print("モジュール slackweb がロードできませんでした。 Slack 投稿ができません。")
 			print("インストールするには以下のコマンドを利用してください。\n    pip install slackweb\n")
-		finally:
-			pass
 
 	##
 	# Constructor

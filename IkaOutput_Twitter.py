@@ -38,8 +38,6 @@ class IkaOutput_Twitter:
 			twitter.post(self.url, params = params)
 		except:
 			print("Twitter: failed to post")
-		finally:
-			pass
 
 	##
 	# Post a screenshot to Twitter
@@ -58,8 +56,8 @@ class IkaOutput_Twitter:
 
 			if req.status_code == 200:
 				return json.loads(req.text)['media_id']
-		finally:
-			pass
+		except:
+			print("Twitter: failed to post image")
 
 		return None
 
@@ -108,8 +106,6 @@ class IkaOutput_Twitter:
 		except:
 			print("モジュール requests_oauthlib がロードできませんでした。 Twitter 投稿ができません。")
 			print("インストールするには以下のコマンドを利用してください。\n    pip install requests_oauthlib\n")
-		finally:
-			pass
 
 	##
 	# Constructor

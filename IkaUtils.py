@@ -109,5 +109,3 @@ class IkaUtils:
 			cv2.imwrite(destfile, frame)
 		except:
 			print("Screenshot: failed")
-		finally:
-			pass

@@ -22,8 +22,8 @@ class IkaOutput_CSV:
 			csv_file = open(self.csv_filename, "a")
 			csv_file.write(record)
 			csv_file.close
-		finally:
-			pass
+		except:
+			print("CSV: Failed to write CSV File")
 
 	##
 	# Generate a message for onGameIndividualResult.
