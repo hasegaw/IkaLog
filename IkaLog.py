@@ -40,12 +40,12 @@ def core():
 
 		context['engine']['frame'] = frame
 
-		thisFrame_InGameTimerIcon = scn_ingame.matchTimerIcon(frame = frame)
+		context['engine']['inGame'] = scn_ingame.matchTimerIcon(frame = frame)
 
 		# GameStart (マップ名、ルール名が表示されている) ?
 
 		r = None
-		if (not thisFrame_InGameTimerIcon) and (time.time() - last_gamestart) > 10:
+		if (not context['engine']['inGame']) and (time.time() - last_gamestart) > 10:
 			r = scn_gamestart.match(context)
 
 		if r:
