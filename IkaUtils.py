@@ -2,8 +2,35 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import cv2
+import re
 
 class IkaUtils:
+	## Find the local player.
+	#
+	# @param context   IkaLog Context.
+	# @return The player information (Directionary class) if found.
+	@staticmethod
+	def getMyEntryFromContext(context):
+		for e in context['game']['players']:
+			if e['me']:
+				return e
+		return None
+
+	## Get player's title.
+	#
+	# @param playerEntry The player.
+	# @return Title in string. Returns None if playerEntry doesn't have title data.
+	@staticmethod
+	def playerTitle(playerEntry):
+		if playerEntry is None:
+			return None
+
+		if not (('gender' in playerEntry) and ('prefix' in playerEntry)):
+			return None
+
+		prefix = re.sub('の', '', playerEntry['prefix'])
+		return "%s%s" % (prefix, playerEntry['gender'])
+
 	@staticmethod
 	def map2text(map, unknown = None, lang = "ja"):
 		if map is None:

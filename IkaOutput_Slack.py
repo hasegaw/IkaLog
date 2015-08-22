@@ -41,6 +41,11 @@ class IkaOutput_Slack:
 	#
 	def onGameIndividualResult(self, context):
 		s = self.getTextGameIndividualResult(context)
+
+		fes_info = IkaUtils.playerTitle(IkaUtils.getMyEntryFromContext(context))
+		if not fes_info is None:
+			s = "%s (フェス %s)" % (s, fes_info)
+
 		self.post(text = s, username = self.username)
 
 	##

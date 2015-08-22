@@ -18,6 +18,8 @@ class IkaOutput_Twitter:
 	## API Endpoint for Medias (screenshots)
 	url_media = "https://upload.twitter.com/1.1/media/upload.json"
 
+	last_me = None
+
 	##
 	# Post a tweet
 	# @param self    The object pointer.
@@ -80,7 +82,18 @@ class IkaOutput_Twitter:
 	# @param context   IkaLog context
 	#
 	def onGameIndividualResult(self, context):
+
+		me = IkaUtils.getMyEntryFromContext(context)
+		fes_title = IkaUtils.playerTitle(me)
+		if IkaUtils.playerTitle(me) and IkaUtils.playerTitle(self.last_me):
+			if me['prefix'] != self.last_me['prefix']:
+				s = '%sになった！ #IkaLog' % fes_title
+				self.tweet(s, media = None)
+		self.last_me = me
+
 		s = self.getTextGameIndividualResult(context)
+		s = "%s (%s)" % (s, fes_title)
+
 		media = self.postMedia(context['engine']['frame']) if self.attachImage else None
 		self.tweet(s, media = media)
 
