@@ -12,7 +12,7 @@ class IkaOutput_Screen:
 	last_update = 0
 
 	def onFrameRead(self, context):
-		cv2.imshow('IkaLog', context['engine']['frame'])
+		cv2.imshow('IkaLog', cv2.resize(context['engine']['frame'], self.video_size))
 
 	def onFrameNext(self, context):
 		if (self.wait_ms == 0):
@@ -27,6 +27,7 @@ class IkaOutput_Screen:
 	# Constructor
 	# @param self         The Object Pointer.
 	#
-	def __init__(self, wait_ms = 1):
+	def __init__(self, wait_ms = 1, size = (1280, 720)):
 		self.wait_ms = wait_ms
+		self.video_size = size
 		pass
