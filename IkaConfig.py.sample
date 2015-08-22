@@ -23,6 +23,7 @@ class IkaConfig:
 		OutputPlugins = []
 
 		# 使いたいプラグインを適宜設定
+		OutputPlugins.append(IkaOutput_Screen())
 		OutputPlugins.append(IkaOutput_Console())
 		OutputPlugins.append(IkaOutput_CSV("ika.csv"))
 		OutputPlugins.append(IkaOutput_JSON("ika.json"))

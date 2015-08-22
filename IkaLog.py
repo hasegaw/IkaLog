@@ -39,8 +39,11 @@ def core():
 			frame = capture.read()
 
 		context['engine']['frame'] = frame
-
 		context['engine']['inGame'] = scn_ingame.matchTimerIcon(frame = frame)
+
+		for op in OutputPlugins:
+			if hasattr(op, "onFrameRead"):
+				op.onFrameRead(context)
 
 		# GameStart (マップ名、ルール名が表示されている) ?
 
@@ -61,7 +64,6 @@ def core():
 			for op in OutputPlugins:
 				if hasattr(op, "onGameStart"):
 					op.onGameStart(context)
-			continue
 		
 		# GameResult (勝敗の詳細が表示されている）?
 		r = False
@@ -99,15 +101,9 @@ def core():
 				context['game']['won'] = None
 				context['game']['players'] = None
 
-
-		cv2.imshow('IkaLog', frame)
-		k = cv2.waitKey(1) # 1msec待つ
-		# if k == 27: # ESCキーで終了
-		# 	break
-
 		for op in OutputPlugins:
-			if hasattr(op, "onNextFrame"):
-				op.onNextFrame(context)
+			if hasattr(op, "onFrameNext"):
+				op.onFrameNext(context)
 
 	# キャプチャを解放する
 	#cap.release()
