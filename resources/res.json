@@ -1,0 +1,101 @@
+{
+	"stages": [
+		"arowana_mall",
+		"blackbelly_skatepark",
+		"saltspray_rig",
+		"urchin_underpass",
+		"walleye_warehouse",
+		"port_mackerel",
+		"kelp_dome",
+		"bluefin_depot",
+		"moray_towers",
+		"camp_triggerfish",
+		"flounder_heights"
+	],
+	"weapons": {
+		"main_weapons": {
+			"shooters": [
+				"splattershot_jr", 
+				"splattershot", 
+				"custom_splattershot_jr", 
+				"hero_shot_replica", 
+				"tentatek_splattershot", 
+				"gal_52", 
+				"n_zap_85", 
+				"splash_o_matic", 
+				"aerospray_mg", 
+				"jet_squelcher", 
+				"n_zap_89", 
+				"blaster", 
+				"neo_splash_o_matic", 
+				"l3_nozzlenose", 
+				"splattershot_pro", 
+				"gal_52_deco", 
+				"luna_blaster", 
+				"gal_96", 
+				"sploosh_o_matic", 
+				"aerospray_rg", 
+				"rapid_blaster", 
+				"range_blaster", 
+				"gal_96_deco", 
+				"custom_jet_squelcher", 
+				"dual_squelcher", 
+				"custom_blaster", 
+				"custom_dual_squelcher", 
+				"rapid_blaster_deco", 
+				"forge_splattershot_pro", 
+				"octoshot_replica"
+			],
+			"rollers": [
+				"splat_roller", 
+				"hero_roller_replica", 
+				"krak_on_splat_roller", 
+				"inkbrush", 
+				"carbon_roller", 
+				"inkbrush_nouveau", 
+				"octobrush", 
+				"dynamo_roller", 
+				"gold_dynamo_roller"
+			],
+			"chargers": [
+				"splat_charger", 
+				"hero_charger_replica", 
+				"kelp_splat_charger", 
+				"clasic_squiffer", 
+				"new_squiffer", 
+				"splatterscope", 
+				"kelp_splatterscope", 
+				"e_liter_3k", 
+				"custom_e_liter_3k", 
+				"e_liter_3k_scope"
+			],
+			"sloshers": [
+				"slosher"
+			], 
+			"splatlings": [
+				"heavy_splatling"
+			]
+		},
+		"sub_weapons": [
+			"splat_bomb",
+			"sprinkler",
+			"seeker",
+			"suction_bomb",
+			"burst_bomb",
+			"ink_mine",
+			"point_sensor",
+			"squid_beakon",
+			"splash_wall",
+			"disruptor"
+		],
+		"special_weapons": [
+			"bubbler",
+			"bomb_rush",
+			"inkzooka",
+			"echolocator",
+			"killer_wail",
+			"inkstrike",
+			"kraken"
+		]
+	}
+}

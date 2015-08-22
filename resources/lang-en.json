@@ -1,0 +1,102 @@
+{
+	"language": "en",
+	"stages": {
+		"arowana_mall": "Arowana Mall",
+		"blackbelly_skatepark": "Blackbelly Skatepark",
+		"saltspray_rig": "Saltspray Rig",
+		"urchin_underpass": "Urchin Underpass",
+		"walleye_warehouse": "Walleye Warehouse",
+		"port_mackerel": "Port Mackerel",
+		"kelp_dome": "Kelp Dome",
+		"bluefin_depot": "Bluefin Depot",
+		"moray_towers": "Moray Towers",
+		"camp_triggerfish": "Camp Triggerfish",
+		"flounder_heights": "Flounder Heights"
+	},
+	"weapons": {
+		"main_weapons": {
+			"shooters": {
+				"splattershot_jr": "Splattershot Jr.",
+				"splattershot": "Splattershot",
+				"custom_splattershot_jr": "Custom Splattershot Jr.",
+				"hero_shot_replica": "Hero Shot Replica",
+				"tentatek_splattershot": "Tentatek Splattershot",
+				"gal_52": ".52 Gal",
+				"n_zap_85": "N-Zap '85",
+				"splash_o_matic": "Splash-o-matic",
+				"aerospray_mg": "Aerospray MG",
+				"jet_squelcher": "Jet Squelcher",
+				"n_zap_89": "N-Zap '89",
+				"blaster": "Blaster",
+				"neo_splash_o_matic": "Neo Splash-o-matic",
+				"l3_nozzlenose": "L-3 Nozzlenose",
+				"splattershot_pro": "Splattershot Pro",
+				"gal_52_deco": ".52 Gal Deco",
+				"luna_blaster": "Luna Blaster",
+				"gal_96": ".96 Gal",
+				"sploosh_o_matic": "Sploosh-o-matic",
+				"aerospray_rg": "Aerospray RG",
+				"rapid_blaster": "Rapid Blaster",
+				"range_blaster": "Range Blaster",
+				"gal_96_deco": ".96 Gal Deco",
+				"custom_jet_squelcher": "Custom Jet Squelcher",
+				"dual_squelcher": "Dual Squelcher",
+				"custom_blaster": "Custom Blaster",
+				"custom_dual_squelcher": "Custom Dual Squelcher",
+				"rapid_blaster_deco": "Rapid Blaster Deco",
+				"forge_splattershot_pro": "Forge Splattershot Pro",
+				"octoshot_replica": "Octoshot Replica"
+			},
+			"rollers": {
+				"splat_roller": "Splat Roller",
+				"hero_roller_replica": "Hero Roller Replica",
+				"krak_on_splat_roller": "Krak-On Splat Roller",
+				"inkbrush": "Inkbrush",
+				"carbon_roller": "Carbon Roller",
+				"inkbrush_nouveau": "Inkbrush Nouveau",
+				"octobrush": "Octobrush",
+				"dynamo_roller": "Dynamo Roller",
+				"gold_dynamo_roller": "Gold Dynamo Roller"
+			},
+			"chargers": {
+				"splat_charger": "Splat Charger",
+				"hero_charger_replica": "Hero Charger Replica",
+				"kelp_splat_charger": "Kelp Splat Charger",
+				"clasic_squiffer": "Classic Squiffer",
+				"new_squiffer": "New Squiffer",
+				"splatterscope": "Splatterscope",
+				"kelp_splatterscope": "Kelp Splatterscope",
+				"e_liter_3k": "E-liter 3K",
+				"custom_e_liter_3k": "Custom E-liter 3K",
+				"e_liter_3k_scope": "Custom E-liter 3K Scope"
+			},
+			"sloshers": {
+				"slosher": "Slosher"
+			},
+			"splatlings": {
+				"heavy_splatling": "Heavy Splatling"
+			}
+		},
+		"sub_weapons": {
+			"splat_bomb": "Splat Bomb",
+			"sprinkler": "Sprinkler",
+			"seeker": "Seeker",
+			"suction_bomb": "Suction Bomb",
+			"burst_bomb": "Burst Bomb",
+			"ink_mine": "Ink Mine",
+			"point_sensor": "Point Sensor",
+			"squid_beakon": "Squid Beacon",
+			"splash_wall": "Splash Wall",
+			"disruptor": "Disruptor"
+		},
+		"special_weapons": {
+			"bubbler": "Bubbler",
+			"bomb_rush": "Bomb Rush",
+			"inkzooka": "Inkzooka",
+			"echolocator": "Echolocator",
+			"killer_wail": "Killer Wail",
+			"inkstrike": "Inkstrike",
+			"kraken": "Kraken"
+		}
+	}
+}
