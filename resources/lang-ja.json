@@ -1,0 +1,102 @@
+{
+	"language": "ja",
+	"stages": {
+		"arowana_mall": "アロワナモール",
+		"blackbelly_skatepark": "Bバスパーク",
+		"saltspray_rig": "シオノメ油田",
+		"urchin_underpass": "デカライン高架下",
+		"walleye_warehouse": "ハコフグ倉庫",
+		"port_mackerel": "ホッケふ頭",
+		"kelp_dome": "モズク農園",
+		"bluefin_depot": "ネギトロ炭鉱",
+		"moray_towers": "タチウオパーキング",
+		"camp_triggerfish": "モンガラキャンプ場",
+		"flounder_heights": "ヒラメが丘団地"
+	},
+	"weapons": {
+		"main_weapons": {
+			"shooters": {
+				"splattershot_jr": "わかばシューター",
+				"splattershot": "スプラシューター",
+				"custom_splattershot_jr": "もみじシューター",
+				"hero_shot_replica": "ヒーローシューター レプリカ",
+				"tentatek_splattershot": "スプラシューターコラボ",
+				"gal_52": ".52ガロン",
+				"n_zap_85": "N-ZAP85",
+				"splash_o_matic": "シャープマーカー",
+				"aerospray_mg": "プロモデラーMG",
+				"jet_squelcher": "ジェットスイーパー",
+				"n_zap_89": "N-ZAP89",
+				"blaster": "ホットブラスター",
+				"neo_splash_o_matic": "シャープマーカーネオ",
+				"l3_nozzlenose": "L3リールガン",
+				"splattershot_pro": "プライムシューター",
+				"gal_52_deco": ".52ガロンデコ",
+				"luna_blaster": "ノヴァブラスター",
+				"gal_96": ".96ガロン",
+				"sploosh_o_matic": "ボールドマーカー",
+				"aerospray_rg": "プロモデラーRG",
+				"rapid_blaster": "ラピッドブラスター",
+				"range_blaster": "ロングブラスター",
+				"gal_96_deco": ".96ガロンデコ",
+				"custom_jet_squelcher": "ジェットスイーパーカスタム",
+				"dual_squelcher": "デュアルスイーパー",
+				"custom_blaster": "ホットブラスターカスタム",
+				"custom_dual_squelcher": "デュアルスイーパーカスタム",
+				"rapid_blaster_deco": "ラピッドブラスターデコ",
+				"forge_splattershot_pro": "プライムシューターコラボ",
+				"octoshot_replica": "オクタシューター レプリカ"
+			},
+			"rollers": {
+				"splat_roller": "スプラローラー",
+				"hero_roller_replica": "ヒーローローラー レプリカ",
+				"krak_on_splat_roller": "スプラローラーコラボ",
+				"inkbrush": "パブロ",
+				"carbon_roller": "カーボンローラー",
+				"inkbrush_nouveau": "パブロ・ヒュー",
+				"octobrush": "ホクサイ",
+				"dynamo_roller": "ダイナモローラー",
+				"gold_dynamo_roller": "ダイナモローラーテスラ"
+			},
+			"chargers": {
+				"splat_charger": "スプラチャージャー",
+				"hero_charger_replica": "ヒーローチャージャー レプリカ",
+				"kelp_splat_charger": "スプラチャージャーワカメ",
+				"clasic_squiffer": "スクイックリンα",
+				"new_squiffer": "スクイックリンβ",
+				"splatterscope": "スプラスコープ",
+				"kelp_splatterscope": "スプラスコープワカメ",
+				"e_liter_3k": "リッター3K",
+				"custom_e_liter_3k": "リッター3Kカスタム",
+				"e_liter_3k_scope": "3Kスコープ"
+			},
+			"sloshers": {
+				"slosher": "バケットスロッシャー"
+			},
+			"splatlings": {
+				"heavy_splatling": "バレルスピナー"
+			}
+		},
+		"sub_weapons": {
+			"splat_bomb": "スプラッシュボム",
+			"sprinkler": "スプリンクラー",
+			"seeker": "チェイスボム",
+			"suction_bomb": "キューバンボム",
+			"burst_bomb": "クイックボム",
+			"ink_mine": "トラップ",
+			"point_sensor": "ポイントセンサー",
+			"squid_beakon": "ジャンプビーコン",
+			"splash_wall": "スプラッシュシールド",
+			"disruptor": "ポイズンボール"
+		},
+		"special_weapons": {
+			"bubbler": "バリア",
+			"bomb_rush": "ボムラッシュ",
+			"inkzooka": "スーパーショット",
+			"echolocator": "スーパーセンサー",
+			"killer_wail": "メガホンレーザー",
+			"inkstrike": "トルネード",
+			"kraken": "ダイオウイカ"
+		}
+	}
+}
