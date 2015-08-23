@@ -15,13 +15,16 @@ class IkaOutput_Screen:
 		cv2.imshow('IkaLog', cv2.resize(context['engine']['frame'], self.video_size))
 
 	def onFrameNext(self, context):
+		r = None
 		if (self.wait_ms == 0):
 			now = time.time()
 			if (now - self.last_update) > 2:
-				cv2.waitKey(1)
+				r = cv2.waitKey(1)
 				self.last_update = now
 		else:
-			cv2.waitKey(self.wait_ms)
+			r = cv2.waitKey(self.wait_ms)
+
+		return r
 
 	##
 	# Constructor

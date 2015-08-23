@@ -101,9 +101,15 @@ def core():
 				context['game']['won'] = None
 				context['game']['players'] = None
 
+		key = None
+
 		for op in OutputPlugins:
 			if hasattr(op, "onFrameNext"):
-				op.onFrameNext(context)
+				key = op.onFrameNext(context)
+
+		for op in OutputPlugins:
+			if hasattr(op, "onKeyPress"):
+				op.onKeyPress(context, key)
 
 	# キャプチャを解放する
 	#cap.release()
