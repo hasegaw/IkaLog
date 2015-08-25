@@ -87,9 +87,9 @@ def core():
 					op.onGameStart(context)
 		
 		# GameResult (勝敗の詳細が表示されている）?
-		r = False
-		#if not thisFrame_InGameTimerIcon:
-		r = scn_gameresult.match(context)
+		r = (not context['engine']['inGame']) and (time.time() - last_capture) > 60
+		if r:
+			r = scn_gameresult.match(context)
 
 		if r:
 			if ((time.time() - last_capture) > 60):
