@@ -111,7 +111,7 @@ s = loopbackTest()
 #cv2.waitKey()
 #sys.exit()
 
-weapons.saveModelToFile("wepaons.trained")
+weapons.saveModelToFile("data/weapons.trained")
 weapons = None
 
 # 他のファイルに対するテスト

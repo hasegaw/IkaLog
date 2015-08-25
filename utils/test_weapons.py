@@ -28,7 +28,7 @@ sys.path.append('.')
 from IkaGlyphRecoginizer import *
 
 weapons = IkaGlyphRecoginizer()
-weapons.loadModelFromFile("weapons.trained")
+weapons.loadModelFromFile("data/weapons.trained")
 
 for root, dirs, files in os.walk("weapons_all/"):
 	l = []
