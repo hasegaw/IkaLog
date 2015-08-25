@@ -61,7 +61,10 @@ def core():
 
 		for op in OutputPlugins:
 			if hasattr(op, "onFrameRead"):
-				op.onFrameRead(context)
+				try:
+					op.onFrameRead(context)
+				except:
+					pass
 
 		# GameStart (マップ名、ルール名が表示されている) ?
 
@@ -104,15 +107,24 @@ def core():
 
 				for op in OutputPlugins:
 					if hasattr(op, "onGameIndividualResultAnalyze"):
-						op.onGameIndividualResultAnalyze(context)
+						try:
+							op.onGameIndividualResultAnalyze(context)
+						except:
+							pass
 
 				for op in OutputPlugins:
 					if hasattr(op, "onGameIndividualResult"):
-						op.onGameIndividualResult(context)
+						try:
+							op.onGameIndividualResult(context)
+						except:
+							pass
 
 				for op in OutputPlugins:
 					if hasattr(op, "onGameReset"):
-						op.onGameReset(context)
+						try:
+							op.onGameReset(context)
+						except:
+							pass
 
 				context['game']['map'] = None
 				context['game']['rule'] = None
@@ -123,11 +135,17 @@ def core():
 
 		for op in OutputPlugins:
 			if hasattr(op, "onFrameNext"):
-				key = op.onFrameNext(context)
+				try:
+					key = op.onFrameNext(context)
+				except:
+					pass
 
 		for op in OutputPlugins:
 			if hasattr(op, "onKeyPress"):
-				op.onKeyPress(context, key)
+				try:
+					op.onKeyPress(context, key)
+				except:
+					pass
 
 	# キャプチャを解放する
 	#cap.release()
