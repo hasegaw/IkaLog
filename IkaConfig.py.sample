@@ -6,6 +6,7 @@ from IkaOutput_CSV import *
 from IkaOutput_Console import *
 from IkaOutput_Fluentd import *
 from IkaOutput_JSON import *
+from IkaOutput_Screen import *
 from IkaOutput_Screenshot import *
 from IkaOutput_Slack import *
 from IkaOutput_Twitter import *
