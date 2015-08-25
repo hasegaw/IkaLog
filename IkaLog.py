@@ -34,6 +34,7 @@ def core():
 		"game": {
 			'map': None,
 			'rule': None,
+			'livesTrack': []
 		},
 		"engine": {
 			'frame': None,
@@ -57,7 +58,7 @@ def core():
 			frame = capture.read()
 
 		context['engine']['frame'] = frame
-		context['engine']['inGame'] = scn_ingame.matchTimerIcon(frame = frame)
+		context['engine']['inGame'] = scn_ingame.matchTimerIcon(context)
 
 		for op in OutputPlugins:
 			if hasattr(op, "onFrameRead"):
@@ -66,6 +67,15 @@ def core():
 				except:
 					pass
 
+		if context['engine']['inGame']:
+			# ライフをチェック
+			try:
+				(team1, team2) = scn_ingame.lives(context)
+				# print("味方 %s 敵 %s" % (team1, team2))
+				context['game']['livesTrack'].append([team1, team2])
+			except:
+				pass
+
 		# GameStart (マップ名、ルール名が表示されている) ?
 
 		r = None
@@ -73,6 +83,11 @@ def core():
 			r = scn_gamestart.match(context)
 
 		if r:
+			context["game"] =  {
+				'map': None,
+				'rule': None,
+				'livesTrack': []
+			}
 			while (r):
 				frame = capture.read()
 				frame = capture.read()
