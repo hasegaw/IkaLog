@@ -29,6 +29,7 @@ from IkaGlyphRecoginizer import *
 
 weapons = IkaGlyphRecoginizer()
 
+weapons.learnImageGroup(name = "3Kスコープ", dir = "weapons/3Kスコープ")
 weapons.learnImageGroup(name = "L3リールガン", dir = "weapons/L3リールガン")
 weapons.learnImageGroup(name = "N-ZAP85", dir = "weapons/NZAP85")
 weapons.learnImageGroup(name = "N-ZAP89", dir = "weapons/オレンジ鉄砲")
@@ -42,6 +43,7 @@ weapons.learnImageGroup(name = "ジェットスイーパーカスタム", dir = 
 weapons.learnImageGroup(name = "シャープマーカー", dir = "weapons/シャープマーカー")
 weapons.learnImageGroup(name = "シャープマーカーネオ", dir = "weapons/シャープマーカーネオ")
 weapons.learnImageGroup(name = "スイックリンα", dir = "weapons/スイックリンA")
+weapons.learnImageGroup(name = "スイックリンβ", dir = "weapons/スイックリンB")
 weapons.learnImageGroup(name = "スプラシューター", dir = "weapons/スプラシューター")
 weapons.learnImageGroup(name = "スプラシューターコラボ", dir = "weapons/スプラシューターコラボ")
 weapons.learnImageGroup(name = "スプラスコープ", dir = "weapons/スプラスコープ")
@@ -57,7 +59,9 @@ weapons.learnImageGroup(name = "デュアルスイーパーカスタム", dir = 
 weapons.learnImageGroup(name = "ノヴァブラスター", dir = "weapons/ノヴァブラスター")
 weapons.learnImageGroup(name = "バケットスローシャー", dir = "weapons/バケットスローシャー")
 weapons.learnImageGroup(name = "パブロ", dir = "weapons/パブロ")
+weapons.learnImageGroup(name = "パブロ・ヒュー", dir = "weapons/パブロ・ヒュー")
 weapons.learnImageGroup(name = "ヒーローシューターレプリカ", dir = "weapons/ヒーローシューターレプリカ")
+weapons.learnImageGroup(name = "ヒーローチャージャーレプリカ", dir = "weapons/ヒーローチャージャーレプリカ")
 weapons.learnImageGroup(name = "ヒーローローラーレプリカ", dir = "weapons/ヒーローローラーレプリカ")
 weapons.learnImageGroup(name = "プライムシューター", dir = "weapons/プライムシューター")
 weapons.learnImageGroup(name = "プライムシューターコラボ", dir = "weapons/プライムシューターコラボ")
@@ -65,6 +69,8 @@ weapons.learnImageGroup(name = "プロモデラーMG", dir = "weapons/プロモ�
 weapons.learnImageGroup(name = "プロモデラーRG", dir = "weapons/プロモデラーRG金")
 weapons.learnImageGroup(name = "ホットブラスター", dir = "weapons/ホットブラスター")
 weapons.learnImageGroup(name = "ホットブラスターカスタム", dir = "weapons/ホットブラスターカスタム")
+weapons.learnImageGroup(name = "ラピッドブラスター", dir = "weapons/ラピッドブラスター")
+weapons.learnImageGroup(name = "ラピッドブラスターデコ", dir = "weapons/ラピッドブラスターデコ")
 weapons.learnImageGroup(name = "リッター3k", dir = "weapons/リッター3k")
 weapons.learnImageGroup(name = "リッター3kカスタム", dir = "weapons/リッター3kカスタム")
 weapons.learnImageGroup(name = "ロングブラスター", dir = "weapons/ロングブラスター")
@@ -93,7 +99,7 @@ def loopbackTest():
 
 			#print("%s: %s 結果: %s<br>" % (msg, weapon['name'], r['name']))
 
-	s = ("ループバック正答率 %3.1f％" % (correct / total * 100))
+	s = ("%d 問中 %d 問正解　　学習内容に対する正答率 %3.1f％" % (total, correct, correct / total * 100))
 
 	# miss list 表示
 	misses_hist = []
@@ -103,11 +109,15 @@ def loopbackTest():
 	weapons.showLearnedWeaponImage(misses_hist, 'Misses', save = 'misses.png')
 	return s
 
+def testModel():
+	for weapon in weapons.models:
+		weapons.testModel(weapon)
 
+testModel()
 
 #import timeit
 #print(timeit.timeit('loopbackTest()', number=1, setup="from __main__ import loopbackTest,guessImage,guessImage1,weapons"))
-s = loopbackTest()
+print(loopbackTest())
 #cv2.waitKey()
 #sys.exit()
 

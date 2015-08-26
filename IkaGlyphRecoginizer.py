@@ -31,7 +31,7 @@ class IkaGlyphRecoginizer:
 	_HSV_COLOR_MAX = 185 
 
 	## Number of Hue samples
-	_HSV_COLOR_SAMPLES =  64
+	_HSV_COLOR_SAMPLES = 36
 
 	## Models
 	models = []
@@ -58,29 +58,33 @@ class IkaGlyphRecoginizer:
 	# @param img    the source image
 	# @return (img,out_img)  the result
 	def normalizeWeaponImage(self, img):
-		img_h = img.shape[0]
-		img_w = img.shape[1]
-	
-		#img = img[2:img_h - 4]
-		img = img[2:img_h - 4, 5:img_w - 3]
-		#img = img[2:img_h - 2, img_w * 0.2:img_w - 2]
-	
-		img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-	
-		h = img_hsv.shape[0]
-		w = img_hsv.shape[1]
+		h = img.shape[0]
+		w = img.shape[1]
+		img = img[2:h - 4, 5:w - 3]
+
+		out_img = img.copy()
+		h = img.shape[0]
+		w = img.shape[1]
+
+		img_hsv = cv2.cvtColor(out_img, cv2.COLOR_BGR2HSV)
 	
 		bgcolor_sample = img_hsv[h - 3:h, 0:3, 0] # Hue
 		bg_h_color = np.average(bgcolor_sample)
 		rad = 7
 		bg_h_color1 = int(bg_h_color - rad)
 		bg_h_color2 = int(bg_h_color + rad)
+
+		# デコ/カスタム要素で認識を優先するため画像で該当部分を拡大
+		x1 = 0
+		x2 = int(w * 0.7)
+		y1 = h - 10
+		out_img[y1: h -1, x1:w - 1, :] = cv2.resize(img[y1: h - 1, x2: w - 1], (w - x1 - 1, h - y1 - 1), interpolation = cv2.INTER_NEAREST)
+		img_hsv = cv2.cvtColor(out_img, cv2.COLOR_BGR2HSV)
 	
 		img_mask = cv2.inRange(img_hsv[:, :, 0], bg_h_color1, bg_h_color2)
 		img_mask2 = 255 - cv2.inRange(img_hsv[:, :, 2], 165,255) # Visibility
 		img_mask = np.minimum(img_mask, img_mask2)
 		
-		out_img = img.copy()
 		for i in range(3):
 			out_img[:, :, i] = np.minimum(out_img[:, :, i], 255 - img_mask)
 	
@@ -118,7 +122,7 @@ class IkaGlyphRecoginizer:
 	
 	## Analyze a image.
 	#
-	def analyzeImage(self, img, blocks_x = 3, blocks_y = 3, debug = False):
+	def analyzeImage(self, img, blocks_x = 5, blocks_y = 5, debug = False):
 		samples = self._precalculatedHueSamples
 
 		imgs = self.normalizeWeaponImage(img)
@@ -132,8 +136,8 @@ class IkaGlyphRecoginizer:
 		img_v = img_hsv[:, :, 2]
 	
 		hist = []
-		part_img_h = np.zeros((bh, bw), np.uint8)  #cv2.resize(img_h, (bw, bh))
-		part_img_s = np.zeros((bh, bw), np.uint8)  #cv2.resize(img_h, (bw, bh))
+		part_img_h = np.zeros((bh, bw), np.uint8)
+		part_img_s = np.zeros((bh, bw), np.uint8)
 	
 		for bx in range(blocks_x):
 			for by in range(blocks_y):
@@ -216,20 +220,14 @@ class IkaGlyphRecoginizer:
 	
 		abs_val = np.abs(img_param['hist'] - h_avg)
 	
-	#	cond0 = (h_var < 256 )
+		cond0 = (h_var < 50 )
 		cond1 = (abs_val < (h_var))
-		cond = cond1
-	#	cond = np.logical_and(cond0, cond1)
-	
-		scores = np.minimum(1000, (abs_val / (h_var + 0.1))) * np.sqrt(h_avg)
-	
+		cond = np.logical_and(cond0, cond1)
 	
 		# 分散を使用した重み付け
+		scores = np.minimum(1000, (abs_val / (h_var + 0.1))) * h_avg
 		score = np.sum(np.extract(cond, scores))
-		scores_max = np.sum(scores)
-	
-		#score = np.sum(np.extract(cond, scores))
-		#scores_max = np.sum(np.extract(cond0, scores))
+		scores_max = np.sum(np.extract(cond0, scores))
 		score_normalized = (score * 100) / scores_max
 	
 		return score_normalized
@@ -251,7 +249,18 @@ class IkaGlyphRecoginizer:
 		cv2.imshow(name, dest)
 		if save:
 			cv2.imwrite(save, dest)
-	
+
+	def testModel(self, model):
+		scores = []
+		for sample in model['samples']:
+			score = self.guessImage1(img = sample, model = model)
+			try:
+				scores.append(int(score * 10) / 10)
+			except:
+				pass
+
+		print("%s %s" % (model['name'], scores))
+
 	def learnImageGroup(self, name = None, dir = None):
 		l = []
 		l_hist = []
