@@ -24,6 +24,7 @@ import time
 
 from IkaScene_GameStart import *
 from IkaScene_ResultDetail import *
+from IkaScene_TowerTracker import *
 from IkaScene_InGame import *
 from IkaConfig import *
 
@@ -34,7 +35,8 @@ def core():
 		"game": {
 			'map': None,
 			'rule': None,
-			'livesTrack': []
+			'livesTrack': [],
+			'towerTrack': [],
 		},
 		"engine": {
 			'frame': None,
@@ -47,6 +49,7 @@ def core():
 	scn_gamestart = IkaScene_GameStart()
 	scn_gameresult = IkaScene_ResultDetail()
 	scn_ingame = IkaScene_InGame()
+	scn_towerTracker = IkaScene_TowerTracker()
 
 	while True:
 		# 0.5フレームおきに処理
@@ -68,11 +71,16 @@ def core():
 					pass
 
 		if context['engine']['inGame']:
-			# ライフをチェック
+			tower_data = scn_towerTracker.match(context)
+
 			try:
+				# ライフをチェック
 				(team1, team2) = scn_ingame.lives(context)
 				# print("味方 %s 敵 %s" % (team1, team2))
+
 				context['game']['livesTrack'].append([team1, team2])
+				if tower_data:
+					context['game']['towerTrack'].append(tower_data.copy())
 			except:
 				pass
 
@@ -86,8 +94,11 @@ def core():
 			context["game"] =  {
 				'map': None,
 				'rule': None,
-				'livesTrack': []
+				'livesTrack': [],
+				'towerTrack': [],
 			}
+			scn_towerTracker.reset(context)
+
 			while (r):
 				frame = capture.read()
 				frame = capture.read()

@@ -43,12 +43,7 @@ class IkaOutput_CSV_AliveSquids:
 		except:
 			print("CSV: Failed to write CSV File")
 
-	##
-	# onGameIndividualResult Hook
-	# @param self      The Object Pointer
-	# @param context   IkaLog context
-	#
-	def onGameIndividualResult(self, context):
+	def writeAliveSquidsCSV(self, context, basename = "ikabattle_log"):
 		time = 0
 		csv = ["tick,y\n", "tick,y\n"]
 
@@ -70,5 +65,37 @@ class IkaOutput_CSV_AliveSquids:
 		t_str = t.strftime("%Y%m%d_%H%M")
 
 		for f in csv:
-			self.writeRecord('alivesquids_%s_team%d.csv' % (t_str, num_team), f)
+			self.writeRecord('%s_team%d.csv' % (basename, num_team), f)
 			num_team = num_team + 1
+
+	def writeFlagsCSV(self, context, basename = "ikabattle_log"):
+		# データがない場合は書かない
+		if len(context['game']['towerTrack']) == 0:
+			return
+
+		time = 0
+		csv = "tick,pos,max,min\n"
+
+		for sample in context['game']['towerTrack']:
+			print(sample)
+			time = time + 1
+			if sample:					
+				csv = "%s%d, %d, %d, %d\n" % (csv, time, sample['pos'], sample['max'], sample['min'])
+
+		print(csv)
+
+		self.writeRecord('%s_tower.csv' % basename, csv)
+
+	##
+	# onGameIndividualResult Hook
+	# @param self      The Object Pointer
+	# @param context   IkaLog context
+	#
+	def onGameIndividualResult(self, context):
+			t = datetime.now()
+			basename = t.strftime("ikabattle_log_%Y%m%d_%H%M")
+			self.writeAliveSquidsCSV(context, basename = basename)
+			try:
+				self.writeFlagsCSV(context, basename = basename)
+			except:
+				print(traceback.format_exc())
