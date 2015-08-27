@@ -24,13 +24,14 @@ import numpy as np
 import os
 
 sys.path.append('.')
+base_dir = sys.argv[1]
 
 from IkaGlyphRecoginizer import *
 
 weapons = IkaGlyphRecoginizer()
 weapons.loadModelFromFile("data/weapons.trained")
 
-for root, dirs, files in os.walk("weapons_all/"):
+for root, dirs, files in os.walk(base_dir):
 	l = []
 	results = {}
 	for file in files:
