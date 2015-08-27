@@ -74,7 +74,7 @@ class IkaScene_TowerTracker:
 		return xPos_pct
 
 	def match(self, context):
-		if not (context['game']['rule']['name'] != 'ガチヤグラ' and context['game']['rule']['name'] =='ガチホコバトル'):
+		if not (context['game']['rule']['name'] != 'ガチヤグラ' and context['game']['rule']['name'] != 'ガチホコバトル'):
 			return None
 
 		xPos_pct = self.towerPos(context)
