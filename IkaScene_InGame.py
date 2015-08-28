@@ -115,24 +115,40 @@ class IkaScene_InGame:
 		eye_white_mask_v = cv2.inRange(img_eye_hsv[:, :, 2], 200, 256)
 		eye_white_mask = np.minimum(eye_white_mask_s, eye_white_mask_v)
 		a = []
+		team1_color = None
+		team2_color = None
+
 		for i in team1:
 			eye_score = np.sum(eye_white_mask[:, i - 4: i + 4]) / 255
 			alive = eye_score > 1
 			a.append(alive)
 
+			if alive:
+				team1_color = img[0, i] # RGB
+
 			cv2.rectangle( context['engine']['frame'], (self.meter_left + i - 4,  44), (self.meter_left + i + 4, 50), (255, 255,255), 1)
+
 
 		b = []
 		for i in team2:
 			eye_score = np.sum(eye_white_mask[:, i - 4: i + 4]) / 255
 			alive = eye_score > 1
 			b.append(alive)
+
+			if alive:
+				team2_color = img[0, i] # RGB
+
 			cv2.rectangle( context['engine']['frame'], (self.meter_left + i - 4,  44), (self.meter_left + i + 4, 50), (255, 255,255), 1)
+#		print("色: 味方 %d 敵 %d" % (team1_color, team2_color))
 		#print("味方 %s 敵 %s" % (a,b))
 #		cv2.imshow('yagura_gray', img_gray2)
 #		cv2.imshow('yagura_gray2', img_gray3)
 #		cv2.imshow('eyes', eye_white_mask)
-		return (a,b)
+
+		if (not (team1_color is None)) and (not (team2_color is None)):
+			context['game']['color'] = [ team1_color, team2_color ]
+
+		return (a, b)
 
 	def matchTimerIcon(self, context):
 		img = IkaUtils.cropImageGray(
