@@ -20,7 +20,7 @@
 
 import sys
 import math
-sys.path.append('/Users/hasegaw/github/qhue/') # FixMe
+sys.path.append('qhue/') # FixMe
 from IkaUtils import *
 
 ## IkaOutput_Hue: "Cameleon" Phillips Hue Lights.
