@@ -55,7 +55,7 @@ class IkaOutput_CSV_AliveSquids:
 				for alive in team:
 					num_squid = num_squid + 1
 
-					if alive:					
+					if alive:
 						csv[num_team] = "%s%d, %d\n" % (csv[num_team], time, num_squid)
 				num_team = num_team + 1
 
@@ -79,7 +79,7 @@ class IkaOutput_CSV_AliveSquids:
 		for sample in context['game']['towerTrack']:
 			print(sample)
 			time = time + 1
-			if sample:					
+			if sample:
 				csv = "%s%d, %d, %d, %d\n" % (csv, time, sample['pos'], sample['max'], sample['min'])
 
 		print(csv)
