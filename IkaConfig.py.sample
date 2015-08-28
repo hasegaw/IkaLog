@@ -23,6 +23,7 @@ from IkaOutput_CSV import *
 from IkaOutput_CSV_AliveSquids import *
 from IkaOutput_Console import *
 from IkaOutput_Fluentd import *
+from IkaOutput_Hue import *
 from IkaOutput_JSON import *
 from IkaOutput_Screen import *
 from IkaOutput_Screenshot import *
@@ -47,6 +48,7 @@ class IkaConfig:
 		OutputPlugins.append(IkaOutput_CSV("ika.csv"))
 		OutputPlugins.append(IkaOutput_JSON("ika.json"))
 		OutputPlugins.append(IkaOutput_Screenshot("./screenshots/"))
+		#OutputPlugins.append(IkaOutput_Hue(host = '192.168.0.1', user = 'newdeveloper'))
 		#OutputPlugins.append(IkaOutput_Slack(url = "https://hooks.slack.com/services/(incoming hook endpoint"))
 		#OutputPlugins.append(IkaOutput_Twitter("ConsumerToken", "ConsumerSecret", "AccessToken", "AccessTokenSecret", attachImage = False))
 		OutputPlugins.append(IkaOutput_Fluentd(host = '127.0.0.1', port = 24224, username = "＜8ヨ", tag = "ikalog"))
