@@ -39,10 +39,11 @@ def learnImageGroup(recoginizer =  None, name = "unknown", dir = None):
 
 weapons = IkaGlyphRecoginizer()
 
+learnImageGroup(weapons, "14式竹筒銃・甲", dir = "14式竹筒銃・甲")
 learnImageGroup(weapons, "3Kスコープ", dir = "3Kスコープ")
 learnImageGroup(weapons, "L3リールガン", dir = "L3リールガン")
-learnImageGroup(weapons, "N-ZAP85", dir = "NZAP85")
-learnImageGroup(weapons, "N-ZAP89", dir = "オレンジ鉄砲")
+learnImageGroup(weapons, "N-ZAP85", dir = "N-ZAP85")
+learnImageGroup(weapons, "N-ZAP89", dir = "N-ZAP89")
 learnImageGroup(weapons, "カーボンローラー", dir = "カーボンローラー")
 learnImageGroup(weapons, "ガロン52", dir = "ガロン52")
 learnImageGroup(weapons, "ガロン96", dir = "ガロン96")
@@ -77,17 +78,17 @@ learnImageGroup(weapons, "プライムシューター", dir = "プライムシ�
 learnImageGroup(weapons, "プライムシューターコラボ", dir = "プライムシューターコラボ")
 learnImageGroup(weapons, "プロモデラーMG", dir = "プロモデラーMG銀")
 learnImageGroup(weapons, "プロモデラーRG", dir = "プロモデラーRG金")
+learnImageGroup(weapons, "ボールドマーカー", dir = "ボールドマーカー")
+learnImageGroup(weapons, "ホクサイ", dir = "ホクサイ")
 learnImageGroup(weapons, "ホットブラスター", dir = "ホットブラスター")
 learnImageGroup(weapons, "ホットブラスターカスタム", dir = "ホットブラスターカスタム")
+learnImageGroup(weapons, "もみじシューター", dir = "もみじシューター")
 learnImageGroup(weapons, "ラピッドブラスター", dir = "ラピッドブラスター")
 learnImageGroup(weapons, "ラピッドブラスターデコ", dir = "ラピッドブラスターデコ")
 learnImageGroup(weapons, "リッター3k", dir = "リッター3k")
 learnImageGroup(weapons, "リッター3kカスタム", dir = "リッター3kカスタム")
 learnImageGroup(weapons, "ロングブラスター", dir = "ロングブラスター")
-learnImageGroup(weapons, "ボールドマーカー", dir = "ボールドマーカー")
-learnImageGroup(weapons, "ホクサイ", dir = "ホクサイ")
-learnImageGroup(weapons, "もみじシューター", dir = "もみじシューター")
-learnImageGroup(weapons, "わかばシューター", dir = "wakaba")
+learnImageGroup(weapons, "わかばシューター", dir = "わかばシューター")
 
 def loopbackTest():
 	results = {}
