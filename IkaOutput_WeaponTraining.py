@@ -22,6 +22,7 @@ from IkaUtils import *
 
 import cv2
 import time
+import sys
 
 ## IkaOutput_WeaponTraining: IkaLog Output Plugin for gathering weapon data for training
 #
