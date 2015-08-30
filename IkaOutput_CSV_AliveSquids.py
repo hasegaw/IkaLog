@@ -84,7 +84,7 @@ class IkaOutput_CSV_AliveSquids:
 
 		print(csv)
 
-		self.writeRecord('%s/%s_tower.csv' % self.dest_dir, basename, csv)
+		self.writeRecord('%s/%s_tower.csv' % (self.dest_dir, basename), csv)
 
 	##
 	# onGameIndividualResult Hook
@@ -95,10 +95,7 @@ class IkaOutput_CSV_AliveSquids:
 			t = datetime.now()
 			basename = t.strftime("ikabattle_log_%Y%m%d_%H%M")
 			self.writeAliveSquidsCSV(context, basename = basename)
-			try:
-				self.writeFlagsCSV(context, basename = basename)
-			except:
-				print(traceback.format_exc())
+			self.writeFlagsCSV(context, basename = basename)
 
 	##
 	# Constructor
