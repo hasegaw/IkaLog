@@ -20,6 +20,7 @@
 import numpy as np
 import cv2
 import sys
+from IkaGlyphRecoginizer import *
 from IkaUtils import *
 
 class IkaScene_ResultDetail:
@@ -118,6 +119,12 @@ class IkaScene_ResultDetail:
 			e = self.analyzeEntry(img_entry)
 			e['team'] = 1 if entry_id < 4 else 2
 			e['rank_in_team'] = (entry_id % 5) + 1
+			try:
+				result, model = self.weapons.guessImage(e['img_weapon'])
+				e['weapon'] = result['name']
+			except:
+				e['weapon'] = None
+
 			context['game']['players'].append(e)
 
 			if 0:
@@ -133,6 +140,13 @@ class IkaScene_ResultDetail:
 
 	def __init__(self):
 		winlose = cv2.imread('masks/result_detail.png')
+
+		try:
+			self.weapons = IkaGlyphRecoginizer()
+			self.weapons.loadModelFromFile("data/weapons.trained")
+		except:
+			print("Could not initalize weapons recoginiton model")
+
 		if winlose is None:
 			print("勝敗画面のマスクデータが読み込めませんでした。")
 
