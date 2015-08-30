@@ -65,7 +65,7 @@ class IkaOutput_CSV_AliveSquids:
 		t_str = t.strftime("%Y%m%d_%H%M")
 
 		for f in csv:
-			self.writeRecord('%s_team%d.csv' % (basename, num_team), f)
+			self.writeRecord('%s/%s_team%d.csv' % (self.dest_dir, basename, num_team), f)
 			num_team = num_team + 1
 
 	def writeFlagsCSV(self, context, basename = "ikabattle_log"):
@@ -84,7 +84,7 @@ class IkaOutput_CSV_AliveSquids:
 
 		print(csv)
 
-		self.writeRecord('%s_tower.csv' % basename, csv)
+		self.writeRecord('%s/%s_tower.csv' % self.dest_dir, basename, csv)
 
 	##
 	# onGameIndividualResult Hook
@@ -99,3 +99,10 @@ class IkaOutput_CSV_AliveSquids:
 				self.writeFlagsCSV(context, basename = basename)
 			except:
 				print(traceback.format_exc())
+
+	##
+	# Constructor
+	# @param self         The Object Pointer.
+	# @param dest_dir     Destionation directory (Relative path, or absolute path)
+	def __init__(self, dir = './log/'):
+		self.dest_dir = dir
