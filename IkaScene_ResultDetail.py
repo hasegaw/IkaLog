@@ -20,6 +20,7 @@
 import numpy as np
 import cv2
 import sys
+from datetime import datetime
 from IkaGlyphRecoginizer import *
 from IkaUtils import *
 
@@ -134,6 +135,7 @@ class IkaScene_ResultDetail:
 			if e['me']:
 				context['game']['won'] = True if entry_id < 5 else False
 		context['game']['won'] = self.isWin(context)
+		context['game']['timestamp'] = datetime.now()
 
 	def match(self, context):
 		return IkaUtils.matchWithMask(context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
