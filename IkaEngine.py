@@ -103,7 +103,7 @@ class IkaEngine:
 			if self.scn_ingame.matchDead(context):
 				if self.last_dead + 3 < time.time():
 					self.callPlugins('onGameDead')
-				last_dead = time.time()
+				self.last_dead = time.time()
 
 			tower_data = self.scn_towerTracker.match(context)
 
