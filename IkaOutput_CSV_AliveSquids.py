@@ -77,12 +77,9 @@ class IkaOutput_CSV_AliveSquids:
 		csv = "tick,pos,max,min\n"
 
 		for sample in context['game']['towerTrack']:
-			print(sample)
 			time = time + 1
 			if sample:
 				csv = "%s%d, %d, %d, %d\n" % (csv, time, sample['pos'], sample['max'], sample['min'])
-
-		print(csv)
 
 		self.writeRecord('%s/%s_tower.csv' % (self.dest_dir, basename), csv)
 
