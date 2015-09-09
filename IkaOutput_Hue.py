@@ -61,7 +61,7 @@ class IkaOutput_Hue:
 		team1 = context['game']['color'][0]
 		team2 = context['game']['color'][1]
 
-		print(team1, team2)
+		# print(team1, team2)
 
 		c1 = self.RGBtoXY(team1[2], team1[1], team1[0])
 		c2 = self.RGBtoXY(team2[2], team2[1], team2[0])
@@ -74,7 +74,6 @@ class IkaOutput_Hue:
 
 	def onFrameNext(self, context):
 		if context['engine']['inGame']:
-			print('hello')
 			if ('color' in context['game']):
 				self.lightTeamColor(context)
 
