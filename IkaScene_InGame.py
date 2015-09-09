@@ -157,13 +157,31 @@ class IkaScene_InGame:
 
 		return IkaUtils.matchWithMask(img, self.mask_timer, 0.85, 0.6)
 
+	def matchGoSign(self, context):
+		return self.mask_goSign.match(context['engine']['frame'])
+
+	def matchDead(self, context):
+		return self.mask_dead.match(context['engine']['frame'])
+
 	def __init__(self):
 		self.mask_timer = IkaUtils.loadMask('masks/ingame_timer.png', self.timer_left, self.timer_top, self.timer_top, self.timer_height)
+		self.mask_goSign = IkaMatcher(
+			1280 / 2 - 420 / 2, 130, 420, 170,
+			img_file = 'masks/ui_go.png',
+			threshold = 0.99,
+			orig_threshold = 0.5,
+			pre_threshold_value = 240,
+			label = 'Go!',
+		)
 
-		#img = cv2.imread('masks/ingame_timer.png')
-		#if img is None:
-		#	print("マスクデータ masks/ingame_timer.png が読み込めませんでした")
-		#self.mask_timer = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)[self.timer_top:self.timer_bottom, self.timer_left:self.timer_right]
+		self.mask_dead = IkaMatcher(
+			1057, 648, 140, 40,
+			img_file = 'masks/ui_dead.png',
+			threshold = 0.8,
+			orig_threshold = 0.3,
+			pre_threshold_value = 220,
+			label = 'dead',
+		)
 
 
 if __name__ == "__main__":

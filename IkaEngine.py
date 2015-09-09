@@ -28,6 +28,7 @@ from IkaScene_GameStart import *
 from IkaScene_ResultDetail import *
 from IkaScene_TowerTracker import *
 from IkaScene_InGame import *
+from IkaScene_Lobby import *
 
 ## The IkaLog core engine.
 #
@@ -36,8 +37,14 @@ class IkaEngine:
 	scn_gameresult = IkaScene_ResultDetail()
 	scn_ingame = IkaScene_InGame()
 	scn_towerTracker = IkaScene_TowerTracker()
-	last_capture = time.time() - 100;
-	last_gamestart = time.time() - 100;
+	scn_lobby = IkaScene_Lobby()
+
+	last_capture = time.time() - 100
+	last_gamestart = time.time() - 100
+	last_lobby_matching = time.time() - 100
+	last_lobby_matched = time.time() - 100
+	last_go_sign = time.time() - 100
+	last_dead = time.time() - 100
 
 	def dprint(self, text):
 		print(text, file = sys.stderr)
@@ -83,6 +90,21 @@ class IkaEngine:
 		self.callPlugins('onFrameRead')
 
 		if context['engine']['inGame']:
+			# ゴーサイン
+			r = False
+			if self.last_go_sign + 60 < time.time():
+				r = self.scn_ingame.matchGoSign(context)
+
+			if r:
+				self.last_go_sign = time.time()
+				self.callPlugins('onGoSign')
+
+			# 死亡状態（「復活まであとｎ秒」）
+			if self.scn_ingame.matchDead(context):
+				if last_dead + 3 < time.time():
+					self.callPlugins('onGameDead')
+				last_dead = time.time()
+
 			tower_data = self.scn_towerTracker.match(context)
 
 			try:
@@ -95,6 +117,24 @@ class IkaEngine:
 					context['game']['towerTrack'].append(tower_data.copy())
 			except:
 				pass
+
+		# Lobby
+		r = False
+		if not context['engine']['inGame']:
+			r = self.scn_lobby.match(context)
+
+		if r:
+			if context['game']['lobby']['state'] == 'matching':
+				if (time.time() - self.last_lobby_matching) > 60:
+					# マッチングを開始した
+					self.callPlugins('onLobbyMatching')
+				self.last_lobby_matching = time.time()
+
+			if context['game']['lobby']['state'] == 'matched':
+				if (time.time() - self.last_lobby_matched) > 10:
+					# マッチングした直後
+					self.callPlugins('onLobbyMatched')
+				self.last_lobby_matched = time.time()
 
 		# GameStart (マップ名、ルール名が表示されている) ?
 
