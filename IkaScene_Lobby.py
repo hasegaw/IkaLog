@@ -72,7 +72,7 @@ class IkaScene_Lobby:
 
 		self.mask_matching = IkaMatcher(
 			826, 37, 280, 34,
-			img_file = 'masks/ui_lobby_public2.png',
+			img_file = 'masks/ui_lobby_public.png',
 			threshold = 0.97,
 			orig_threshold = 0.5,
 			pre_threshold_value = 220,
@@ -86,7 +86,6 @@ class IkaScene_Lobby:
 			orig_threshold = 0.5,
 			pre_threshold_value = 220,
 			label = 'Matched',
-			debug = True
 		)
 
 if __name__ == "__main__":
