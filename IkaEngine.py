@@ -101,7 +101,7 @@ class IkaEngine:
 
 			# 死亡状態（「復活まであとｎ秒」）
 			if self.scn_ingame.matchDead(context):
-				if last_dead + 3 < time.time():
+				if self.last_dead + 3 < time.time():
 					self.callPlugins('onGameDead')
 				last_dead = time.time()
 
