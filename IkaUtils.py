@@ -126,3 +126,98 @@ class IkaUtils:
 			cv2.imwrite(destfile, frame)
 		except:
 			print("Screenshot: failed")
+
+
+## Match images with mask data.
+class IkaMatcher:
+	## Match the image.
+	# @param self   The object.
+	# @param img    Frame data.
+	# @param debug  If true, show debug information.
+	def match(self, img, debug = None):
+		if debug is None:
+			debug = self.debug
+
+		# Crop
+		cropped = (img.shape[0] == self.height) and (img.shape[1] == self.width)
+		if not cropped:
+			img = img[self.top: self.top + self.height, self.left: self.left + self.width]
+
+		# Grayscale
+		if img.shape[2] > 1:
+			img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+		# Check false-positive
+		orig_hist = cv2.calcHist([img], [0], None, [3], [0, 256])
+		orig_raito  = orig_hist[2] / np.sum(orig_hist)
+		raito = 0
+
+		match = True
+
+		if orig_raito > self.orig_threshold:
+			if debug:
+				#print("original image exceeded orig_threshold")
+				match = False
+
+		if match and not (self.pre_threshold_value is None):
+			ret, img = cv2.threshold(img, self.pre_threshold_value, 255, cv2.THRESH_BINARY)
+
+		if match:
+			added = img + self.mask_img
+
+			hist = cv2.calcHist([added], [0], None, [3], [0, 256])
+
+			raito = hist[2] / np.sum(hist)
+			match = raito > self.threshold
+		else:
+			added = None
+
+		if debug:# and (match > threshold):
+			label = self.label if not self.label is None else self
+			print("%s(%s): result=%s raito %f orig_raito %f, threshold %3.3f orig_threshold %3.3f" %
+				(self.__class__.__name__, label, match, raito, orig_raito, self.threshold, self.orig_threshold))
+			cv2.imshow('img: %s' % label, img)
+			cv2.imshow('mask: %s' % label, self.mask_img)
+			if not added is None:
+				cv2.imshow('result: %s' % label, added)
+
+		return match
+
+	## Constructor.
+	# @param self                 The object.
+	# @param left                 Left of the mask.
+	# @param top                  Top of the mask.
+	# @param width                Width of the mask.
+	# @param height               Height of the mask.
+	# @param img                  Instance of the mask image.
+	# @param img_file             Filename of the mask image.
+	# @param threshold            Threshold
+	# @param orig_threshold       Target frame must be lower than this raito.
+	# @prram pre_threshold_value  Threshold target frame with this level before matching.
+	# @param debug                If true, show debug information.
+	# @param label                Label (text data) to distingish this mask.
+	def __init__(self, left, top, width, height, img = None, img_file = None, threshold = 0.9, orig_threshold = 0.7, pre_threshold_value = 230, debug = False, label = None):
+		self.top = top
+		self.left = left
+		self.width = width
+		self.height = height
+		self.threshold = threshold
+		self.orig_threshold = orig_threshold
+		self.pre_threshold_value = pre_threshold_value
+		self.debug = debug
+		self.label = label
+
+		if not img_file is None:
+			img = cv2.imread(img_file)
+
+		if img is None:
+			raise Exception('Could not load mask image')
+
+		if len(img.shape) > 2 and img.shape[2] != 1:
+			img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+		cropped = (img.shape[0] == self.height) and (img.shape[1] == self.width)
+		if cropped:
+			self.mask_img = img
+		else:
+			self.mask_img = img[top: top + height, left: left + width]
