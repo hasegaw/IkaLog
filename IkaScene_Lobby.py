@@ -99,7 +99,6 @@ class IkaScene_Lobby:
 			orig_threshold = 0.5,
 			pre_threshold_value = 220,
 			label = 'Matched',
-			debug = True
 		)
 
 		self.mask_tag_matched = IkaMatcher(
