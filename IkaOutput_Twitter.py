@@ -107,7 +107,8 @@ class IkaOutput_Twitter:
 		self.last_me = me
 
 		s = self.getTextGameIndividualResult(context)
-		s = "%s (%s)" % (s, fes_title)
+		if not fes_title is None:
+			s = "%s (%s)" % (s, fes_title)
 
 		media = self.postMedia(context['engine']['frame']) if self.attachImage else None
 		self.tweet(s, media = media)
