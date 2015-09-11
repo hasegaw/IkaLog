@@ -27,6 +27,7 @@ class IkaInput_CVCapture:
 	out_height = 720 
 	need_resize = False
 	need_deinterlace = False
+	offset = (0, 0)
 
 	def read(self):
 		ret, frame = self.cap.read()
@@ -37,6 +38,21 @@ class IkaInput_CVCapture:
 		if self.need_deinterlace:
 			for y in range(frame.shape[0])[1::2]:
 				frame[y,:] = frame[y - 1, :]
+
+		if not (self.offset[0] == 0 and self.offset[1] == 0):
+			ox = self.offset[0]
+			oy = self.offset[1]
+
+			sx1 = max(-ox, 0)
+			sy1 = max(-oy, 0)
+
+			dx1 = max(ox, 0)
+			dy1 = max(oy, 0)
+
+			w = min(self.out_width - dx1, self.out_width - sx1)
+			h = min(self.out_height - dy1, self.out_height - sy1)
+
+			frame[dy1:dy1 + h, dx1:dx1 + w] = frame[sy1:sy1 + h, sx1:sx1 + w]
 
 		if self.need_resize:
 			return cv2.resize(frame, (self.out_width, self.out_height))
