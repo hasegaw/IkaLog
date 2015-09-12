@@ -39,8 +39,12 @@ class IkaScene_Lobby:
 		r_pub_matched  = self.mask_matched.match(frame)
 		r_tag_matching = self.mask_tag_matching.match(frame)
 		r_tag_matched  = self.mask_tag_matched.match(frame)
+		r_fes_matched  = self.mask_fes_matched.match(frame)
 
-		if not (r_pub_matching or r_pub_matched or r_tag_matching or r_tag_matched):
+		r_matching = r_pub_matching or r_tag_matching
+		r_matched = r_pub_matched or r_tag_matched or r_fes_matched
+
+		if not (r_matching or r_matched):
 			return False
 
 		context['game']['lobby'] = {
@@ -54,10 +58,13 @@ class IkaScene_Lobby:
 		if (r_tag_matching or r_tag_matched):
 			context['game']['lobby']['type'] = 'tag'
 
-		if (r_pub_matching or r_tag_matching):
+		if (r_fes_matched):
+			context['game']['lobby']['type'] = 'festa'
+
+		if (r_matching):
 			context['game']['lobby']['state'] = 'matching'
 
-		if (r_pub_matched or r_tag_matched):
+		if (r_matched):
 			context['game']['lobby']['state'] = 'matched'
 
 		#print(context['game']['lobby'])
@@ -117,6 +124,15 @@ class IkaScene_Lobby:
 			orig_threshold = 0.5,
 			pre_threshold_value = 210,
 			label = 'TagMatching',
+		)
+
+		self.mask_fes_matched = IkaMatcher(
+			851, 383, 225, 30,
+			img_file = 'masks/ui_lobby_fes_matched.png',
+			threshold = 0.90,
+			orig_threshold = 0.5,
+			pre_threshold_value = 210,
+			label = 'FestaMatched',
 		)
 
 if __name__ == "__main__":
