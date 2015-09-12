@@ -18,6 +18,8 @@
 #  limitations under the License.
 #
 
+from __future__ import print_function
+
 import sys
 import numpy as np
 import cv2
@@ -29,6 +31,7 @@ from IkaScene_ResultDetail import *
 from IkaScene_TowerTracker import *
 from IkaScene_InGame import *
 from IkaScene_Lobby import *
+
 
 ## The IkaLog core engine.
 #
