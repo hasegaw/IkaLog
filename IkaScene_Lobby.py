@@ -27,14 +27,14 @@ class IkaScene_Lobby:
 	def match(self, context):
 		frame = context['engine']['frame']
 
-		# 「ルール」「ステージ」の文字があればパブリックロビーで待ち合わせ中
-#		if not self.mask_rule.match(frame):
-#			return False
+		# 「ルール」「ステージ」
+		if not self.mask_rule.match(frame):
+			return False
 
-#		if not self.mask_stage.match(frame):
-#			return False
+		if not self.mask_stage.match(frame):
+			return False
 
-		# マッチング状況はどちらかがあるはず
+		# マッチング中は下記文字列のうちひとつがあるはず
 		r_pub_matching = self.mask_matching.match(frame)
 		r_pub_matched  = self.mask_matched.match(frame)
 		r_tag_matching = self.mask_tag_matching.match(frame)
@@ -67,27 +67,25 @@ class IkaScene_Lobby:
 		if (r_matched):
 			context['game']['lobby']['state'] = 'matched'
 
-		#print(context['game']['lobby'])
-
 		return True
 
 	def __init__(self):
 		self.mask_rule = IkaMatcher(
 			0, 220, 737, 94,
 			img_file = 'masks/ui_lobby_public.png',
-			threshold = 0.999,
-			orig_threshold = 0.5,
-			pre_threshold_value = 220,
-			label = 'Rule'
+			threshold = 0.99,
+			orig_threshold = 0.1,
+			pre_threshold_value = 160,
+			label = 'Rule',
 		)
 
 		self.mask_stage = IkaMatcher(
 			0, 345, 737, 94,
 			img_file = 'masks/ui_lobby_public.png',
-			threshold = 0.999,
-			orig_threshold = 0.5,
-			pre_threshold_value = 220,
-			label = 'Stage'
+			threshold = 0.99,
+			orig_threshold = 0.1,
+			pre_threshold_value = 160,
+			label = 'Stage',
 		)
 
 		self.mask_matching = IkaMatcher(
@@ -95,7 +93,7 @@ class IkaScene_Lobby:
 			img_file = 'masks/ui_lobby_public.png',
 			threshold = 0.97,
 			orig_threshold = 0.5,
-			pre_threshold_value = 220,
+			pre_threshold_value = 160,
 			label = 'Matching',
 		)
 
@@ -104,7 +102,7 @@ class IkaScene_Lobby:
 			img_file = 'masks/ui_lobby_public_matched.png',
 			threshold = 0.97,
 			orig_threshold = 0.5,
-			pre_threshold_value = 220,
+			pre_threshold_value = 160,
 			label = 'Matched',
 		)
 
@@ -113,7 +111,7 @@ class IkaScene_Lobby:
 			img_file = 'masks/ui_lobby_tag_matched.png',
 			threshold = 0.90,
 			orig_threshold = 0.5,
-			pre_threshold_value = 210,
+			pre_threshold_value = 160,
 			label = 'TagMatched',
 		)
 
@@ -122,7 +120,7 @@ class IkaScene_Lobby:
 			img_file = 'masks/ui_lobby_tag_matching.png',
 			threshold = 0.97,
 			orig_threshold = 0.5,
-			pre_threshold_value = 210,
+			pre_threshold_value = 160,
 			label = 'TagMatching',
 		)
 
@@ -131,7 +129,7 @@ class IkaScene_Lobby:
 			img_file = 'masks/ui_lobby_fes_matched.png',
 			threshold = 0.90,
 			orig_threshold = 0.5,
-			pre_threshold_value = 210,
+			pre_threshold_value = 160,
 			label = 'FestaMatched',
 		)
 
