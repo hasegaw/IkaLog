@@ -1,2 +1,9 @@
 screenshots/*.png
 ika.csv
+*.pyc
+__pycache__
+.DS_Store
+*.swp
+*.swo
+ika.csv
+ika.json
