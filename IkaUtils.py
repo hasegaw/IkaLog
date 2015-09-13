@@ -56,6 +56,7 @@ class IkaUtils:
 			return unknown
 		return map['name']
 
+	@staticmethod
 	def rule2text(rule, unknown = None, lang = "ja"):
 		if rule is None:
 			if unknown is None:
@@ -116,11 +117,13 @@ class IkaUtils:
 
 		return mask 
 
+	@staticmethod
 	def getWinLoseText(won, win_text = "勝ち", lose_text = "負け", unknown_text = "不明"):
 		if won is None:
 			return unknown_text
 		return win_text if won else lose_text
 
+	@staticmethod
 	def writeScreenshot(destfile, frame):
 		try:
 			cv2.imwrite(destfile, frame)
