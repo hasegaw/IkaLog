@@ -77,7 +77,8 @@ class IkaScene_TowerTracker:
 		if context['game']['rule'] is None:
 			return None
 
-		if not (context['game']['rule']['name'] != 'ガチヤグラ' and context['game']['rule']['name'] != 'ガチホコバトル'):
+		applicable_modes = [u'ガチヤグラ', u'ガチホコバトル', 'ガチヤグラ', 'ガチホコバトル']
+		if not (context['game']['rule']['name'] in applicable_modes):
 			return None
 
 		xPos_pct = self.towerPos(context)
