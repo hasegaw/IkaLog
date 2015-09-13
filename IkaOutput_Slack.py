@@ -51,8 +51,16 @@ class IkaOutput_Slack:
 		self._internal_update = True
 
 		self.checkEnable.SetValue(self.enabled)
-		self.editURL.SetValue(self.url)
-		self.editBotName.SetValue(self.username)
+
+		if not self.url is None:
+			self.editURL.SetValue(self.url)
+		else:
+			self.editURL.SetValue('')
+
+		if not self.username is None:
+			self.editBotName.SetValue(self.username)
+		else:
+			self.editBotName.SetValue('')
 
 		self._internal_update = False
 
