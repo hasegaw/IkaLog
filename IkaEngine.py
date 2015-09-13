@@ -117,9 +117,9 @@ class IkaEngine:
 				(team1, team2) = self.scn_ingame.lives(context)
 				# print("味方 %s 敵 %s" % (team1, team2))
 
-				context['game']['livesTrack'].append([team1, team2])
+				context['game']['livesTrack'].append([context['engine']['msec'], team1, team2])
 				if tower_data:
-					context['game']['towerTrack'].append(tower_data.copy())
+					context['game']['towerTrack'].append([context['engine']['msec'], tower_data.copy()])
 			except:
 				pass
 

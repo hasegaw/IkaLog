@@ -43,12 +43,14 @@ class IkaOutput_CSV_AliveSquids:
 		except:
 			print("CSV: Failed to write CSV File")
 
-	def writeAliveSquidsCSV(self, context, basename = "ikabattle_log"):
-		time = 0
+	def writeAliveSquidsCSV(self, context, basename = "ikabattle_log", debug = False):
 		csv = ["tick,y\n", "tick,y\n"]
 
 		for sample in context['game']['livesTrack']:
-			time = time + 1
+			if debug:
+				print('lives sample = %s', sample)
+			time = sample[0]
+			del sample[0]
 			num_team = 0
 			for team in sample:
 				num_squid = 0
@@ -68,18 +70,19 @@ class IkaOutput_CSV_AliveSquids:
 			self.writeRecord('%s/%s_team%d.csv' % (self.dest_dir, basename, num_team), f)
 			num_team = num_team + 1
 
-	def writeFlagsCSV(self, context, basename = "ikabattle_log"):
+	def writeFlagsCSV(self, context, basename = "ikabattle_log", debug = False):
 		# データがない場合は書かない
 		if len(context['game']['towerTrack']) == 0:
 			return
 
-		time = 0
 		csv = "tick,pos,max,min\n"
 
 		for sample in context['game']['towerTrack']:
-			time = time + 1
-			if sample:
-				csv = "%s%d, %d, %d, %d\n" % (csv, time, sample['pos'], sample['max'], sample['min'])
+			if debug:
+				print('tower sample = %s', sample)
+			time = sample[0]
+			sample = sample[1]
+			csv = "%s%d, %d, %d, %d\n" % (csv, time, sample['pos'], sample['max'], sample['min'])
 
 		self.writeRecord('%s/%s_tower.csv' % (self.dest_dir, basename), csv)
 
@@ -91,12 +94,13 @@ class IkaOutput_CSV_AliveSquids:
 	def onGameIndividualResult(self, context):
 			t = datetime.now()
 			basename = t.strftime("ikabattle_log_%Y%m%d_%H%M")
-			self.writeAliveSquidsCSV(context, basename = basename)
-			self.writeFlagsCSV(context, basename = basename)
+			self.writeAliveSquidsCSV(context, basename = basename, debug = self.debug)
+			self.writeFlagsCSV(context, basename = basename, debug = self.debug)
 
 	##
 	# Constructor
 	# @param self         The Object Pointer.
 	# @param dest_dir     Destionation directory (Relative path, or absolute path)
-	def __init__(self, dir = './log/'):
+	def __init__(self, dir = './log/', debug = False):
 		self.dest_dir = dir
+		self.debug = debug
