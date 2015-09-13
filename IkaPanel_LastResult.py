@@ -19,6 +19,7 @@
 #
 
 import wx
+import cv2
 
 class LastResultPanel(wx.Panel):
 	def onGameIndividualResult(self, context):
@@ -36,16 +37,8 @@ class LastResultPanel(wx.Panel):
 		dc.Clear()
 		dc.DrawBitmap(self.bmp, 0, 0)
 
-		return
-
-		dc = wx.PaintDC(self)
-
-		w, h = self.GetClientSizeTuple()
-
 	def __init__(self, *args, **kwargs):
 		self.latest_frame = None
 		wx.Panel.__init__(self, *args, **kwargs)
 		self.Bind(wx.EVT_PAINT, self.OnPaint)
 #		self.Bind(wx.EVT_SIZE, self.OnResize)
-
-
