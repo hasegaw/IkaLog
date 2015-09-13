@@ -69,7 +69,7 @@ class IkaEngine:
 	def reset(self):
 		# Initalize the context
 		self.context = {
-			"game": {
+			'game': {
 				'map': None,
 				'rule': None,
 				'won': None,
@@ -77,8 +77,10 @@ class IkaEngine:
 				'livesTrack': [],
 				'towerTrack': [],
 			},
-			"engine": {
+			'engine': {
 				'frame': None,
+			},
+			'config': {
 			}
 		}
 
