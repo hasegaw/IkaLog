@@ -23,22 +23,47 @@ import wx
 class TimelinePanel(wx.Panel):
 	margin_dots = 30
 	max_game_period = 60 * 5 # in seconds
+	game_period = max_game_period
+	context = None
+
+	def onFrameNext(self, context):
+		if self.context is None:
+			self.context = context
+		self.Refresh()
+
+	def rescaleX(self, context):
+		self.game_period = self.max_game_period
+		if not 'livesTrack' in context['game']:
+			return
+
+		# 横幅を確定する
+		l = len(self.context['game']['livesTrack'])
+
+		if l < 2:
+			return
+
+		t1 = self.context['game']['livesTrack'][0][0]
+		t2 = self.context['game']['livesTrack'][l - 1][0]
+		t = int((t2 - t1) / 1000 + 0.999)
+		self.game_period = t
 
 	def drawLives(self, context):
 		if not 'livesTrack' in context['game']:
 			return False
 
-		for sample in context['game']['livesTrack']:
-			print(sample)
+		if len(context['game']['livesTrack']) < 1:
+			return False
+
+		time_origin = context['game']['livesTrack'][0][0]
 
 		last_xPos = None
 		last_yPos = None
 		for sample in context['game']['livesTrack']:
-			msec = sample[0]
+			msec = sample[0] - time_origin
 			team1_lives = sample[1]
 			team2_lives = sample[2]
 
-			xPos = 0 if msec == 0 else int(((msec * 1.0) / (self.max_game_period * 100.0)) * self.gw)
+			xPos = 0 if msec == 0 else int(((msec * 1.0) / (self.game_period * 1000.0)) * self.gw)
 
 			# team1
 			y1 = 0
@@ -79,17 +104,24 @@ class TimelinePanel(wx.Panel):
 
 	def drawTower(self, context):
 		if not 'towerTrack' in context['game']:
+			#print('drawTower: no track data')
 			return False
+
+		if len(context['game']['towerTrack']) < 1:
+			#print('drawTower: no track data 2')
+			return False
+
+		time_origin = context['game']['towerTrack'][0][0]
 
 		self.dc.SetPen(wx.Pen(wx.RED, 3))
 
 		last_xPos = None
 		last_yPos = None
 		for sample in context['game']['towerTrack']:
-			msec = sample[0]
+			msec = sample[0]  - time_origin
 			vals = sample[1]
 
-			xPos = 0 if msec == 0 else int(msec * self.gw / (self.max_game_period * 100))
+			xPos = 0 if msec == 0 else int(msec * self.gw / (self.game_period * 1000.0))
 			yPos = 0 if vals['pos'] == 0  else vals['pos'] * (self.gh / 2) / 100
 			yPos = int(self.gh / 2 - yPos)
 			if not last_yPos is None:
@@ -98,8 +130,8 @@ class TimelinePanel(wx.Panel):
 			last_yPos = yPos
 	
 	def drawGraphXaxis(self):
-		for t in range(5):
-			x = int(self.gw * (t * 60) / self.max_game_period)
+		for t in range(int(self.game_period / 60) + 2):
+			x = int(self.gw * (t * 60) / self.game_period)
 			if (x < self.gw):
 				self.dc.SetPen(wx.Pen(wx.LIGHT_GREY,  2))
 				self.dc.DrawLine(self.margin_dots + x, self.margin_dots, self.margin_dots + x, self.margin_dots + self.gh)
@@ -108,7 +140,7 @@ class TimelinePanel(wx.Panel):
 				self.dc.SetFont(wx.Font(8,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL))
 				self.dc.DrawText(s, self.margin_dots + x, self.margin_dots + self.gh)
 				
-			x = int(self.gw * (t * 60 + 30) / self.max_game_period)
+			x = int(self.gw * (t * 60 + 30) / self.game_period)
 			if (x < self.gw):
 				self.dc.SetPen(wx.Pen(wx.LIGHT_GREY,  1))
 				self.dc.DrawLine(self.margin_dots + x, self.margin_dots, self.margin_dots + x, self.margin_dots + self.gh)
@@ -139,15 +171,14 @@ class TimelinePanel(wx.Panel):
 		self.default_pen = self.dc.GetPen()
 		self.default_font = self.dc.GetFont()
 
-		# 横幅を確定する
-		msec = 0
-		for sample in self.context['game']['livesTrack']:
-			if msec < sample[0]:
-				msec = sample[0]
-		self.max_game_period = int(msec / 100)
 
 		self.drawGraphFrame()
 
+		if self.context is None:
+			# !!
+			return
+
+		self.rescaleX(self.context)
 		self.drawLives(self.context)
 		self.drawGraphXaxis()
 		self.drawTower(self.context)
@@ -173,13 +204,11 @@ if __name__ == "__main__":
 
 	application  = wx.App()
 	frame = wx.Frame(None, wx.ID_ANY, 'Preview', size = (640, 360))
-	timeline = TimelinePanel(frame, size = (640, 360))
+	timeline = TimelinePanel(frame, size = (640, 100))
 
 	f = open('game.pickle', 'rb')
 	timeline.context = { 'game': pickle.load(f) }
 	f.close()
-
-	print(timeline.context)
 
 	layout = wx.BoxSizer(wx.VERTICAL)
 	layout.Add(timeline)
