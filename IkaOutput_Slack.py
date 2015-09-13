@@ -20,7 +20,7 @@
 
 from IkaUtils import *
 
-# Needed on GUI mode
+# Needed in GUI mode
 try:
 	import wx
 except:
