@@ -168,7 +168,7 @@ class IkaScene_InGame:
 		self.mask_goSign = IkaMatcher(
 			1280 / 2 - 420 / 2, 130, 420, 170,
 			img_file = 'masks/ui_go.png',
-			threshold = 0.99,
+			threshold = 0.98,
 			orig_threshold = 0.5,
 			pre_threshold_value = 240,
 			label = 'Go!',
