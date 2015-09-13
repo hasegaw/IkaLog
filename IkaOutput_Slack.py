@@ -20,10 +20,104 @@
 
 from IkaUtils import *
 
+# Needed on GUI mode
+try:
+	import wx
+except:
+	pass
+
 ## IkaOutput_Slack: IkaLog Output Plugin for Slack
 #
 # Post game results to Slack, using Incoming Hook
 class IkaOutput_Slack:
+	def onResetConfig(self, context = None):
+		self.enabled = False
+		self.url =''
+		self.username = 'IkaLog'
+
+	def onSaveConfigToContext(self, context):
+		context['config']['slack'] = {
+			'Enable': self.enabled,
+			'url': self.url,
+			'botName': self.username,
+		}
+
+	def ApplyUI(self):
+		self.enabled  = self.checkEnable.GetValue()
+		self.url      = self.editURL.GetValue()
+		self.username = self.editBotName.GetValue()
+
+	def RefreshUI(self):
+		self._internal_update = True
+
+		self.checkEnable.SetValue(self.enabled)
+		self.editURL.SetValue(self.url)
+		self.editBotName.SetValue(self.username)
+
+		self._internal_update = False
+
+	def OnApplyButtonClick(self, event):
+		self.ApplyUI()
+
+	def OnResetButtonClick(self, event):
+		self.RefreshUI()
+
+	def OnDefaultButtonClick(self, event):
+		self.onResetConfig()
+		self.RefreshUI()
+
+
+	def onLoadConfigFromContext(self, context):
+		self.OnResetConfig(context)
+		if not ('slack' in context[config]):
+			conf = context['config']['slack']
+		else:
+			conf = {}
+
+		if 'Enable' in conf:
+			self.enabled = conf['Enable']
+
+		if 'url' in conf:
+			self.url = conf['url']
+
+		if 'botName' in conf:
+			self.botName = conf['botName']
+
+		self.RefreshUI()
+		return True
+
+	def onOptionTabCreate(self, notebook):
+		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
+		self.page = notebook.InsertPage(0, self.panel, 'Slack')
+		self.layout = wx.BoxSizer(wx.VERTICAL)
+
+		self.checkEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'Slack へ戦績を通知する')
+		self.editURL = wx.TextCtrl(self.panel, wx.ID_ANY, u'http:')
+		self.editBotName = wx.TextCtrl(self.panel, wx.ID_ANY, u'＜βコ3')
+
+		self.applyButton = wx.Button(self.panel, wx.ID_ANY, u'反映')
+		self.resetButton = wx.Button(self.panel, wx.ID_ANY, u'現行設定に戻す')
+		self.defaultButton = wx.Button(self.panel, wx.ID_ANY, u'デフォルト設定に戻す')
+
+		layout = wx.BoxSizer(wx.HORIZONTAL)
+		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'投稿者名'))
+		layout.Add(self.editBotName, flag = wx.EXPAND)
+		self.layout.Add(self.checkEnable)
+		self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'Incoming WebHook API URL'))
+		self.layout.Add(self.editURL, flag = wx.EXPAND)
+		self.layout.Add(layout, flag = wx.EXPAND)
+
+		layout = wx.BoxSizer(wx.HORIZONTAL)
+		layout.Add(self.applyButton)
+		layout.Add(self.resetButton)
+		layout.Add(self.defaultButton)
+		self.layout.Add(layout, flag = wx.EXPAND)
+
+		self.panel.SetSizer(self.layout)
+
+		self.applyButton.Bind(wx.EVT_BUTTON, self.OnApplyButtonClick)
+		self.resetButton.Bind(wx.EVT_BUTTON, self.OnResetButtonClick)
+		self.defaultButton.Bind(wx.EVT_BUTTON, self.OnDefaultButtonClick)
 
 	##
 	# Post a bot message to slack.
@@ -81,8 +175,10 @@ class IkaOutput_Slack:
 	# @param url      Slack Incoming Hook Endpoint
 	# @param username Name the bot use on Slack
 	def __init__(self, url = None, username = "＜8ヨ"):
+		self._internal_update = False
 		self.url = url
 		self.username = username
+		self.enabled = (not url is None)
 		self.checkImport()
 
 if __name__ == "__main__":
