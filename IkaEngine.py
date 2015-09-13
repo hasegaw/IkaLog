@@ -155,9 +155,7 @@ class IkaEngine:
 			self.scn_towerTracker.reset(context)
 
 			while (r):
-				frame = self.capture.read()
-				frame = self.capture.read()
-				frame = self.capture.read()
+				frame = self.readNextFrame(skip_frames = 3)
 				context['engine']['frame'] = frame
 				r = self.scn_gamestart.match(context)
 
@@ -176,15 +174,12 @@ class IkaEngine:
 				
 				# 安定するまで待つ
 				for x in range(10):
-					new_frame = self.capture.read()
-					if not (new_frame is None):
-						frame = new_frame
+					frame = self.readNextFrame()
 
 				# 安定した画像で再度解析
 				context['engine']['frame'] = frame
 				self.scn_gameresult.analyze(context)
 
-				print("Finish検出")
 				self.callPlugins('onGameIndividualResultAnalyze')
 				self.callPlugins('onGameIndividualResult')
 				self.callPlugins('onGameReset')
@@ -212,11 +207,14 @@ class IkaEngine:
 
 	def readNextFrame(self, skip_frames = 0):
 		for i in range(skip_frames):
-			frame = self.capture.read()
+			frame, t = self.capture.read()
+		frame, t = self.capture.read()
 
 		while frame is None:
 			cv2.waitKey(1000)
-			frame = self.capture.read()
+			frame, t = self.capture.read()
+
+		self.context['engine']['msec'] = t
 		return frame
 
 	def run(self):

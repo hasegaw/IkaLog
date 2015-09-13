@@ -21,19 +21,23 @@ import numpy as np
 import cv2
 import sys
 import os
+import time
 
 class IkaInput_CVCapture:
 	out_width = 1280
 	out_height = 720 
 	need_resize = False
 	need_deinterlace = False
+	realtime = True
 	offset = (0, 0)
+
+	_systime_launch = int(time.time() * 1000)
 
 	def read(self):
 		ret, frame = self.cap.read()
 
 		if not ret:
-			return None
+			return None, None
 
 		if self.need_deinterlace:
 			for y in range(frame.shape[0])[1::2]:
@@ -54,10 +58,23 @@ class IkaInput_CVCapture:
 
 			frame[dy1:dy1 + h, dx1:dx1 + w] = frame[sy1:sy1 + h, sx1:sx1 + w]
 
+		t = None
+		if not self.realtime:
+			try:
+				t = self.cap.get(cv2.CAP_PROP_POS_MSEC)
+			except:
+				pass
+			if t is None:
+				print('Cannot get video position...')
+				self.realtime = True
+
+		if self.realtime:
+			t = int(time.time() * 1000) - self._systime_launch
+
 		if self.need_resize:
-			return cv2.resize(frame, (self.out_width, self.out_height))
+			return cv2.resize(frame, (self.out_width, self.out_height)), t
 		else:
-			return frame
+			return frame, t
 
 	def setResolution(self, width, height):
 		self.cap.set(3, width)
@@ -77,12 +94,14 @@ class IkaInput_CVCapture:
 		return False
 
 	def startCamera(self, source):
+		self.realtime = True
 		if self.isWindows():
 			self.initCapture(700 + source)
 		else:
 			self.initCapture(0 + source)
 
 	def startRecordedFile(self, file):
+		self.realtime = False
 		self.initCapture(file)
 
 	#def __init__(self, source, width = 1280, height = 720):
