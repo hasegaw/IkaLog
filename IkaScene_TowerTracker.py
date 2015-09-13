@@ -90,7 +90,7 @@ class IkaScene_TowerTracker:
 
 		context['game']['tower']['pos'] = xPos_pct
 		context['game']['tower']['min'] = min(xPos_pct, context['game']['tower']['min'])
-		context['game']['tower']['max'] = min(xPos_pct, context['game']['tower']['max'])
+		context['game']['tower']['max'] = max(xPos_pct, context['game']['tower']['max'])
 		return context['game']['tower']
 
 	def __init__(self):
