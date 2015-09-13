@@ -26,9 +26,119 @@ import os
 from datetime import datetime
 from IkaUtils import *
 
+# Needed in GUI mode
+try:
+	import wx
+except:
+	pass
+
 ## IkaLog Output Plugin: Show message on Console
 #
 class IkaOutput_OBS:
+
+	def onResetConfig(self, context = None):
+		self.enabled = False
+		self.AutoRenameEnabled = False
+		self.ControlOBS = ''
+		self.dir = ''
+
+	def onSaveConfigToContext(self, context):
+		context = {
+			'Enable' : self.Enable,
+			'AutoRenameEnable': self.AutoRenameEnabled,
+			'ControlOBS': self.ControlOBS,
+			'Dir': self.dir,
+		}
+
+	def ApplyUI(self):
+		self.Enable =            self.checkEnable.GetValue()
+		self.AutoRenameEnabled = self.checkAutoRenameEnable.GetValue()
+		self.ControlOBS =        self.editControlOBS.GetValue()
+		self.dir =               self.editDir.GetValue()
+
+	def RefreshUI(self):
+		self._internal_update = True
+		self.checkEnable.SetValue(self.enabled)
+		self.checkAutoRenameEnable.SetValue(self.AutoRenameEnabled)
+
+		if not self.ControlOBS is None:
+			self.editControlOBS.SetValue(self.ControlOBS)
+		else:
+			self.editControlOBS.SetValue('')
+
+		if not self.dir is None:
+			self.editDir.SetValue(self.dir)
+		else:
+			self.editDir.SetValue('')
+
+	def OnApplyButtonClick(self, event):
+		self.ApplyUI()
+
+	def OnResetButtonClick(self, event):
+		self.RefreshUI()
+
+	def OnDefaultButtonClick(self, event):
+		self.onResetConfig()
+		self.RefreshUI()
+
+	def onLoadConfigFromContext(self, context):
+		self.OnResetConfig(context)
+		if not ('obs' in context[config]):
+			conf = context['config']['obs']
+		else:
+			conf = {}
+
+		if 'Enable' in conf:
+			self.enabled = conf['Enable']
+
+		if 'AutoRenameEnable' in conf:
+			self.AutoRenameEnabled = conf['AutoRenameEnable']
+
+		if 'ControlOBS' in conf:
+			self.ControlOBS = conf['ControlOBS']
+
+		if 'Dir' in conf:
+			self.dir = conf['Dir']
+
+		self.RefreshUI()
+		return True
+
+	def onOptionTabCreate(self, notebook):
+		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
+		self.page = notebook.InsertPage(0, self.panel, 'OBS')
+		self.layout = wx.BoxSizer(wx.VERTICAL)
+		self.panel.SetSizer(self.layout)
+		self.checkEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'Open Broadcaster Software の録画／録画停止ボタンを自動操作する')
+		self.checkAutoRenameEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'録画ファイルの自動リネームを行う')
+		self.editControlOBS = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+		self.editDir = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+
+		self.applyButton = wx.Button(self.panel, wx.ID_ANY, u'反映')
+		self.resetButton = wx.Button(self.panel, wx.ID_ANY, u'現行設定に戻す')
+		self.defaultButton = wx.Button(self.panel, wx.ID_ANY, u'デフォルト設定に戻す')
+
+		layout = wx.GridSizer(2, 2)
+		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ControlOBS.au3 パス'))
+		layout.Add(self.editControlOBS, flag = wx.EXPAND)
+		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'録画フォルダ'))
+		layout.Add(self.editDir, flag = wx.EXPAND)
+
+		self.layout.Add(self.checkEnable)
+		self.layout.Add(self.checkAutoRenameEnable)
+		self.layout.Add(layout)
+
+		layout = wx.BoxSizer(wx.HORIZONTAL)
+		layout.Add(self.applyButton)
+		layout.Add(self.resetButton)
+		layout.Add(self.defaultButton)
+		self.layout.Add(layout, flag = wx.EXPAND)
+
+		self.panel.SetSizer(self.layout)
+
+		self.applyButton.Bind(wx.EVT_BUTTON, self.OnApplyButtonClick)
+		self.resetButton.Bind(wx.EVT_BUTTON, self.OnResetButtonClick)
+		self.defaultButton.Bind(wx.EVT_BUTTON, self.OnDefaultButtonClick)
+
 
 	## Generate new MP4 filename.
 	#
@@ -87,6 +197,8 @@ class IkaOutput_OBS:
 		thread.start()
 
 	def __init__(self, ControlOBS, dir = None):
+		self.enabled = (not ControlOBS is None)
+		self.AutoRenameEnabled = (not dir is None)
 		self.ControlOBS = ControlOBS
 		self.dir = dir
 
