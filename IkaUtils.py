@@ -17,11 +17,18 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+from __future__ import print_function
+
 import numpy as np
 import cv2
+import sys
 import re
 
 class IkaUtils:
+	@staticmethod
+	def dprint(text):
+		print(text, file = sys.stderr)
+
 	## Find the local player.
 	#
 	# @param context   IkaLog Context.
