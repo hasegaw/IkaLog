@@ -43,28 +43,8 @@ class IkaOutput_Twitter:
 
 	last_me = None
 
-	def onResetConfig(self, context = None):
-		self.enabled = False
-		self.AttachImage = False
-		self.ConsumerKey = ''
-		self.ConsumerSecret = ''
-		self.AccessToken = ''
-		self.AccessTokenSecret = ''
-		self.Footer = ''
-
-	def onSaveConfigToContext(self, context):
-		context = {
-			'Enable' : self.Enable,
-			'AttachImage': self.AttachImage,
-			'ConsumerKey' : self.ConsumerKey,
-			'ConsumerSecret': self.ConsumerSecret,
-			'AccessToken': self.AccessToken,
-			'AccessTokenSecret': self.AccessTokenSecret,
-			'Footer': self.Footer,
-		}
-
 	def ApplyUI(self):
-		self.Enable =            self.checkEnable.GetValue()
+		self.enabled =           self.checkEnable.GetValue()
 		self.AttachImage =       self.checkAttachImage.GetValue()
 		self.ConsumerKey =       self.editConsumerKey.GetValue()
 		self.ConsumerSecret =    self.editConsumerSecret.GetValue()
@@ -98,27 +78,27 @@ class IkaOutput_Twitter:
 			self.editAccessTokenSecret.SetValue('')
 
 		if not self.Footer is None:
-			self.editAccessTokenSecret.SetValue(self.Footer)
+			self.editFooter.SetValue(self.Footer)
 		else:
-			self.editAccessTokenSecret.SetValue('')
+			self.editFooter.SetValue('')
 
 		self._internal_update = False
 
-	def OnApplyButtonClick(self, event):
-		self.ApplyUI()
+	def onConfigReset(self, context = None):
+		self.enabled = False
+		self.AttachImage = False
+		self.ConsumerKey = ''
+		self.ConsumerSecret = ''
+		self.AccessToken = ''
+		self.AccessTokenSecret = ''
+		self.Footer = ''
 
-	def OnResetButtonClick(self, event):
-		self.RefreshUI()
+	def onConfigLoadFromContext(self, context):
+		self.onConfigReset(context)
 
-	def OnDefaultButtonClick(self, event):
-		self.onResetConfig()
-		self.RefreshUI()
-
-	def onLoadConfigFromContext(self, context):
-		self.OnResetConfig(context)
-		if not ('twitter' in context[config]):
+		try:
 			conf = context['config']['twitter']
-		else:
+		except:
 			conf = {}
 
 		if 'Enable' in conf:
@@ -140,10 +120,51 @@ class IkaOutput_Twitter:
 			self.AccessTokenSecret = conf['AccessTokenSecret']
 
 		if 'Footer' in conf:
-			self.AccessTokenSecret = conf['Footer']
+			self.Footer = conf['Footer']
 
 		self.RefreshUI()
 		return True
+
+	def onConfigSaveToContext(self, context):
+		context['config']['twitter'] = {
+			'Enable' : self.enabled,
+			'AttachImage': self.AttachImage,
+			'ConsumerKey' : self.ConsumerKey,
+			'ConsumerSecret': self.ConsumerSecret,
+			'AccessToken': self.AccessToken,
+			'AccessTokenSecret': self.AccessTokenSecret,
+			'Footer': self.Footer,
+		}
+
+	def onConfigApply(self, context):
+		self.ApplyUI()
+
+		if not self.ConsumerKey is None:
+			self.editConsumerKey.SetValue(self.ConsumerKey)
+		else:
+			self.editConsumerKey.SetValue('')
+
+		if not self.ConsumerSecret is None:
+			self.editConsumerSecret.SetValue(self.ConsumerSecret)
+		else:
+			self.editConsumerSecret.SetValue('')
+
+		if not self.AccessToken is None:
+			self.editAccessToken.SetValue(self.AccessToken)
+		else:
+			self.editAccessToken.SetValue('')
+
+		if not self.AccessTokenSecret is None:
+			self.editAccessTokenSecret.SetValue(self.AccessTokenSecret)
+		else:
+			self.editAccessTokenSecret.SetValue('')
+
+		if not self.Footer is None:
+			self.editAccessTokenSecret.SetValue(self.Footer)
+		else:
+			self.editAccessTokenSecret.SetValue('')
+
+		self._internal_update = False
 
 	def onOptionTabCreate(self, notebook):
 		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
@@ -162,10 +183,6 @@ class IkaOutput_Twitter:
 		self.editConsumerSecret= wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 		self.editAccessToken = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 		self.editAccessTokenSecret = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
-
-		self.applyButton = wx.Button(self.panel, wx.ID_ANY, u'反映')
-		self.resetButton = wx.Button(self.panel, wx.ID_ANY, u'現行設定に戻す')
-		self.defaultButton = wx.Button(self.panel, wx.ID_ANY, u'デフォルト設定に戻す')
 
 		layout = wx.GridSizer(2, 2)
 		layout.Add(self.radioIkaLogKey)
@@ -190,17 +207,7 @@ class IkaOutput_Twitter:
 		self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'フッタ'))
 		self.layout.Add(self.editFooter, flag = wx.EXPAND)
 
-		layout = wx.BoxSizer(wx.HORIZONTAL)
-		layout.Add(self.applyButton)
-		layout.Add(self.resetButton)
-		layout.Add(self.defaultButton)
-		self.layout.Add(layout, flag = wx.EXPAND)
-
 		self.panel.SetSizer(self.layout)
-
-		self.applyButton.Bind(wx.EVT_BUTTON, self.OnApplyButtonClick)
-		self.resetButton.Bind(wx.EVT_BUTTON, self.OnResetButtonClick)
-		self.defaultButton.Bind(wx.EVT_BUTTON, self.OnDefaultButtonClick)
 
 	##
 	# Post a tweet

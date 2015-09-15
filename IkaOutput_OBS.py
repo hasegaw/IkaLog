@@ -36,22 +36,8 @@ except:
 #
 class IkaOutput_OBS:
 
-	def onResetConfig(self, context = None):
-		self.enabled = False
-		self.AutoRenameEnabled = False
-		self.ControlOBS = ''
-		self.dir = ''
-
-	def onSaveConfigToContext(self, context):
-		context = {
-			'Enable' : self.Enable,
-			'AutoRenameEnable': self.AutoRenameEnabled,
-			'ControlOBS': self.ControlOBS,
-			'Dir': self.dir,
-		}
-
 	def ApplyUI(self):
-		self.Enable =            self.checkEnable.GetValue()
+		self.enabled =           self.checkEnable.GetValue()
 		self.AutoRenameEnabled = self.checkAutoRenameEnable.GetValue()
 		self.ControlOBS =        self.editControlOBS.GetValue()
 		self.dir =               self.editDir.GetValue()
@@ -71,21 +57,17 @@ class IkaOutput_OBS:
 		else:
 			self.editDir.SetValue('')
 
-	def OnApplyButtonClick(self, event):
-		self.ApplyUI()
+	def onConfigReset(self, context = None):
+		self.enabled = False
+		self.AutoRenameEnabled = False
+		self.ControlOBS = ''
+		self.dir = ''
 
-	def OnResetButtonClick(self, event):
-		self.RefreshUI()
-
-	def OnDefaultButtonClick(self, event):
-		self.onResetConfig()
-		self.RefreshUI()
-
-	def onLoadConfigFromContext(self, context):
-		self.OnResetConfig(context)
-		if not ('obs' in context[config]):
+	def onConfigLoadFromContext(self, context):
+		self.onConfigReset(context)
+		try:
 			conf = context['config']['obs']
-		else:
+		except:
 			conf = {}
 
 		if 'Enable' in conf:
@@ -103,6 +85,17 @@ class IkaOutput_OBS:
 		self.RefreshUI()
 		return True
 
+	def onConfigSaveToContext(self, context):
+		context['config']['obs'] = {
+			'Enable' : self.enabled,
+			'AutoRenameEnable': self.AutoRenameEnabled,
+			'ControlOBS': self.ControlOBS,
+			'Dir': self.dir,
+		}
+
+	def onConfigApply(self, context):
+		self.ApplyUI()
+
 	def onOptionTabCreate(self, notebook):
 		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
 		self.page = notebook.InsertPage(0, self.panel, 'OBS')
@@ -112,10 +105,6 @@ class IkaOutput_OBS:
 		self.checkAutoRenameEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'録画ファイルの自動リネームを行う')
 		self.editControlOBS = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 		self.editDir = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
-
-		self.applyButton = wx.Button(self.panel, wx.ID_ANY, u'反映')
-		self.resetButton = wx.Button(self.panel, wx.ID_ANY, u'現行設定に戻す')
-		self.defaultButton = wx.Button(self.panel, wx.ID_ANY, u'デフォルト設定に戻す')
 
 		layout = wx.GridSizer(2, 2)
 		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ControlOBS.au3 パス'))
@@ -127,17 +116,7 @@ class IkaOutput_OBS:
 		self.layout.Add(self.checkAutoRenameEnable)
 		self.layout.Add(layout)
 
-		layout = wx.BoxSizer(wx.HORIZONTAL)
-		layout.Add(self.applyButton)
-		layout.Add(self.resetButton)
-		layout.Add(self.defaultButton)
-		self.layout.Add(layout, flag = wx.EXPAND)
-
 		self.panel.SetSizer(self.layout)
-
-		self.applyButton.Bind(wx.EVT_BUTTON, self.OnApplyButtonClick)
-		self.resetButton.Bind(wx.EVT_BUTTON, self.OnResetButtonClick)
-		self.defaultButton.Bind(wx.EVT_BUTTON, self.OnDefaultButtonClick)
 
 
 	## Generate new MP4 filename.
