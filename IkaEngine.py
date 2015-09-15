@@ -66,6 +66,9 @@ class IkaEngine:
 					self.dprint(traceback.format_exc())
 					self.dprint("<<<<<")
 
+	def stop(self):
+		self._stop = True
+
 	def reset(self):
 		# Initalize the context
 		self.context = {
@@ -220,8 +223,12 @@ class IkaEngine:
 		return frame
 
 	def run(self):
-		while True:
-			self.processFrame()
+		# Main loop.
+		while not self._stop:
+			if self._pause:
+				time.sleep(0.5)
+			else:
+				self.processFrame()
 
 		cv2.destroyAllWindows()
 
@@ -231,7 +238,12 @@ class IkaEngine:
 	def setPlugins(self, plugins):
 		self.OutputPlugins = plugins
 
+	def pause(self, pause):
+		self._pause = pause
+
 	def __init__(self):
+		self._stop = False
+		self._pause = True
 		self.reset()
 
 if __name__ == "__main__":
