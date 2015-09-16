@@ -26,6 +26,11 @@ import yaml
 from IkaInput_CVCapture import *
 from IkaEngine import *
 from IkaOutput_Console import *
+from IkaOutput_CSV import *
+from IkaOutput_Fluentd import *
+from IkaOutput_Hue import *
+from IkaOutput_JSON import *
+from IkaOutput_Screenshot import *
 from IkaOutput_Slack import *
 from IkaOutput_Twitter import *
 from IkaOutput_OBS import *
@@ -127,8 +132,6 @@ class IkaLogGUI:
 		self.setEnable(not self.enable)
 
 	def OnClose(self, event):
-		# engine を停止してから Destroy するようにしてみたけど Python 内で
-		# NULL Pointer 参照が発生している模様.... どうすりゃいいの
 		engine.stop()
 		while engineThread.isAlive():
 			time.sleep(0.5)
@@ -203,43 +206,47 @@ if __name__ == "__main__":
 	gui.frame.Show()
 	engine = IkaEngine()
 
-	if inputPlugin.isWindows():
-		inputPlugin.startCamera(1)
-	else:
-		inputPlugin.startRecordedFile('hoko_win.mp4')
-		#inputPlugin.startRecordedFile('/Users/hasegaw/Downloads/tag_match_lobby.mp4')
-		#inputPlugin.startRecordedFile('/Users/hasegaw/work/splatoon/hoko2_win.mp4')
-		#inputPlugin.startRecordedFile('/Users/hasegaw/work/splatoon/hoko_game_mpeg4_6kbps.mp4')
-		#inputPlugin.startRecordedFile('/Users/hasegaw/work/splatoon/scaled.avi')          # ファイルからの読み込み
-
 	engine.setCapture(inputPlugin)
-	outputPlugins = []
-	outputPlugins.append(IkaOutput_Console())
-	outputPlugins.append(gui.preview)
-	outputPlugins.append(gui.lastResult)
-	outputPlugins.append(gui.timeline)
-	outputPlugins.append(inputPlugin)
-	outputPlugins.append(gui)
+	plugins = []
 
-	slack = IkaOutput_Slack()
-	slack.onOptionTabCreate(gui.options.notebookOptions)
-	outputPlugins.append(slack)
+	# とりあえずデバッグ用にコンソールプラグイン
+	plugins.append(IkaOutput_Console())
 
-	twitter = IkaOutput_Twitter()
-	twitter.onOptionTabCreate(gui.options.notebookOptions)
-	outputPlugins.append(twitter)
+	# 各パネルをプラグインしてイベントを受信する
+	plugins.append(gui.preview)
+	plugins.append(gui.lastResult)
+	plugins.append(gui.timeline)
 
-	obs = IkaOutput_OBS('aaa')
-	obs.onOptionTabCreate(gui.options.notebookOptions)
-	outputPlugins.append(obs)
+	# 設定画面を持つ input plugin もイベントを受信する
+	plugins.append(inputPlugin)
 
-	engine.setPlugins(outputPlugins)
+	# UI 自体もイベントを受信
+	plugins.append(gui)
 
+	# 設定画面を持つ各種 Output Plugin
+	# -> 設定画面の生成とプラグインリストへの登録
+	for plugin in [
+		IkaOutput_CSV(),
+		IkaOutput_Fluentd(),
+		IkaOutput_JSON(),
+		IkaOutput_Hue(),
+		IkaOutput_OBS(),
+		IkaOutput_Twitter(),
+		IkaOutput_Screenshot(),
+		IkaOutput_Slack(),
+	]:
+		plugin.onOptionTabCreate(gui.options.notebookOptions)
+		plugins.append(plugin)
+
+	# プラグインリストを登録
+	engine.setPlugins(plugins)
+
+	# IkaLog GUI 起動時にキャプチャが enable 状態かどうか
 	gui.setEnable(True)
 
 	# Loading config
 	gui.loadConfig(engine.context)
-	engine.callPlugins('onConfigLoadFromContext')
+	engine.callPlugins('onConfigLoadFromContext', debug = True)
 
 	engineThread = threading.Thread(target=engineThread_func)
 	engineThread.start()
