@@ -6,11 +6,6 @@
 ・ただし 64bit 版 Python で動かすと DirectShow などの入力側がうまく
 　動作しないことがあるので、通常は 32bit 版でインストールするとよい模様。
 
-・wxPython を利用した GUI の開発を進めているが、 wxPython の Python 3.x
-　対応版が出ていない模様？このため開発環境では Python 2.7 を使用しているが
-　Python 3.x でも動くはずである（手元 Windows 環境では Python 3.4 で動作中）
-・将来的には Python 2.7 を前提とするかもしれない。
-
 ・OpenCV 3.x でなくとも OpenCV 2.x がすでにインストールされている環境では、
 　cv2 モジュールがインポートできれば、下記の通り難はあるがほぼ動く模様。
 　　・OpenCV 2.x では全体的に動作が遅い (OpenCV 3.xのほうがとても動作が速い）
@@ -75,3 +70,10 @@ C:\IkaLog\IkaLog-master\ の IkaConfig.py.sample を IkaConfig.py に
 c:
 cd \IkaLog\IkaLog-master
 ..\python34\python IkaLog.py
+
+■ GUI プレビュー版（まだ実用レベルではない）
+
+Project Phoenix 3.0.3 (wxPython新版), PyYAML など一部パッケージの追加が
+必要。
+
+..\python34\python IkaUI.py
