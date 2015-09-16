@@ -57,7 +57,7 @@ class IkaOutput_JSON:
 		t_unix = int(time.mktime(t.timetuple()))
 
 		record = { 'time': t_unix, 'event': 'GameResult', 'map': map, 'rule': rule, 'result': won }
-		return json.dumps(record, separators=(',',':'))
+		return json.dumps(record, separators=(',',':')) + "\n"
 
 	##
 	# onGameIndividualResult Hook
