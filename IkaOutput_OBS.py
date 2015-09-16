@@ -179,7 +179,7 @@ class IkaOutput_OBS:
 		thread = threading.Thread(target=self.worker)
 		thread.start()
 
-	def __init__(self, ControlOBS, dir = None):
+	def __init__(self, ControlOBS = None, dir = None):
 		self.enabled = (not ControlOBS is None)
 		self.AutoRenameEnabled = (not dir is None)
 		self.ControlOBS = ControlOBS
