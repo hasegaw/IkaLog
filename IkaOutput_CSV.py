@@ -22,12 +22,79 @@ from IkaUtils import *
 from datetime import datetime
 import time
 
+# Needed in GUI mode
+try:
+	import wx
+except:
+	pass
+
 ## @package IkaOutput_CSV
 
 ## IkaOutput_CSV: IkaLog CSV Output Plugin
 #
 # Log Splatoon game results as CSV format.
 class IkaOutput_CSV:
+
+	def ApplyUI(self):
+		self.enabled =           self.checkEnable.GetValue()
+		self.csv_filename =      self.editCsvFilename.GetValue()
+
+	def RefreshUI(self):
+		self._internal_update = True
+		self.checkEnable.SetValue(self.enabled)
+
+		if not self.csv_filename is None:
+			self.editCsvFilename.SetValue(self.csv_filename)
+		else:
+			self.editCsvFilename.SetValue('')
+
+	def onConfigReset(self, context = None):
+		self.enabled = False
+		self.csv_filename = ''
+
+	def onConfigLoadFromContext(self, context):
+		self.onConfigReset(context)
+		try:
+			conf = context['config']['csv']
+		except:
+			conf = {}
+
+		if 'Enable' in conf:
+			self.enabled = conf['Enable']
+
+		if 'CsvFilename' in conf:
+			self.csv_filename = conf['CsvFilename']
+
+		self.RefreshUI()
+		return True
+
+	def onConfigSaveToContext(self, context):
+		context['config']['csv'] = {
+			'Enable' : self.enabled,
+			'CsvFilename': self.csv_filename,
+		}
+
+	def onConfigApply(self, context):
+		self.ApplyUI()
+
+	def onOptionTabCreate(self, notebook):
+		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
+		self.page = notebook.InsertPage(0, self.panel, 'CSV')
+		self.layout = wx.BoxSizer(wx.VERTICAL)
+		self.panel.SetSizer(self.layout)
+		self.checkEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'CSVファイルへ戦績を出力する')
+		self.editCsvFilename     = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+
+		try:
+			layout = wx.GridSizer(2, 1)
+		except:
+			layout = wx.GridSizer(2)
+
+		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'CSV保存先ファイル'))
+		layout.Add(self.editCsvFilename, flag = wx.EXPAND)
+
+		self.layout.Add(self.checkEnable)
+		self.layout.Add(layout)
 
 	##
 	# Write a line to text file.
@@ -65,6 +132,11 @@ class IkaOutput_CSV:
 	# @param context   IkaLog context
 	#
 	def onGameIndividualResult(self, context):
+		IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
+
+		if not self.enabled:
+			return
+
 		record = self.getRecordGameIndividualResult(context)
 		self.writeRecord(record)
 
@@ -73,5 +145,7 @@ class IkaOutput_CSV:
 	# @param self         The Object Pointer.
 	# @param csv_filename CSV log file name
 	#
-	def __init__(self, csv_filename):
+	def __init__(self, csv_filename = None):
+		if csv_filename is None:
+			self.enabled = True
 		self.csv_filename = csv_filename

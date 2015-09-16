@@ -24,10 +24,78 @@ from datetime import datetime
 import time
 import json
 
-## IkaOutput_CSV: IkaLog Output Plugin for CSV Logging
+# Needed in GUI mode
+try:
+	import wx
+except:
+	pass
+
+## IkaOutput_JSON: IkaLog Output Plugin for JSON Logging
 #
 # Write JSON Log file
 class IkaOutput_JSON:
+
+
+	def ApplyUI(self):
+		self.enabled =           self.checkEnable.GetValue()
+		self.json_filename =      self.editJsonFilename.GetValue()
+
+	def RefreshUI(self):
+		self._internal_update = True
+		self.checkEnable.SetValue(self.enabled)
+
+		if not self.json_filename is None:
+			self.editJsonFilename.SetValue(self.json_filename)
+		else:
+			self.editJsonFilename.SetValue('')
+
+	def onConfigReset(self, context = None):
+		self.enabled = False
+		self.json_filename = ''
+
+	def onConfigLoadFromContext(self, context):
+		self.onConfigReset(context)
+		try:
+			conf = context['config']['json']
+		except:
+			conf = {}
+
+		if 'Enable' in conf:
+			self.enabled = conf['Enable']
+
+		if 'JsonFilename' in conf:
+			self.json_filename = conf['JsonFilename']
+
+		self.RefreshUI()
+		return True
+
+	def onConfigSaveToContext(self, context):
+		context['config']['json'] = {
+			'Enable' : self.enabled,
+			'JsonFilename': self.json_filename,
+		}
+
+	def onConfigApply(self, context):
+		self.ApplyUI()
+
+	def onOptionTabCreate(self, notebook):
+		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
+		self.page = notebook.InsertPage(0, self.panel, 'JSON')
+		self.layout = wx.BoxSizer(wx.VERTICAL)
+		self.panel.SetSizer(self.layout)
+		self.checkEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'JSONファイルへ戦績を出力する')
+		self.editJsonFilename     = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+
+		try:
+			layout = wx.GridSizer(2, 1)
+		except:
+			layout = wx.GridSizer(2)
+
+		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'JSON保存先ファイル'))
+		layout.Add(self.editJsonFilename, flag = wx.EXPAND)
+
+		self.layout.Add(self.checkEnable)
+		self.layout.Add(layout)
 
 	##
 	# Write a line to text file.
@@ -65,6 +133,11 @@ class IkaOutput_JSON:
 	# @param context   IkaLog context
 	#
 	def onGameIndividualResult(self, context):
+		IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
+
+		if not self.enabled:
+			return
+
 		record = self.getRecordGameIndividualResult(context)
 		self.writeRecord(record)
 
@@ -73,5 +146,6 @@ class IkaOutput_JSON:
 	# @param self          The Object Pointer.
 	# @param json_filename JSON log file name
 	#
-	def __init__(self, json_filename):
+	def __init__(self, json_filename = None):
+		self.enabled = True
 		self.json_filename = json_filename
