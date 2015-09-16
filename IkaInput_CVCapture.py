@@ -23,6 +23,12 @@ import sys
 import os
 import time
 
+# Needed in GUI mode
+try:
+	import wx
+except:
+	pass
+
 class IkaInput_CVCapture:
 	out_width = 1280
 	out_height = 720 
@@ -32,6 +38,12 @@ class IkaInput_CVCapture:
 	offset = (0, 0)
 
 	_systime_launch = int(time.time() * 1000)
+
+	source = ''
+	CameraIndex = 0
+	Deinterlace = False
+	File = ''
+
 
 	def read(self):
 		ret, frame = self.cap.read()
@@ -104,8 +116,107 @@ class IkaInput_CVCapture:
 		self.realtime = False
 		self.initCapture(file)
 
-	#def __init__(self, source, width = 1280, height = 720):
-	#	self.initCapture(source, width = width, height = height)
+	def restartCamera(self):
+		print("should restart camera")
+
+	def ApplyUI(self):
+		self.source = ''
+		for control in [self.radioCamera, self.radioFile]:
+			if control.GetValue():
+				self.source = {
+					self.radioCamera: 'camera',
+					self.radioFile: 'file',
+				}[control]
+
+		self.CameraIndex = self.listCameras.GetSelection()
+		self.File        = self.editFile.GetValue()
+		self.Deinterlace = self.checkDeinterlace.GetValue()
+		restartCamera()
+
+	def RefreshUI(self):
+		if self.source == 'camera':
+			self.radioCamera.SetValue(True)
+
+		if self.source == 'file':
+			self.radioFile.SetValue(True)
+
+		self.listCameras.SetSelection(self.CameraIndex)
+
+		if not self.File is None:
+			self.editFile.SetValue('')
+		else:
+			self.editFile.SetValue(self.File)
+
+		self.checkDeinterlace.SetValue(self.Deinterlace)
+
+	def onConfigReset(self, context = None):
+		# さすがにカメラはリセットしたくないな
+		pass
+
+	def onConfigLoadFromContext(self, context):
+		self.onConfigReset(context)
+		try:
+			conf = context['config']['cvcapture']
+		except:
+			conf = {}
+
+		if 'source' in conf:
+			if conf['source'] in ['camera', 'file']:
+				self.source = conf['source']
+			else:
+				self.source = ''
+
+		if 'CameraIndex' in conf:
+			try:
+				self.CameraIndex = int(conf['CameraIndex'])
+			except:
+				# FIXME
+				self.CameraIndex = 0
+
+		if 'File' in conf:
+			self.File = conf['File']
+
+		if 'Deinterlace' in conf:
+			self.Deinterlace = conf['Deinterlace']
+
+		self.RefreshUI()
+		self.restartCamera()
+		return True
+
+	def onConfigSaveToContext(self, context):
+		context['config']['cvcapture'] = {
+			'source': self.source,
+			'file': self.File,
+			'CameraIndex': self.CameraIndex,
+			'Deinterlace': self.Deinterlace,
+		}
+
+	def onConfigApply(self, context):
+		self.ApplyUI()
+
+	def onOptionTabCreate(self, notebook):
+		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
+		self.page = notebook.InsertPage(0, self.panel, 'Input')
+
+		cameras = [ 'a', 'b' ]
+
+		self.layout = wx.BoxSizer(wx.VERTICAL)
+		self.panel.SetSizer(self.layout)
+		self.radioCamera = wx.RadioButton(self.panel, wx.ID_ANY, u'Realtime Capture from HDMI grabber')
+		self.radioFile = wx.RadioButton(self.panel, wx.ID_ANY, u'Read from pre-recorded video file (for testing)')
+		self.editFile = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+		self.listCameras = wx.ListBox(self.panel, wx.ID_ANY, choices = cameras)
+		self.buttonReloadDevices = wx.Button(self.panel, wx.ID_ANY, u'Reload Devices')
+		self.checkDeinterlace = wx.CheckBox(self.panel, wx.ID_ANY, u'Enable Deinterlacing (experimental)')
+
+		self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'Select Input source:'))
+		self.layout.Add(self.radioCamera)
+		self.layout.Add(self.listCameras, flag= wx.EXPAND)
+		self.layout.Add(self.buttonReloadDevices)
+		self.layout.Add(self.radioFile)
+		self.layout.Add(self.editFile, flag = wx.EXPAND)
+		self.layout.Add(self.checkDeinterlace)
+		self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'Video Offset'))
 
 if __name__ == "__main__":
 	obj = IkaInput_CVCapture()
