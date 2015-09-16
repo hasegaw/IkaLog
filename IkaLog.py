@@ -31,6 +31,7 @@ from IkaEngine import *
 
 capture, OutputPlugins = IkaConfig().config()
 engine = IkaEngine()
+engine.pause(False)
 engine.setCapture(capture)
 engine.setPlugins(OutputPlugins)
 engine.run()

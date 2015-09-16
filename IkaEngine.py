@@ -250,6 +250,7 @@ if __name__ == "__main__":
 	from IkaConfig import *
 	_capture, _OutputPlugins = IkaConfig().config()
 	engine = IkaEngine()
+	engine.pause(False)
 	engine.setCapture(_capture)
 	engine.setPlugins(_OutputPlugins)
 	engine.run()
