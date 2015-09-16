@@ -184,7 +184,11 @@ class IkaOutput_Twitter:
 		self.editAccessToken = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 		self.editAccessTokenSecret = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
-		layout = wx.GridSizer(2, 2)
+		try:
+			layout = wx.GridSizer(2, 2)
+		except:
+			layout = wx.GridSizer(2)
+
 		layout.Add(self.radioIkaLogKey)
 		layout.Add(self.buttonIkaLogAuth)
 		layout.Add(self.radioOwnKey)

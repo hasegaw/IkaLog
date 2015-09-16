@@ -67,8 +67,13 @@ class IkaLogGUI:
 				print('%s is hidden' % panel)
 
 		# リサイズイベントが発生しないと画面レイアウトが正しくならないので
-		w, h = self.frame.GetClientSizeTuple()
-		self.frame.SetSizeWH(w, h)
+		try:
+			# Project Phoenix
+			self.layout.Layout()
+		except:
+			# If it doesn't work... for old wxPython
+			w, h = self.frame.GetClientSizeTuple()
+			self.frame.SetSizeWH(w, h)
 
 	## ('-' )
 	#

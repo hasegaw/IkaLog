@@ -106,7 +106,11 @@ class IkaOutput_OBS:
 		self.editControlOBS = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 		self.editDir = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
-		layout = wx.GridSizer(2, 2)
+		try:
+			layout = wx.GridSizer(2, 2)
+		except:
+			layout = wx.GridSizer(2)
+
 		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ControlOBS.au3 パス'))
 		layout.Add(self.editControlOBS, flag = wx.EXPAND)
 		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'録画フォルダ'))

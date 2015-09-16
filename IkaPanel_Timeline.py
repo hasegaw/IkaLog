@@ -160,7 +160,11 @@ class TimelinePanel(wx.Panel):
 
 	def OnPaint(self, event):
 		self.dc = wx.PaintDC(self)
-		w, h = self.GetClientSizeTuple()
+		try:
+			w, h = self.GetClientSizeTuple()
+		except:
+			w, h = self.GetClientSize()
+
 		# グラフ描画サイズ (gw: 横幅, gh: 縦幅)
 		# マージンを除いた実際の四角形のサイズ
 		

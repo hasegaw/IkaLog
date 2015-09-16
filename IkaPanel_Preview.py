@@ -45,7 +45,14 @@ class PreviewPanel(wx.Panel):
 			return
 		width = 640
 		height = 360
-		self.bmp = wx.BitmapFromBuffer(width, height, cv2.cvtColor(self.latest_frame, cv2.COLOR_BGR2RGB))
+
+		frame_rgb = cv2.cvtColor(self.latest_frame, cv2.COLOR_BGR2RGB)
+
+		try:
+			self.bmp = wx.Bitmap.FromBuffer(width, height, frame_rgb)
+		except:
+			self.bmp = wx.BitmapFromBuffer(width, height, frame_rgb)
+
 		dc = wx.BufferedPaintDC(self)
 		dc.SetBackground(wx.Brush(wx.RED))
 		dc.Clear()
