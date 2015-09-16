@@ -22,6 +22,9 @@ import cv2
 import sys
 import os
 import time
+import threading
+
+from IkaUtils import *
 
 # Needed in GUI mode
 try:
@@ -30,8 +33,9 @@ except:
 	pass
 
 class IkaInput_CVCapture:
+	cap = None
 	out_width = 1280
-	out_height = 720 
+	out_height = 720
 	need_resize = False
 	need_deinterlace = False
 	realtime = True
@@ -44,9 +48,15 @@ class IkaInput_CVCapture:
 	Deinterlace = False
 	File = ''
 
+	lock = threading.Lock()
 
 	def read(self):
+		if self.cap is None:
+			return None, None
+
+		self.lock.acquire()
 		ret, frame = self.cap.read()
+		self.lock.release()
 
 		if not ret:
 			return None, None
@@ -94,8 +104,13 @@ class IkaInput_CVCapture:
 		self.need_resize = (width != self.out_width) or (height != self.out_height)
 
 	def initCapture(self, source, width = 1280, height = 720):
+		self.lock.acquire()
+		if not self.cap is None:
+			self.cap.release()
+
 		self.cap = cv2.VideoCapture(source)
 		self.setResolution(width, height)
+		self.lock.release()
 
 	def isWindows(self):
 		try:
@@ -106,6 +121,7 @@ class IkaInput_CVCapture:
 		return False
 
 	def startCamera(self, source):
+		IkaUtils.dprint('%s: initalizing capture device %d' % (self, source))
 		self.realtime = True
 		if self.isWindows():
 			self.initCapture(700 + source)
@@ -113,11 +129,29 @@ class IkaInput_CVCapture:
 			self.initCapture(0 + source)
 
 	def startRecordedFile(self, file):
+		IkaUtils.dprint('%s: initalizing pre-recorded video file %s' % (self, file))
 		self.realtime = False
 		self.initCapture(file)
 
-	def restartCamera(self):
-		print("should restart camera")
+	def restartInput(self):
+		print(self.source, self.File, self.CameraIndex)
+		if self.source == 'camera':
+			self.initCapture(self.CameraIndex)
+		elif self.source == 'file':
+			self.startRecordedFile(self.File)
+		else:
+			self.cap = None
+			IkaUtils.dprint('No input is set up.')
+
+		success = True
+		if self.cap is None:
+			success = False
+
+		if not success:
+			if not self.cap.isOpened():
+				success = False
+
+		return success
 
 	def ApplyUI(self):
 		self.source = ''
@@ -131,7 +165,15 @@ class IkaInput_CVCapture:
 		self.CameraIndex = self.listCameras.GetSelection()
 		self.File        = self.editFile.GetValue()
 		self.Deinterlace = self.checkDeinterlace.GetValue()
-		restartCamera()
+
+		# この関数は GUI 動作時にしか呼ばれない。カメラが開けなかった
+		# 場合にメッセージを出す
+		if not self.restartInput():
+			r = wx.MessageDialog(None, u'キャプチャデバイスの初期化に失敗しました。設定を見直してください', 'Error',
+				wx.OK | wx.ICON_ERROR).ShowModal()
+			IkaUtils.dprint("%s: failed to activate input source >>>>" % (self))
+		else:
+			IkaUtils.dprint("%s: activated new input source" % self)
 
 	def RefreshUI(self):
 		if self.source == 'camera':
@@ -157,14 +199,16 @@ class IkaInput_CVCapture:
 		self.onConfigReset(context)
 		try:
 			conf = context['config']['cvcapture']
+			print(context['config']['cvcapture'])
 		except:
 			conf = {}
 
-		if 'source' in conf:
-			if conf['source'] in ['camera', 'file']:
-				self.source = conf['source']
-			else:
-				self.source = ''
+		self.source = ''
+		try:
+			if conf['Source'] in ['camera', 'file', u'camera', u'file']:
+				self.source = conf['Source']
+		except:
+			pass
 
 		if 'CameraIndex' in conf:
 			try:
@@ -180,16 +224,20 @@ class IkaInput_CVCapture:
 			self.Deinterlace = conf['Deinterlace']
 
 		self.RefreshUI()
-		self.restartCamera()
-		return True
+
+		if self.source != '':
+			return self.restartInput()
+
+		return False
 
 	def onConfigSaveToContext(self, context):
 		context['config']['cvcapture'] = {
-			'source': self.source,
-			'file': self.File,
+			'Source': self.source,
+			'File': self.File,
 			'CameraIndex': self.CameraIndex,
 			'Deinterlace': self.Deinterlace,
 		}
+		print(context['config']['cvcapture'])
 
 	def onConfigApply(self, context):
 		self.ApplyUI()
@@ -226,4 +274,4 @@ if __name__ == "__main__":
 	while k != 27:
 		frame = obj.read()
 		cv2.imshow('IkaInput_Capture', frame)
-		k = cv2.waitKey(1) 
+		k = cv2.waitKey(1)
