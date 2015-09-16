@@ -18,14 +18,100 @@
 #  limitations under the License.
 #
 
+# Needed in GUI mode
+try:
+	import wx
+except:
+	pass
+
 import sys
 import math
-sys.path.append('qhue/') # FixMe
 from IkaUtils import *
+
+# Needed in GUI mode
+try:
+	import wx
+except:
+	pass
 
 ## IkaOutput_Hue: "Cameleon" Phillips Hue Lights.
 #
 class IkaOutput_Hue:
+
+	def ApplyUI(self):
+		self.enabled =           self.checkEnable.GetValue()
+		self.editHost =        self.editHueHost.GetValue()
+		self.dir =               self.editHueUsername.GetValue()
+
+	def RefreshUI(self):
+		self._internal_update = True
+		self.checkEnable.SetValue(self.enabled)
+
+		if not self.hueHost is None:
+			self.editHueHost.SetValue(self.hueHost)
+		else:
+			self.editHueHost.SetValue('')
+
+		if not self.hueUsername is None:
+			self.editHueUsername.SetValue(self.hueUsername)
+		else:
+			self.editHueUsername.SetValue('')
+
+	def onConfigReset(self, context = None):
+		self.enabled = False
+		self.hueHost = ''
+		self.hueUsername = ''
+
+	def onConfigLoadFromContext(self, context):
+		self.onConfigReset(context)
+		try:
+			conf = context['config']['hue']
+		except:
+			conf = {}
+
+		if 'Enable' in conf:
+			self.enabled = conf['Enable']
+
+		if 'HueHost' in conf:
+			self.hueHost= conf['HueHost']
+
+		if 'HueHost' in conf:
+			self.hueUsername = conf['HueUsername']
+
+		self.RefreshUI()
+		return True
+
+	def onConfigSaveToContext(self, context):
+		context['config']['hue'] = {
+			'Enable' : self.enabled,
+			'HueHost': self.hueHost,
+			'HueUsername': self.hueUsername,
+		}
+
+	def onConfigApply(self, context):
+		self.ApplyUI()
+
+	def onOptionTabCreate(self, notebook):
+		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
+		self.page = notebook.InsertPage(0, self.panel, 'Hue')
+		self.layout = wx.BoxSizer(wx.VERTICAL)
+		self.panel.SetSizer(self.layout)
+		self.checkEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'Hue と連携')
+		self.editHueHost = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+		self.editHueUsername = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+
+		try:
+			layout = wx.GridSizer(2, 2)
+		except:
+			layout = wx.GridSizer(2)
+
+		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ホスト'))
+		layout.Add(self.editHueHost)
+		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ユーザ'))
+		layout.Add(self.editHueUsername)
+		self.layout.Add(self.checkEnable)
+		self.layout.Add(layout)
+
 	# EnhanceColor and RGBtoXY is imported from:
 	# https://gist.githubusercontent.com/error454/6b94c46d1f7512ffe5ee/raw/73b190ce256c3d8dd540cc34e6dae43848cbce4c/gistfile1.py
 
@@ -79,11 +165,10 @@ class IkaOutput_Hue:
 
 	def checkImport(self):
 		try:
-			from fluent import sender
-			from fluent import event
+			import qhue
 		except:
-			print("モジュール fluent-logger がロードできませんでした。 Fluentd 連携ができません。")
-			print("インストールするには以下のコマンドを利用してください。\n    pip install fluent-logger\n")
+			print("モジュール qhue がロードできませんでした。 Hue 連携ができません。")
+			#print("インストールするには以下のコマンドを利用してください。\n    pip install fluent-logger\n")
 
 	##
 	# Constructor
@@ -95,9 +180,13 @@ class IkaOutput_Hue:
 	# @param username Name the bot use on Slack
 	#
 	def __init__(self, host = None, user = None):
+		self.enabled = (not host is None)
 		if not (host and user):
 			self.hue_bridge = None
 			return None
+
+		checkImport()
+
 		import qhue
 		self.hue_bridge = qhue.Bridge(host, user)
 
