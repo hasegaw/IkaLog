@@ -29,14 +29,13 @@ class PreviewPanel(wx.Panel):
 
 	def onFrameRead(self, context):
 		self.latest_frame = cv2.resize(context['engine']['frame'], (640, 360))
-		self.Refresh()
+		self.refresh_at_next = True
 
 	def OnResize(self, event):
 		w, h = self.GetClientSizeTuple()
 		new_height = int((w * 720) / 1280)
 
 		orig_state = self.SetEventHandlerEnable(self, False)
-		print(w, new_height)
 		self.SetSize((w, new_height))
 		self.SetEventHandlerEnable(self, orig_state)
 
@@ -64,11 +63,25 @@ class PreviewPanel(wx.Panel):
 
 		w, h = self.GetClientSizeTuple()
 
+	def OnTimer(self, evnet):
+		if self.latest_frame is None:
+			return
+		if not self.refresh_at_next:
+			return
+
+		self.Refresh()
+		self.refresh_at_next = False
+
 	def __init__(self, *args, **kwargs):
+		self.refresh_at_next = False
 		self.latest_frame = None
+
 		wx.Panel.__init__(self, *args, **kwargs)
+		self.timer = wx.Timer(self)
+		self.timer.Start(100)
 		self.Bind(wx.EVT_PAINT, self.OnPaint)
 #		self.Bind(wx.EVT_SIZE, self.OnResize)
+		self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
 
 
 if __name__ == "__main__":
