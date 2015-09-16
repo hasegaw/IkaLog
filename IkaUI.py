@@ -19,6 +19,7 @@
 #
 
 import wx
+import time
 import threading
 import yaml
 
@@ -26,35 +27,67 @@ from IkaInput_CVCapture import *
 from IkaEngine import *
 from IkaOutput_Console import *
 from IkaOutput_Slack import *
+from IkaOutput_Twitter import *
+from IkaOutput_OBS import *
 
 from IkaPanel_Preview import *
 from IkaPanel_Timeline import *
 from IkaPanel_LastResult import *
+from IkaPanel_Options import *
+
+from IkaUtils import *
 
 class IkaLogGUI:
+
+	def onNextFrame(self, context):
+		# This IkaEngine thread a bit, so that GUI thread can process events.
+		time.sleep(0.01)
+
+	def OnOptionsApplyClick(self, sender):
+		engine.callPlugins('onConfigApply', debug = True)
+		engine.callPlugins('onConfigSaveToContext', debug = True)
+		self.saveCurrentConfig(engine.context)
+
+	def OnOptionsResetClick(self, sender):
+		engine.callPlugins('onConfigLoadFromContext', debug = True)
+		engine.callPlugins('onConfigReset', debug = True)
+
+	def OnOptionsLoadDefaultClick(self, sender):
+		r = wx.MessageDialog(None, 'All of IkaLog config will be reset. Are you sure to load default?', 'Confirmation',
+			wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION).ShowModal()
+
+		if r != wx.ID_YES:
+			return
+
+		engine.callPlugins('onConfigReset', debug = True)
+		engine.callPlugins('onConfigSaveToContext', debug = True)
+		self.saveCurrentConfig(engine.context)
+
+	## 現在の設定値をYAMLファイルからインポート
+	#
+	def loadConfig(self, context, filename = 'IkaConfig.yaml'):
+		# FIXME:  yaml がないと落ちる
+		yaml_file = open(filename, 'r')
+		engine.context['config'] = yaml.load(yaml_file)
+		yaml_file.close()
 
 	## 現在の設定値をYAMLファイルにエクスポート
 	#
 	def saveCurrentConfig(self, context, filename = 'IkaConfig.yaml'):
-		if not 'config' in context:
-			context['config'] = {}
-		for tab in self.tabs:
-			tab.saveConfigToContext(context)
-
 		yaml_file = open(filename, 'w')
 		yaml_file.write(yaml.dump(context['config']))
 		yaml_file.close
 
 	## パネル切り替え時の処理
 	#
-	def OnSwitchPanel(self, event):
-		activeButton = event.GetEventObject()
+	def switchToPanel(self, activeButton):
 
-		for button in [self.buttonPreview, self.buttonLastResult, self.buttonTimeline]:
+		for button in [self.buttonPreview, self.buttonLastResult, self.buttonTimeline, self.buttonOptions]:
 			panel = {
 				self.buttonPreview: self.preview,
 				self.buttonLastResult: self.lastResult,
 				self.buttonTimeline: self.timeline,
+				self.buttonOptions: self.options,
 			}[button]
 
 			if button == activeButton:
@@ -75,16 +108,31 @@ class IkaLogGUI:
 			w, h = self.frame.GetClientSizeTuple()
 			self.frame.SetSizeWH(w, h)
 
-	## ('-' )
-	#
-	def OnA(self, event):
-		context = {
-			'config': {}
-		}
-		self.saveCurrentConfig(context)
+	def OnSwitchPanel(self, event):
+		activeButton = event.GetEventObject()
+		self.switchToPanel(activeButton)
 
-	def CreateOptionsUI(self):
-		self.notebookOptions = wx.Notebook(self.frame, wx.ID_ANY)
+	def UpdateEnableButton(self):
+		color = '#00A000' if self.enable else '#C0C0C0'
+		label = 'Stop' if self.enable else 'Start'
+		self.buttonEnable.SetBackgroundColour(color)
+		self.buttonEnable.SetLabel(label)
+
+	def setEnable(self, enable):
+		self.enable = enable
+		engine.pause(not enable)
+		self.UpdateEnableButton()
+
+	def OnEnableButtonClick(self, event):
+		self.setEnable(not self.enable)
+
+	def OnClose(self, event):
+		# engine を停止してから Destroy するようにしてみたけど Python 内で
+		# NULL Pointer 参照が発生している模様.... どうすりゃいいの
+		engine.stop()
+		while engineThread.isAlive():
+			time.sleep(0.5)
+		self.frame.Destroy()
 
 	def CreateButtonsUI(self):
 		panel = self.frame
@@ -106,46 +154,63 @@ class IkaLogGUI:
 		self.buttonPreview.Bind(wx.EVT_BUTTON, self.OnSwitchPanel)
 		self.buttonLastResult.Bind(wx.EVT_BUTTON, self.OnSwitchPanel)
 		self.buttonTimeline.Bind(wx.EVT_BUTTON, self.OnSwitchPanel)
+		self.buttonOptions.Bind(wx.EVT_BUTTON, self.OnSwitchPanel)
 
 	def __init__(self):
 		self.frame = wx.Frame(None, wx.ID_ANY, "IkaLog GUI", size=(700,500))
 
 		self.layout = wx.BoxSizer(wx.VERTICAL)
+
+		self.CreateButtonsUI()
+		self.layout.Add(self.buttonsLayout)
+
 		self.preview = PreviewPanel(self.frame, size=(640, 360))
 		self.lastResult = LastResultPanel(self.frame, size=(640,360))
 		self.timeline = TimelinePanel(self.frame, size=(640,200))
-#		self.layout.Add(self.lastResult, flag = wx.EXPAND)
-		self.layout.Add(self.preview, flag = wx.EXPAND)
-		self.layout.Add(self.timeline, flag = wx.EXPAND)
-		
-		self.CreateButtonsUI()
-		self.layout.Add(self.buttonsLayout)
-		
-		self.CreateOptionsUI()
-		self.layout.Add(self.notebookOptions)
+		self.options = OptionsPanel(self.frame, size=(640,360))
 
-		self.tabs = [
-#			IkaOptionTab_Fluentd(self),
-#			IkaOptionTab_Hue(self),
-#			IkaOptionTab_Twitter(self),
-#			IkaOptionTab_Logging(self),
-#			IkaOptionTab_Core(self),
-		]
+		self.layout.Add(self.lastResult, flag = wx.EXPAND)
+		self.layout.Add(self.preview, flag = wx.EXPAND)
+		self.layout.Add(self.options, flag= wx.EXPAND)
+		self.layout.Add(self.timeline, flag = wx.EXPAND)
 
 		self.frame.SetSizer(self.layout)
 
-		self.buttonEnable.Bind(wx.EVT_BUTTON, self.OnA)
+		# Frame events
+		self.frame.Bind(wx.EVT_CLOSE, self.OnClose)
+		self.buttonEnable.Bind(wx.EVT_BUTTON, self.OnEnableButtonClick)
 
+		# Set event handlers for options tab
+		self.options.Bind('optionsApply', self.OnOptionsApplyClick)
+		self.options.Bind('optionsReset', self.OnOptionsResetClick)
+		self.options.Bind('optionsLoadDefault', self.OnOptionsLoadDefaultClick)
+
+		self.switchToPanel(self.buttonPreview)
+
+		# Ready.
 		self.frame.Show()
 
+def engineThread_func():
+	IkaUtils.dprint('IkaEngine thread started')
+	engine.run()
+	IkaUtils.dprint('IkaEngine thread terminated')
 
-def uiThread():
-	engine = IkaEngine()
+if __name__ == "__main__":
+	application  = wx.App()
 	inputPlugin = IkaInput_CVCapture()
-	#inputPlugin.startRecordedFile('/Users/hasegaw/Downloads/tag_match_lobby.mp4')
-	inputPlugin.startRecordedFile('/Users/hasegaw/work/splatoon/hoko2_win.mp4')
-	#inputPlugin.startRecordedFile('/Users/hasegaw/work/splatoon/hoko_game_mpeg4_6kbps.mp4')
-	#inputPlugin.startRecordedFile('/Users/hasegaw/work/splatoon/scaled.avi')          # ファイルからの読み込み
+	gui = IkaLogGUI()
+	inputPlugin.onOptionTabCreate(gui.options.notebookOptions)
+	gui.frame.Show()
+	engine = IkaEngine()
+
+	if inputPlugin.isWindows():
+		inputPlugin.startCamera(1)
+	else:
+		inputPlugin.startRecordedFile('hoko_win.mp4')
+		#inputPlugin.startRecordedFile('/Users/hasegaw/Downloads/tag_match_lobby.mp4')
+		#inputPlugin.startRecordedFile('/Users/hasegaw/work/splatoon/hoko2_win.mp4')
+		#inputPlugin.startRecordedFile('/Users/hasegaw/work/splatoon/hoko_game_mpeg4_6kbps.mp4')
+		#inputPlugin.startRecordedFile('/Users/hasegaw/work/splatoon/scaled.avi')          # ファイルからの読み込み
 
 	engine.setCapture(inputPlugin)
 	outputPlugins = []
@@ -153,19 +218,29 @@ def uiThread():
 	outputPlugins.append(gui.preview)
 	outputPlugins.append(gui.lastResult)
 	outputPlugins.append(gui.timeline)
+	outputPlugins.append(inputPlugin)
+	outputPlugins.append(gui)
+
 	slack = IkaOutput_Slack()
-	slack.onOptionTabCreate(gui.notebookOptions)
-	slack.RefreshUI()
+	slack.onOptionTabCreate(gui.options.notebookOptions)
+	outputPlugins.append(slack)
+
+	twitter = IkaOutput_Twitter()
+	twitter.onOptionTabCreate(gui.options.notebookOptions)
+	outputPlugins.append(twitter)
+
+	obs = IkaOutput_OBS('aaa')
+	obs.onOptionTabCreate(gui.options.notebookOptions)
+	outputPlugins.append(obs)
 
 	engine.setPlugins(outputPlugins)
 
-	engine.run()
+	gui.setEnable(True)
 
-if __name__ == "__main__":
-	application  = wx.App()
-	gui = IkaLogGUI()
-	gui.frame.Show()
+	# Loading config
+	gui.loadConfig(engine.context)
+	engine.callPlugins('onConfigLoadFromContext')
 
-	thread = threading.Thread(target=uiThread)
-	thread.start()
+	engineThread = threading.Thread(target=engineThread_func)
+	engineThread.start()
 	application.MainLoop()
