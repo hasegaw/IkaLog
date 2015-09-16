@@ -147,5 +147,5 @@ class IkaOutput_JSON:
 	# @param json_filename JSON log file name
 	#
 	def __init__(self, json_filename = None):
-		self.enabled = True
+		self.enabled = (not json_filename is None)
 		self.json_filename = json_filename

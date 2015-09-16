@@ -146,6 +146,5 @@ class IkaOutput_CSV:
 	# @param csv_filename CSV log file name
 	#
 	def __init__(self, csv_filename = None):
-		if csv_filename is None:
-			self.enabled = True
+		self.enabled = (not csv_filename is None)
 		self.csv_filename = csv_filename
