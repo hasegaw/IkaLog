@@ -20,9 +20,119 @@
 
 from IkaUtils import *
 
+# Needed in GUI mode
+try:
+	import wx
+except:
+	pass
+
 ## IkaOutput_Fluentd: IkaLog Output Plugin for Fluentd ecosystem
 #
 class IkaOutput_Fluentd:
+
+	def ApplyUI(self):
+		self.enabled =           self.checkEnable.GetValue()
+		self.host =              self.editHost.GetValue()
+		self.port =              self.editPort.GetValue()
+		self.tag =               self.editTag.GetValue()
+		self.username =          self.editUsername.GetValue()
+
+	def RefreshUI(self):
+		self._internal_update = True
+		self.checkEnable.SetValue(self.enabled)
+
+		if not self.host is None:
+			self.editHost.SetValue(self.host)
+		else:
+			self.editHost.SetValue('')
+
+		if not self.port is None:
+			self.editPort.SetValue(self.port)
+		else:
+			self.editPort.SetValue('')
+
+		if not self.tag is None:
+			self.editTag.SetValue(self.tag)
+		else:
+			self.editTag.SetValue('')
+
+		if not self.username is None:
+			self.editUsername.SetValue(self.username)
+		else:
+			self.editUsername.SetValue('')
+
+	def onConfigReset(self, context = None):
+		self.enabled = False
+		self.host = ''
+		self.port = ''
+		self.tag = ''
+		self.username = ''
+
+	def onConfigLoadFromContext(self, context):
+		self.onConfigReset(context)
+		try:
+			conf = context['config']['fluentd']
+		except:
+			conf = {}
+
+		if 'Enable' in conf:
+			self.enabled = conf['Enable']
+
+		if 'Host' in conf:
+			self.host = conf['Host']
+
+		if 'Port' in conf:
+			self.port = conf['Port']
+
+		if 'Tag' in conf:
+			self.tag = conf['Tag']
+
+		if 'Username' in conf:
+			self.username = conf['Username']
+
+		self.RefreshUI()
+		return True
+
+	def onConfigSaveToContext(self, context):
+		context['config']['fluentd'] = {
+			'Enable' : self.enabled,
+			'Host': self.host,
+			'Port': self.port,
+			'Username': self.username,
+		}
+
+	def onConfigApply(self, context):
+		self.ApplyUI()
+
+	def onOptionTabCreate(self, notebook):
+		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
+		self.page = notebook.InsertPage(0, self.panel, 'Fluentd')
+		self.layout = wx.BoxSizer(wx.VERTICAL)
+
+		self.checkEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'Fluentd へ戦績を送信する')
+		self.editHost = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+		self.editPort = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+		self.editTag = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+		self.editUsername = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+
+		try:
+			layout = wx.GridSizer(2, 4)
+		except:
+			layout = wx.GridSizer(2)
+
+		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ホスト'))
+		layout.Add(self.editHost)
+		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ポート'))
+		layout.Add(self.editPort)
+		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'タグ'))
+		layout.Add(self.editTag)
+		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ユーザ名'))
+		layout.Add(self.editUsername)
+
+		self.layout.Add(self.checkEnable)
+		self.layout.Add(layout)
+
+		self.panel.SetSizer(self.layout)
 
 	##
 	# Log a record to Fluentd.
@@ -65,6 +175,11 @@ class IkaOutput_Fluentd:
 	# @param context   IkaLog context
 	#
 	def onGameIndividualResult(self, context):
+		IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
+
+		if not self.enabled:
+			return
+
 		record = self.getRecordGameIndividualResult(context)
 		self.submitRecord('gameresult', record)
 
@@ -90,6 +205,7 @@ class IkaOutput_Fluentd:
 	# @param username Name the bot use on Slack
 	#
 	def __init__(self, tag = 'ikalog', username = 'ika', host = None, port = 24224):
+		self.enabled = False
 		self.tag = tag
 		self.username = username
 		self.host = host
