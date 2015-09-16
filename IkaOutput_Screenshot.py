@@ -24,10 +24,82 @@ from IkaScene_PlazaUserStat import * #Fixme...
 import cv2
 import time
 
+# Needed in GUI mode
+try:
+	import wx
+except:
+	pass
+
 ## IkaOutput_Screenshot: IkaLog Output Plugin for Screenshots
 #
 # Save screenshots on certain events
 class IkaOutput_Screenshot:
+
+	def ApplyUI(self):
+		self.resultDetailEnabled = self.checkResultDetailEnable.GetValue()
+		self.miiverseDrawingEnabled = self.checkMiiverseDrawingEnable.GetValue()
+		self.dir =               self.editDir.GetValue()
+
+	def RefreshUI(self):
+		self._internal_update = True
+		self.checkResultDetailEnable.SetValue(self.resultDetailEnabled)
+		self.checkMiiverseDrawingEnable.SetValue(self.miiverseDrawingEnabled)
+
+		if not self.dir is None:
+			self.editDir.SetValue(self.dir)
+		else:
+			self.editDir.SetValue('')
+
+	def onConfigReset(self, context = None):
+		self.resultDetailEnabled = False
+		self.miiverseDrawingEnabled = False
+		self.dir = './screenshot/'
+
+	def onConfigLoadFromContext(self, context):
+		self.onConfigReset(context)
+		try:
+			conf = context['config']['screenshot']
+		except:
+			conf = {}
+
+		if 'ResultDetailEnable' in conf:
+			self.resultDetailEnabled = conf['ResultDetailEnable']
+
+		if 'MiiverseDrawingEnable' in conf:
+			self.miiverseDrawingEnabled = conf['MiiverseDrawingEnable']
+
+		if 'Dir' in conf:
+			self.dir = conf['Dir']
+
+		self.RefreshUI()
+		return True
+
+	def onConfigSaveToContext(self, context):
+		context['config']['screenshot'] = {
+			'ResultDetailEnable' : self.resultDetailEnabled,
+			'MiiveseDrawingEnable' : self.miiverseDrawingEnabled,
+			'Dir': self.dir,
+		}
+
+	def onConfigApply(self, context):
+		self.ApplyUI()
+
+	def onOptionTabCreate(self, notebook):
+		self.panel = wx.Panel(notebook, wx.ID_ANY)
+		self.page = notebook.InsertPage(0, self.panel, 'Screenshot')
+		self.layout = wx.BoxSizer(wx.VERTICAL)
+		self.panel.SetSizer(self.layout)
+		self.checkResultDetailEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'戦績画面のスクリーンショットを保存する')
+		self.checkMiiverseDrawingEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'広場で他プレイヤーの画面を開いた際、投稿を自動保存する')
+		self.editDir = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+
+		self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'スクリーンショット保存先ディレクトリ'))
+		self.layout.Add(self.editDir, flag = wx.EXPAND)
+		self.layout.Add(self.checkResultDetailEnable)
+		self.layout.Add(self.checkMiiverseDrawingEnable)
+
+		self.panel.SetSizer(self.layout)
+
 	def saveDrawing(self, context):
 		x1 = 241
 		x2 = x1 + 367
@@ -37,7 +109,7 @@ class IkaOutput_Screenshot:
 		drawing = context['engine']['frame'][y1:y2, x1:x2, :]
 
 		basename = time.strftime("%Y%m%d_%H%M%S", time.localtime())
-		destfile = "%s/miiverse_%s.png" % (self.dest_dir, basename)
+		destfile = "%s/miiverse_%s.png" % (self.dir, basename)
 
 		IkaUtils.writeScreenshot(destfile, drawing)
 		print("スクリーンショット %s を保存しました" % destfile)
@@ -49,7 +121,7 @@ class IkaOutput_Screenshot:
 	#
 	def onGameIndividualResult(self, context):
 		basename = time.strftime("%Y%m%d_%H%M", time.localtime())
-		destfile = "%s/ikabattle_%s.png" % (self.dest_dir, basename)
+		destfile = "%s/ikabattle_%s.png" % (self.dir, basename)
 
 		IkaUtils.writeScreenshot(destfile, context['engine']['frame'])
 		print("スクリーンショット %s を保存しました" % destfile)
@@ -64,7 +136,9 @@ class IkaOutput_Screenshot:
 	##
 	# Constructor
 	# @param self         The Object Pointer.
-	# @param dest_dir     Destionation directory (Relative path, or absolute path)
+	# @param dir          Destionation directory (Relative path, or absolute path)
 	#
-	def __init__(self, dest_dir):
-		self.dest_dir = dest_dir
+	def __init__(self, dest_dir = None):
+		self.resultDetailEnabled = (not dest_dir is None)
+		self.miiverseDrawingEnabled = False
+		self.dir = dir
