@@ -22,9 +22,18 @@ from __future__ import print_function
 import numpy as np
 import cv2
 import sys
+import os
 import re
 
 class IkaUtils:
+	@staticmethod
+	def isWindows():
+		try:
+			os.uname()
+		except AttributeError:
+			return True
+		return False
+
 	@staticmethod
 	def dprint(text):
 		print(text, file = sys.stderr)
@@ -134,8 +143,11 @@ class IkaUtils:
 	def writeScreenshot(destfile, frame):
 		try:
 			cv2.imwrite(destfile, frame)
+			return os.path.isfile(destfile)
+
 		except:
 			print("Screenshot: failed")
+			return False
 
 
 ## Match images with mask data.
