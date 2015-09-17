@@ -88,7 +88,7 @@ class IkaOutput_Slack:
 		self.ApplyUI()
 
 	def onOptionTabCreate(self, notebook):
-		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
+		self.panel = wx.Panel(notebook, wx.ID_ANY)
 		self.page = notebook.InsertPage(0, self.panel, 'Slack')
 		self.layout = wx.BoxSizer(wx.VERTICAL)
 
@@ -138,6 +138,9 @@ class IkaOutput_Slack:
 	# @param context   IkaLog context
 	#
 	def onGameIndividualResult(self, context):
+		if not self.enabled:
+			return False
+
 		s = self.getTextGameIndividualResult(context)
 
 		fes_info = IkaUtils.playerTitle(IkaUtils.getMyEntryFromContext(context))
