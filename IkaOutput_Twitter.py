@@ -25,6 +25,7 @@ from IkaUtils import *
 from datetime import datetime
 import json
 import cv2
+import os
 
 # Needed in GUI mode
 try:
@@ -36,6 +37,11 @@ except:
 # 
 # Tweet Splatton game events.
 class IkaOutput_Twitter:
+
+	## TODO
+	_PresetCK = None
+	_PresetCS = None
+
 	## API Endpoint for Tweets
 	url = "https://api.twitter.com/1.1/statuses/update.json"
 	## API Endpoint for Medias (screenshots)
@@ -44,6 +50,14 @@ class IkaOutput_Twitter:
 	last_me = None
 
 	def ApplyUI(self):
+
+		if self.radioIkaLogKey.GetValue():
+			self.ConsumerKeyType = 'ikalog'
+		if self.radioOwnKey.GetValue():
+			self.ConsumerKeyType = 'own'
+		if self._PresetCK is None:
+			self.ConsumerKeyType = 'own'
+
 		self.enabled =           self.checkEnable.GetValue()
 		self.AttachImage =       self.checkAttachImage.GetValue()
 		self.ConsumerKey =       self.editConsumerKey.GetValue()
@@ -52,10 +66,34 @@ class IkaOutput_Twitter:
 		self.AccessTokenSecret = self.editAccessTokenSecret.GetValue()
 		self.Footer =            self.editFooter.GetValue()
 
+	def OnConsumerKeyModeSwitch(self, event = None):
+		if self._PresetCK is None:
+			self.radioIkaLogKey.Disable()
+			self.radioOwnKey.SetValue(True)
+		else:
+			self.radioIkaLogKey.Enable()
+
+		if self.radioOwnKey.GetValue():
+			self.editConsumerKey.Enable()
+			self.editConsumerSecret.Enable()
+			self.buttonIkaLogAuth.Disable()
+		else:
+			self.editConsumerKey.Disable()
+			self.editConsumerSecret.Disable()
+			self.buttonIkaLogAuth.Enable()
+
 	def RefreshUI(self):
 		self._internal_update = True
 		self.checkEnable.SetValue(self.enabled)
 		self.checkAttachImage.SetValue(self.AttachImage)
+
+		try:
+			{
+				'ikalog': self.radioIkaLogKey,
+				'own': self.radioOwnKey,
+			}[self.ConsumerKeyType].SetValue(True)
+		except:
+			pass
 
 		if not self.ConsumerKey is None:
 			self.editConsumerKey.SetValue(self.ConsumerKey)
@@ -81,12 +119,13 @@ class IkaOutput_Twitter:
 			self.editFooter.SetValue(self.Footer)
 		else:
 			self.editFooter.SetValue('')
-
+		self.OnConsumerKeyModeSwitch()
 		self._internal_update = False
 
 	def onConfigReset(self, context = None):
 		self.enabled = False
 		self.AttachImage = False
+		self.ConsumerKeyType = 'ikalog'
 		self.ConsumerKey = ''
 		self.ConsumerSecret = ''
 		self.AccessToken = ''
@@ -160,14 +199,77 @@ class IkaOutput_Twitter:
 			self.editAccessTokenSecret.SetValue('')
 
 		if not self.Footer is None:
-			self.editAccessTokenSecret.SetValue(self.Footer)
+			self.editFooter.SetValue(self.Footer)
 		else:
-			self.editAccessTokenSecret.SetValue('')
+			self.editFooter.SetValue('')
 
 		self._internal_update = False
 
+	def OnTestButtonClick(self, event):
+		dlg = wx.TextEntryDialog(None, '投稿内容を入力してください', caption='投稿テスト', value='マンメンミ')
+		r = dlg.ShowModal()
+		s = dlg.GetValue()
+		dlg.Destroy()
+
+		if r != wx.ID_OK:
+			return
+
+		failure = False
+		try:
+			# FixMe: tweet() doesn't return result code
+			self.tweet(s)
+		except:
+			failure = True
+
+		# FixMe
+
+	def OnIkaLogAuthButtonClick(self, event):
+		from requests_oauthlib import OAuth1Session
+
+		request_token_url = 'https://api.twitter.com/oauth/request_token'
+		authorization_url = 'https://api.twitter.com/oauth/authorize'
+		access_token_url = 'https://api.twitter.com/oauth/access_token'
+
+		oauth_session = OAuth1Session(self._PresetCK, client_secret = self._PresetCS, callback_uri = 'oob')
+		step1 = oauth_session.fetch_request_token(request_token_url)
+		auth_web_url = oauth_session.authorization_url(authorization_url)
+
+		msg = "Twitter の利用認証を行います。\n下記のURLをブラウザにペーストし、Twitterサイトで認証ページを開いてください。"
+
+		dlg = wx.TextEntryDialog(None, msg, caption='OAuth認証', value=auth_web_url)
+		r = dlg.ShowModal()
+		dlg.Destroy()
+
+		if r != wx.ID_OK:
+			return
+
+		msg = "Twitter サイトにて認証に成功すると PIN コードが表示されます。\n表示された PIN コードを下記に入力してください。"
+
+		dlg = wx.TextEntryDialog(None, msg, caption='OAuth認証', value='')
+		dlg.ShowModal()
+		pin = dlg.GetValue()
+		dlg.Destroy()
+
+		if r != wx.ID_OK:
+			return
+
+		oauth_session.params['oauth_verifier'] = pin
+		r = oauth_session.get('%s?oauth_token=%s' % (access_token_url, step1['oauth_token']))
+
+		d = oauth_session.parse_authorization_response('?' + r.text)
+		AT = d['oauth_token']
+		ATS = d['oauth_token_secret']
+
+		self.radioIkaLogKey.SetValue(True)
+		self.ConsumerKeyType = 'ikalog'
+		self.AccessToken = AT
+		self.AccessTokenSecret = ATS
+		self.ScreenName = d['screen_name']
+
+		self.RefreshUI()
+
 	def onOptionTabCreate(self, notebook):
-		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
+		self.panel = wx.Panel(notebook, wx.ID_ANY)
 		self.page = notebook.InsertPage(0, self.panel, 'Twitter')
 		self.layout = wx.BoxSizer(wx.VERTICAL)
 		self.panel.SetSizer(self.layout)
@@ -179,6 +281,7 @@ class IkaOutput_Twitter:
 		self.radioOwnKey = wx.RadioButton(self.panel, wx.ID_ANY, u'自分のキー')
 
 		self.buttonIkaLogAuth = wx.Button(self.panel, wx.ID_ANY, u'Twitter 連携認証')
+		self.buttonTest = wx.Button(self.panel, wx.ID_ANY, u'投稿テスト(反映済みの設定を使用します)')
 		self.editConsumerKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 		self.editConsumerSecret= wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 		self.editAccessToken = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
@@ -210,8 +313,14 @@ class IkaOutput_Twitter:
 		self.layout.Add(self.editAccessTokenSecret, flag = wx.EXPAND)
 		self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'フッタ'))
 		self.layout.Add(self.editFooter, flag = wx.EXPAND)
+		self.layout.Add(self.buttonTest)
 
 		self.panel.SetSizer(self.layout)
+
+		self.radioIkaLogKey.Bind(wx.EVT_RADIOBUTTON, self.OnConsumerKeyModeSwitch)
+		self.radioOwnKey.Bind(wx.EVT_RADIOBUTTON, self.OnConsumerKeyModeSwitch)
+		self.buttonIkaLogAuth.Bind(wx.EVT_BUTTON, self.OnIkaLogAuthButtonClick)
+		self.buttonTest.Bind(wx.EVT_BUTTON, self.OnTestButtonClick)
 
 	##
 	# Post a tweet
@@ -225,12 +334,13 @@ class IkaOutput_Twitter:
 		else:
 			params = { "status": s, "media_ids": [media] }
 
-		try:
-			from requests_oauthlib import OAuth1Session
-			twitter = OAuth1Session(self.ConsumerKey, self.ConsumerSecret, self.AccessToken, self.AccessTokenSecret)
-			twitter.post(self.url, params = params)
-		except:
-			print("Twitter: failed to post")
+		from requests_oauthlib import OAuth1Session
+
+		CK = self._PresetCK if self.ConsumerKeyType == 'ikalog' else self.ConsumerKey
+		CS = self._PresetCS if self.ConsumerKeyType == 'ikalog' else self.ConsumerSecret
+
+		twitter = OAuth1Session(CK, CS, self.AccessToken, self.AccessTokenSecret)
+		twitter.post(self.url, params = params)
 
 	##
 	# Post a screenshot to Twitter
@@ -239,18 +349,25 @@ class IkaOutput_Twitter:
 	# @return media   The media ID
 	#
 	def postMedia(self, frame):
-		try:
-			from requests_oauthlib import OAuth1Session
-			twitter = OAuth1Session(self.ConsumerKey, self.ConsumerSecret, self.AccessToken, self.AccessTokenSecret)
 
-			IkaUtils.writeScreenshot('_image_for_twitter.jpg', cv2.resize(frame, (640,360)))
-			files = { "media" : open("_image_for_twitter.jpg", "rb") }
-			req = twitter.post(self.url_media, files = files)
+		if IkaUtils.isWindows():
+			temp_file = os.path.join(os.environ['TMP'], '_image_for_twitter.jpg')
+		else:
+			temp_file = '_image_for_twitter.jpg'
 
-			if req.status_code == 200:
-				return json.loads(req.text)['media_id']
-		except:
-			print("Twitter: failed to post image")
+		IkaUtils.writeScreenshot(temp_file, cv2.resize(frame, (640, 360)))
+
+		files = { "media" : open(temp_file, "rb") }
+
+		CK = self._PresetCK if self.ConsumerKeyType == 'ikalog' else self.ConsumerKey
+		CS = self._PresetCS if self.ConsumerKeyType == 'ikalog' else self.ConsumerSecret
+
+		from requests_oauthlib import OAuth1Session
+		twitter = OAuth1Session(CK, CS, self.AccessToken, self.AccessTokenSecret)
+		req = twitter.post(self.url_media, files = files)
+
+		if req.status_code == 200:
+			return json.loads(req.text)['media_id']
 
 		return None
 
@@ -273,6 +390,8 @@ class IkaOutput_Twitter:
 	# @param context   IkaLog context
 	#
 	def onGameIndividualResult(self, context):
+		if not self.enabled:
+			return False
 
 		me = IkaUtils.getMyEntryFromContext(context)
 		fes_title = IkaUtils.playerTitle(me)
@@ -312,6 +431,7 @@ class IkaOutput_Twitter:
 	#
 	def __init__(self, ConsumerKey = None, ConsumerSecret = None, AccessToken = None, AccessTokenSecret = None, attachImage = False, Footer = ''):
 		self.enabled = not((ConsumerKey is None) or (ConsumerSecret is None) or (AccessToken is None) or (AccessTokenSecret is None))
+		self.ConsumerKeyType = 'own'
 		self.ConsumerKey = ConsumerKey
 		self.ConsumerSecret = ConsumerSecret
 		self.AccessToken = AccessToken
