@@ -91,7 +91,6 @@ class OptionsPanel(wx.Panel):
 		self.buttonOptionReset.Bind(wx.EVT_BUTTON, self.OnOptionButtonClick)
 		self.buttonOptionLoadDefault.Bind(wx.EVT_BUTTON, self.OnOptionButtonClick)
 
-		self.layoutOptions.Add(buttonsLayout)
-#		self.layout.Add(self.panelOptions, flag = wx.EXPAND)
+		self.layoutOptions.Add(buttonsLayout, flag = wx.EXPAND)
 
 		self.SetSizer(self.layoutOptions)
