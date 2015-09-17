@@ -23,6 +23,7 @@ from IkaScene_PlazaUserStat import * #Fixme...
 
 import cv2
 import time
+import os
 
 # Needed in GUI mode
 try:
@@ -53,7 +54,7 @@ class IkaOutput_Screenshot:
 	def onConfigReset(self, context = None):
 		self.resultDetailEnabled = False
 		self.miiverseDrawingEnabled = False
-		self.dir = './screenshot/'
+		self.dir = os.path.join(os.getcwd(), 'screenshots')
 
 	def onConfigLoadFromContext(self, context):
 		self.onConfigReset(context)
