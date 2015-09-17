@@ -21,6 +21,7 @@
 from distutils.core import setup
 import os
 import py2exe
+import requests.certs
 
 Mydata_files = []
 dir = 'masks/'
@@ -29,6 +30,11 @@ for files in os.listdir(dir):
 	if os.path.isfile(f1): # skip directories
 		f2 = 'masks', [f1]
 		Mydata_files.append(f2)
+
+Mydata_files.append(('', ['cacert.pem']))
+Mydata_files.append(('', ['videoinput.dll']))
+Mydata_files.append(('utils', ['utils/ControlOBS.au3']))
+Mydata_files.append(('screenshots', ['screenshots/.keep_dir']))
 
 setup(
 	console=['IkaUI.py'],
