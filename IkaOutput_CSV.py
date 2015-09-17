@@ -21,6 +21,7 @@
 from IkaUtils import *
 from datetime import datetime
 import time
+import os
 
 # Needed in GUI mode
 try:
@@ -50,7 +51,7 @@ class IkaOutput_CSV:
 
 	def onConfigReset(self, context = None):
 		self.enabled = False
-		self.csv_filename = ''
+		self.csv_filename = os.path.join(os.getcwd(), 'ika.csv')
 
 	def onConfigLoadFromContext(self, context):
 		self.onConfigReset(context)
@@ -78,23 +79,17 @@ class IkaOutput_CSV:
 		self.ApplyUI()
 
 	def onOptionTabCreate(self, notebook):
-		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
+		self.panel = wx.Panel(notebook, wx.ID_ANY)
 		self.page = notebook.InsertPage(0, self.panel, 'CSV')
 		self.layout = wx.BoxSizer(wx.VERTICAL)
 		self.panel.SetSizer(self.layout)
 		self.checkEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'CSVファイルへ戦績を出力する')
 		self.editCsvFilename     = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
-		try:
-			layout = wx.GridSizer(2, 1)
-		except:
-			layout = wx.GridSizer(2)
-
-		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'CSV保存先ファイル'))
-		layout.Add(self.editCsvFilename, flag = wx.EXPAND)
+		self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'CSV保存先ファイル'))
+		self.layout.Add(self.editCsvFilename, flag = wx.EXPAND)
 
 		self.layout.Add(self.checkEnable)
-		self.layout.Add(layout)
 
 	##
 	# Write a line to text file.
