@@ -23,6 +23,7 @@ from IkaUtils import *
 from datetime import datetime
 import time
 import json
+import os
 
 # Needed in GUI mode
 try:
@@ -51,7 +52,7 @@ class IkaOutput_JSON:
 
 	def onConfigReset(self, context = None):
 		self.enabled = False
-		self.json_filename = ''
+		self.json_filename = os.path.join(os.getcwd(), 'ika.json')
 
 	def onConfigLoadFromContext(self, context):
 		self.onConfigReset(context)
@@ -79,23 +80,17 @@ class IkaOutput_JSON:
 		self.ApplyUI()
 
 	def onOptionTabCreate(self, notebook):
-		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
+		self.panel = wx.Panel(notebook, wx.ID_ANY)
 		self.page = notebook.InsertPage(0, self.panel, 'JSON')
 		self.layout = wx.BoxSizer(wx.VERTICAL)
 		self.panel.SetSizer(self.layout)
 		self.checkEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'JSONファイルへ戦績を出力する')
 		self.editJsonFilename     = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
-		try:
-			layout = wx.GridSizer(2, 1)
-		except:
-			layout = wx.GridSizer(2)
-
-		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'JSON保存先ファイル'))
-		layout.Add(self.editJsonFilename, flag = wx.EXPAND)
+		self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'JSON保存先ファイル'))
+		self.layout.Add(self.editJsonFilename, flag = wx.EXPAND)
 
 		self.layout.Add(self.checkEnable)
-		self.layout.Add(layout)
 
 	##
 	# Write a line to text file.
