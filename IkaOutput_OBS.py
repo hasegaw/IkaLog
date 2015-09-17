@@ -60,7 +60,7 @@ class IkaOutput_OBS:
 	def onConfigReset(self, context = None):
 		self.enabled = False
 		self.AutoRenameEnabled = False
-		self.ControlOBS = ''
+		self.ControlOBS = os.path.join(os.getcwd(), 'utils', 'ControlOBS.au3')
 		self.dir = ''
 
 	def onConfigLoadFromContext(self, context):
@@ -97,7 +97,7 @@ class IkaOutput_OBS:
 		self.ApplyUI()
 
 	def onOptionTabCreate(self, notebook):
-		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
+		self.panel = wx.Panel(notebook, wx.ID_ANY)
 		self.page = notebook.InsertPage(0, self.panel, 'OBS')
 		self.layout = wx.BoxSizer(wx.VERTICAL)
 		self.panel.SetSizer(self.layout)
@@ -106,19 +106,13 @@ class IkaOutput_OBS:
 		self.editControlOBS = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 		self.editDir = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
-		try:
-			layout = wx.GridSizer(2, 2)
-		except:
-			layout = wx.GridSizer(2)
-
-		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ControlOBS.au3 パス'))
-		layout.Add(self.editControlOBS, flag = wx.EXPAND)
-		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'録画フォルダ'))
-		layout.Add(self.editDir, flag = wx.EXPAND)
+		self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ControlOBS.au3 パス'))
+		self.layout.Add(self.editControlOBS, flag = wx.EXPAND)
+		self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'録画フォルダ'))
+		self.layout.Add(self.editDir, flag = wx.EXPAND)
 
 		self.layout.Add(self.checkEnable)
 		self.layout.Add(self.checkAutoRenameEnable)
-		self.layout.Add(layout)
 
 		self.panel.SetSizer(self.layout)
 
@@ -152,12 +146,18 @@ class IkaOutput_OBS:
 	# @param self    The object.
 	# @param context IkaLog context.
 	def onLobbyMatched(self, context):
+		if not self.enabled:
+			return False
+
 		self.runControlOBS('start')
 
 	def worker(self):
 		self.runControlOBS('stop')
 
 	def onGameIndividualResult(self, context):
+		if not self.enabled:
+			return False
+
 		# Set Environment variables.
 		map = IkaUtils.map2text(context['game']['map'], unknown = 'unknown')
 		rule = IkaUtils.rule2text(context['game']['rule'], unknown = 'unknown')
