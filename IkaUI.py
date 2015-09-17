@@ -71,10 +71,12 @@ class IkaLogGUI:
 	## 現在の設定値をYAMLファイルからインポート
 	#
 	def loadConfig(self, context, filename = 'IkaConfig.yaml'):
-		# FIXME:  yaml がないと落ちる
-		yaml_file = open(filename, 'r')
-		engine.context['config'] = yaml.load(yaml_file)
-		yaml_file.close()
+		try:
+			yaml_file = open(filename, 'r')
+			engine.context['config'] = yaml.load(yaml_file)
+			yaml_file.close()
+		except:
+			pass
 
 	## 現在の設定値をYAMLファイルにエクスポート
 	#
@@ -170,7 +172,7 @@ class IkaLogGUI:
 		self.preview = PreviewPanel(self.frame, size=(640, 360))
 		self.lastResult = LastResultPanel(self.frame, size=(640,360))
 		self.timeline = TimelinePanel(self.frame, size=(640,200))
-		self.options = OptionsPanel(self.frame, size=(640,360))
+		self.options = OptionsPanel(self.frame, size=(640,500))
 
 		self.layout.Add(self.lastResult, flag = wx.EXPAND)
 		self.layout.Add(self.preview, flag = wx.EXPAND)
@@ -227,14 +229,15 @@ if __name__ == "__main__":
 	# -> 設定画面の生成とプラグインリストへの登録
 	for plugin in [
 		IkaOutput_CSV(),
-		IkaOutput_Fluentd(),
+		#IkaOutput_Fluentd(),
 		IkaOutput_JSON(),
-		IkaOutput_Hue(),
+		#IkaOutput_Hue(),
 		IkaOutput_OBS(),
 		IkaOutput_Twitter(),
 		IkaOutput_Screenshot(),
 		IkaOutput_Slack(),
 	]:
+		print('Initializing %s' % plugin)
 		plugin.onOptionTabCreate(gui.options.notebookOptions)
 		plugins.append(plugin)
 
@@ -245,6 +248,7 @@ if __name__ == "__main__":
 	gui.setEnable(True)
 
 	# Loading config
+	engine.callPlugins('onConfigReset', debug = True)
 	gui.loadConfig(engine.context)
 	engine.callPlugins('onConfigLoadFromContext', debug = True)
 
