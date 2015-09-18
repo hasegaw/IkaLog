@@ -142,4 +142,4 @@ class IkaOutput_Screenshot:
 	def __init__(self, dest_dir = None):
 		self.resultDetailEnabled = (not dest_dir is None)
 		self.miiverseDrawingEnabled = False
-		self.dir = dir
+		self.dir = dest_dir
