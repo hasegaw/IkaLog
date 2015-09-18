@@ -34,6 +34,7 @@ for files in os.listdir(dir):
 Mydata_files.append(('', ['cacert.pem']))
 Mydata_files.append(('', ['videoinput.dll']))
 Mydata_files.append(('utils', ['utils/ControlOBS.au3']))
+Mydata_files.append(('utils', ['utils/ControlAmarecTV.au3']))
 Mydata_files.append(('screenshots', ['screenshots/.keep_dir']))
 
 setup(
