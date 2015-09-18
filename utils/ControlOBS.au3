@@ -38,6 +38,7 @@
 
 Func RenameFile($source)
 	Local $dest = EnvGet('IKALOG_MP4_DESTNAME')
+	$dest = StringReplace($dest, "/", "\")
 	If $dest = '' Then
 		Return False
 	EndIf
@@ -47,7 +48,15 @@ EndFunc
 
 Func FindRecentRecording()
 	Local $directory = EnvGet('IKALOG_MP4_DESTDIR')
-	Local $hSearch = FileFindFirstFile($directory & '/*.mp4')
+
+	; Replace all slashes to backslashes.
+	; $directory also needs a backslash at its end.
+	$directory = StringReplace($directory, "/", "\")
+	If StringRight($directory, 1) <> "\" Then
+		$directory = $directory & "\"
+	EndIf
+
+	Local $hSearch = FileFindFirstFile($directory & '*.mp4')
 
 	If $hSearch = -1 Then
 		Return False
