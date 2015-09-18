@@ -71,6 +71,7 @@ class IkaScene_GameStart:
 		data9 = cv2.imread('masks/hoko_mongara.png',1)
 		data10 = cv2.imread('masks/nawabari_hokke.png',1)
 		data11 = cv2.imread('masks/nawabari_hirame.png',1)
+		data12 = cv2.imread('masks/nawabari_masaba.png',1)
 
 		self.map_list = []
 		self.map_list.append(self.load_mapname_mask(data1, 'タチウオパーキング'))
@@ -84,6 +85,7 @@ class IkaScene_GameStart:
 		self.map_list.append(self.load_mapname_mask(data9, 'モンガラキャンプ場'))
 		self.map_list.append(self.load_mapname_mask(data10, 'ホッケふ頭'))
 		self.map_list.append(self.load_mapname_mask(data11, 'ヒラメが丘団地'))
+		self.map_list.append(self.load_mapname_mask(data12, 'マサバ海峡大橋'))
 
 		self.rule_list = []
 		self.rule_list.append(self.load_rulename_mask(data1, 'ガチエリア'))
