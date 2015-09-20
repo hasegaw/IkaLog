@@ -60,7 +60,9 @@ class InputSourceEnumerator:
 	def Enumerate(self):
 		if IkaUtils.isWindows():
 			try:
-				return self.EnumWindows()
+				cameras = self.EnumWindows()
+				if len(cameras) > 1:
+					return cameras
 			except:
 				IkaUtils.dprint('%s: Failed to enumerate DirectShow devices' % self)
 
