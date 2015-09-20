@@ -216,6 +216,9 @@ class IkaEngine:
 		frame, t = self.capture.read()
 
 		while frame is None:
+			self.callPlugins('onFrameReadFailed')
+			if self._stop:
+				return None, None
 			cv2.waitKey(1000)
 			frame, t = self.capture.read()
 
