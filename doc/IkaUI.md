@@ -1,16 +1,9 @@
 # はじめてのIkaLog GUI版
 
-IkaLog GUI版とは、 IkaLog が簡単に使えるように
-GUI 操作が可能となった Windows 用アプリケーション版です。
-
 ![Input](images/IkaUI.png)
 
 現在 Dropbox などからアルファ版スナップショットを公開しています。
 
-IkaLog は <https://github.com/hasegaw/IkaLog> にてホストされている
-オープンソースソフトウェアです。
-IkaLog GUI 版 (IkaUI) は IkaLog をウインドウアプリとして動くように
-したバージョンです。
 
 ## IkaLog って何ができるの
 
@@ -22,36 +15,38 @@ IkaLog GUI 版 (IkaUI) は IkaLog をウインドウアプリとして動くよ�
 - Twitter, Slack にプレイ状況をリアルタイム投稿
 - アマレコTV, OBS などの録画ソフトの録画開始・停止を自動制御、ファイルをリネーム
 
-※CLI版ではほかに下記の機能があります
+## (参考) IkaLog GUI 版とコマンドライン版の違い
+
+IkaLog は <https://github.com/hasegaw/IkaLog> にてホストされている
+オープンソースソフトウェアです。
+
+IkaLog GUI 版 (IkaUI) は IkaLog をウインドウアプリとして動くように
+したバージョンです。
+
+#### GUI版のみにある機能
+
+- Windows 用 EXE アプリケーションになっているので簡単に使える
+- タイムライン表示が可能（Experimental)
+- 設定が画面上でできる
+
+#### コマンドライン版にのみあり、現在 GUI では使えない機能
+
+すべての IkaLog の機能はまだ実装されていません。必要であればコマンドライン版を検討してください。
 
 - Fluentd 連携 (データベースやWebサービスに戦績を投稿)
 - Hue (Phillips製フルカラーLED電球)にチーム色を設定
+- キャプチャボードの表示ズレ対策 (IkaInput_CVCapture.offset)
+- そのほか自分でプラグインを自由に追加可能
 - etc...
 
+<br>
 ## IkaLog の入手方法
 
 公開 URL からファイルをダウンロードします。最新版はこちら:
 
 <https://dl.dropboxusercontent.com/u/14421778/IkaLog/WinIkaLog_20150918rev2.zip>
 
-## 現在の GUI 版でできること、できないこと
-
-
-### GUI版でだけ、できること
-
-- Windows 用 EXE アプリケーションになっているので簡単に使える
-- タイムライン表示が可能（Experimental)
-- 設定が画面上でできる
-
-### 現在の GUI 版では、できないこと
-
-すべての IkaLog の機能はまだ実装されていません。CUI版を使ってください。
-
-- Fluentd 連携機能
-- Hue 連携機能
-- キャプチャボードの表示ズレ対策 (IkaInput_CVCapture.offset)
-- ウインドウ表示はまだ最低限しか実装されていません(うごくけども...レベル)
-
+<br>
 ## はじめての設定
 
 IkaLog をはじめて使う場合は、 IkaUI.exe を起動して設定を行ってください。
@@ -60,6 +55,8 @@ IkaLog をはじめて使う場合は、 IkaUI.exe を起動して設定を行�
 
 IkaLog を利用する前に、WiiU の画面を HDMI キャプチャできる環境を
 構成してください。
+
+[HDMI キャプチャ機器の選び方について](CaptureDevice.md)
 
 #### アマレコTV を使っている場合
 
@@ -106,6 +103,7 @@ IkaUI.exe を起動し、プレビューが映っていることを確認して�
 スプラトゥーンをプレイします。
 マッチ終了後に CSV/JSON ファイルが更新されていれば、正しく動作しています。
 
+<br>
 ## 設定項目
 
 ### Input (入力ソースの設定)
@@ -317,7 +315,7 @@ IkaConfig.yaml ファイルに Twitter の認証情報が平文で保存され�
 #### Slack投稿例
 ![Slack 投稿例](images/Slack_IkaLog.png)
 
-
+<br>
 ## 謝辞
 
 - 各種バグ報告や修正コード、修正案、方向性の検討について様々な方から意見やアイデアをいただきました。
