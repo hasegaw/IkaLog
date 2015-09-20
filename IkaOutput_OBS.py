@@ -168,7 +168,7 @@ class IkaOutput_OBS:
 		os.environ['IKALOG_WON'] = won
 		#os.environ['IKALOG_TIMESTAMP'] = time.strftime("%Y%m%d_%H%M", context['game']['timestamp'])
 
-		if not self.dir is None:
+		if self.AutoRenameEnabled:
 			os.environ['IKALOG_MP4_DESTNAME'] = '%s%s' % (self.dir, self.createMP4Filename(context))
 			os.environ['IKALOG_MP4_DESTDIR'] = self.dir 
 
