@@ -31,12 +31,14 @@ from IkaScene_ResultDetail import *
 from IkaScene_TowerTracker import *
 from IkaScene_InGame import *
 from IkaScene_Lobby import *
+from IkaScene_GameFinish import *
 
 
 ## The IkaLog core engine.
 #
 class IkaEngine:
 	scn_gamestart = IkaScene_GameStart()
+	scn_gamefinish = IkaScene_GameFinish()
 	scn_gameresult = IkaScene_ResultDetail()
 	scn_ingame = IkaScene_InGame()
 	scn_towerTracker = IkaScene_TowerTracker()
@@ -164,10 +166,18 @@ class IkaEngine:
 				context['engine']['frame'] = frame
 				r = self.scn_gamestart.match(context)
 
-			self.last_gamestart = time.time()	
+			self.last_gamestart = time.time()
 
 			self.callPlugins('onGameStart')
-		
+
+		# GameFinish (ゲームが終了した) ?
+		r = False
+		if (not context['engine']['inGame']):
+			r = self.scn_gamefinish.match(context)
+
+		if r:
+			self.callPlugins('onGameFinish')
+
 		# GameResult (勝敗の詳細が表示されている）?
 		r = (not context['engine']['inGame']) and (time.time() - self.last_capture) > 60
 		if r:
