@@ -41,11 +41,16 @@ class IkaScene_Lobby:
 		r_tag_matched  = self.mask_tag_matched.match(frame)
 		r_fes_matched  = self.mask_fes_matched.match(frame)
 
+		match_count = 0
+		for matched in [r_pub_matching, r_pub_matched, r_tag_matching, r_tag_matched, r_fes_matched]:
+			if matched:
+				match_count = match_count + 1
+
+		if match_count > 1:
+			return False
+
 		r_matching = r_pub_matching or r_tag_matching
 		r_matched = r_pub_matched or r_tag_matched or r_fes_matched
-
-		if not (r_matching or r_matched):
-			return False
 
 		context['game']['lobby'] = {
 			'type': None,
@@ -69,73 +74,85 @@ class IkaScene_Lobby:
 
 		return True
 
-	def __init__(self):
+	def __init__(self, debug = False):
 		self.mask_rule = IkaMatcher(
 			0, 220, 737, 94,
 			img_file = 'masks/ui_lobby_public.png',
-			threshold = 0.99,
-			orig_threshold = 0.1,
-			pre_threshold_value = 160,
+			threshold = 0.95,
+			orig_threshold = 0.10,
+			false_positive_method = IkaMatcher.FP_FRONT_IS_WHITE,
+			pre_threshold_value = 230,
 			label = 'Rule',
+			debug = debug
 		)
 
 		self.mask_stage = IkaMatcher(
 			0, 345, 737, 94,
 			img_file = 'masks/ui_lobby_public.png',
-			threshold = 0.99,
-			orig_threshold = 0.1,
-			pre_threshold_value = 160,
+			threshold = 0.95,
+			orig_threshold = 0.10,
+			false_positive_method = IkaMatcher.FP_FRONT_IS_WHITE,
+			pre_threshold_value = 230,
 			label = 'Stage',
+			debug = debug
 		)
 
 		self.mask_matching = IkaMatcher(
 			826, 37, 280, 34,
 			img_file = 'masks/ui_lobby_public.png',
-			threshold = 0.97,
-			orig_threshold = 0.5,
-			pre_threshold_value = 160,
+			threshold = 0.90,
+			orig_threshold = 0.10,
+			false_positive_method = IkaMatcher.FP_FRONT_IS_WHITE,
+			pre_threshold_value = 230,
 			label = 'Matching',
+			debug = debug
 		)
 
 		self.mask_matched = IkaMatcher(
 			826, 37, 280, 34,
 			img_file = 'masks/ui_lobby_public_matched.png',
-			threshold = 0.97,
-			orig_threshold = 0.5,
+			threshold = 0.90,
+			orig_threshold = 0.10,
+			false_positive_method = IkaMatcher.FP_FRONT_IS_WHITE,
 			pre_threshold_value = 160,
 			label = 'Matched',
+			debug = debug
 		)
 
 		self.mask_tag_matched = IkaMatcher(
 			826, 24, 280, 34,
 			img_file = 'masks/ui_lobby_tag_matched.png',
 			threshold = 0.90,
-			orig_threshold = 0.5,
+			orig_threshold = 0.10,
+			false_positive_method = IkaMatcher.FP_BACK_IS_BLACK,
 			pre_threshold_value = 160,
 			label = 'TagMatched',
+			debug = debug
 		)
 
 		self.mask_tag_matching = IkaMatcher(
 			826, 24, 280, 34,
 			img_file = 'masks/ui_lobby_tag_matching.png',
-			threshold = 0.97,
-			orig_threshold = 0.5,
+			threshold = 0.90,
+			orig_threshold = 0.10,
 			pre_threshold_value = 160,
 			label = 'TagMatching',
+			debug = debug
 		)
 
 		self.mask_fes_matched = IkaMatcher(
 			851, 383, 225, 30,
 			img_file = 'masks/ui_lobby_fes_matched.png',
 			threshold = 0.90,
-			orig_threshold = 0.5,
+			orig_threshold = 0.10,
 			pre_threshold_value = 160,
 			label = 'FestaMatched',
+			debug = debug
 		)
 
 if __name__ == "__main__":
 	target = cv2.imread(sys.argv[1])
-	obj = IkaScene_Lobby()
+	obj = IkaScene_Lobby(debug = True)
 
 	context = {
 		'engine': { 'frame': target },
@@ -146,4 +163,4 @@ if __name__ == "__main__":
 	print("matched %s" % (matched))
 	print(context['game'])
 
-	cv2.waitKey(10000)
+	cv2.waitKey()
