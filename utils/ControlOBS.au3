@@ -89,8 +89,7 @@ Func ControlOBS($stop)
     Local $hWnd = WinWait('[CLASS:OBSWindowClass]', '', 1)
 
 	If $hWnd == 0 Then
-		Run('C:\Program Files\OBS\OBS.exe')
-		Local $hWnd = WinWait('[CLASS:OBSWindowClass]', '', 10)
+		Return False
 	EndIf
 
 	; Get current state.
