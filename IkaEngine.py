@@ -105,7 +105,7 @@ class IkaEngine:
 
 			if r:
 				self.last_go_sign = time.time()
-				self.callPlugins('onGoSign')
+				self.callPlugins('onGameGoSign')
 
 			# 死亡状態（「復活まであとｎ秒」）
 			if self.scn_ingame.matchDead(context):
