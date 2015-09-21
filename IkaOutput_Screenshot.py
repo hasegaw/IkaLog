@@ -109,8 +109,8 @@ class IkaOutput_Screenshot:
 
 		drawing = context['engine']['frame'][y1:y2, x1:x2, :]
 
-		basename = time.strftime("%Y%m%d_%H%M%S", time.localtime())
-		destfile = "%s/miiverse_%s.png" % (self.dir, basename)
+		timestr = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+		destfile = os.path.join(self.dir, 'miiverse_%s.png' % timestr)
 
 		IkaUtils.writeScreenshot(destfile, drawing)
 		print("スクリーンショット %s を保存しました" % destfile)
@@ -121,8 +121,8 @@ class IkaOutput_Screenshot:
 	# @param context   IkaLog context
 	#
 	def onGameIndividualResult(self, context):
-		basename = time.strftime("%Y%m%d_%H%M", time.localtime())
-		destfile = "%s/ikabattle_%s.png" % (self.dir, basename)
+		timestr = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+		destfile = os.path.join(self.dir, 'ikabattle_%s.png' % timestr)
 
 		IkaUtils.writeScreenshot(destfile, context['engine']['frame'])
 		print("スクリーンショット %s を保存しました" % destfile)
