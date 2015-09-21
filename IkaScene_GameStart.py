@@ -32,95 +32,27 @@ class IkaScene_GameStart:
 	mapname_top = 580
 	mapname_height = 640 - mapname_top
 
-	rulename_left = 640 - 300
-	rulename_right = 640 + 300
+	rulename_left = 640 - 120
+	rulename_right = 640 + 120
 	rulename_width = rulename_right - rulename_left
 	rulename_top = 250
 	rulename_bottom = 310
 	rulename_height = rulename_bottom - rulename_top
 
-	def load_mapname_mask(self, frame, map_name):
-		if frame is None:
-			print("%s のマスクデータが読み込めませんでした。" % map_name)
-
-		img_map = IkaUtils.cropImageGray(frame, self.mapname_left, self.mapname_top, self.mapname_width, self.mapname_height)
-
-		keys = [ 'name', 'mask' ]
-		values = [ map_name, img_map ]
-		return dict(zip(keys, values))
-
-	def load_rulename_mask(self, frame, rule_name):
-		if frame is None:
-			print("%s のマスクデータが読み込めませんでした。" % rule_name)
-
-		img_rule = IkaUtils.cropImageGray(frame, self.rulename_left, self.rulename_top, self.rulename_width, self.rulename_height)
-
-		keys = [ 'name', 'mask' ]
-		values = [ rule_name, img_rule ]
-		return dict(zip(keys, values))
-
-	def __init__(self):
-		data1 = cv2.imread('masks/gachi_tachiuo.png',1)
-		data2 = cv2.imread('masks/nawabari_mozuku.png',1)
-		data3 = cv2.imread('masks/gachi_negitoro.png',1)
-		data4 = cv2.imread('masks/nawabari_arowana.png',1)
-		data5 = cv2.imread('masks/yagura_decaline.png',1)
-		data6 = cv2.imread('masks/gachi_buspark.png',1)
-		data7 = cv2.imread('masks/gachi_hakofugu.png',1)
-		data8 = cv2.imread('masks/gachi_shionome.png',1)
-		data9 = cv2.imread('masks/hoko_mongara.png',1)
-		data10 = cv2.imread('masks/nawabari_hokke.png',1)
-		data11 = cv2.imread('masks/nawabari_hirame.png',1)
-		data12 = cv2.imread('masks/nawabari_masaba.png',1)
-
-		self.map_list = []
-		self.map_list.append(self.load_mapname_mask(data1, 'タチウオパーキング'))
-		self.map_list.append(self.load_mapname_mask(data2, 'モズク農園'))
-		self.map_list.append(self.load_mapname_mask(data3, 'ネギトロ炭鉱'))
-		self.map_list.append(self.load_mapname_mask(data4, 'アロワナモール'))
-		self.map_list.append(self.load_mapname_mask(data5, 'デカライン高架下'))
-		self.map_list.append(self.load_mapname_mask(data6, 'Bバスパーク'))
-		self.map_list.append(self.load_mapname_mask(data7, 'ハコフグ倉庫'))
-		self.map_list.append(self.load_mapname_mask(data8, 'シオノメ油田'))
-		self.map_list.append(self.load_mapname_mask(data9, 'モンガラキャンプ場'))
-		self.map_list.append(self.load_mapname_mask(data10, 'ホッケふ頭'))
-		self.map_list.append(self.load_mapname_mask(data11, 'ヒラメが丘団地'))
-		self.map_list.append(self.load_mapname_mask(data12, 'マサバ海峡大橋'))
-
-		self.rule_list = []
-		self.rule_list.append(self.load_rulename_mask(data1, 'ガチエリア'))
-		self.rule_list.append(self.load_rulename_mask(data2, 'ナワバリバトル'))
-		self.rule_list.append(self.load_rulename_mask(data5, 'ガチヤグラ'))
-		self.rule_list.append(self.load_rulename_mask(data9, 'ガチホコバトル'))
-
 	def guess_map(self, frame):
-		target_gray = IkaUtils.cropImageGray(frame, self.mapname_left, self.mapname_top, self.mapname_width, self.mapname_height)
-		ret, src = cv2.threshold(target_gray, 230, 255, cv2.THRESH_BINARY)
-
 		# マップ名を判断
 		for map in self.map_list:
-			mask = map['mask']
-
-			match = IkaUtils.matchWithMask(src, mask, 0.99, 0.80)
-			if match:
-				#print("マップ名 %s : %f" % (map['name'], match))
+			r = map['mask'].match(frame)
+			if r:
 				return map
-
 		return None
 
 	def guess_rule(self, frame):
-		target_gray = IkaUtils.cropImageGray(frame, self.rulename_left, self.rulename_top, self.rulename_width, self.rulename_height)
-		ret, src = cv2.threshold(target_gray, 230, 255, cv2.THRESH_BINARY)
-
 		# モード名を判断
 		for rule in self.rule_list:
-			mask = rule['mask']
-
-			match = IkaUtils.matchWithMask(src, mask, 0.99, 0.80)
-			if match:
-				#print("モード名 %s : %f" % (rule['name'], match))
+			r = rule['mask'].match(frame)
+			if r:
 				return rule
-		
 		return None
 
 	def match(self, context):
@@ -134,25 +66,66 @@ class IkaScene_GameStart:
 
 		return (map or rule)
 
+	def __init__(self, debug = False):
+		self.map_list = [
+			{ 'name': 'タチウオパーキング', 'file': 'masks/gachi_tachiuo.png' },
+			{ 'name': 'モズク農園',         'file': 'masks/nawabari_mozuku.png' },
+			{ 'name': 'ネギトロ炭鉱',       'file': 'masks/gachi_negitoro.png'},
+			{ 'name': 'アロワナモール',     'file': 'masks/nawabari_arowana.png'},
+			{ 'name': 'デカライン高架下',   'file': 'masks/yagura_decaline.png' },
+			{ 'name': 'Bバスパーク',        'file': 'masks/gachi_buspark.png' },
+			{ 'name': 'ハコフグ倉庫',       'file': 'masks/gachi_hakofugu.png' },
+			{ 'name': 'シオノメ油田',       'file': 'masks/gachi_shionome.png' },
+			{ 'name': 'モンガラキャンプ場', 'file': 'masks/hoko_mongara.png' },
+			{ 'name': 'ホッケふ頭',         'file': 'masks/nawabari_hokke.png' },
+			{ 'name': 'ヒラメが丘団地',     'file': 'masks/nawabari_hirame.png' },
+			{ 'name': 'マサバ海峡大橋',     'file': 'masks/nawabari_masaba.png' },
+		]
+
+		self.rule_list = [
+			{ 'name': 'ガチエリア',     'file': 'masks/gachi_tachiuo.png'},
+			{ 'name': 'ガチヤグラ',     'file': 'masks/yagura_decaline.png'},
+			{ 'name': 'ガチホコバトル', 'file': 'masks/hoko_mongara.png'},
+			{ 'name': 'ナワバリバトル', 'file': 'masks/nawabari_mozuku.png'},
+		]
+
+		for map in self.map_list:
+			map['mask'] = IkaMatcher(
+				self.mapname_left, self.mapname_top, self.mapname_width, self.mapname_height,
+				img_file = map['file'],
+				threshold = 0.95,
+				orig_threshold = 0.1,
+				false_positive_method = IkaMatcher.FP_FRONT_IS_WHITE,
+				pre_threshold_value = 230,
+				label = 'map:%s' % map['name'],
+				debug = False,
+			)
+
+		for rule in self.rule_list:
+			rule['mask'] = IkaMatcher(
+				self.rulename_left, self.rulename_top, self.rulename_width, self.rulename_height,
+				img_file = rule['file'],
+				threshold = 0.95,
+				orig_threshold = 0.1,
+				false_positive_method = IkaMatcher.FP_FRONT_IS_WHITE,
+				pre_threshold_value = 230,
+				label = 'rule:%s' % rule['name'],
+				debug = False,
+			)
+
 if __name__ == "__main__":
-	print(sys.argv)
 	target = cv2.imread(sys.argv[1])
 
-	obj = IkaScene_GameStart()
+	context = {
+		'engine': { 'frame': target },
+		'game': {},
+	}
 
-	r = obj.match(target)
-	map = r['map']
-	rule = r['rule']
+	obj = IkaScene_GameStart(debug = True)
 
-	#map = obj.guess_map(target)
-	#rule = obj.guess_rule(target)
+	r = obj.match(context)
 
-	print(map)
-	print(rule)
+	print(r, context['game'])
 
-	#cv2.imshow('Scene', target)
-	#k = cv2.waitKey(3000) # 1msec待つ
-
-	if (map and rule):
-		s = "ゲーム画面検出。 マップ: %s モード: %s" % (map['name'], rule['name'])
-		print(s)
+	cv2.imshow('Scene', target)
+	cv2.waitKey()
