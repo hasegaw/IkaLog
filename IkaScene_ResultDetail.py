@@ -352,13 +352,14 @@ class IkaScene_ResultDetail:
 		context['game']['players'] = []
 
 		img = context['engine']['frame']
+
 		for top in entry_top:
 			entry_id = entry_id + 1
 			img_entry = img[top:top+entry_height, entry_left:entry_left+entry_width]
 
 			e = self.analyzeEntry(img_entry)
 			e['team'] = 1 if entry_id < 4 else 2
-			e['rank_in_team'] = (entry_id % 5) + 1
+			e['rank_in_team'] = entry_id if entry_id < 4 else entry_id - 4
 			try:
 				result, model = self.weapons.guessImage(e['img_weapon'])
 				e['weapon'] = result['name']
