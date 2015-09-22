@@ -5,7 +5,7 @@ IkaLog のアクションはプラグインで定義します。このドキュ�
 なお、現在 IkaLog は大変カジュアルに開発されています。
 このドキュメントの内容が変更されること、このドキュメントの後に仕様が変更されることもあります。
 
-#＃ プラグインの実態
+## プラグインの実態
 
 IkaLog のプラグインの正体は Python のクラスです。
 
@@ -69,6 +69,7 @@ IkaLog が何かの場面を検出すると、プラグインが持っている�
 | onGameStart | ゲームのステージとルールが判明した |
 | onGameGoSign | ゲーム開始の合図(Go!) の瞬間 |
 | onGameFinish | ゲーム終了（タイムアップもしくはノックアウト）の瞬間 |
+| onGameSplattered | IkaLog ユーザーのインクリングが誰かをたぽした |
 | onGameDead |  IkaLog ユーザーのインクリングが死亡 |
 | onGameIndividualResultAnalyze | 戦績画面(K/D)が表示された |
 | onGameIndividualResult | 戦績画面(K/D)が表示され、分析が完了 |
