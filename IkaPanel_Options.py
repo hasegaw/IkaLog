@@ -38,59 +38,64 @@ from IkaUtils import *
 
 
 class OptionsPanel(wx.Panel):
-	## コールバックハンドラを設定
-	#
-	def Bind(self, event, func):
-		self.handler[event] = func
+    # コールバックハンドラを設定
+    #
 
-	## イベントを発生させる
-	#
-	def RaiseEvent(self, event):
-		if not (event in self.handler):
-			return
-		self.handler[event](self)
+    def Bind(self, event, func):
+        self.handler[event] = func
 
-	def SetEventHandlerEnable(self, obj, enable):
-		orig_state = obj.GetEvtHandlerEnabled()
-		obj.SetEvtHandlerEnabled(enable)
-		return orig_state
+    # イベントを発生させる
+    #
+    def RaiseEvent(self, event):
+        if not (event in self.handler):
+            return
+        self.handler[event](self)
 
-	## オプションボタン選択時の処理
-	#
-	def OnOptionButtonClick(self, event):
-		activeButton = event.GetEventObject()
+    def SetEventHandlerEnable(self, obj, enable):
+        orig_state = obj.GetEvtHandlerEnabled()
+        obj.SetEvtHandlerEnabled(enable)
+        return orig_state
 
-		event_name = {
-			self.buttonOptionApply: 'optionsApply',
-			self.buttonOptionReset: 'optionsReset',
-			self.buttonOptionLoadDefault: 'optionsLoadDefault',
-		}[activeButton]
-		self.RaiseEvent(event_name)
+    # オプションボタン選択時の処理
+    #
+    def OnOptionButtonClick(self, event):
+        activeButton = event.GetEventObject()
 
-	def __init__(self, *args, **kwargs):
-		self.handler = {}
+        event_name = {
+            self.buttonOptionApply: 'optionsApply',
+            self.buttonOptionReset: 'optionsReset',
+            self.buttonOptionLoadDefault: 'optionsLoadDefault',
+        }[activeButton]
+        self.RaiseEvent(event_name)
 
-		wx.Panel.__init__(self, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        self.handler = {}
 
-		self.panelOptions = self
-		self.notebookOptions = wx.Notebook(self.panelOptions, wx.ID_ANY)
-		self.layoutOptions = wx.BoxSizer(wx.VERTICAL)
-		self.layoutOptions.Add(self.notebookOptions, flag = wx.EXPAND)
-		self.panelOptions.SetSizer(self.layoutOptions)
+        wx.Panel.__init__(self, *args, **kwargs)
 
-		buttonsLayout = wx.BoxSizer(wx.HORIZONTAL)
-		self.buttonOptionApply = wx.Button(self.panelOptions, wx.ID_ANY, u'Apply')
-		self.buttonOptionReset = wx.Button(self.panelOptions, wx.ID_ANY, u'Reset')
-		self.buttonOptionLoadDefault = wx.Button(self.panelOptions, wx.ID_ANY, u'Load default')
+        self.panelOptions = self
+        self.notebookOptions = wx.Notebook(self.panelOptions, wx.ID_ANY)
+        self.layoutOptions = wx.BoxSizer(wx.VERTICAL)
+        self.layoutOptions.Add(self.notebookOptions, flag=wx.EXPAND)
+        self.panelOptions.SetSizer(self.layoutOptions)
 
-		buttonsLayout.Add(self.buttonOptionApply)
-		buttonsLayout.Add(self.buttonOptionReset)
-		buttonsLayout.Add(self.buttonOptionLoadDefault)
+        buttonsLayout = wx.BoxSizer(wx.HORIZONTAL)
+        self.buttonOptionApply = wx.Button(
+            self.panelOptions, wx.ID_ANY, u'Apply')
+        self.buttonOptionReset = wx.Button(
+            self.panelOptions, wx.ID_ANY, u'Reset')
+        self.buttonOptionLoadDefault = wx.Button(
+            self.panelOptions, wx.ID_ANY, u'Load default')
 
-		self.buttonOptionApply.Bind(wx.EVT_BUTTON, self.OnOptionButtonClick)
-		self.buttonOptionReset.Bind(wx.EVT_BUTTON, self.OnOptionButtonClick)
-		self.buttonOptionLoadDefault.Bind(wx.EVT_BUTTON, self.OnOptionButtonClick)
+        buttonsLayout.Add(self.buttonOptionApply)
+        buttonsLayout.Add(self.buttonOptionReset)
+        buttonsLayout.Add(self.buttonOptionLoadDefault)
 
-		self.layoutOptions.Add(buttonsLayout, flag = wx.EXPAND)
+        self.buttonOptionApply.Bind(wx.EVT_BUTTON, self.OnOptionButtonClick)
+        self.buttonOptionReset.Bind(wx.EVT_BUTTON, self.OnOptionButtonClick)
+        self.buttonOptionLoadDefault.Bind(
+            wx.EVT_BUTTON, self.OnOptionButtonClick)
 
-		self.SetSizer(self.layoutOptions)
+        self.layoutOptions.Add(buttonsLayout, flag=wx.EXPAND)
+
+        self.SetSizer(self.layoutOptions)

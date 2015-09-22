@@ -21,31 +21,33 @@
 import wx
 import cv2
 
+
 class LastResultPanel(wx.Panel):
-	def onGameIndividualResult(self, context):
-		self.latest_frame = cv2.resize(context['engine']['frame'], (640, 360))
-		self.Refresh()
 
-	def OnPaint(self, event):
-		if self.latest_frame is None:
-			return
-		width = 640
-		height = 360
+    def onGameIndividualResult(self, context):
+        self.latest_frame = cv2.resize(context['engine']['frame'], (640, 360))
+        self.Refresh()
 
-		frame_rgb = cv2.cvtColor(self.latest_frame, cv2.COLOR_BGR2RGB)
+    def OnPaint(self, event):
+        if self.latest_frame is None:
+            return
+        width = 640
+        height = 360
 
-		try:
-			self.bmp = wx.Bitmap.FromBuffer(width, height, frame_rgb)
-		except:
-			self.bmp = wx.BitmapFromBuffer(width, height, frame_rgb)
+        frame_rgb = cv2.cvtColor(self.latest_frame, cv2.COLOR_BGR2RGB)
 
-		dc = wx.BufferedPaintDC(self)
-		dc.SetBackground(wx.Brush(wx.RED))
-		dc.Clear()
-		dc.DrawBitmap(self.bmp, 0, 0)
+        try:
+            self.bmp = wx.Bitmap.FromBuffer(width, height, frame_rgb)
+        except:
+            self.bmp = wx.BitmapFromBuffer(width, height, frame_rgb)
 
-	def __init__(self, *args, **kwargs):
-		self.latest_frame = None
-		wx.Panel.__init__(self, *args, **kwargs)
-		self.Bind(wx.EVT_PAINT, self.OnPaint)
+        dc = wx.BufferedPaintDC(self)
+        dc.SetBackground(wx.Brush(wx.RED))
+        dc.Clear()
+        dc.DrawBitmap(self.bmp, 0, 0)
+
+    def __init__(self, *args, **kwargs):
+        self.latest_frame = None
+        wx.Panel.__init__(self, *args, **kwargs)
+        self.Bind(wx.EVT_PAINT, self.OnPaint)
 #		self.Bind(wx.EVT_SIZE, self.OnResize)
