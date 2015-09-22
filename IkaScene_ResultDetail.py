@@ -20,9 +20,92 @@
 import numpy as np
 import cv2
 import sys
+import traceback
 from datetime import datetime
 from IkaGlyphRecoginizer import *
 from IkaUtils import *
+
+
+class IkaKdRecoginizer:
+
+	samples = np.empty((0,21 * 14))
+	responses = []
+	model = cv2.ml.KNearest_create()
+
+	def saveModelToFile(self, file):
+		f = open(file, "wb")
+		pickle.dump([self.samples, self.responses], f)
+		f.close()
+
+	def loadModelFromFile(self, file):
+		f = open(file, "rb")
+		l = pickle.load(f)
+		f.close()
+		self.samples = l[0]
+		self.responses = l[1]
+		#print(self.samples.shape)
+		#print(self.responses)
+
+	def preprocess(self, img):
+		img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+		ret, img = cv2.threshold(img, 230, 255, cv2.THRESH_BINARY)
+		return img
+
+	def teach(self,file):
+		img = cv2.imread(file, 1)
+		img = self.preprocess(img)
+		img1 = img[:, 0:14]
+		img2 = img[:, 15:29]
+		print(img1.shape, img2.shape)
+		cv2.imshow('what is this number?',img2)
+
+		key = cv2.waitKey()
+		sys.stdout.write('%d' % (key - 48))
+
+		sample = img2.reshape((1, img2.shape[0] * img2.shape[1]))
+
+		self.samples = np.append(self.samples, sample, 0)
+		self.responses.append(key - 48)
+
+	def matchSingleDigit(self, img):
+		raito = np.sum(img) / (img.shape[0] * img.shape[1]) if np.sum(img) != 0 else 0.0
+
+		if raito < 0.1:
+			# ほぼ真っ黒
+			return 0
+
+		sample = img.reshape((1, img.shape[0] * img.shape[1]))
+		sample = np.array(sample, np.float32)
+
+		k = 3
+
+		retval, results, neigh_resp, dists = self.model.findNearest(sample, k)
+
+		d = int(results.ravel())
+		return d
+
+	def match(self, img):
+		if not self.trained:
+			return None
+
+		img = self.preprocess(img)
+		img1 = img[:, 0:14]
+		img2 = img[:, 15:29]
+
+		num = self.matchSingleDigit(img1) * 10 + self.matchSingleDigit(img2)
+		return num
+
+	def train(self):
+		samples = np.array(self.samples, np.float32)
+		responses = np.array(self.responses, np.float32)
+		responses = responses.reshape((responses.size,1))
+		responses = np.array(self.responses,np.float32)
+		self.model.train(samples, cv2.ml.ROW_SAMPLE, responses)
+		self.trained = True
+
+	def __init__(self):
+		self.trained = False
+
 
 class IkaScene_ResultDetail:
 	def isEntryMe(self, entry_img):
@@ -206,8 +289,8 @@ class IkaScene_ResultDetail:
 		entry_xoffset_nawabari_score = 995 - entry_left
 		entry_width_nawabari_score = 115
 
-		entry_xoffset_kd = 1187 - entry_left
-		entry_width_kd = 30
+		entry_xoffset_kd = 1185 - entry_left
+		entry_width_kd = 31
 		entry_height_kd = 21
 
 		me = self.isEntryMe(img_entry)
@@ -284,12 +367,18 @@ class IkaScene_ResultDetail:
 
 			context['game']['players'].append(e)
 
-			if 0:
-				for x in ['rank', 'weapon', 'name', 'score', 'kills', 'deaths']:
-					cv2.imwrite("_%s.%d.png" % (x, entry_id), e['img_%s' % x])
+			if self.kd_recoginizer:
+				try:
+					e['kills'] = self.kd_recoginizer.match(e['img_kills'])
+					e['deaths'] = self.kd_recoginizer.match(e['img_deaths'])
+
+				except:
+					IkaUtils.dprint('Exception occured in K/D recoginization.')
+					IkaUtils.dprint(traceback.format_exc())
 
 			if e['me']:
 				context['game']['won'] = True if entry_id < 5 else False
+
 		context['game']['won'] = self.isWin(context)
 		context['game']['timestamp'] = datetime.now()
 
@@ -303,7 +392,15 @@ class IkaScene_ResultDetail:
 			self.weapons = IkaGlyphRecoginizer()
 			self.weapons.loadModelFromFile("data/weapons.trained")
 		except:
-			print("Could not initalize weapons recoginiton model")
+			IkaUtils.dprint("Could not initalize weapons recoginiton model")
+
+		try:
+			self.kd_recoginizer = IkaKdRecoginizer()
+			self.kd_recoginizer.loadModelFromFile('data/kd.model')
+			self.kd_recoginizer.train()
+		except:
+			IkaUtils.dprint("Could not initalize KD recoginiton model")
+			self.kd_recoiginizer = None
 
 		if winlose is None:
 			print("勝敗画面のマスクデータが読み込めませんでした。")
@@ -311,6 +408,7 @@ class IkaScene_ResultDetail:
 		self.winlose_gray = cv2.cvtColor(winlose, cv2.COLOR_BGR2GRAY)
 
 if __name__ == "__main__":
+	import re
 	files = sys.argv[1:]
 
 	for file in files:
@@ -328,12 +426,22 @@ if __name__ == "__main__":
 		won = IkaUtils.getWinLoseText(context['game']['won'], win_text ="win", lose_text = "lose", unknown_text = "unknown")
 		print("matched %s analyzed %s result %s" % (matched, analyzed, won))
 
-		e = IkaUtils.getMyEntryFromContext(context)
-		prefix = e['prefix']
-		import re
-		prefix_ = re.sub('の', '', prefix)	
-		print("%s%s" % (prefix_, e['gender']))
-		cv2.waitKey()
+		print('')
+		for e in context['game']['players']:
+
+			if 'prefix' in e:
+				prefix = e['prefix']
+				prefix_ = re.sub('の', '', prefix)
+				gender = e['gender']
+			else:
+				prefix_ = ''
+				gender = ''
+
+			kills = e['kills'] if not e['kills'] is None else ''
+			deaths = e['deaths'] if not e['deaths'] is None else ''
+
+			print("%s/%s %s%s" % (kills, deaths, prefix_, gender))
+		#cv2.waitKey()
 
 
 	# ランクごとにソートした画像を出す
