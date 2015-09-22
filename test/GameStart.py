@@ -26,6 +26,7 @@ from IkaEngine import *
 from IkaInput_CVCapture import *
 from IkaOutput_Screen import *
 
+
 class IkaTestGameStart:
 
     def onFrameRead(self, context):
@@ -52,10 +53,10 @@ class IkaTestGameStart:
         input.need_resize = True
 
         # 画面が見えないと進捗が判らないので
-        screen = IkaOutput_Screen(0, size = (640, 360))
+        screen = IkaOutput_Screen(0, size=(640, 360))
 
         # プラグインとして自分自身（画面）を設定しコールバックを受ける
-        outputPlugins = [ self, screen ]
+        outputPlugins = [self, screen]
 
         # IkaEngine を実行
         self.engine = IkaEngine()
@@ -67,8 +68,10 @@ class IkaTestGameStart:
         except:
             pass
 
-        map = IkaUtils.map2text(self.engine.context['game']['map'], unknown = 'None')
-        rule = IkaUtils.rule2text(self.engine.context['game']['rule'], unknown = 'None')
+        map = IkaUtils.map2text(self.engine.context['game'][
+                                'map'], unknown='None')
+        rule = IkaUtils.rule2text(self.engine.context['game'][
+                                  'rule'], unknown='None')
         print(file, map, rule)
 
 if __name__ == "__main__":
