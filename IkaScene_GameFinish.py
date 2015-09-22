@@ -22,41 +22,42 @@ import cv2
 import sys
 from IkaUtils import *
 
+
 class IkaScene_GameFinish:
 
-	last_matched = False
+    last_matched = False
 
-	def match(self, context):
-		frame = context['engine']['frame']
+    def match(self, context):
+        frame = context['engine']['frame']
 
-		matched = self.mask_finish.match(frame)
-		ret = matched and (not self.last_matched)
-		self.last_matched = matched
+        matched = self.mask_finish.match(frame)
+        ret = matched and (not self.last_matched)
+        self.last_matched = matched
 
-		return ret
+        return ret
 
-	def __init__(self, debug = False):
-		self.mask_finish = IkaMatcher(
-			0, 0, 1280, 720,
-			img_file = 'masks/ui_finish.png',
-			threshold = 0.95,
-			orig_threshold = 0.001,
-			false_positive_method = IkaMatcher.FP_BACK_IS_BLACK,
-			pre_threshold_value = 16,
-			label = 'Finish',
-			debug = debug,
-		)
+    def __init__(self, debug=False):
+        self.mask_finish = IkaMatcher(
+            0, 0, 1280, 720,
+            img_file='masks/ui_finish.png',
+            threshold=0.95,
+            orig_threshold=0.001,
+            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
+            pre_threshold_value=16,
+            label='Finish',
+            debug=debug,
+        )
 
 if __name__ == "__main__":
-	target = cv2.imread(sys.argv[1])
-	obj = IkaScene_GameFinish(debug = True)
+    target = cv2.imread(sys.argv[1])
+    obj = IkaScene_GameFinish(debug=True)
 
-	context = {
-		'engine': { 'frame': target },
-		'game': {},
-	}
+    context = {
+        'engine': {'frame': target},
+        'game': {},
+    }
 
-	matched = obj.match(context)
-	print("matched %s" % (matched))
+    matched = obj.match(context)
+    print("matched %s" % (matched))
 
-	cv2.waitKey()
+    cv2.waitKey()
