@@ -22,16 +22,21 @@ from distutils.core import setup
 import os
 import py2exe
 import requests.certs
+import shutil
 
 Mydata_files = []
-dir = 'masks/'
-for files in os.listdir(dir):
-	f1 = dir + files
-	if os.path.isfile(f1): # skip directories
-		f2 = 'masks', [f1]
-		Mydata_files.append(f2)
 
-Mydata_files.append(('', ['cacert.pem']))
+def addDirectory(dir):
+	for files in os.listdir(dir + '/'):
+		f1 = os.path.join(dir, files)
+		if os.path.isfile(f1): # skip directories
+			f2 = dir, [f1]
+			Mydata_files.append(f2)
+
+addDirectory('masks')
+addDirectory('data')
+
+Mydata_files.append(('', [requests.certs.where()]))
 Mydata_files.append(('', ['videoinput.dll']))
 Mydata_files.append(('utils', ['utils/ControlOBS.au3']))
 Mydata_files.append(('utils', ['utils/ControlAmarecTV.au3']))
