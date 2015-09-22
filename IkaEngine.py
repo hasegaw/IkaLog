@@ -110,6 +110,10 @@ class IkaEngine:
                 self.last_go_sign = time.time()
                 self.callPlugins('onGameGoSign')
 
+            # 誰かをキルしたか
+            if self.scn_ingame.matchSplatted(context):
+                self.callPlugins('onGameSplatted')
+
             # 死亡状態（「復活まであとｎ秒」）
             if self.scn_ingame.matchDead(context):
                 if self.last_dead + 3 < time.time():

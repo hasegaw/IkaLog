@@ -161,6 +161,31 @@ class IkaScene_InGame:
 
         return IkaUtils.matchWithMask(img, self.mask_timer, 0.85, 0.6)
 
+    # FixMe
+    _last_killed = 0
+
+    def matchKilled(self, context):
+        img_gray = cv2.cvtColor(context['engine']['frame'][
+                                :, 502:778], cv2.COLOR_BGR2GRAY)
+        ret, img_thresh = cv2.threshold(img_gray, 90, 255, cv2.THRESH_BINARY)
+
+        killed_y = [652, 652 - 40, 652 - 80, 652 - 120]  # たぶん...。
+        killed = 0
+
+        list = []
+        for n in range(len(killed_y)):
+            y = killed_y[n]
+            box = img_thresh[y:y + 30, :]
+            r = self.mask_killed.match(box)
+
+            if r:
+                list.append(n)
+                killed = killed + 1
+
+        r = killed > self._last_killed
+        self._last_killed = killed
+        return r
+
     def matchGoSign(self, context):
         return self.mask_goSign.match(context['engine']['frame'])
 
@@ -170,6 +195,7 @@ class IkaScene_InGame:
     def __init__(self):
         self.mask_timer = IkaUtils.loadMask(
             'masks/ingame_timer.png', self.timer_left, self.timer_top, self.timer_top, self.timer_height)
+
         self.mask_goSign = IkaMatcher(
             1280 / 2 - 420 / 2, 130, 420, 170,
             img_file='masks/ui_go.png',
@@ -177,6 +203,21 @@ class IkaScene_InGame:
             orig_threshold=0.5,
             pre_threshold_value=240,
             label='Go!',
+        )
+
+        # mask_killed
+        # 高画質動画なら threshold = 0.90 でいける
+        # ビットレートが低いと threshold = 0.80 か
+        # ビットレートが低い場合はイベントのチャタリング対策なども必要
+        self.mask_killed = IkaMatcher(
+            0, 0, 50, 30,
+            img_file='masks/ui_killed.png',
+            threshold=0.80,
+            orig_threshold=0.10,
+            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
+            pre_threshold_value=90,
+            label='killed',
+            debug=False
         )
 
         self.mask_dead = IkaMatcher(
