@@ -193,7 +193,7 @@ class IkaMatcher:
                       self.left: self.left + self.width]
 
         # Grayscale
-        if img.shape[2] > 1:
+        if len(img.shape) > 2:
             img_bgr = img
             img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         else:
