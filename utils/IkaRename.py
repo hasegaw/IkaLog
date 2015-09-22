@@ -33,12 +33,14 @@ from IkaEngine import *
 from IkaInput_CVCapture import *
 from IkaOutput_Screen import *
 
+
 class IkaRename:
 
     def createMP4Filename(self, context):
-        map = IkaUtils.map2text(context['game']['map'], unknown = 'マップ不明')
-        rule = IkaUtils.rule2text(context['game']['rule'], unknown = 'ルール不明')
-        won = IkaUtils.getWinLoseText(context['game']['won'], win_text = 'win', lose_text = 'lose')
+        map = IkaUtils.map2text(context['game']['map'], unknown='マップ不明')
+        rule = IkaUtils.rule2text(context['game']['rule'], unknown='ルール不明')
+        won = IkaUtils.getWinLoseText(
+            context['game']['won'], win_text='win', lose_text='lose')
 
         timestamp = time.localtime(os.stat(file).st_mtime)
         time_str = time.strftime("%Y%m%d_%H%M", timestamp)
@@ -73,10 +75,10 @@ class IkaRename:
         input.need_resize = True
 
         # 画面が見えないと進捗が判らないので
-        screen = IkaOutput_Screen(0, size = (640, 360))
+        screen = IkaOutput_Screen(0, size=(640, 360))
 
         # プラグインとして自分自身（画面）を設定しコールバックを受ける
-        outputPlugins = [ self, screen ]
+        outputPlugins = [self, screen]
 
         # IkaEngine を実行
         self.engine = IkaEngine()
