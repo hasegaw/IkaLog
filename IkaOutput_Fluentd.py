@@ -22,196 +22,200 @@ from IkaUtils import *
 
 # Needed in GUI mode
 try:
-	import wx
+    import wx
 except:
-	pass
+    pass
 
-## IkaOutput_Fluentd: IkaLog Output Plugin for Fluentd ecosystem
+# IkaOutput_Fluentd: IkaLog Output Plugin for Fluentd ecosystem
 #
+
+
 class IkaOutput_Fluentd:
 
-	def ApplyUI(self):
-		self.enabled =           self.checkEnable.GetValue()
-		self.host =              self.editHost.GetValue()
-		self.port =              self.editPort.GetValue()
-		self.tag =               self.editTag.GetValue()
-		self.username =          self.editUsername.GetValue()
+    def ApplyUI(self):
+        self.enabled = self.checkEnable.GetValue()
+        self.host = self.editHost.GetValue()
+        self.port = self.editPort.GetValue()
+        self.tag = self.editTag.GetValue()
+        self.username = self.editUsername.GetValue()
 
-	def RefreshUI(self):
-		self._internal_update = True
-		self.checkEnable.SetValue(self.enabled)
+    def RefreshUI(self):
+        self._internal_update = True
+        self.checkEnable.SetValue(self.enabled)
 
-		if not self.host is None:
-			self.editHost.SetValue(self.host)
-		else:
-			self.editHost.SetValue('')
+        if not self.host is None:
+            self.editHost.SetValue(self.host)
+        else:
+            self.editHost.SetValue('')
 
-		if not self.port is None:
-			self.editPort.SetValue(self.port)
-		else:
-			self.editPort.SetValue('')
+        if not self.port is None:
+            self.editPort.SetValue(self.port)
+        else:
+            self.editPort.SetValue('')
 
-		if not self.tag is None:
-			self.editTag.SetValue(self.tag)
-		else:
-			self.editTag.SetValue('')
+        if not self.tag is None:
+            self.editTag.SetValue(self.tag)
+        else:
+            self.editTag.SetValue('')
 
-		if not self.username is None:
-			self.editUsername.SetValue(self.username)
-		else:
-			self.editUsername.SetValue('')
+        if not self.username is None:
+            self.editUsername.SetValue(self.username)
+        else:
+            self.editUsername.SetValue('')
 
-	def onConfigReset(self, context = None):
-		self.enabled = False
-		self.host = ''
-		self.port = ''
-		self.tag = ''
-		self.username = ''
+    def onConfigReset(self, context=None):
+        self.enabled = False
+        self.host = ''
+        self.port = ''
+        self.tag = ''
+        self.username = ''
 
-	def onConfigLoadFromContext(self, context):
-		self.onConfigReset(context)
-		try:
-			conf = context['config']['fluentd']
-		except:
-			conf = {}
+    def onConfigLoadFromContext(self, context):
+        self.onConfigReset(context)
+        try:
+            conf = context['config']['fluentd']
+        except:
+            conf = {}
 
-		if 'Enable' in conf:
-			self.enabled = conf['Enable']
+        if 'Enable' in conf:
+            self.enabled = conf['Enable']
 
-		if 'Host' in conf:
-			self.host = conf['Host']
+        if 'Host' in conf:
+            self.host = conf['Host']
 
-		if 'Port' in conf:
-			self.port = conf['Port']
+        if 'Port' in conf:
+            self.port = conf['Port']
 
-		if 'Tag' in conf:
-			self.tag = conf['Tag']
+        if 'Tag' in conf:
+            self.tag = conf['Tag']
 
-		if 'Username' in conf:
-			self.username = conf['Username']
+        if 'Username' in conf:
+            self.username = conf['Username']
 
-		self.RefreshUI()
-		return True
+        self.RefreshUI()
+        return True
 
-	def onConfigSaveToContext(self, context):
-		context['config']['fluentd'] = {
-			'Enable' : self.enabled,
-			'Host': self.host,
-			'Port': self.port,
-			'Username': self.username,
-		}
+    def onConfigSaveToContext(self, context):
+        context['config']['fluentd'] = {
+            'Enable': self.enabled,
+            'Host': self.host,
+            'Port': self.port,
+            'Username': self.username,
+        }
 
-	def onConfigApply(self, context):
-		self.ApplyUI()
+    def onConfigApply(self, context):
+        self.ApplyUI()
 
-	def onOptionTabCreate(self, notebook):
-		self.panel = wx.Panel(notebook, wx.ID_ANY, size = (640, 360))
-		self.page = notebook.InsertPage(0, self.panel, 'Fluentd')
-		self.layout = wx.BoxSizer(wx.VERTICAL)
+    def onOptionTabCreate(self, notebook):
+        self.panel = wx.Panel(notebook, wx.ID_ANY, size=(640, 360))
+        self.page = notebook.InsertPage(0, self.panel, 'Fluentd')
+        self.layout = wx.BoxSizer(wx.VERTICAL)
 
-		self.checkEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'Fluentd へ戦績を送信する')
-		self.editHost = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
-		self.editPort = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
-		self.editTag = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
-		self.editUsername = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+        self.checkEnable = wx.CheckBox(
+            self.panel, wx.ID_ANY, u'Fluentd へ戦績を送信する')
+        self.editHost = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+        self.editPort = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+        self.editTag = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+        self.editUsername = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
-		try:
-			layout = wx.GridSizer(2, 4)
-		except:
-			layout = wx.GridSizer(2)
+        try:
+            layout = wx.GridSizer(2, 4)
+        except:
+            layout = wx.GridSizer(2)
 
-		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ホスト'))
-		layout.Add(self.editHost)
-		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ポート'))
-		layout.Add(self.editPort)
-		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'タグ'))
-		layout.Add(self.editTag)
-		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ユーザ名'))
-		layout.Add(self.editUsername)
+        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ホスト'))
+        layout.Add(self.editHost)
+        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ポート'))
+        layout.Add(self.editPort)
+        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'タグ'))
+        layout.Add(self.editTag)
+        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ユーザ名'))
+        layout.Add(self.editUsername)
 
-		self.layout.Add(self.checkEnable)
-		self.layout.Add(layout)
+        self.layout.Add(self.checkEnable)
+        self.layout.Add(layout)
 
-		self.panel.SetSizer(self.layout)
+        self.panel.SetSizer(self.layout)
 
-	##
-	# Log a record to Fluentd.
-	# @param self       The Object Pointer.
-	# @param recordType Record Type (tag)
-	# @param record     Record
-	#
-	def submitRecord(self, recordType, record):
-		try:
-			from fluent import sender
-			from fluent import event
-			if self.host is None:
-				sender = sender.setup(self.tag)
-			else:
-				sender.setup(self.tag, host = self.host, port = self.port)
+    ##
+    # Log a record to Fluentd.
+    # @param self       The Object Pointer.
+    # @param recordType Record Type (tag)
+    # @param record     Record
+    #
+    def submitRecord(self, recordType, record):
+        try:
+            from fluent import sender
+            from fluent import event
+            if self.host is None:
+                sender = sender.setup(self.tag)
+            else:
+                sender.setup(self.tag, host=self.host, port=self.port)
 
-			event.Event(recordType, record)
-		except:
-			printf("Fluentd: Failed to submit a record")
+            event.Event(recordType, record)
+        except:
+            printf("Fluentd: Failed to submit a record")
 
-	##
-	# Generate a record for onGameIndividualResult.
-	# @param self      The Object Pointer.
-	# @param context   IkaLog context
-	#
-	def getRecordGameIndividualResult(self, context):
-		map = IkaUtils.map2text(context['game']['map'])
-		rule = IkaUtils.rule2text(context['game']['rule'])
-		won = IkaUtils.getWinLoseText(context['game']['won'], win_text ="win", lose_text = "lose", unknown_text = "unknown")
-		return {
-			'username': self.username,
-			'map': map,
-			'rule': rule,
-			'result': won
-		}
+    ##
+    # Generate a record for onGameIndividualResult.
+    # @param self      The Object Pointer.
+    # @param context   IkaLog context
+    #
+    def getRecordGameIndividualResult(self, context):
+        map = IkaUtils.map2text(context['game']['map'])
+        rule = IkaUtils.rule2text(context['game']['rule'])
+        won = IkaUtils.getWinLoseText(
+            context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
+        return {
+            'username': self.username,
+            'map': map,
+            'rule': rule,
+            'result': won
+        }
 
-	##
-	# onGameIndividualResult Hook
-	# @param self      The Object Pointer
-	# @param context   IkaLog context
-	#
-	def onGameIndividualResult(self, context):
-		IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
+    ##
+    # onGameIndividualResult Hook
+    # @param self      The Object Pointer
+    # @param context   IkaLog context
+    #
+    def onGameIndividualResult(self, context):
+        IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
-		if not self.enabled:
-			return
+        if not self.enabled:
+            return
 
-		record = self.getRecordGameIndividualResult(context)
-		self.submitRecord('gameresult', record)
+        record = self.getRecordGameIndividualResult(context)
+        self.submitRecord('gameresult', record)
 
-	##
-	# Check availability of modules this plugin depends on.
-	# @param self      The Object Pointer.
-	#
-	def checkImport(self):
-		try:
-			from fluent import sender
-			from fluent import event
-		except:
-			print("モジュール fluent-logger がロードできませんでした。 Fluentd 連携ができません。")
-			print("インストールするには以下のコマンドを利用してください。\n    pip install fluent-logger\n")
+    ##
+    # Check availability of modules this plugin depends on.
+    # @param self      The Object Pointer.
+    #
+    def checkImport(self):
+        try:
+            from fluent import sender
+            from fluent import event
+        except:
+            print("モジュール fluent-logger がロードできませんでした。 Fluentd 連携ができません。")
+            print("インストールするには以下のコマンドを利用してください。\n    pip install fluent-logger\n")
 
-	##
-	# Constructor
-	# @param self     The Object Pointer.
-	# @param tag      tag
-	# @param username Username of the player.
-	# @param host     Fluentd host if Fluentd is on a different node
-	# @param port     Fluentd port
-	# @param username Name the bot use on Slack
-	#
-	def __init__(self, tag = 'ikalog', username = 'ika', host = None, port = 24224):
-		self.enabled = False
-		self.tag = tag
-		self.username = username
-		self.host = host
-		self.port = port
+    ##
+    # Constructor
+    # @param self     The Object Pointer.
+    # @param tag      tag
+    # @param username Username of the player.
+    # @param host     Fluentd host if Fluentd is on a different node
+    # @param port     Fluentd port
+    # @param username Name the bot use on Slack
+    #
+    def __init__(self, tag='ikalog', username='ika', host=None, port=24224):
+        self.enabled = False
+        self.tag = tag
+        self.username = username
+        self.host = host
+        self.port = port
 
-		self.checkImport()
+        self.checkImport()
 
 if __name__ == "__main__":
-	obj = IkaOutput_Fluentd()
+    obj = IkaOutput_Fluentd()

@@ -22,165 +22,171 @@ from IkaUtils import *
 
 # Needed in GUI mode
 try:
-	import wx
+    import wx
 except:
-	pass
+    pass
 
-## IkaOutput_Slack: IkaLog Output Plugin for Slack
+# IkaOutput_Slack: IkaLog Output Plugin for Slack
 #
 # Post game results to Slack, using Incoming Hook
+
+
 class IkaOutput_Slack:
-	def ApplyUI(self):
-		self.enabled  = self.checkEnable.GetValue()
-		self.url      = self.editURL.GetValue()
-		self.username = self.editBotName.GetValue()
 
-	def RefreshUI(self):
-		self._internal_update = True
+    def ApplyUI(self):
+        self.enabled = self.checkEnable.GetValue()
+        self.url = self.editURL.GetValue()
+        self.username = self.editBotName.GetValue()
 
-		self.checkEnable.SetValue(self.enabled)
+    def RefreshUI(self):
+        self._internal_update = True
 
-		if not self.url is None:
-			self.editURL.SetValue(self.url)
-		else:
-			self.editURL.SetValue('')
+        self.checkEnable.SetValue(self.enabled)
 
-		if not self.username is None:
-			self.editBotName.SetValue(self.username)
-		else:
-			self.editBotName.SetValue('')
+        if not self.url is None:
+            self.editURL.SetValue(self.url)
+        else:
+            self.editURL.SetValue('')
 
-		self._internal_update = False
+        if not self.username is None:
+            self.editBotName.SetValue(self.username)
+        else:
+            self.editBotName.SetValue('')
 
-	def onConfigReset(self, context = None):
-		self.enabled = False
-		self.url =''
-		self.username = 'IkaLog'
+        self._internal_update = False
 
-	def onConfigLoadFromContext(self, context):
-		self.onConfigReset(context)
+    def onConfigReset(self, context=None):
+        self.enabled = False
+        self.url = ''
+        self.username = 'IkaLog'
 
-		try:
-			conf = context['config']['slack']
-		except:
-			conf = {}
+    def onConfigLoadFromContext(self, context):
+        self.onConfigReset(context)
 
-		if 'Enable' in conf:
-			self.enabled = conf['Enable']
+        try:
+            conf = context['config']['slack']
+        except:
+            conf = {}
 
-		if 'url' in conf:
-			self.url = conf['url']
+        if 'Enable' in conf:
+            self.enabled = conf['Enable']
 
-		if 'botName' in conf:
-			self.username = conf['botName']
+        if 'url' in conf:
+            self.url = conf['url']
 
-		self.RefreshUI()
-		return True
+        if 'botName' in conf:
+            self.username = conf['botName']
 
-	def onConfigSaveToContext(self, context):
-		context['config']['slack'] = {
-			'Enable': self.enabled,
-			'url': self.url,
-			'botName': self.username,
-		}
+        self.RefreshUI()
+        return True
 
-	def onConfigApply(self, context):
-		self.ApplyUI()
+    def onConfigSaveToContext(self, context):
+        context['config']['slack'] = {
+            'Enable': self.enabled,
+            'url': self.url,
+            'botName': self.username,
+        }
 
-	def onOptionTabCreate(self, notebook):
-		self.panel = wx.Panel(notebook, wx.ID_ANY)
-		self.page = notebook.InsertPage(0, self.panel, 'Slack')
-		self.layout = wx.BoxSizer(wx.VERTICAL)
+    def onConfigApply(self, context):
+        self.ApplyUI()
 
-		self.checkEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'Slack へ戦績を通知する')
-		self.editURL = wx.TextCtrl(self.panel, wx.ID_ANY, u'http:')
-		self.editBotName = wx.TextCtrl(self.panel, wx.ID_ANY, u'＜βコ3')
+    def onOptionTabCreate(self, notebook):
+        self.panel = wx.Panel(notebook, wx.ID_ANY)
+        self.page = notebook.InsertPage(0, self.panel, 'Slack')
+        self.layout = wx.BoxSizer(wx.VERTICAL)
 
-		layout = wx.BoxSizer(wx.HORIZONTAL)
-		layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'投稿者名'))
-		layout.Add(self.editBotName, flag = wx.EXPAND)
-		self.layout.Add(self.checkEnable)
-		self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'Incoming WebHook API URL'))
-		self.layout.Add(self.editURL, flag = wx.EXPAND)
-		self.layout.Add(layout, flag = wx.EXPAND)
+        self.checkEnable = wx.CheckBox(
+            self.panel, wx.ID_ANY, u'Slack へ戦績を通知する')
+        self.editURL = wx.TextCtrl(self.panel, wx.ID_ANY, u'http:')
+        self.editBotName = wx.TextCtrl(self.panel, wx.ID_ANY, u'＜βコ3')
 
-		self.panel.SetSizer(self.layout)
+        layout = wx.BoxSizer(wx.HORIZONTAL)
+        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'投稿者名'))
+        layout.Add(self.editBotName, flag=wx.EXPAND)
+        self.layout.Add(self.checkEnable)
+        self.layout.Add(wx.StaticText(
+            self.panel, wx.ID_ANY, u'Incoming WebHook API URL'))
+        self.layout.Add(self.editURL, flag=wx.EXPAND)
+        self.layout.Add(layout, flag=wx.EXPAND)
 
+        self.panel.SetSizer(self.layout)
 
-	##
-	# Post a bot message to slack.
-	# @param self     The Object Pointer.
-	# @param text     Text message.
-	# @param username Username.
-	#
-	def post(self, text = "", username = "＜8コ三"):
-		try:
-			import slackweb
-			slack = slackweb.Slack(url = self.url)
-			slack.notify(text = text, username = self.username)
-		except:
-			print("Slack: Failed to post a message to Slack")
+    ##
+    # Post a bot message to slack.
+    # @param self     The Object Pointer.
+    # @param text     Text message.
+    # @param username Username.
+    #
+    def post(self, text="", username="＜8コ三"):
+        try:
+            import slackweb
+            slack = slackweb.Slack(url=self.url)
+            slack.notify(text=text, username=self.username)
+        except:
+            print("Slack: Failed to post a message to Slack")
 
-	##
-	# Generate a record for onGameIndividualResult.
-	# @param self      The Object Pointer.
-	# @param context   IkaLog context
-	#
-	def getTextGameIndividualResult(self, context):
-		map = IkaUtils.map2text(context['game']['map'])
-		rule = IkaUtils.rule2text(context['game']['rule'])
-		won = IkaUtils.getWinLoseText(context['game']['won'], win_text ="勝ち", lose_text = "負け", unknown_text = "不明")
-		return "%sで%sに%sました" % (map, rule, won)
+    ##
+    # Generate a record for onGameIndividualResult.
+    # @param self      The Object Pointer.
+    # @param context   IkaLog context
+    #
+    def getTextGameIndividualResult(self, context):
+        map = IkaUtils.map2text(context['game']['map'])
+        rule = IkaUtils.rule2text(context['game']['rule'])
+        won = IkaUtils.getWinLoseText(
+            context['game']['won'], win_text="勝ち", lose_text="負け", unknown_text="不明")
+        return "%sで%sに%sました" % (map, rule, won)
 
-	##
-	# onGameIndividualResult Hook
-	# @param self      The Object Pointer
-	# @param context   IkaLog context
-	#
-	def onGameIndividualResult(self, context):
-		if not self.enabled:
-			return False
+    ##
+    # onGameIndividualResult Hook
+    # @param self      The Object Pointer
+    # @param context   IkaLog context
+    #
+    def onGameIndividualResult(self, context):
+        if not self.enabled:
+            return False
 
-		s = self.getTextGameIndividualResult(context)
+        s = self.getTextGameIndividualResult(context)
 
-		fes_info = IkaUtils.playerTitle(IkaUtils.getMyEntryFromContext(context))
-		if not fes_info is None:
-			s = "%s (フェス %s)" % (s, fes_info)
+        fes_info = IkaUtils.playerTitle(
+            IkaUtils.getMyEntryFromContext(context))
+        if not fes_info is None:
+            s = "%s (フェス %s)" % (s, fes_info)
 
-		self.post(text = s, username = self.username)
+        self.post(text=s, username=self.username)
 
-	##
-	# Check availability of modules this plugin depends on.
-	# @param self      The Object Pointer.
-	#
-	def checkImport(self):
-		try:
-			import slackweb
-		except:
-			print("モジュール slackweb がロードできませんでした。 Slack 投稿ができません。")
-			print("インストールするには以下のコマンドを利用してください。\n    pip install slackweb\n")
+    ##
+    # Check availability of modules this plugin depends on.
+    # @param self      The Object Pointer.
+    #
+    def checkImport(self):
+        try:
+            import slackweb
+        except:
+            print("モジュール slackweb がロードできませんでした。 Slack 投稿ができません。")
+            print("インストールするには以下のコマンドを利用してください。\n    pip install slackweb\n")
 
-	##
-	# Constructor
-	# @param self     The Object Pointer.
-	# @param url      Slack Incoming Hook Endpoint
-	# @param username Name the bot use on Slack
-	def __init__(self, url = None, username = "＜8ヨ"):
-		self._internal_update = False
-		self.url = url
-		self.username = username
-		self.enabled = (not url is None)
-		self.checkImport()
+    ##
+    # Constructor
+    # @param self     The Object Pointer.
+    # @param url      Slack Incoming Hook Endpoint
+    # @param username Name the bot use on Slack
+    def __init__(self, url=None, username="＜8ヨ"):
+        self._internal_update = False
+        self.url = url
+        self.username = username
+        self.enabled = (not url is None)
+        self.checkImport()
 
 if __name__ == "__main__":
-	import sys
-	obj = IkaOutput_Slack(
-		url = sys.argv[1],
-	)
-	s = obj.getTextGameIndividualResult( {
-			"game": {
-				"map": {"name": "map_name"},
-				"rule": {"name": "rule_name"},
-				"won": True, }})
-	print(s)
-	obj.post(s)
+    import sys
+    obj = IkaOutput_Slack(
+        url=sys.argv[1],
+    )
+    s = obj.getTextGameIndividualResult({
+        "game": {
+            "map": {"name": "map_name"},
+            "rule": {"name": "rule_name"},
+            "won": True, }})
+    print(s)
+    obj.post(s)

@@ -24,61 +24,65 @@ import cv2
 import time
 import sys
 
-## IkaOutput_WeaponTraining: IkaLog Output Plugin for gathering weapon data for training
+# IkaOutput_WeaponTraining: IkaLog Output Plugin for gathering weapon data for training
 #
 # Save screenshots on certain events
+
+
 class IkaOutput_WeaponTraining:
-	##
-	# onGameIndividualResult Hook
-	# @param self      The Object Pointer
-	# @param context   IkaLog context
-	#
-	def onGameIndividualResult(self, context, basename = None):
-		if basename is None:	
-			basename = time.strftime("ikabattle_%Y%m%d_%H%M", time.localtime())
-		i = 0
-		for e in context['game']['players']:
-			destdir = "%s/%s" % (self.dest_dir, e['weapon'])
-			destfile = "%s/%s.%d.png" % (destdir, basename, i)
-			print(destfile)
-			try:
-				os.makedirs(destdir)
-			except:
-				pass
+    ##
+    # onGameIndividualResult Hook
+    # @param self      The Object Pointer
+    # @param context   IkaLog context
+    #
 
-			IkaUtils.writeScreenshot(destfile, e['img_weapon'])
-			i = i + 1
+    def onGameIndividualResult(self, context, basename=None):
+        if basename is None:
+            basename = time.strftime("ikabattle_%Y%m%d_%H%M", time.localtime())
+        i = 0
+        for e in context['game']['players']:
+            destdir = "%s/%s" % (self.dest_dir, e['weapon'])
+            destfile = "%s/%s.%d.png" % (destdir, basename, i)
+            print(destfile)
+            try:
+                os.makedirs(destdir)
+            except:
+                pass
 
-	##
-	# Constructor
-	# @param self         The Object Pointer.
-	# @param dest_dir     Destionation directory (Relative path, or absolute path)
-	#
-	def __init__(self, dest_dir = "training/weapons"):
-		self.dest_dir = dest_dir
+            IkaUtils.writeScreenshot(destfile, e['img_weapon'])
+            i = i + 1
+
+    ##
+    # Constructor
+    # @param self         The Object Pointer.
+    # @param dest_dir     Destionation directory (Relative path, or absolute path)
+    #
+    def __init__(self, dest_dir="training/weapons"):
+        self.dest_dir = dest_dir
 
 
 if __name__ == "__main__":
-	import IkaScene_ResultDetail
-	import os
+    import IkaScene_ResultDetail
+    import os
 
-	args = sys.argv.copy()
-	del args[0]
+    args = sys.argv.copy()
+    del args[0]
 
-	for in_file in args:
-		target = cv2.imread(in_file)
-		basename, ext = os.path.splitext(os.path.basename(in_file))
-		obj = IkaScene_ResultDetail.IkaScene_ResultDetail()
+    for in_file in args:
+        target = cv2.imread(in_file)
+        basename, ext = os.path.splitext(os.path.basename(in_file))
+        obj = IkaScene_ResultDetail.IkaScene_ResultDetail()
 
-		context = {
-			'engine': { 'frame': target },
-			'game': { 'map': { 'name': ''}, 'rule': {'name': ''}},
-		}
+        context = {
+            'engine': {'frame': target},
+            'game': {'map': {'name': ''}, 'rule': {'name': ''}},
+        }
 
-		matched = obj.match(context)
-		analyzed = obj.analyze(context)
-		won = IkaUtils.getWinLoseText(context['game']['won'], win_text ="win", lose_text = "lose", unknown_text = "unknown")
-		print("matched %s analyzed %s result %s" % (matched, analyzed, won))
+        matched = obj.match(context)
+        analyzed = obj.analyze(context)
+        won = IkaUtils.getWinLoseText(
+            context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
+        print("matched %s analyzed %s result %s" % (matched, analyzed, won))
 
-		out = IkaOutput_WeaponTraining()
-		out.onGameIndividualResult(context, basename = basename)
+        out = IkaOutput_WeaponTraining()
+        out.onGameIndividualResult(context, basename=basename)

@@ -22,54 +22,57 @@ from IkaUtils import *
 from datetime import datetime
 import time
 
-## IkaLog Output Plugin: Show message on Console
+# IkaLog Output Plugin: Show message on Console
 #
+
+
 class IkaOutput_Console:
 
-	##
-	# onGameStart Hook
-	# @param self      The Object Pointer
-	# @param context   IkaLog context
-	#
-	def onGameStart(self, context):
-		map = IkaUtils.map2text(context['game']['map'])
-		rule = IkaUtils.rule2text(context['game']['rule'])
-		print("ゲームスタート。マップ %s ルール %s" % (map, rule))
+    ##
+    # onGameStart Hook
+    # @param self      The Object Pointer
+    # @param context   IkaLog context
+    #
+    def onGameStart(self, context):
+        map = IkaUtils.map2text(context['game']['map'])
+        rule = IkaUtils.rule2text(context['game']['rule'])
+        print("ゲームスタート。マップ %s ルール %s" % (map, rule))
 
-	##
-	# Generate a message for onGameIndividualResult.
-	# @param self      The Object Pointer.
-	# @param context   IkaLog context
-	#
-	def getTextGameIndividualResult(self, context):
-		map = IkaUtils.map2text(context['game']['map'])
-		rule = IkaUtils.rule2text(context['game']['rule'])
-		won = IkaUtils.getWinLoseText(context['game']['won'], win_text ="勝ち", lose_text = "負け", unknown_text = "不明")
-		t = datetime.now()
-		t_str = t.strftime("%Y,%m,%d,%H,%M")
-		t_unix = int(time.mktime(t.timetuple()))
-		me = IkaUtils.getMyEntryFromContext(context)
+    ##
+    # Generate a message for onGameIndividualResult.
+    # @param self      The Object Pointer.
+    # @param context   IkaLog context
+    #
+    def getTextGameIndividualResult(self, context):
+        map = IkaUtils.map2text(context['game']['map'])
+        rule = IkaUtils.rule2text(context['game']['rule'])
+        won = IkaUtils.getWinLoseText(
+            context['game']['won'], win_text="勝ち", lose_text="負け", unknown_text="不明")
+        t = datetime.now()
+        t_str = t.strftime("%Y,%m,%d,%H,%M")
+        t_unix = int(time.mktime(t.timetuple()))
+        me = IkaUtils.getMyEntryFromContext(context)
 
-		s = 'ゲーム終了。'
-		s = '%s ステージ:%s' % (s, map)
-		s = '%s ルール:%s' % (s, rule)
+        s = 'ゲーム終了。'
+        s = '%s ステージ:%s' % (s, map)
+        s = '%s ルール:%s' % (s, rule)
 
-		if ('kills' in me) and ('deaths' in me):
-			s = '%s %dK/%dD' % (s, me['kills'], me['deaths'])
+        if ('kills' in me) and ('deaths' in me):
+            s = '%s %dK/%dD' % (s, me['kills'], me['deaths'])
 
-		if 'weapon' in me:
-			s = '%s 使用ブキ:%s' % (s, me['weapon'])
+        if 'weapon' in me:
+            s = '%s 使用ブキ:%s' % (s, me['weapon'])
 
-		if ('rank_in_team' in me):
-			s = '%s チーム内順位: %d' % (s, me['rank_in_team'])
+        if ('rank_in_team' in me):
+            s = '%s チーム内順位: %d' % (s, me['rank_in_team'])
 
-		return s
+        return s
 
-	##
-	# onGameIndividualResult Hook
-	# @param self      The Object Pointer
-	# @param context   IkaLog context
-	#
-	def onGameIndividualResult(self, context):
-		s = self.getTextGameIndividualResult(context)
-		print(s)
+    ##
+    # onGameIndividualResult Hook
+    # @param self      The Object Pointer
+    # @param context   IkaLog context
+    #
+    def onGameIndividualResult(self, context):
+        s = self.getTextGameIndividualResult(context)
+        print(s)

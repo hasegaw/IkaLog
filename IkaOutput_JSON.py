@@ -27,127 +27,131 @@ import os
 
 # Needed in GUI mode
 try:
-	import wx
+    import wx
 except:
-	pass
+    pass
 
-## IkaOutput_JSON: IkaLog Output Plugin for JSON Logging
+# IkaOutput_JSON: IkaLog Output Plugin for JSON Logging
 #
 # Write JSON Log file
+
+
 class IkaOutput_JSON:
 
+    def ApplyUI(self):
+        self.enabled = self.checkEnable.GetValue()
+        self.json_filename = self.editJsonFilename.GetValue()
 
-	def ApplyUI(self):
-		self.enabled =           self.checkEnable.GetValue()
-		self.json_filename =      self.editJsonFilename.GetValue()
+    def RefreshUI(self):
+        self._internal_update = True
+        self.checkEnable.SetValue(self.enabled)
 
-	def RefreshUI(self):
-		self._internal_update = True
-		self.checkEnable.SetValue(self.enabled)
+        if not self.json_filename is None:
+            self.editJsonFilename.SetValue(self.json_filename)
+        else:
+            self.editJsonFilename.SetValue('')
 
-		if not self.json_filename is None:
-			self.editJsonFilename.SetValue(self.json_filename)
-		else:
-			self.editJsonFilename.SetValue('')
+    def onConfigReset(self, context=None):
+        self.enabled = False
+        self.json_filename = os.path.join(os.getcwd(), 'ika.json')
 
-	def onConfigReset(self, context = None):
-		self.enabled = False
-		self.json_filename = os.path.join(os.getcwd(), 'ika.json')
+    def onConfigLoadFromContext(self, context):
+        self.onConfigReset(context)
+        try:
+            conf = context['config']['json']
+        except:
+            conf = {}
 
-	def onConfigLoadFromContext(self, context):
-		self.onConfigReset(context)
-		try:
-			conf = context['config']['json']
-		except:
-			conf = {}
+        if 'Enable' in conf:
+            self.enabled = conf['Enable']
 
-		if 'Enable' in conf:
-			self.enabled = conf['Enable']
+        if 'JsonFilename' in conf:
+            self.json_filename = conf['JsonFilename']
 
-		if 'JsonFilename' in conf:
-			self.json_filename = conf['JsonFilename']
+        self.RefreshUI()
+        return True
 
-		self.RefreshUI()
-		return True
+    def onConfigSaveToContext(self, context):
+        context['config']['json'] = {
+            'Enable': self.enabled,
+            'JsonFilename': self.json_filename,
+        }
 
-	def onConfigSaveToContext(self, context):
-		context['config']['json'] = {
-			'Enable' : self.enabled,
-			'JsonFilename': self.json_filename,
-		}
+    def onConfigApply(self, context):
+        self.ApplyUI()
 
-	def onConfigApply(self, context):
-		self.ApplyUI()
+    def onOptionTabCreate(self, notebook):
+        self.panel = wx.Panel(notebook, wx.ID_ANY)
+        self.page = notebook.InsertPage(0, self.panel, 'JSON')
+        self.layout = wx.BoxSizer(wx.VERTICAL)
+        self.panel.SetSizer(self.layout)
+        self.checkEnable = wx.CheckBox(
+            self.panel, wx.ID_ANY, u'JSONファイルへ戦績を出力する')
+        self.editJsonFilename = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
-	def onOptionTabCreate(self, notebook):
-		self.panel = wx.Panel(notebook, wx.ID_ANY)
-		self.page = notebook.InsertPage(0, self.panel, 'JSON')
-		self.layout = wx.BoxSizer(wx.VERTICAL)
-		self.panel.SetSizer(self.layout)
-		self.checkEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'JSONファイルへ戦績を出力する')
-		self.editJsonFilename     = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'JSON保存先ファイル'))
+        self.layout.Add(self.editJsonFilename, flag=wx.EXPAND)
 
-		self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'JSON保存先ファイル'))
-		self.layout.Add(self.editJsonFilename, flag = wx.EXPAND)
+        self.layout.Add(self.checkEnable)
 
-		self.layout.Add(self.checkEnable)
+    ##
+    # Write a line to text file.
+    # @param self     The Object Pointer.
+    # @param record   Record (text)
+    #
+    def writeRecord(self, record):
+        try:
+            json_file = open(self.json_filename, "a")
+            json_file.write(record)
+            json_file.close
+        except:
+            print("JSON: Failed to write JSON file")
 
-	##
-	# Write a line to text file.
-	# @param self     The Object Pointer.
-	# @param record   Record (text)
-	#
-	def writeRecord(self, record):
-		try:
-			json_file = open(self.json_filename, "a")
-			json_file.write(record)
-			json_file.close
-		except:
-			print("JSON: Failed to write JSON file")
+    ##
+    # Generate a record for onGameIndividualResult.
+    # @param self      The Object Pointer.
+    # @param context   IkaLog context
+    #
+    def getRecordGameIndividualResult(self, context):
+        map = IkaUtils.map2text(context['game']['map'])
+        rule = IkaUtils.rule2text(context['game']['rule'])
+        won = IkaUtils.getWinLoseText(
+            context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
 
-	##
-	# Generate a record for onGameIndividualResult.
-	# @param self      The Object Pointer.
-	# @param context   IkaLog context
-	#
-	def getRecordGameIndividualResult(self, context):
-		map = IkaUtils.map2text(context['game']['map'])
-		rule = IkaUtils.rule2text(context['game']['rule'])
-		won = IkaUtils.getWinLoseText(context['game']['won'], win_text ="win", lose_text = "lose", unknown_text = "unknown")
+        t = datetime.now()
+        t_str = t.strftime("%Y,%m,%d,%H,%M")
+        t_unix = int(time.mktime(t.timetuple()))
 
-		t = datetime.now()
-		t_str = t.strftime("%Y,%m,%d,%H,%M")
-		t_unix = int(time.mktime(t.timetuple()))
+        record = {'time': t_unix, 'event': 'GameResult',
+                  'map': map, 'rule': rule, 'result': won}
 
-		record = { 'time': t_unix, 'event': 'GameResult', 'map': map, 'rule': rule, 'result': won }
+        me = IkaUtils.getMyEntryFromContext(context)
 
-		me = IkaUtils.getMyEntryFromContext(context)
+        for field in ['kills', 'deaths', 'rank_in_team']:
+            if field in me:
+                record[field] = me[field]
 
-		for field in ['kills', 'deaths', 'rank_in_team']:
-			if field in me:
-				record[field] = me[field]
+        return json.dumps(record, separators=(',', ':')) + "\n"
 
-		return json.dumps(record, separators=(',',':')) + "\n"
+    ##
+    # onGameIndividualResult Hook
+    # @param self      The Object Pointer
+    # @param context   IkaLog context
+    #
+    def onGameIndividualResult(self, context):
+        IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
-	##
-	# onGameIndividualResult Hook
-	# @param self      The Object Pointer
-	# @param context   IkaLog context
-	#
-	def onGameIndividualResult(self, context):
-		IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
+        if not self.enabled:
+            return
 
-		if not self.enabled:
-			return
+        record = self.getRecordGameIndividualResult(context)
+        self.writeRecord(record)
 
-		record = self.getRecordGameIndividualResult(context)
-		self.writeRecord(record)
-
-	##
-	# Constructor
-	# @param self          The Object Pointer.
-	# @param json_filename JSON log file name
-	#
-	def __init__(self, json_filename = None):
-		self.enabled = (not json_filename is None)
-		self.json_filename = json_filename
+    ##
+    # Constructor
+    # @param self          The Object Pointer.
+    # @param json_filename JSON log file name
+    #
+    def __init__(self, json_filename=None):
+        self.enabled = (not json_filename is None)
+        self.json_filename = json_filename
