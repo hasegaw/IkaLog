@@ -48,8 +48,22 @@ class IkaOutput_Console:
 		t = datetime.now()
 		t_str = t.strftime("%Y,%m,%d,%H,%M")
 		t_unix = int(time.mktime(t.timetuple()))
+		me = IkaUtils.getMyEntryFromContext(context)
 
-		return "ゲーム終了。マップ %s ルール %s 結果 %s" % (map, rule, won)
+		s = 'ゲーム終了。'
+		s = '%s ステージ:%s' % (s, map)
+		s = '%s ルール:%s' % (s, rule)
+
+		if ('kills' in me) and ('deaths' in me):
+			s = '%s %dK/%dD' % (s, me['kills'], me['deaths'])
+
+		if 'weapon' in me:
+			s = '%s 使用ブキ:%s' % (s, me['weapon'])
+
+		if ('rank_in_team' in me):
+			s = '%s チーム内順位: %d' % (s, me['rank_in_team'])
+
+		return s
 
 	##
 	# onGameIndividualResult Hook

@@ -120,6 +120,13 @@ class IkaOutput_JSON:
 		t_unix = int(time.mktime(t.timetuple()))
 
 		record = { 'time': t_unix, 'event': 'GameResult', 'map': map, 'rule': rule, 'result': won }
+
+		me = IkaUtils.getMyEntryFromContext(context)
+
+		for field in ['kills', 'deaths', 'rank_in_team']:
+			if field in me:
+				record[field] = me[field]
+
 		return json.dumps(record, separators=(',',':')) + "\n"
 
 	##

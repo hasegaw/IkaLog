@@ -54,7 +54,7 @@ class IkaConfig:
 		OutputPlugins.append(IkaOutput_Screenshot("./screenshots/"))
 		#OutputPlugins.append(IkaOutput_Hue(host = '192.168.0.1', user = 'newdeveloper'))
 		#OutputPlugins.append(IkaOutput_Slack(url = "https://hooks.slack.com/services/(incoming hook endpoint"))
-		#OutputPlugins.append(IkaOutput_Twitter("ConsumerToken", "ConsumerSecret", "AccessToken", "AccessTokenSecret", attachImage = False))
+		#OutputPlugins.append(IkaOutput_Twitter("ConsumerToken", "ConsumerSecret", "AccessToken", "AccessTokenSecret", attachImage = False, Footer = 'マンメンミ', TweetKd = True))
 		OutputPlugins.append(IkaOutput_Fluentd(host = '127.0.0.1', port = 24224, username = "＜8ヨ", tag = "ikalog"))
 		#OutputPlugins.append(IkaOutput_CSV_AliveSquids())
 

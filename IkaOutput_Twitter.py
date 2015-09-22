@@ -60,6 +60,7 @@ class IkaOutput_Twitter:
 
 		self.enabled =           self.checkEnable.GetValue()
 		self.AttachImage =       self.checkAttachImage.GetValue()
+		self.TweetKd =           self.checkTweetKd.GetValue()
 		self.ConsumerKey =       self.editConsumerKey.GetValue()
 		self.ConsumerSecret =    self.editConsumerSecret.GetValue()
 		self.AccessToken =       self.editAccessToken.GetValue()
@@ -86,6 +87,7 @@ class IkaOutput_Twitter:
 		self._internal_update = True
 		self.checkEnable.SetValue(self.enabled)
 		self.checkAttachImage.SetValue(self.AttachImage)
+		self.checkTweetKd.SetValue(self.TweetKd)
 
 		try:
 			{
@@ -125,6 +127,7 @@ class IkaOutput_Twitter:
 	def onConfigReset(self, context = None):
 		self.enabled = False
 		self.AttachImage = False
+		self.TweetKd = False
 		self.ConsumerKeyType = 'ikalog'
 		self.ConsumerKey = ''
 		self.ConsumerSecret = ''
@@ -145,6 +148,9 @@ class IkaOutput_Twitter:
 
 		if 'AttachImage' in conf:
 			self.AttachImage = conf['AttachImage']
+
+		if 'TweetKd' in conf:
+			self.TweetKd = conf['TweetKd']
 
 		if 'ConsumerKey' in conf:
 			self.ConsumerKey = conf['ConsumerKey']
@@ -168,6 +174,7 @@ class IkaOutput_Twitter:
 		context['config']['twitter'] = {
 			'Enable' : self.enabled,
 			'AttachImage': self.AttachImage,
+			'TweetKd': self.TweetKd,
 			'ConsumerKey' : self.ConsumerKey,
 			'ConsumerSecret': self.ConsumerSecret,
 			'AccessToken': self.AccessToken,
@@ -275,6 +282,7 @@ class IkaOutput_Twitter:
 		self.panel.SetSizer(self.layout)
 		self.checkEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'Twitter へ戦績を通知する')
 		self.checkAttachImage = wx.CheckBox(self.panel, wx.ID_ANY, u'戦績画面を画像添付する')
+		self.checkTweetKd = wx.CheckBox(self.panel, wx.ID_ANY, u'K/D を投稿する')
 		self.editFooter = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
 		self.radioIkaLogKey = wx.RadioButton(self.panel, wx.ID_ANY, u'IkaLog内部キー')
@@ -298,6 +306,7 @@ class IkaOutput_Twitter:
 
 		self.layout.Add(self.checkEnable)
 		self.layout.Add(self.checkAttachImage)
+		self.layout.Add(self.checkTweetKd)
 		self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'フッタ'))
 
 		self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'使用するAPIキー'))
@@ -382,7 +391,19 @@ class IkaOutput_Twitter:
 		rule = IkaUtils.rule2text(context['game']['rule'])
 		won = IkaUtils.getWinLoseText(context['game']['won'], win_text ="勝ち", lose_text = "負け", unknown_text = "不明")
 		t = datetime.now().strftime("%Y/%m/%d %H:%M")
-		return "%sで%sに%sました (%s) %s #IkaLog" % (map, rule, won, t, self.Footer)
+
+		s = '%sで%sに%sました' % (map, rule, won)
+
+		me = IkaUtils.getMyEntryFromContext(context)
+		if ('kills' in me) and ('deaths' in me) and self.TweetKd:
+			s = '%s %dk/%dd' % (s, me['kills'], me['deaths'])
+
+		fes_title = IkaUtils.playerTitle(me)
+		if fes_title:
+			s = '%s %s' % (s, fes_title)
+
+		s = '%s (%s) %s #IkaLog' % (s, t, self.Footer)
+		return s
 
 	##
 	# onGameIndividualResult Hook
@@ -390,20 +411,13 @@ class IkaOutput_Twitter:
 	# @param context   IkaLog context
 	#
 	def onGameIndividualResult(self, context):
+		IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
+
 		if not self.enabled:
 			return False
 
-		me = IkaUtils.getMyEntryFromContext(context)
-		fes_title = IkaUtils.playerTitle(me)
-		if IkaUtils.playerTitle(me) and IkaUtils.playerTitle(self.last_me):
-			if me['prefix'] != self.last_me['prefix']:
-				s = '%sになった！ #IkaLog' % fes_title
-				self.tweet(s, media = None)
-		self.last_me = me
-
 		s = self.getTextGameIndividualResult(context)
-		if not fes_title is None:
-			s = "%s (%s)" % (s, fes_title)
+		IkaUtils.dprint('投稿内容 %s' % s)
 
 		media = self.postMedia(context['engine']['frame']) if self.AttachImage else None
 		self.tweet(s, media = media)
@@ -429,7 +443,7 @@ class IkaOutput_Twitter:
 	# @param AuthTokenSecret Authentication token secret.
 	# @param AttachImage     If true, post screenshots.
 	#
-	def __init__(self, ConsumerKey = None, ConsumerSecret = None, AccessToken = None, AccessTokenSecret = None, attachImage = False, Footer = ''):
+	def __init__(self, ConsumerKey = None, ConsumerSecret = None, AccessToken = None, AccessTokenSecret = None, attachImage = False, Footer = '', TweetKd = False):
 		self.enabled = not((ConsumerKey is None) or (ConsumerSecret is None) or (AccessToken is None) or (AccessTokenSecret is None))
 		self.ConsumerKeyType = 'own'
 		self.ConsumerKey = ConsumerKey
@@ -437,6 +451,7 @@ class IkaOutput_Twitter:
 		self.AccessToken = AccessToken
 		self.AccessTokenSecret = AccessTokenSecret
 		self.AttachImage = attachImage
+		self.TweetKd = TweetKd
 		self.Footer = ''
 
 		self.checkImport()
