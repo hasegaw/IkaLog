@@ -127,7 +127,7 @@ class IkaOutput_JSON:
 
         me = IkaUtils.getMyEntryFromContext(context)
 
-        for field in ['kills', 'deaths', 'rank_in_team']:
+        for field in ['kills', 'deaths', 'rank_in_team', 'udemae_pre']:
             if field in me:
                 record[field] = me[field]
 
