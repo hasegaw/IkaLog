@@ -406,12 +406,12 @@ class IkaScene_ResultDetail:
                 IkaUtils.dprint('Exception occured in K/D recoginization.')
                 IkaUtils.dprint(traceback.format_exc())
 
-            try:
-                result, model = self.weapons.guessImage(entry['img_weapon'])
-                entry['weapon'] = result['name']
-            except:
-                IkaUtils.dprint('Exception occured in weapon recoginization.')
-                IkaUtils.dprint(traceback.format_exc())
+        try:
+            result, model = self.weapons.guessImage(entry['img_weapon'])
+            entry['weapon'] = result['name']
+        except:
+            IkaUtils.dprint('Exception occured in weapon recoginization.')
+            IkaUtils.dprint(traceback.format_exc())
 
         return entry
 
