@@ -108,6 +108,51 @@ class IkaKdRecoginizer:
         self.trained = False
 
 
+class IkaUdemaeRecoginizer:
+
+    udemae_matchers = []
+
+    def match(self, img):
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        ret, img_threshold = cv2.threshold(
+            img_gray, 230, 255, cv2.THRESH_BINARY)
+
+        for matcher in self.udemae_matchers:
+            if matcher.match(img_threshold):
+                return matcher.label
+        return None
+
+    def loadUdemaeMask(self, debug=False):
+        self.udemae_matchers = []
+        udemae_list = [
+            {'file': 'udemae_c1.png', 'text': 'C-', },
+            {'file': 'udemae_c2.png', 'text': 'C', },
+            {'file': 'udemae_c3.png', 'text': 'C+', },
+            {'file': 'udemae_b1.png', 'text': 'B-', },
+            {'file': 'udemae_b2.png', 'text': 'B', },
+            {'file': 'udemae_b3.png', 'text': 'B+', },
+            {'file': 'udemae_a1.png', 'text': 'A-', },
+            {'file': 'udemae_a2.png', 'text': 'A', },
+            {'file': 'udemae_a3.png', 'text': 'A+', },
+            # {'file': 'udemae_s1.png', 'text': 'S-', },
+            {'file': 'udemae_s2.png', 'text': 'S', },
+            {'file': 'udemae_s3.png', 'text': 'S+', },
+        ]
+        for udemae in udemae_list:
+            mask_filename = os.path.join('masks', udemae['file'])
+            matcher = IkaMatcher(
+                0, 0, 115, 45,
+                img_file=mask_filename,
+                threshold=0.99,
+                orig_threshold=0.01,
+                false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
+                pre_threshold_value=230,
+                label=udemae['text'],
+                debug=debug,
+            )
+            self.udemae_matchers.append(matcher)
+
+
 class IkaScene_ResultDetail:
 
     def isEntryMe(self, entry_img):
@@ -335,10 +380,38 @@ class IkaScene_ResultDetail:
             "img_kills": img_kills,
             "img_deaths": img_deaths,
         }
+
         if is_fes:
             entry["img_fes_title"] = img_fes_title
             entry["gender"] = fes_info["gender"]
             entry["prefix"] = fes_info["prefix"]
+
+        if self.udemae_recoginizer:
+            try:
+                # Udemae will be shown in img_score in ranked battles.
+                udemae = self.udemae_recoginizer.match(entry['img_score'])
+                if udemae:
+                    entry['udemae_pre'] = udemae
+            except:
+                IkaUtils.dprint('Exception occured in Udemae recoginization.')
+                IkaUtils.dprint(traceback.format_exc())
+
+        if self.kd_recoginizer:
+            try:
+                entry['kills'] = self.kd_recoginizer.match(entry['img_kills'])
+                entry['deaths'] = self.kd_recoginizer.match(
+                    entry['img_deaths'])
+
+            except:
+                IkaUtils.dprint('Exception occured in K/D recoginization.')
+                IkaUtils.dprint(traceback.format_exc())
+
+            try:
+                result, model = self.weapons.guessImage(entry['img_weapon'])
+                entry['weapon'] = result['name']
+            except:
+                IkaUtils.dprint('Exception occured in weapon recoginization.')
+                IkaUtils.dprint(traceback.format_exc())
 
         return entry
 
@@ -366,24 +439,11 @@ class IkaScene_ResultDetail:
                             entry_left:entry_left + entry_width]
 
             e = self.analyzeEntry(img_entry)
+
             e['team'] = 1 if entry_id < 4 else 2
             e['rank_in_team'] = entry_id if entry_id < 4 else entry_id - 4
-            try:
-                result, model = self.weapons.guessImage(e['img_weapon'])
-                e['weapon'] = result['name']
-            except:
-                e['weapon'] = None
 
             context['game']['players'].append(e)
-
-            if self.kd_recoginizer:
-                try:
-                    e['kills'] = self.kd_recoginizer.match(e['img_kills'])
-                    e['deaths'] = self.kd_recoginizer.match(e['img_deaths'])
-
-                except:
-                    IkaUtils.dprint('Exception occured in K/D recoginization.')
-                    IkaUtils.dprint(traceback.format_exc())
 
             if e['me']:
                 context['game']['won'] = True if entry_id < 5 else False
@@ -410,6 +470,12 @@ class IkaScene_ResultDetail:
         except:
             IkaUtils.dprint("Could not initalize KD recoginiton model")
             self.kd_recoiginizer = None
+
+        try:
+            self.udemae_recoginizer = IkaUdemaeRecoginizer()
+        except:
+            IkaUtils.dprint("Could not initalize Udemae recoginiton model")
+            self.udemae_recoginizer = None
 
         if winlose is None:
             print("勝敗画面のマスクデータが読み込めませんでした。")
