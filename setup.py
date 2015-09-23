@@ -26,12 +26,13 @@ import shutil
 
 Mydata_files = []
 
+
 def addDirectory(dir):
-	for files in os.listdir(dir + '/'):
-		f1 = os.path.join(dir, files)
-		if os.path.isfile(f1): # skip directories
-			f2 = dir, [f1]
-			Mydata_files.append(f2)
+    for files in os.listdir(dir + '/'):
+        f1 = os.path.join(dir, files)
+        if os.path.isfile(f1):  # skip directories
+            f2 = dir, [f1]
+            Mydata_files.append(f2)
 
 addDirectory('masks')
 addDirectory('data')
@@ -43,22 +44,22 @@ Mydata_files.append(('utils', ['utils/ControlAmarecTV.au3']))
 Mydata_files.append(('screenshots', ['screenshots/.keep_dir']))
 
 setup(
-	console=['IkaUI.py'],
-	data_files = Mydata_files,
-	zipfile = None,
-	options = {
-		'py2exe': {
-			'bundle_files': 1,
-			'unbuffered': True,
-			'optimize': 2,
-			'compressed': 1,
-		}
-	
-	}
+    console=['IkaUI.py'],
+    data_files=Mydata_files,
+    zipfile=None,
+    options={
+        'py2exe': {
+            'bundle_files': 1,
+            'unbuffered': True,
+            'optimize': 2,
+            'compressed': 1,
+        }
+
+    }
 )
 
-#	'name': 'IkaLog',
-#	'company_name': 'Project IkaLog',
-#	'url': 'https://github.com/hasegaw/IkaLog',
-#	'description': 'Enjoy Splatoon!',
-#	'version': '0.01',
+#    'name': 'IkaLog',
+#    'company_name': 'Project IkaLog',
+#    'url': 'https://github.com/hasegaw/IkaLog',
+#    'description': 'Enjoy Splatoon!',
+#    'version': '0.01',
