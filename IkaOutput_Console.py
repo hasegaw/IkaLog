@@ -56,6 +56,7 @@ class IkaOutput_Console:
         s = 'ゲーム終了。'
         s = '%s ステージ:%s' % (s, map)
         s = '%s ルール:%s' % (s, rule)
+        s = '%s %s' % (s, won)
 
         if ('kills' in me) and ('deaths' in me):
             s = '%s %dK/%dD' % (s, me['kills'], me['deaths'])
@@ -65,6 +66,9 @@ class IkaOutput_Console:
 
         if ('rank_in_team' in me):
             s = '%s チーム内順位: %d' % (s, me['rank_in_team'])
+
+        if ('udemae_pre' in me) and me['udemae_pre']:
+            s = '%s プレイ前ウデマエ %s' % (s, me['udemae_pre'])
 
         return s
 
