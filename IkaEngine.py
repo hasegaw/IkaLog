@@ -111,8 +111,8 @@ class IkaEngine:
                 self.callPlugins('onGameGoSign')
 
             # 誰かをキルしたか
-            if self.scn_ingame.matchSplatted(context):
-                self.callPlugins('onGameSplatted')
+            if self.scn_ingame.matchKilled(context):
+                self.callPlugins('onGameKilled')
 
             # 死亡状態（「復活まであとｎ秒」）
             if self.scn_ingame.matchDead(context):
