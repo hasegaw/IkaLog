@@ -70,11 +70,12 @@ class InputSourceEnumerator:
 
     def __init__(self):
         if IkaUtils.isWindows():
+            videoinput_dll = os.path.join('lib', 'videoinput.dll')
             try:
                 self.c_int_p = ctypes.POINTER(ctypes.c_int)
 
-                ctypes.cdll.LoadLibrary('videoinput.dll')
-                self.dll = ctypes.CDLL('videoinput.dll')
+                ctypes.cdll.LoadLibrary(videoinput_dll)
+                self.dll = ctypes.CDLL(videoinput_dll)
 
                 self.dll.VI_Init.argtypes = []
                 self.dll.VI_Init.restype = ctypes.c_int
@@ -85,7 +86,7 @@ class InputSourceEnumerator:
                 self.dll.VI_GetDeviceName.argtypes = []
             except:
                 IkaUtils.dprint(
-                    "%s: Failed to initalize videoinput.dll" % self)
+                    "%s: Failed to initalize %s" % self, videoinput_dll)
 
 
 class cvcapture:
@@ -383,7 +384,7 @@ class cvcapture:
             wx.EVT_BUTTON, self.OnReloadDevicesButtonClick)
 
 if __name__ == "__main__":
-    obj = input.cvcapture()
+    obj = cvcapture()
 
     list = InputSourceEnumerator().Enumerate()
     for n in range(len(list)):
@@ -395,6 +396,6 @@ if __name__ == "__main__":
 
     k = 0
     while k != 27:
-        frame = obj.read()
-        cv2.imshow('IkaInput_Capture', frame)
+        frame, t = obj.read()
+        cv2.imshow(obj.__class__.__name__, frame)
         k = cv2.waitKey(1)
