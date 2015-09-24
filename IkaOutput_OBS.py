@@ -62,7 +62,7 @@ class IkaOutput_OBS:
     def onConfigReset(self, context=None):
         self.enabled = False
         self.AutoRenameEnabled = False
-        self.ControlOBS = os.path.join(os.getcwd(), 'utils', 'ControlOBS.au3')
+        self.ControlOBS = os.path.join(os.getcwd(), 'tools', 'ControlOBS.au3')
         self.dir = ''
 
     def onConfigLoadFromContext(self, context):
@@ -204,7 +204,7 @@ if __name__ == "__main__":
         }
     }
 
-    obs = IkaOutput_OBS('P:/IkaLog/utils/ControlOBS.au3', dir='K:/')
+    obs = IkaOutput_OBS('P:/IkaLog/tools/ControlOBS.au3', dir='K:/')
 
     obs.onLobbyMatched(context)
     time.sleep(10)

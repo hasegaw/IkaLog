@@ -21,7 +21,7 @@
 # IkaLogを使ってビデオファイルをリネームする
 #
 # 使い方
-#   python utils\IkaRename.py K:\hoge.mp4
+#   python tools\IkaRename.py K:\hoge.mp4
 #   ->  "K:\20150913_2330_タチウオパーキング_ガチエリア_win.mp4"
 #       などにリネームされる
 
