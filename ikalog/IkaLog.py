@@ -20,8 +20,7 @@
 
 import signal
 
-from IkaConfig import *
-from IkaEngine import *
+from ikalog.engine import *
 
 
 def signal_handler(num, frame):

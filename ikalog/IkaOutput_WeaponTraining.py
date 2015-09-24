@@ -18,11 +18,12 @@
 #  limitations under the License.
 #
 
-from IkaUtils import *
-
-import cv2
 import time
 import sys
+
+import cv2
+
+from .IkaUtils import *
 
 # IkaOutput_WeaponTraining: IkaLog Output Plugin for gathering weapon data for training
 #
@@ -62,7 +63,7 @@ class IkaOutput_WeaponTraining:
 
 
 if __name__ == "__main__":
-    import IkaScene_ResultDetail
+    from ikalog import IkaScene_ResultDetail
     import os
 
     args = sys.argv.copy()

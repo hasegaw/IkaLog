@@ -18,29 +18,22 @@
 #  limitations under the License.
 #
 
-import wx
-import time
-import threading
 import yaml
 
-from input import cvcapture
-from IkaEngine import *
-from IkaOutput_Console import *
-from IkaOutput_CSV import *
-from IkaOutput_Fluentd import *
-from IkaOutput_Hue import *
-from IkaOutput_JSON import *
-from IkaOutput_Screenshot import *
-from IkaOutput_Slack import *
-from IkaOutput_Twitter import *
-from IkaOutput_OBS import *
+from .engine import *
+from .outputs.json import *
+from .IkaOutput_Console import *
+from .IkaOutput_CSV import *
+from .IkaOutput_Screenshot import *
+from .IkaOutput_Slack import *
+from .IkaOutput_Twitter import *
+from .IkaOutput_OBS import *
 
-from IkaPanel_Preview import *
-from IkaPanel_Timeline import *
-from IkaPanel_LastResult import *
-from IkaPanel_Options import *
+from .IkaPanel_Preview import *
+from .IkaPanel_Timeline import *
+from .IkaPanel_Options import *
 
-from IkaUtils import *
+from .IkaUtils import *
 
 
 class IkaLogGUI:

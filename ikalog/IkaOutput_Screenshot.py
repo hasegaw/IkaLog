@@ -18,12 +18,12 @@
 #  limitations under the License.
 #
 
-from IkaUtils import *
-from IkaScene_PlazaUserStat import *  # Fixme...
-
-import cv2
 import time
 import os
+
+from .IkaUtils import *
+from .IkaScene_PlazaUserStat import *  # Fixme...
+
 
 # Needed in GUI mode
 try:

@@ -18,9 +18,11 @@
 #  limitations under the License.
 #
 
-from IkaUtils import *
 from datetime import datetime
 import time
+
+from .IkaUtils import *
+
 
 # IkaLog Output Plugin: Show message on Console
 #

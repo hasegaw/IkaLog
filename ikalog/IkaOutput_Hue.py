@@ -19,9 +19,10 @@
 #
 
 import traceback
-import sys
 import math
-from IkaUtils import *
+
+from .IkaUtils import *
+
 
 # Needed in GUI mode
 try:

@@ -41,7 +41,7 @@ Mydata_files.append(('', [requests.certs.where()]))
 Mydata_files.append(('', ['videoinput.dll']))
 Mydata_files.append(('tools', ['tools/ControlOBS.au3']))
 Mydata_files.append(('tools', ['tools/ControlAmarecTV.au3']))
-Mydata_files.append(('screenshots', ['screenshots/.keep_dir']))
+Mydata_files.append(('screenshots', ['screenshots/.gitkeep']))
 
 setup(
     console=['IkaUI.py'],

@@ -27,12 +27,11 @@
 
 import sys
 import os
-sys.path.append('.')
 
-import input
-from IkaEngine import *
-from IkaOutput_Screen import *
-
+from ikalog.inputs import cvcapture
+from ikalog.engine import IkaEngine
+from ikalog.IkaOutput_Screen import *
+from ikalog.IkaUtils import *
 
 class IkaRename:
 
@@ -70,7 +69,7 @@ class IkaRename:
         self.file = file
 
         # インプットとして指定されたファイルを読む
-        source = input.cvcapture()
+        source = cvcapture()
         source.startRecordedFile(file)
         source.need_resize = True
 

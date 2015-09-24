@@ -18,22 +18,7 @@
 #  limitations under the License.
 #
 
-import wx
-import time
-import threading
-import yaml
-
-from IkaEngine import *
-from IkaOutput_Console import *
-from IkaOutput_Slack import *
-from IkaOutput_Twitter import *
-from IkaOutput_OBS import *
-
-from IkaPanel_Preview import *
-from IkaPanel_Timeline import *
-from IkaPanel_LastResult import *
-
-from IkaUtils import *
+from .IkaPanel_LastResult import *
 
 
 class OptionsPanel(wx.Panel):

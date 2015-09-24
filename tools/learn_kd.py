@@ -17,10 +17,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import cv2
 import sys
 sys.path.append('.')
-from IkaScene_ResultDetail import *
+from ikalog.IkaScene_ResultDetail import *
 
 if __name__ == "__main__":
     obj = IkaKdRecoginizer()

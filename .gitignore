@@ -7,6 +7,6 @@ __pycache__
 *.swo
 ika.csv
 ika.json
-IkaConfig.py
+ikalog/IkaConfig.py
 IkaConfig.yaml
 dist/

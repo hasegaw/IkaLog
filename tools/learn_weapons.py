@@ -18,15 +18,12 @@
 #  limitations under the License.
 #
 
-import cv2
 import sys
-import numpy as np
-import os
 
 sys.path.append('.')
 train_basedir = sys.argv[1]
 
-from IkaGlyphRecoginizer import *
+from ikalog.IkaGlyphRecoginizer import *
 
 
 def learnImageGroup(recoginizer=None, name="unknown", dir=None):

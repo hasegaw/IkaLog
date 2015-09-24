@@ -19,12 +19,10 @@
 #
 
 import traceback
-import time
 import threading
-import sys
-import os
-from datetime import datetime
-from IkaUtils import *
+
+from .IkaUtils import *
+
 
 # Needed in GUI mode
 try:
