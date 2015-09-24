@@ -23,7 +23,6 @@ import time
 import threading
 import yaml
 
-from IkaInput_CVCapture import *
 from IkaEngine import *
 from IkaOutput_Console import *
 from IkaOutput_Slack import *

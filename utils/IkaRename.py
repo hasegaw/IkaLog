@@ -29,8 +29,8 @@ import sys
 import os
 sys.path.append('.')
 
+import input
 from IkaEngine import *
-from IkaInput_CVCapture import *
 from IkaOutput_Screen import *
 
 
@@ -70,9 +70,9 @@ class IkaRename:
         self.file = file
 
         # インプットとして指定されたファイルを読む
-        input = IkaInput_CVCapture()
-        input.startRecordedFile(file)
-        input.need_resize = True
+        source = input.cvcapture()
+        source.startRecordedFile(file)
+        source.need_resize = True
 
         # 画面が見えないと進捗が判らないので
         screen = IkaOutput_Screen(0, size=(640, 360))
@@ -83,7 +83,7 @@ class IkaRename:
         # IkaEngine を実行
         self.engine = IkaEngine()
         self.engine.pause(False)
-        self.engine.setCapture(input)
+        self.engine.setCapture(source)
         self.engine.setPlugins(outputPlugins)
         self.engine.run()
 

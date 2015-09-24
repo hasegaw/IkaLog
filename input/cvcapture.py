@@ -91,7 +91,7 @@ class InputSourceEnumerator:
                     "%s: Failed to initalize videoinput.dll" % self)
 
 
-class IkaInput_CVCapture:
+class cvcapture:
     cap = None
     out_width = 1280
     out_height = 720
@@ -386,7 +386,7 @@ class IkaInput_CVCapture:
             wx.EVT_BUTTON, self.OnReloadDevicesButtonClick)
 
 if __name__ == "__main__":
-    obj = IkaInput_CVCapture()
+    obj = input.cvcapture()
 
     list = InputSourceEnumerator().Enumerate()
     for n in range(len(list)):

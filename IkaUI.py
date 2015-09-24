@@ -23,7 +23,7 @@ import time
 import threading
 import yaml
 
-from IkaInput_CVCapture import *
+from input import cvcapture
 from IkaEngine import *
 from IkaOutput_Console import *
 from IkaOutput_CSV import *
@@ -204,7 +204,7 @@ def engineThread_func():
 
 if __name__ == "__main__":
     application = wx.App()
-    inputPlugin = IkaInput_CVCapture()
+    inputPlugin = cvcapture()
     gui = IkaLogGUI()
     inputPlugin.onOptionTabCreate(gui.options.notebookOptions)
     gui.frame.Show()
