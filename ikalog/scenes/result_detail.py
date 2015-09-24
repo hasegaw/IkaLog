@@ -149,6 +149,8 @@ class IkaUdemaeRecoginizer:
                 debug=debug,
             )
             self.udemae_matchers.append(matcher)
+    def __init__(self, debug=False):
+        self.loadUdemaeMask(debug=debug)
 
 
 class IkaScene_ResultDetail:
