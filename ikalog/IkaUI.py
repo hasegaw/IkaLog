@@ -21,13 +21,13 @@
 import yaml
 
 from .engine import *
+from .outputs.console import *
+from .outputs.csv import *
 from .outputs.json import *
-from .IkaOutput_Console import *
-from .IkaOutput_CSV import *
-from .IkaOutput_Screenshot import *
-from .IkaOutput_Slack import *
-from .IkaOutput_Twitter import *
-from .IkaOutput_OBS import *
+from .outputs.screenshot import *
+from .outputs.slack import *
+from .outputs.twitter import *
+from .outputs.videorecorder import *
 
 from .IkaPanel_Preview import *
 from .IkaPanel_Timeline import *
