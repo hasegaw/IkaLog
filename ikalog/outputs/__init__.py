@@ -10,6 +10,7 @@ from .json import IkaOutput_JSON
 from .preview import IkaOutput_Screen
 from .screenshot import IkaOutput_Screenshot
 from .slack import IkaOutput_Slack
+from .statink import statink
 from .twitter import IkaOutput_Twitter
 from .videorecorder import IkaOutput_OBS
 from .weapon_training import IkaOutput_WeaponTraining
