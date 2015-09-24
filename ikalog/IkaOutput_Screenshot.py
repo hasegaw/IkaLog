@@ -19,10 +19,8 @@
 #
 
 import time
-import os
 
-from .IkaUtils import *
-from .IkaScene_PlazaUserStat import *  # Fixme...
+from ikalog.scenes.plaza_user_stat import *  # Fixme...
 
 
 # Needed in GUI mode

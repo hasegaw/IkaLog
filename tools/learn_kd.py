@@ -19,7 +19,7 @@
 #
 import sys
 sys.path.append('.')
-from ikalog.IkaScene_ResultDetail import *
+from ikalog.scenes.result_detail import *
 
 if __name__ == "__main__":
     obj = IkaKdRecoginizer()

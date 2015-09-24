@@ -21,7 +21,7 @@ import traceback
 from datetime import datetime
 
 from ikalog.IkaGlyphRecoginizer import *
-from .IkaUtils import *
+from ikalog.IkaUtils import *
 
 
 class IkaKdRecoginizer:

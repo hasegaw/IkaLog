@@ -20,26 +20,23 @@
 
 from __future__ import print_function
 
+import cv2
+import sys
 import time
 import traceback
 
-from .IkaScene_GameStart import *
-from .IkaScene_ResultDetail import *
-from .IkaScene_TowerTracker import *
-from .IkaScene_InGame import *
-from .IkaScene_Lobby import *
-from ikalog.IkaScene_GameFinish import *
-
+from . import scenes
+from IkaConfig import IkaConfig
 
 # The IkaLog core engine.
 #
 class IkaEngine:
-    scn_gamestart = IkaScene_GameStart()
-    scn_gamefinish = IkaScene_GameFinish()
-    scn_gameresult = IkaScene_ResultDetail()
-    scn_ingame = IkaScene_InGame()
-    scn_towerTracker = IkaScene_TowerTracker()
-    scn_lobby = IkaScene_Lobby()
+    scn_gamestart = scenes.IkaScene_GameStart()
+    scn_gamefinish = scenes.IkaScene_GameFinish()
+    scn_gameresult = scenes.IkaScene_ResultDetail()
+    scn_ingame = scenes.IkaScene_InGame()
+    scn_towerTracker = scenes.IkaScene_TowerTracker()
+    scn_lobby = scenes.IkaScene_Lobby()
 
     last_capture = time.time() - 100
     last_gamestart = time.time() - 100
