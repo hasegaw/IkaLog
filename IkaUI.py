@@ -20,20 +20,21 @@
 
 import yaml
 
-from .engine import *
-from .outputs.console import *
-from .outputs.csv import *
-from .outputs.json import *
-from .outputs.screenshot import *
-from .outputs.slack import *
-from .outputs.twitter import *
-from .outputs.videorecorder import *
+from ikalog.inputs.cvcapture import cvcapture
+from ikalog.engine import *
+from ikalog.outputs.console import *
+from ikalog.outputs.csv import *
+from ikalog.outputs.json import *
+from ikalog.outputs.screenshot import *
+from ikalog.outputs.slack import *
+from ikalog.outputs.twitter import *
+from ikalog.outputs.videorecorder import *
 
-from .IkaPanel_Preview import *
-from .IkaPanel_Timeline import *
-from .IkaPanel_Options import *
+from ikalog.IkaPanel_Preview import *
+from ikalog.IkaPanel_Timeline import *
+from ikalog.IkaPanel_Options import *
 
-from .IkaUtils import *
+from ikalog.IkaUtils import *
 
 
 class IkaLogGUI:
