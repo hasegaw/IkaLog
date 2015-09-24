@@ -18,16 +18,18 @@
 #  limitations under the License.
 #
 
-import numpy as np
-import cv2
-import time
+import signal
 
-from IkaScene_GameStart import *
-from IkaScene_ResultDetail import *
-from IkaScene_TowerTracker import *
-from IkaScene_InGame import *
 from IkaConfig import *
 from IkaEngine import *
+
+
+def signal_handler(num, frame):
+    IkaUtils.dprint('IkaLog: got signal %d' % num)
+    if num == 2:
+        engine.stop()
+
+signal.signal(signal.SIGINT, signal_handler)
 
 capture, OutputPlugins = IkaConfig().config()
 engine = IkaEngine()
@@ -35,3 +37,4 @@ engine.pause(False)
 engine.setCapture(capture)
 engine.setPlugins(OutputPlugins)
 engine.run()
+IkaUtils.dprint('bye!')
