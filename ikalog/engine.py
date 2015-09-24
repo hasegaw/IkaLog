@@ -30,6 +30,8 @@ from IkaConfig import IkaConfig
 
 # The IkaLog core engine.
 #
+
+
 class IkaEngine:
     scn_gamestart = scenes.IkaScene_GameStart()
     scn_gamefinish = scenes.IkaScene_GameFinish()
