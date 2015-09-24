@@ -180,17 +180,58 @@ class IkaScene_InGame:
 
             if r:
                 list.append(n)
-                killed = killed + 1
 
-        r = killed > self._last_killed
-        self._last_killed = killed
-        return r
+        return len(list)
 
     def matchGoSign(self, context):
         return self.mask_goSign.match(context['engine']['frame'])
 
     def matchDead(self, context):
         return self.mask_dead.match(context['engine']['frame'])
+
+    def match(self, context):
+        context['engine']['inGame'] = self.matchTimerIcon(context)
+
+        if not context['engine']['inGame']:
+            return False
+
+        callPlugins = context['engine']['service']['callPlugins']
+        msec = context['engine']['msec']
+
+        if not self in context['scene']:
+            context['scene'][self] = {
+                'lastGoSign': msec - 60 * 1000,
+                'lastDead': msec - 60 * 1000,
+                'lastKill': msec - 60 * 1000,
+                'kills': 0,
+            }
+
+        context['scene'][self]['lastTimerIcon'] = msec
+
+        # ゴーサイン (60秒に1度まで)
+        if (context['scene'][self]['lastGoSign'] + 60 * 1000) < msec:
+            if self.matchGoSign(context):
+                callPlugins('onGameGoSign')
+                context['scene'][self]['lastGoSign'] = msec
+
+        # 誰かをキルしたか
+        kills = self.matchKilled(context)
+        if context['scene'][self]['kills'] < kills:
+            callPlugins('onGameKilled')
+            context['scene'][self]['kills'] = kills
+            context['scene'][self]['lastKill'] = msec
+        else:
+            # 品質が悪いムービーのチャタリング対策
+            # 長すぎると連続キル検出をミスする可能性あり
+            if (context['scene'][self]['lastKill'] + 1 * 1000) < msec:
+                context['scene'][self]['kills'] = kills
+
+        # 死亡状態（「復活まであとｎ秒」）
+        if self.matchDead(context):
+            if (context['scene'][self]['lastDead'] + 5 * 1000) < msec:
+                callPlugins('onGameDead')
+            context['scene'][self]['lastDead'] = msec
+        return True
 
     def __init__(self):
         self.mask_timer = IkaUtils.loadMask(

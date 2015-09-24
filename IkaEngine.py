@@ -21,7 +21,6 @@
 from __future__ import print_function
 
 import sys
-import numpy as np
 import cv2
 import time
 import traceback
@@ -48,8 +47,6 @@ class IkaEngine:
     last_gamestart = time.time() - 100
     last_lobby_matching = time.time() - 100
     last_lobby_matched = time.time() - 100
-    last_go_sign = time.time() - 100
-    last_dead = time.time() - 100
 
     def dprint(self, text):
         print(text, file=sys.stderr)
@@ -105,40 +102,22 @@ class IkaEngine:
 
         self.callPlugins('onFrameRead')
 
-        if context['engine']['inGame']:
-            # ゴーサイン
-            r = False
-            if self.last_go_sign + 60 < time.time():
-                r = self.scn_ingame.matchGoSign(context)
+        self.scn_ingame.match(context)
 
-            if r:
-                self.last_go_sign = time.time()
-                self.callPlugins('onGameGoSign')
+        tower_data = self.scn_towerTracker.match(context)
 
-            # 誰かをキルしたか
-            if self.scn_ingame.matchKilled(context):
-                self.callPlugins('onGameKilled')
+        try:
+            # ライフをチェック
+            (team1, team2) = self.scn_ingame.lives(context)
+            # print("味方 %s 敵 %s" % (team1, team2))
 
-            # 死亡状態（「復活まであとｎ秒」）
-            if self.scn_ingame.matchDead(context):
-                if self.last_dead + 3 < time.time():
-                    self.callPlugins('onGameDead')
-                self.last_dead = time.time()
-
-            tower_data = self.scn_towerTracker.match(context)
-
-            try:
-                # ライフをチェック
-                (team1, team2) = self.scn_ingame.lives(context)
-                # print("味方 %s 敵 %s" % (team1, team2))
-
-                context['game']['livesTrack'].append(
-                    [context['engine']['msec'], team1, team2])
-                if tower_data:
-                    context['game']['towerTrack'].append(
-                        [context['engine']['msec'], tower_data.copy()])
-            except:
-                pass
+            context['game']['livesTrack'].append(
+                [context['engine']['msec'], team1, team2])
+            if tower_data:
+                context['game']['towerTrack'].append(
+                    [context['engine']['msec'], tower_data.copy()])
+        except:
+            pass
 
         # Lobby
         r = False
