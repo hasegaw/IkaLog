@@ -29,7 +29,7 @@ import time
 from ikalog.inputs import cvcapture
 from ikalog.engine import IkaEngine
 from ikalog import outputs
-from ikalog.utils.__init__ import *
+from ikalog.utils import *
 
 class IkaRename:
 

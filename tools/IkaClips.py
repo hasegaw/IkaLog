@@ -29,7 +29,7 @@ sys.path.append('.')
 from ikalog.inputs.cvcapture import *
 from ikalog.engine import *
 from ikalog.outputs.preview import *
-from ikalog.IkaUtils import *
+from ikalog.utils import *
 
 
 class IkaClips:

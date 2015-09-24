@@ -18,17 +18,12 @@
 #  limitations under the License.
 #
 
+import threading
 import yaml
 
 from ikalog.inputs.cvcapture import cvcapture
 from ikalog.engine import *
-from ikalog.outputs.console import *
-from ikalog.outputs.csv import *
-from ikalog.outputs.json import *
-from ikalog.outputs.screenshot import *
-from ikalog.outputs.slack import *
-from ikalog.outputs.twitter import *
-from ikalog.outputs.videorecorder import *
+from ikalog import outputs
 
 from ikalog.IkaPanel_Preview import *
 from ikalog.IkaPanel_Timeline import *
@@ -208,7 +203,7 @@ if __name__ == "__main__":
     plugins = []
 
     # とりあえずデバッグ用にコンソールプラグイン
-    plugins.append(IkaOutput_Console())
+    plugins.append(outputs.IkaOutput_Console())
 
     # 各パネルをプラグインしてイベントを受信する
     plugins.append(gui.preview)
@@ -224,14 +219,14 @@ if __name__ == "__main__":
     # 設定画面を持つ各種 Output Plugin
     # -> 設定画面の生成とプラグインリストへの登録
     for plugin in [
-            IkaOutput_CSV(),
-            # IkaOutput_Fluentd(),
-            IkaOutput_JSON(),
-            # IkaOutput_Hue(),
-            IkaOutput_OBS(),
-            IkaOutput_Twitter(),
-            IkaOutput_Screenshot(),
-            IkaOutput_Slack(),
+            outputs.IkaOutput_CSV(),
+            # outputs.IkaOutput_Fluentd(),
+            outputs.IkaOutput_JSON(),
+            # outputs.IkaOutput_Hue(),
+            outputs.IkaOutput_OBS(),
+            outputs.IkaOutput_Twitter(),
+            outputs.IkaOutput_Screenshot(),
+            outputs.IkaOutput_Slack(),
     ]:
         print('Initializing %s' % plugin)
         plugin.onOptionTabCreate(gui.options.notebookOptions)
