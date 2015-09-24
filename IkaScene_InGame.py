@@ -38,10 +38,13 @@ class IkaScene_InGame:
     meter_height = 1
 
     def lives(self, context):
+        if not context['engine']['inGame']:
+            return None, None
+
         img = context['engine']['frame'][self.meter_top:self.meter_top +
                                          self.meter_height, self.meter_left:self.meter_left + self.meter_width]
-        img2 = cv2.resize(img, (self.meter_width, 100))
         img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        img2 = cv2.resize(img, (self.meter_width, 100))
 #		for i in range(2):
 #			img2[20:40,:, i] = cv2.resize(img_hsv[:,:,0], (self.meter_width, 20))
 #			img2[40:60,:, i] = cv2.resize(img_hsv[:,:,1], (self.meter_width, 20))
@@ -126,7 +129,8 @@ class IkaScene_InGame:
             a.append(alive)
 
             if alive:
-                team1_color = img[0, i]  # RGB
+                team1_color = img[0, i]  # BGR
+                team1_color_hsv = img_hsv[0, i]
 
             cv2.rectangle(context['engine']['frame'], (self.meter_left +
                                                        i - 4,  44), (self.meter_left + i + 4, 50), (255, 255, 255), 1)
@@ -138,7 +142,8 @@ class IkaScene_InGame:
             b.append(alive)
 
             if alive:
-                team2_color = img[0, i]  # RGB
+                team2_color = img[0, i]  # BGR
+                team2_color_hsv = img_hsv[0, i]
 
             cv2.rectangle(context['engine']['frame'], (self.meter_left +
                                                        i - 4,  44), (self.meter_left + i + 4, 50), (255, 255, 255), 1)
@@ -148,8 +153,20 @@ class IkaScene_InGame:
 #		cv2.imshow('yagura_gray2', img_gray3)
 #		cv2.imshow('eyes', eye_white_mask)
 
-        if (not (team1_color is None)) and (not (team2_color is None)):
-            context['game']['color'] = [team1_color, team2_color]
+        hasTeamColor = ('team_color_bgr' in context['game'])
+
+        if (not team1_color is None) and (not team2_color is None) and not hasTeamColor:
+            context['game']['team_color_bgr'] = [
+                team1_color,
+                team2_color
+            ]
+            context['game']['team_color_hsv'] = [
+                team1_color_hsv,
+                team2_color_hsv
+            ]
+
+            callPlugins = context['engine']['service']['callPlugins']
+            callPlugins('onGameTeamColor')
 
         return (a, b)
 
