@@ -26,7 +26,7 @@ import os
 
 import cv2
 
-from .IkaUtils import *
+from ikalog.IkaUtils import *
 
 # Needed in GUI mode
 try:

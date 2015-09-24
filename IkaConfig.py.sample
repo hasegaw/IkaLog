@@ -20,12 +20,13 @@
 
 from ikalog.inputs.cvcapture import cvcapture
 from ikalog.outputs.json import *
-from ikalog.IkaOutput_CSV import *
-from ikalog.IkaOutput_Console import *
-from ikalog.IkaOutput_DebugLog import *
-from ikalog.IkaOutput_Screen import *
-from ikalog.IkaOutput_Screenshot import *
-from ikalog.IkaOutput_Twitter import *
+from ikalog.outputs.csv import *
+from ikalog.outputs.console import *
+from ikalog.outputs.debug import *
+from ikalog.outputs.preview import *
+from ikalog.outputs.screenshot import *
+from ikalog.outputs.twitter import *
+from ikalog.outputs.slack import *
 
 
 class IkaConfig:

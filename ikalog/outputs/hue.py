@@ -21,7 +21,7 @@
 import traceback
 import math
 
-from .IkaUtils import *
+from ikalog.IkaUtils import *
 
 
 # Needed in GUI mode

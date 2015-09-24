@@ -21,7 +21,7 @@
 import time
 import os
 
-from .IkaUtils import *
+from ikalog.IkaUtils import *
 
 
 # IkaLog Output Plugin: Write debug logs.

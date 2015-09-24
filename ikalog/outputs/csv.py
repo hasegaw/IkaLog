@@ -22,7 +22,7 @@ from datetime import datetime
 import time
 import os
 
-from .IkaUtils import *
+from ikalog.IkaUtils import *
 
 
 # Needed in GUI mode

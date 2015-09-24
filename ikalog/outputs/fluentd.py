@@ -18,7 +18,7 @@
 #  limitations under the License.
 #
 
-from .IkaUtils import *
+from ikalog.IkaUtils import *
 
 # Needed in GUI mode
 try:
