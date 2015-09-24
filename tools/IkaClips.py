@@ -26,9 +26,9 @@ import pprint
 
 sys.path.append('.')
 
-import ikalog.inputs
-from ikalog.IkaEngine import *
-from ikalog.IkaOutput_Screen import *
+from ikalog.inputs.cvcapture import *
+from ikalog.engine import *
+from ikalog.outputs.preview import *
 from ikalog.IkaUtils import *
 
 
@@ -117,7 +117,7 @@ class IkaClips:
         self.t_GameStart = None
 
         # インプットとして指定されたファイルを読む
-        source = inputs.cvcapture()
+        source = cvcapture()
         source.startRecordedFile(file)
         source.need_resize = True
 
@@ -173,7 +173,7 @@ class IkaClips:
             clip['file'], at, dur, destfile)
         IkaUtils.dprint(cmd)
 
-        # os.system(cmd)
+        os.system(cmd)
 
         clip['file_out'] = destfile
 
@@ -198,6 +198,9 @@ class IkaClips:
         IkaUtils.dprint(cmd)
 
         os.system(cmd)
+
+        for clip in self.clips:
+            os.remove(clip['file_out'])
 
     def __init__(self):
         self.scenes = []
