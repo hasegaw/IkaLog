@@ -18,14 +18,14 @@
 #  limitations under the License.
 #
 
-from .inputs import cvcapture
-from .outputs.json import *
-from .IkaOutput_CSV import *
-from .IkaOutput_Console import *
-from .IkaOutput_DebugLog import *
-from .IkaOutput_Screen import *
-from .IkaOutput_Screenshot import *
-from .IkaOutput_Twitter import *
+from ikalog.inputs.cvcapture import cvcapture
+from ikalog.outputs.json import *
+from ikalog.IkaOutput_CSV import *
+from ikalog.IkaOutput_Console import *
+from ikalog.IkaOutput_DebugLog import *
+from ikalog.IkaOutput_Screen import *
+from ikalog.IkaOutput_Screenshot import *
+from ikalog.IkaOutput_Twitter import *
 
 
 class IkaConfig:
@@ -34,7 +34,7 @@ class IkaConfig:
         source = cvcapture()
 
         # 使いたい入力を選択
-        source .startCamera(0)                       # キャプチャデバイスから
+        source.startCamera(0)                        # キャプチャデバイスから
         # source.startRecordedFile('video.avi')      # ファイルからの読み込み
 
         source.need_resize = True                    # 720p でない場合はリサイズさせる
