@@ -18,12 +18,7 @@
 #  limitations under the License.
 #
 
-# Needed in GUI mode
-try:
-    import wx
-except:
-    pass
-
+import traceback
 import sys
 import math
 from IkaUtils import *
@@ -146,8 +141,14 @@ class IkaOutput_Hue:
             return (xFinal, yFinal)
 
     def lightTeamColor(self, context):
-        team1 = context['game']['color'][0]
-        team2 = context['game']['color'][1]
+        if not ('team_color_bgr' in context['game']):
+            return
+
+        if self.hue_bridge is None:
+            return
+
+        team1 = context['game']['team_color_bgr'][0]
+        team2 = context['game']['team_color_bgr'][1]
 
         # print(team1, team2)
 
@@ -162,8 +163,7 @@ class IkaOutput_Hue:
 
     def onFrameNext(self, context):
         if context['engine']['inGame']:
-            if ('color' in context['game']):
-                self.lightTeamColor(context)
+            self.lightTeamColor(context)
 
     def checkImport(self):
         try:
@@ -187,10 +187,14 @@ class IkaOutput_Hue:
             self.hue_bridge = None
             return None
 
-        checkImport()
+        self.checkImport()
 
         import qhue
-        self.hue_bridge = qhue.Bridge(host, user)
+        try:
+            self.hue_bridge = qhue.Bridge(host, user)
+        except:
+            IkaUtils.dprint('%s: Exception.' % self)
+            IkaUtils.dprint(traceback.format_exc())
 
 if __name__ == "__main__":
     obj = IkaOutput_Hue(host='192.168.44.87', user='newdeveloper')
