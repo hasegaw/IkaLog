@@ -21,7 +21,7 @@
 import signal
 
 from ikalog.engine import *
-
+from IkaConfig import *
 
 def signal_handler(num, frame):
     IkaUtils.dprint('IkaLog: got signal %d' % num)
