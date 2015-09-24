@@ -18,7 +18,7 @@
 #  limitations under the License.
 #
 
-from IkaUtils import *
+from .IkaUtils import *
 
 # Needed in GUI mode
 try:
@@ -154,7 +154,7 @@ class IkaOutput_Fluentd:
 
             event.Event(recordType, record)
         except:
-            printf("Fluentd: Failed to submit a record")
+            print("Fluentd: Failed to submit a record")
 
     ##
     # Generate a record for onGameIndividualResult.

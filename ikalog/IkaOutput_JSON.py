@@ -18,10 +18,12 @@
 #  limitations under the License.
 #
 
-from IkaUtils import *
 from datetime import datetime
 import time
+import json
 import os
+
+from .IkaUtils import *
 
 # Needed in GUI mode
 try:
@@ -29,52 +31,50 @@ try:
 except:
     pass
 
-# @package IkaOutput_CSV
-
-# IkaOutput_CSV: IkaLog CSV Output Plugin
+# IkaOutput_JSON: IkaLog Output Plugin for JSON Logging
 #
-# Log Splatoon game results as CSV format.
+# Write JSON Log file
 
 
-class IkaOutput_CSV:
+class IkaOutput_JSON:
 
     def ApplyUI(self):
         self.enabled = self.checkEnable.GetValue()
-        self.csv_filename = self.editCsvFilename.GetValue()
+        self.json_filename = self.editJsonFilename.GetValue()
 
     def RefreshUI(self):
         self._internal_update = True
         self.checkEnable.SetValue(self.enabled)
 
-        if not self.csv_filename is None:
-            self.editCsvFilename.SetValue(self.csv_filename)
+        if not self.json_filename is None:
+            self.editJsonFilename.SetValue(self.json_filename)
         else:
-            self.editCsvFilename.SetValue('')
+            self.editJsonFilename.SetValue('')
 
     def onConfigReset(self, context=None):
         self.enabled = False
-        self.csv_filename = os.path.join(os.getcwd(), 'ika.csv')
+        self.json_filename = os.path.join(os.getcwd(), 'ika.json')
 
     def onConfigLoadFromContext(self, context):
         self.onConfigReset(context)
         try:
-            conf = context['config']['csv']
+            conf = context['config']['json']
         except:
             conf = {}
 
         if 'Enable' in conf:
             self.enabled = conf['Enable']
 
-        if 'CsvFilename' in conf:
-            self.csv_filename = conf['CsvFilename']
+        if 'JsonFilename' in conf:
+            self.json_filename = conf['JsonFilename']
 
         self.RefreshUI()
         return True
 
     def onConfigSaveToContext(self, context):
-        context['config']['csv'] = {
+        context['config']['json'] = {
             'Enable': self.enabled,
-            'CsvFilename': self.csv_filename,
+            'JsonFilename': self.json_filename,
         }
 
     def onConfigApply(self, context):
@@ -82,15 +82,15 @@ class IkaOutput_CSV:
 
     def onOptionTabCreate(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, 'CSV')
+        self.page = notebook.InsertPage(0, self.panel, 'JSON')
         self.layout = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.layout)
         self.checkEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'CSVファイルへ戦績を出力する')
-        self.editCsvFilename = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+            self.panel, wx.ID_ANY, u'JSONファイルへ戦績を出力する')
+        self.editJsonFilename = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'CSV保存先ファイル'))
-        self.layout.Add(self.editCsvFilename, flag=wx.EXPAND)
+        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'JSON保存先ファイル'))
+        self.layout.Add(self.editJsonFilename, flag=wx.EXPAND)
 
         self.layout.Add(self.checkEnable)
 
@@ -101,14 +101,14 @@ class IkaOutput_CSV:
     #
     def writeRecord(self, record):
         try:
-            csv_file = open(self.csv_filename, "a")
-            csv_file.write(record)
-            csv_file.close
+            json_file = open(self.json_filename, "a")
+            json_file.write(record)
+            json_file.close
         except:
-            print("CSV: Failed to write CSV File")
+            print("JSON: Failed to write JSON file")
 
     ##
-    # Generate a message for onGameIndividualResult.
+    # Generate a record for onGameIndividualResult.
     # @param self      The Object Pointer.
     # @param context   IkaLog context
     #
@@ -116,15 +116,22 @@ class IkaOutput_CSV:
         map = IkaUtils.map2text(context['game']['map'])
         rule = IkaUtils.rule2text(context['game']['rule'])
         won = IkaUtils.getWinLoseText(
-            context['game']['won'], win_text="勝ち", lose_text="負け", unknown_text="不明")
+            context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
 
         t = datetime.now()
         t_str = t.strftime("%Y,%m,%d,%H,%M")
         t_unix = int(time.mktime(t.timetuple()))
-        s_won = IkaUtils.getWinLoseText(
-            won, win_text="勝ち", lose_text="負け", unknown_text="不明")
 
-        return "%s,%s,%s,%s,%s\n" % (t_unix, t_str, map, rule, won)
+        record = {'time': t_unix, 'event': 'GameResult',
+                  'map': map, 'rule': rule, 'result': won}
+
+        me = IkaUtils.getMyEntryFromContext(context)
+
+        for field in ['kills', 'deaths', 'rank_in_team', 'udemae_pre']:
+            if field in me:
+                record[field] = me[field]
+
+        return json.dumps(record, separators=(',', ':')) + "\n"
 
     ##
     # onGameIndividualResult Hook
@@ -142,9 +149,9 @@ class IkaOutput_CSV:
 
     ##
     # Constructor
-    # @param self         The Object Pointer.
-    # @param csv_filename CSV log file name
+    # @param self          The Object Pointer.
+    # @param json_filename JSON log file name
     #
-    def __init__(self, csv_filename=None):
-        self.enabled = (not csv_filename is None)
-        self.csv_filename = csv_filename
+    def __init__(self, json_filename=None):
+        self.enabled = (not json_filename is None)
+        self.json_filename = json_filename

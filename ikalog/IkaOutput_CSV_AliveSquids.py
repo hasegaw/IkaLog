@@ -22,9 +22,8 @@
 #  This module is still in proof of concept, and subject to change.
 #
 
-from IkaUtils import *
 from datetime import datetime
-import time
+
 
 # IkaLog Output Plugin: Write 'Alive Squids' CSV data
 #

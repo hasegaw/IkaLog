@@ -20,12 +20,13 @@
 
 # @package IkaOutput_Twitter
 
-from IkaUtils import *
-
 from datetime import datetime
 import json
-import cv2
 import os
+
+import cv2
+
+from .IkaUtils import *
 
 # Needed in GUI mode
 try:

@@ -26,10 +26,10 @@ import pprint
 
 sys.path.append('.')
 
-import input
-from IkaEngine import *
-from IkaOutput_Screen import *
-from IkaUtils import *
+import ikalog.inputs
+from ikalog.IkaEngine import *
+from ikalog.IkaOutput_Screen import *
+from ikalog.IkaUtils import *
 
 
 class IkaClips:
@@ -117,7 +117,7 @@ class IkaClips:
         self.t_GameStart = None
 
         # インプットとして指定されたファイルを読む
-        source = input.cvcapture()
+        source = inputs.cvcapture()
         source.startRecordedFile(file)
         source.need_resize = True
 

@@ -17,13 +17,11 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import numpy as np
-import cv2
-import sys
 import traceback
 from datetime import datetime
-from IkaGlyphRecoginizer import *
-from IkaUtils import *
+
+from ikalog.IkaGlyphRecoginizer import *
+from .IkaUtils import *
 
 
 class IkaKdRecoginizer:

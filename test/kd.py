@@ -1,7 +1,6 @@
 import sys
 sys.path.append('.')
-import cv2
-from IkaScene_ResultDetail import *
+from ikalog.IkaScene_ResultDetail import *
 
 if __name__ == "__main__":
     obj = IkaKdRecoginizer()

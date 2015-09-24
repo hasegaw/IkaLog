@@ -22,10 +22,10 @@ import sys
 import os
 sys.path.append('.')
 
-import input
-
-from IkaEngine import *
-from IkaOutput_Screen import *
+from ..ikalog.inputs import cvcapture
+from ..ikalog import IkaUtils
+from ..ikalog.engine import *
+from ..ikalog.IkaOutput_Screen import *
 
 
 class IkaTestGameStart:
@@ -49,7 +49,7 @@ class IkaTestGameStart:
 
     def __init__(self, file):
         # インプットとして指定されたファイルを読む
-        source = IkaInput_CVCapture()
+        source = cvcapture()
         source.startRecordedFile(file)
         source.need_resize = True
 

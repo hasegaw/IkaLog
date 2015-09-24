@@ -18,9 +18,11 @@
 #  limitations under the License.
 #
 
-from IkaUtils import *
 import time
 import os
+
+from .IkaUtils import *
+
 
 # IkaLog Output Plugin: Write debug logs.
 

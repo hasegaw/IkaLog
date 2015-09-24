@@ -20,17 +20,14 @@
 
 from __future__ import print_function
 
-import sys
-import cv2
-import time
 import traceback
 
-from IkaScene_GameStart import *
-from IkaScene_ResultDetail import *
-from IkaScene_TowerTracker import *
-from IkaScene_InGame import *
-from IkaScene_Lobby import *
-from IkaScene_GameFinish import *
+from .IkaScene_GameStart import *
+from .IkaScene_ResultDetail import *
+from .IkaScene_TowerTracker import *
+from .IkaScene_InGame import *
+from .IkaScene_Lobby import *
+from ikalog.IkaScene_GameFinish import *
 
 
 # The IkaLog core engine.
@@ -252,7 +249,7 @@ class IkaEngine:
         self.reset()
 
 if __name__ == "__main__":
-    from IkaConfig import *
+    from ikalog.IkaConfig import *
     _capture, _OutputPlugins = IkaConfig().config()
     engine = IkaEngine()
     engine.pause(False)

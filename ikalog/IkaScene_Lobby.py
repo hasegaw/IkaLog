@@ -17,10 +17,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import numpy as np
-import cv2
-import sys
-from IkaUtils import *
+from .IkaUtils import *
 
 
 class IkaScene_Lobby:

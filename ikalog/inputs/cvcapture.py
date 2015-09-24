@@ -17,15 +17,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import numpy as np
-import cv2
-import sys
-import os
 import ctypes
 import time
 import threading
 
-from IkaUtils import *
+from ikalog.IkaUtils import *
+
 
 # Needed in GUI mode
 try:

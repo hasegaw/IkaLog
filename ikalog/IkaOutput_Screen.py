@@ -18,7 +18,6 @@
 #  limitations under the License.
 #
 
-from IkaUtils import *
 import time
 
 import cv2

@@ -18,18 +18,18 @@
 #  limitations under the License.
 #
 
-from input import cvcapture
-from IkaOutput_CSV import *
-from IkaOutput_CSV_AliveSquids import *
-from IkaOutput_Console import *
-from IkaOutput_DebugLog import *
-from IkaOutput_Fluentd import *
-from IkaOutput_Hue import *
-from IkaOutput_JSON import *
-from IkaOutput_Screen import *
-from IkaOutput_Screenshot import *
-from IkaOutput_Slack import *
-from IkaOutput_Twitter import *
+from .inputs import cvcapture
+from .IkaOutput_CSV import *
+from .IkaOutput_CSV_AliveSquids import *
+from .IkaOutput_Console import *
+from .IkaOutput_DebugLog import *
+from .IkaOutput_Fluentd import *
+from .IkaOutput_Hue import *
+from .IkaOutput_JSON import *
+from .IkaOutput_Screen import *
+from .IkaOutput_Screenshot import *
+from .IkaOutput_Slack import *
+from .IkaOutput_Twitter import *
 
 
 class IkaConfig:
