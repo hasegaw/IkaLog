@@ -15,13 +15,13 @@ HDMI キャプチャ環境の構築は相性問題なども発生しやすいで
 
 Windows 環境の IkaLog / IkaLog GUI 版との組み合わせ報告があったキャプチャ機器を紹介します。
 
-| メーカー | 型番 | 仕様 | 備考 |
-|-------|-----|----|----|
-| SKNET | [SK-MVXU3R](http://www.sknet-web.co.jp/product/mvxu3r/) | 1080p 60fps | デバイス名 "MonsterX U3.0R Capture" <br> USB 3.0 接続タイプ <br> IkaLog 開発に利用 |
-| AVerMedia | [AVT-C875](http://www.avermedia.co.jp/product_swap/avt-c875.html) | 1080p 60fps | ハードウェア MPEG エンコーダ搭載機<br>Stream Engine のインストールが必要 |
-| ドリキャプ | [HC-HD1](http://www.drecap.com/DC-HD1BJ.html) | 720p 30fps | PCIe 拡張カードタイプ <br> デバイス名 "7160 HD Capture (Path1)" <br> IkaLog 開発に利用|
-| サンコー | [HDMVC4UC](http://www.thanko.jp/product/1526.html#introduction) | 1080p 30fps | PCIe 拡張カードタイプ <br> デバイス名 "???(TBD)" <br> 入力画像にズレあり(左に2px)。 offset パラメータ = (2,0) |
-
+| 推奨 | メーカー | 型番 | 仕様 | 備考 |
+|----------|------|-----|----|----|
+| ★ | SKNET | [SK-MVXU3R](http://www.sknet-web.co.jp/product/mvxu3r/) | 1080p 60fps | デバイス名 "MonsterX U3.0R Capture" <br> USB 3.0 接続タイプ <br> IkaLog 開発に利用 |
+| ★ | AVerMedia | [AVT-C875](http://www.avermedia.co.jp/product_swap/avt-c875.html) | 1080p 60fps | Stream Engine のインストールが必要。ビットレート 60.0Mbps に指定 <br> デバイス名 "LGP Stream Engine" <br> ハードウェア MPEG エンコーダ搭載機 <br> 利用例  [AVT-C875でスプラトゥーンをキャプチャしてみたメモ(IkaLogとWebRTC)](http://mzsm.me/2015/09/23/hdmi-capture-avt-c875/)|
+|  |ドリキャプ | [HC-HD1](http://www.drecap.com/DC-HD1BJ.html) | 720p 30fps | PCIe 拡張カードタイプ <br> デバイス名 "7160 HD Capture (Path1)" <br> IkaLog 開発に利用|
+|  | サンコー | [HDMVC4UC](http://www.thanko.jp/product/1526.html#introduction) | 1080p 30fps | PCIe 拡張カードタイプ <br> デバイス名 "???(TBD)" <br> 入力画像にズレあり(左に2px)。 offset パラメータ = (2,0) |
+|  | CELSUS | [REGIA ONE](http://www.celsus.co.jp/regia/regia1.html) | 1080i | PCIe 拡張カードタイプ <br> デバイス名 "???(TBD)" <br> 入力画像にズレあり(左に2px)。 offset パラメータ = (2,0) |
 <br>
 ## IkaLog で使える HDMI キャプチャ機器の条件
 
@@ -34,11 +34,11 @@ Windows 環境で動作する IkaLog (IkaLog GUI)と組み合わせるHDMIキャ
 
 #### 推奨条件
 
+- HDMI キャプチャ内容がおかしい（例：左右フチのドットがかけている、など）は誤認識の原因になります。新しく購入することはあまりオススメしません。
 - HDMI パススルー機能を搭載しており、 PC に入力しながら他の TV やディスプレイに映して
   プレイできるものがオススメ。 <br> （もしくは HDMI スプリッタを併用する)
 - MPEG 圧縮などを行わず、オリジナル映像に忠実なデータを入力できること。 <br>
   お店の POP などでは「ソフトウェアエンコード」と書かれている場合があります
-
 ※ 強者は Linux 環境上で OpenCV に別途パッチを当てて BMD の Intensity Pro と組み合わせて動かしていたりもするようです。 (O_O)
 
 ####  「ソフトウェアエンコード」と「ハードウェアエンコード」
@@ -64,4 +64,3 @@ IkaLog の場合は前者のソフトウェアエンコード方式のデバイ�
 
 - 遅延が少ない
 - 入力画像がより忠実であり IkaLog が誤動作しにくい
-

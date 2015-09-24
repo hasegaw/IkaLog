@@ -44,7 +44,7 @@ IkaLog GUI 版 (IkaUI) は IkaLog をウインドウアプリとして動くよ�
 
 公開 URL からファイルをダウンロードします。最新版はこちら:
 
-<https://dl.dropboxusercontent.com/u/14421778/IkaLog/WinIkaLog_20150918rev2.zip>
+<https://dl.dropboxusercontent.com/u/14421778/IkaLog/download.html>
 
 <br>
 ## はじめての設定
