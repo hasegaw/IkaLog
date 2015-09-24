@@ -17,7 +17,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-from .IkaUtils import *
+from ikalog.IkaUtils import *
 
 # Tracker the control tower, (or rainmaker)
 #

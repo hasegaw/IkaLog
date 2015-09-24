@@ -266,7 +266,7 @@ class IkaMatcher:
         self.false_positive_method = false_positive_method if not false_positive_method is None else IkaMatcher.FP_FRONT_IS_WHITE
 
         if not img_file is None:
-            img = cv2.imread(img_file)
+            img = cv2.imread(os.path.join(os.path.dirname(os.path.dirname(__file__)), img_file))
 
         if img is None:
             raise Exception('Could not load mask image')

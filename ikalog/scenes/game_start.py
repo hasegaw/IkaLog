@@ -18,7 +18,7 @@
 #  limitations under the License.
 #
 
-from .IkaUtils import *
+from ..IkaUtils import *
 
 
 class IkaScene_GameStart:
