@@ -24,8 +24,6 @@ import numpy as np
 import os
 import pickle
 
-# @package IkaGlyphRecoginizer
-
 
 class IkaGlyphRecoginizer:
     # Maximum Hue Value in OpenCV HSV Color.

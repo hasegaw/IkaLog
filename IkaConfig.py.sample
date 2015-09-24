@@ -19,15 +19,7 @@
 #
 
 from ikalog.inputs.cvcapture import cvcapture
-from ikalog.outputs.json import *
-from ikalog.outputs.csv import *
-from ikalog.outputs.console import *
-from ikalog.outputs.debug import *
-from ikalog.outputs.fluentd import *
-from ikalog.outputs.preview import *
-from ikalog.outputs.screenshot import *
-from ikalog.outputs.twitter import *
-from ikalog.outputs.slack import *
+from ikalog import outputs
 
 
 class IkaConfig:
@@ -51,16 +43,16 @@ class IkaConfig:
             # IkaOutput_Screen: IkaLog 実行中にキャプチャ画像を表示します。
             #   wait_ms=1        キャプチャ画像表示後に停止するミリ秒数。 ただし0=2秒毎に1ms
             #   size=(1280, 720) ウインドウサイズ。
-            IkaOutput_Screen(wait_ms=1, size=(1280,720)),
+            outputs.IkaOutput_Screen(wait_ms=1, size=(1280,720)),
 
             # IkaOutput_Console(): 各種メッセージを表示します。
-            IkaOutput_Console(),
+            outputs.IkaOutput_Console(),
 
             # IkaOutput_CSV: CSVログファイルを出力します。
-            IkaOutput_CSV('ika.csv'),
+            outputs.IkaOutput_CSV('ika.csv'),
 
             # IkaOutput_Fluentd: Fluentd にデータを投げます。
-            # IkaOutput_Fluentd(
+            # outputs.IkaOutput_Fluentd(
             # host='127.0.0.1',
             #     port=24224,
             #     username='＜8ヨ',
@@ -68,20 +60,20 @@ class IkaConfig:
             # ),
 
             # IkaOutput_JSON: JSONログファイルを出力します。
-            IkaOutput_JSON('ika.json'),
+            outputs.IkaOutput_JSON('ika.json'),
 
             # IkaOutput_Screenshot: 戦績画面のスクリーンショットを保存します。
-            IkaOutput_Screenshot('./screenshots/'),
+            outputs.IkaOutput_Screenshot('./screenshots/'),
 
             # IkaOutput_Hue(host='192.168.0.1',user='newdeveloper'),
 
             # IkaOutput_Slack: Slack 連携
             #   url="http://...."   Slack の Inconming Web Hook URL
             #   username="botname"  Slack 上に出す bot 名
-            # IkaOutput_Slack(url='https://hooks.slack.com/services/(incoming hook endpoint)'),
+            # outputs.IkaOutput_Slack(url='https://hooks.slack.com/services/(incoming hook endpoint)'),
 
             # IkaOutput_Twitter: Twitter 連携
-            # IkaOutput_Twitter(
+            # outputs.IkaOutput_Twitter(
             #     'ConsumerToken',
             #     'ConsumerSecret',
             #     'AccessToken',
@@ -94,7 +86,7 @@ class IkaConfig:
 
             # 開発者向け。
             # イベントトリガをコンソールに出力。イベントトリガ時のスクリーンショット保存
-            IkaOutput_DebugLog(dir='./screenshots/', screenshot=False)
+            outputs.IkaOutput_DebugLog(dir='./screenshots/', screenshot=False)
         ]
 
         return [source, OutputPlugins]

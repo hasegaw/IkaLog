@@ -34,7 +34,7 @@ from ikalog.IkaPanel_Preview import *
 from ikalog.IkaPanel_Timeline import *
 from ikalog.IkaPanel_Options import *
 
-from ikalog.IkaUtils import *
+from ikalog.utils import *
 
 
 class IkaLogGUI:

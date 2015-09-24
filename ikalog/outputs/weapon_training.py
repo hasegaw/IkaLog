@@ -20,7 +20,7 @@
 
 import time
 
-from ikalog.IkaUtils import *
+from ikalog.utils import *
 
 # IkaOutput_WeaponTraining: IkaLog Output Plugin for gathering weapon data for training
 #

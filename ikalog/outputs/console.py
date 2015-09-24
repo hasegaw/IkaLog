@@ -21,7 +21,7 @@
 from datetime import datetime
 import time
 
-from ikalog.IkaUtils import *
+from ikalog.utils import *
 
 
 # IkaLog Output Plugin: Show message on Console

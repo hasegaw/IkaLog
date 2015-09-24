@@ -19,11 +19,11 @@
 #
 
 import sys
-import os
+
 sys.path.append('.')
 
 from ..ikalog.inputs import cvcapture
-from ..ikalog import IkaUtils
+from ikalog.utils import __init__
 from ..ikalog.engine import *
 from ..ikalog.IkaOutput_Screen import *
 
@@ -32,19 +32,19 @@ class IkaTestGameStart:
 
     def onFrameRead(self, context):
         if (context['engine']['msec'] > 60 * 1000):
-            IkaUtils.dprint('%s: プレイから60秒以内にマップが検出できませんでした' % self)
+            __init__.dprint('%s: プレイから60秒以内にマップが検出できませんでした' % self)
             self.engine.stop()
 
     def onGameGoSign(self, context):
-        IkaUtils.dprint('%s: ゴーサインがでました' % self)
+        __init__.dprint('%s: ゴーサインがでました' % self)
         self.engine.stop()
 
     def onFrameReadFailed(self, context):
-        IkaUtils.dprint('%s: たぶんファイルの終端にたどり着きました' % self)
+        __init__.dprint('%s: たぶんファイルの終端にたどり着きました' % self)
         self.engine.stop()
 
     def onGameStart(self, context):
-        IkaUtils.dprint('%s: ゲーム検出' % self)
+        __init__.dprint('%s: ゲーム検出' % self)
         self.engine.stop()
 
     def __init__(self, file):
@@ -69,9 +69,9 @@ class IkaTestGameStart:
         except:
             pass
 
-        map = IkaUtils.map2text(self.engine.context['game'][
+        map = __init__.map2text(self.engine.context['game'][
                                 'map'], unknown='None')
-        rule = IkaUtils.rule2text(self.engine.context['game'][
+        rule = __init__.rule2text(self.engine.context['game'][
                                   'rule'], unknown='None')
         print(file, map, rule)
 

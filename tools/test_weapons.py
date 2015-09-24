@@ -18,12 +18,14 @@
 #  limitations under the License.
 #
 
+import cv2
+import os
 import sys
 
 sys.path.append('.')
 base_dir = sys.argv[1]
 
-from ikalog.IkaGlyphRecoginizer import *
+from ikalog.utils import IkaGlyphRecoginizer
 
 weapons = IkaGlyphRecoginizer()
 weapons.loadModelFromFile("data/weapons.trained")
