@@ -20,9 +20,9 @@
 
 from datetime import datetime
 import time
-import os
 
-from ikalog.IkaUtils import *
+from ikalog.utils import *
+
 
 
 # Needed in GUI mode

@@ -21,7 +21,8 @@ import ctypes
 import time
 import threading
 
-from ikalog.IkaUtils import *
+from ikalog.utils import *
+
 
 
 # Needed in GUI mode

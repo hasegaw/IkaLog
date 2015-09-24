@@ -17,11 +17,11 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import pickle
 import traceback
 from datetime import datetime
 
-from ikalog.IkaGlyphRecoginizer import *
-from ikalog.IkaUtils import *
+from ikalog.utils import *
 
 
 class IkaKdRecoginizer:

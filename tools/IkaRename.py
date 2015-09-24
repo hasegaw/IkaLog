@@ -25,13 +25,11 @@
 #   ->  "K:\20150913_2330_タチウオパーキング_ガチエリア_win.mp4"
 #       などにリネームされる
 
-import sys
-import os
-
+import time
 from ikalog.inputs import cvcapture
 from ikalog.engine import IkaEngine
-from ikalog.IkaOutput_Screen import *
-from ikalog.IkaUtils import *
+from ikalog import outputs
+from ikalog.utils.__init__ import *
 
 class IkaRename:
 
@@ -74,7 +72,7 @@ class IkaRename:
         source.need_resize = True
 
         # 画面が見えないと進捗が判らないので
-        screen = IkaOutput_Screen(0, size=(640, 360))
+        screen = outputs.IkaOutput_Screen(0, size=(640, 360))
 
         # プラグインとして自分自身（画面）を設定しコールバックを受ける
         outputPlugins = [self, screen]

@@ -23,7 +23,7 @@ import sys
 sys.path.append('.')
 train_basedir = sys.argv[1]
 
-from ikalog.IkaGlyphRecoginizer import *
+from ikalog.utils import IkaGlyphRecoginizer
 
 
 def learnImageGroup(recoginizer=None, name="unknown", dir=None):

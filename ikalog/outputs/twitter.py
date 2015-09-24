@@ -22,11 +22,9 @@
 
 from datetime import datetime
 import json
-import os
 
-import cv2
+from ikalog.utils import *
 
-from ikalog.IkaUtils import *
 
 # Needed in GUI mode
 try:
