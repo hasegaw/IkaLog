@@ -85,6 +85,11 @@ class IkaEngine:
             },
             'engine': {
                 'frame': None,
+                'service': {
+                    'callPlugins': self.callPlugins,
+                }
+            },
+            'scene': {
             },
             'config': {
             }
