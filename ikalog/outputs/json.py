@@ -23,7 +23,7 @@ import time
 import json
 import os
 
-from .IkaUtils import *
+from ikalog.IkaUtils import *
 
 # Needed in GUI mode
 try:
