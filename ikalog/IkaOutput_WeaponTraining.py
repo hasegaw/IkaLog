@@ -19,9 +19,6 @@
 #
 
 import time
-import sys
-
-import cv2
 
 from .IkaUtils import *
 
@@ -63,7 +60,7 @@ class IkaOutput_WeaponTraining:
 
 
 if __name__ == "__main__":
-    from ikalog import IkaScene_ResultDetail
+    from ikalog.scenes import result_detail
     import os
 
     args = sys.argv.copy()
@@ -72,7 +69,7 @@ if __name__ == "__main__":
     for in_file in args:
         target = cv2.imread(in_file)
         basename, ext = os.path.splitext(os.path.basename(in_file))
-        obj = IkaScene_ResultDetail.IkaScene_ResultDetail()
+        obj = result_detail.IkaScene_ResultDetail()
 
         context = {
             'engine': {'frame': target},
