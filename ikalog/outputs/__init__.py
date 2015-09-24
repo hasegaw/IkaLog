@@ -6,6 +6,7 @@ from .csv_alivesquids import IkaOutput_CSV_AliveSquids
 from .debug import IkaOutput_DebugLog
 from .fluentd import IkaOutput_Fluentd
 from .hue import IkaOutput_Hue
+from .ikadenwa import ikadenwa
 from .json import IkaOutput_JSON
 from .preview import IkaOutput_Screen
 from .screenshot import IkaOutput_Screenshot
