@@ -415,10 +415,10 @@ class IkaOutput_Twitter:
     # @param context   IkaLog context
     #
     def getTextGameIndividualResult(self, context):
-        map = IkaUtils.map2text(context['game']['map'])
-        rule = IkaUtils.rule2text(context['game']['rule'])
+        map = IkaUtils.map2text(context['game']['map'], unknown = 'スプラトゥーン')
+        rule = IkaUtils.rule2text(context['game']['rule'], unknown = 'バトル')
         won = IkaUtils.getWinLoseText(
-            context['game']['won'], win_text="勝ち", lose_text="負け", unknown_text="不明")
+            context['game']['won'], win_text='勝ち', lose_text='負け', unknown_text='参加し')
         t = datetime.now().strftime("%Y/%m/%d %H:%M")
 
         s = '%sで%sに%sました' % (map, rule, won)
