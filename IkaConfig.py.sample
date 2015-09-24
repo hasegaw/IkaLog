@@ -23,6 +23,7 @@ from ikalog.outputs.json import *
 from ikalog.outputs.csv import *
 from ikalog.outputs.console import *
 from ikalog.outputs.debug import *
+from ikalog.outputs.fluentd import *
 from ikalog.outputs.preview import *
 from ikalog.outputs.screenshot import *
 from ikalog.outputs.twitter import *
@@ -64,7 +65,7 @@ class IkaConfig:
             #     port=24224,
             #     username='＜8ヨ',
             #     tag='ikalog'
-            # )
+            # ),
 
             # IkaOutput_JSON: JSONログファイルを出力します。
             IkaOutput_JSON('ika.json'),
