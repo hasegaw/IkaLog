@@ -75,6 +75,9 @@ class statink:
             payload['kill'] = me['kills']
             payload['death'] = me['deaths']
 
+        if ('score' in me):
+            payload['my_point'] = me['score']
+
         if ('udemae_pre' in me):
             payload['udemae'] = me['udemae_pre'].lower()
 
