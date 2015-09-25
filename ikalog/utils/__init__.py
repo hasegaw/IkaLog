@@ -28,6 +28,8 @@ import cv2
 import numpy as np
 from .matcher import IkaMatcher
 from .glyph_recoginizer import IkaGlyphRecoginizer
+from .character_recoginizer import character_recoginizer
+
 
 class IkaUtils:
 
