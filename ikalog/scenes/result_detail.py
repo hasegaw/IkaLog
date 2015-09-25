@@ -22,135 +22,8 @@ import traceback
 from datetime import datetime
 
 from ikalog.utils import *
-
-
-class IkaKdRecoginizer:
-
-    samples = np.empty((0, 21 * 14))
-    responses = []
-    model = cv2.ml.KNearest_create()
-
-    def saveModelToFile(self, file):
-        f = open(file, "wb")
-        pickle.dump([self.samples, self.responses], f)
-        f.close()
-
-    def loadModelFromFile(self, file):
-        f = open(file, "rb")
-        l = pickle.load(f)
-        f.close()
-        self.samples = l[0]
-        self.responses = l[1]
-        # print(self.samples.shape)
-        # print(self.responses)
-
-    def preprocess(self, img):
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        ret, img = cv2.threshold(img, 230, 255, cv2.THRESH_BINARY)
-        return img
-
-    def teach(self, file):
-        img = cv2.imread(file, 1)
-        img = self.preprocess(img)
-        img1 = img[:, 0:14]
-        img2 = img[:, 15:29]
-        print(img1.shape, img2.shape)
-        cv2.imshow('what is this number?', img2)
-
-        key = cv2.waitKey()
-        sys.stdout.write('%d' % (key - 48))
-
-        sample = img2.reshape((1, img2.shape[0] * img2.shape[1]))
-
-        self.samples = np.append(self.samples, sample, 0)
-        self.responses.append(key - 48)
-
-    def matchSingleDigit(self, img):
-        raito = np.sum(
-            img) / (img.shape[0] * img.shape[1]) if np.sum(img) != 0 else 0.0
-
-        if raito < 0.1:
-            # ほぼ真っ黒
-            return 0
-
-        sample = img.reshape((1, img.shape[0] * img.shape[1]))
-        sample = np.array(sample, np.float32)
-
-        k = 3
-
-        retval, results, neigh_resp, dists = self.model.findNearest(sample, k)
-
-        d = int(results.ravel())
-        return d
-
-    def match(self, img):
-        if not self.trained:
-            return None
-
-        img = self.preprocess(img)
-        img1 = img[:, 0:14]
-        img2 = img[:, 15:29]
-
-        num = self.matchSingleDigit(img1) * 10 + self.matchSingleDigit(img2)
-        return num
-
-    def train(self):
-        samples = np.array(self.samples, np.float32)
-        responses = np.array(self.responses, np.float32)
-        responses = responses.reshape((responses.size, 1))
-        responses = np.array(self.responses, np.float32)
-        self.model.train(samples, cv2.ml.ROW_SAMPLE, responses)
-        self.trained = True
-
-    def __init__(self):
-        self.trained = False
-
-
-class IkaUdemaeRecoginizer:
-
-    udemae_matchers = []
-
-    def match(self, img):
-        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        ret, img_threshold = cv2.threshold(
-            img_gray, 230, 255, cv2.THRESH_BINARY)
-
-        for matcher in self.udemae_matchers:
-            if matcher.match(img_threshold):
-                return matcher.label
-        return None
-
-    def loadUdemaeMask(self, debug=False):
-        self.udemae_matchers = []
-        udemae_list = [
-            {'file': 'udemae_c1.png', 'text': 'C-', },
-            {'file': 'udemae_c2.png', 'text': 'C', },
-            {'file': 'udemae_c3.png', 'text': 'C+', },
-            {'file': 'udemae_b1.png', 'text': 'B-', },
-            {'file': 'udemae_b2.png', 'text': 'B', },
-            {'file': 'udemae_b3.png', 'text': 'B+', },
-            {'file': 'udemae_a1.png', 'text': 'A-', },
-            {'file': 'udemae_a2.png', 'text': 'A', },
-            {'file': 'udemae_a3.png', 'text': 'A+', },
-            # {'file': 'udemae_s1.png', 'text': 'S-', },
-            {'file': 'udemae_s2.png', 'text': 'S', },
-            {'file': 'udemae_s3.png', 'text': 'S+', },
-        ]
-        for udemae in udemae_list:
-            mask_filename = os.path.join('masks', udemae['file'])
-            matcher = IkaMatcher(
-                0, 0, 115, 45,
-                img_file=mask_filename,
-                threshold=0.99,
-                orig_threshold=0.01,
-                false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
-                pre_threshold_value=230,
-                label=udemae['text'],
-                debug=debug,
-            )
-            self.udemae_matchers.append(matcher)
-    def __init__(self, debug=False):
-        self.loadUdemaeMask(debug=debug)
+from ikalog.utils.character_recoginizer.number import *
+from ikalog.utils.character_recoginizer.udemae import *
 
 
 class IkaScene_ResultDetail:
@@ -181,6 +54,7 @@ class IkaScene_ResultDetail:
     plot_img = np.zeros((2000, 1000, 1), np.uint8)
     plot_img2 = np.zeros((2000, 1000, 1), np.uint8)
 
+    # FixMe: character_recoginizer を使って再実装
     def guessFesTitle(self, img_fes_title):
         img_fes_title_hsv = cv2.cvtColor(img_fes_title, cv2.COLOR_BGR2HSV)
         yellow = cv2.inRange(img_fes_title_hsv[:, :, 0], 32 - 2, 32 + 2)
@@ -345,7 +219,7 @@ class IkaScene_ResultDetail:
         if me:
             weapon_left = entry_xoffset_weapon_me
             name_left = entry_xoffset_name_me
-            rank_left = 0
+            rank_left = 2
         else:
             weapon_left = entry_xoffset_weapon
             name_left = entry_xoffset_name
@@ -356,6 +230,7 @@ class IkaScene_ResultDetail:
         img_name = img_entry[:, name_left:name_left + entry_width_name]
         img_score = img_entry[
             :, entry_xoffset_nawabari_score:entry_xoffset_nawabari_score + entry_width_nawabari_score]
+
         img_kills = img_entry[0:entry_height_kd,
                               entry_xoffset_kd:entry_xoffset_kd + entry_width_kd]
         img_deaths = img_entry[entry_height_kd:entry_height_kd *
@@ -368,8 +243,16 @@ class IkaScene_ResultDetail:
         img_fes_title_mask = np.minimum(yellow, yellow2)
         is_fes = np.sum(img_fes_title_mask) > img_fes_title_mask.shape[
             0] * img_fes_title_mask.shape[1] * 16
+
         if is_fes:
             fes_info = self.guessFesTitle(img_fes_title)
+
+        # 左寄せで白文字がない & フェス中でなければガチバトル
+        ret, img_nawabari = cv2.threshold(
+            img_score, 230, 255, cv2.THRESH_BINARY)
+        isRankedBattle = (not is_fes) and (np.sum(img_nawabari[:, int(
+            entry_width_nawabari_score * 0.8): entry_width_nawabari_score]) == 0)
+        isNawabariBattle = (not is_fes) and (not isRankedBattle)
 
         entry = {
             "me": me,
@@ -386,7 +269,7 @@ class IkaScene_ResultDetail:
             entry["gender"] = fes_info["gender"]
             entry["prefix"] = fes_info["prefix"]
 
-        if self.udemae_recoginizer:
+        if self.udemae_recoginizer and isRankedBattle:
             try:
                 # Udemae will be shown in img_score in ranked battles.
                 udemae = self.udemae_recoginizer.match(entry['img_score'])
@@ -396,11 +279,18 @@ class IkaScene_ResultDetail:
                 IkaUtils.dprint('Exception occured in Udemae recoginization.')
                 IkaUtils.dprint(traceback.format_exc())
 
-        if self.kd_recoginizer:
+        if self.number_recoginizer:
             try:
-                entry['kills'] = self.kd_recoginizer.match(entry['img_kills'])
-                entry['deaths'] = self.kd_recoginizer.match(
-                    entry['img_deaths'])
+                entry['rank'] = self.number_recoginizer.matchDigits(entry[
+                                                                    'img_rank'])
+                entry['kills'] = self.number_recoginizer.matchDigits(entry[
+                                                                     'img_kills'])
+                entry['deaths'] = self.number_recoginizer.matchDigits(entry[
+                                                                      'img_deaths'])
+                if isNawabariBattle:
+                    entry['score'] = self.number_recoginizer.matchDigits(entry[
+                                                                         'img_score'])
+                # score: ナワバリかガチかで認識方法が変わる
 
             except:
                 IkaUtils.dprint('Exception occured in K/D recoginization.')
@@ -451,6 +341,8 @@ class IkaScene_ResultDetail:
         context['game']['won'] = self.isWin(context)
         context['game']['timestamp'] = datetime.now()
 
+        return True
+
     def match(self, context):
         return IkaUtils.matchWithMask(context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
 
@@ -464,17 +356,19 @@ class IkaScene_ResultDetail:
             IkaUtils.dprint("Could not initalize weapons recoginiton model")
 
         try:
-            self.kd_recoginizer = IkaKdRecoginizer()
-            self.kd_recoginizer.loadModelFromFile('data/kd.model')
-            self.kd_recoginizer.train()
+            self.number_recoginizer = number()
+#            self.chara_recoginizer.loadModelFromFile('data/kd.model')
+#            self.kd_recoginizer.train()
         except:
             IkaUtils.dprint("Could not initalize KD recoginiton model")
-            self.kd_recoiginizer = None
+            IkaUtils.dprint(traceback.format_exc())
+            self.number_recoginizer = None
 
         try:
-            self.udemae_recoginizer = IkaUdemaeRecoginizer()
+            self.udemae_recoginizer = udemae()
         except:
             IkaUtils.dprint("Could not initalize Udemae recoginiton model")
+            IkaUtils.dprint(traceback.format_exc())
             self.udemae_recoginizer = None
 
         if winlose is None:
@@ -513,30 +407,14 @@ if __name__ == "__main__":
                 prefix_ = ''
                 gender = ''
 
-            kills = e['kills'] if not e['kills'] is None else ''
-            deaths = e['deaths'] if not e['deaths'] is None else ''
+            udemae = e['udemae_pre'] if ('udemae_pre' in e) else None
+            rank = e['rank'] if ('rank' in e) else None
+            kills = e['kills'] if ('kills' in e) else None
+            deaths = e['deaths'] if ('deaths' in e) else None
+            score = e['score'] if ('score' in e) else None
 
-            print("%s/%s %s%s" % (kills, deaths, prefix_, gender))
-        # cv2.waitKey()
+            print("rank %s udemae %s %s/%s score %s %s%s" %
+                  (rank, udemae, kills, deaths, score, prefix_, gender))
 
-    # ランクごとにソートした画像を出す
-    plot_img = np.zeros((2000, 1000, 1), np.uint8)
-    x = 0
-    y = 0
-    for rank in obj.rank_imgs.keys():
-        print(rank)
-        for img in obj.rank_imgs[rank]:
-            w = img.shape[1]
-            h = img.shape[0]
-            x1 = x
-            x2 = x + w
-            y1 = y
-            y2 = y + h
-            plot_img[y1:y2, x1:x2, 0] = img
-            y = y2
-
-        x = x + 100
-        y = 0
-    cv2.imshow('rank betu', plot_img)
-
-    cv2.waitKey()
+    if len(files) > 0:
+            cv2.waitKey()
