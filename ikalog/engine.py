@@ -50,18 +50,30 @@ class IkaEngine:
 
     def callPlugins(self, event_name, debug=False):
         if debug:
-            self.dprint("call plug-in hook (%s):" % event_name)
+            self.dprint('call plug-in hook (%s):' % event_name)
+
         for op in self.OutputPlugins:
             if hasattr(op, event_name):
                 if debug:
-                    self.dprint("Call  %s" % op.__class__.__name__)
+                    self.dprint('Call  %s' % op.__class__.__name__)
                 try:
                     getattr(op, event_name)(self.context)
                 except:
-                    self.dprint("%s.%s() raised a exception >>>>" %
+                    self.dprint('%s.%s() raised a exception >>>>' %
                                 (op.__class__.__name__, event_name))
                     self.dprint(traceback.format_exc())
-                    self.dprint("<<<<<")
+                    self.dprint('<<<<<')
+            elif hasattr(op, 'onUncatchedEvent'):
+                if debug:
+                    self.dprint(
+                        'call plug-in hook (UncatchedEvent, %s):' % event_name)
+                try:
+                    getattr(op, 'onUncatchedEvent')(event_name, self.context)
+                except:
+                    self.dprint('%s.%s() raised a exception >>>>' %
+                                (op.__class__.__name__, event_name))
+                    self.dprint(traceback.format_exc())
+                    self.dprint('<<<<<')
 
     def stop(self):
         self._stop = True
