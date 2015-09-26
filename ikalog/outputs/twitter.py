@@ -432,10 +432,11 @@ class IkaOutput_Twitter:
 
         s = '%sで%sに%sました' % (map, rule, won)
 
+        me = IkaUtils.getMyEntryFromContext(context)
+
         if ('score' in me) and self.TweetMyScore:
             s = '%s %sp' % (s, me['score'])
 
-        me = IkaUtils.getMyEntryFromContext(context)
         if ('kills' in me) and ('deaths' in me) and self.TweetKd:
             s = '%s %dk/%dd' % (s, me['kills'], me['deaths'])
 
