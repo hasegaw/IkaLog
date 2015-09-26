@@ -418,9 +418,10 @@ if __name__ == "__main__":
             kills = e['kills'] if ('kills' in e) else None
             deaths = e['deaths'] if ('deaths' in e) else None
             score = e['score'] if ('score' in e) else None
+            me = '*' if e['me'] else ''
 
-            print("rank %s udemae %s %s/%s score %s %s%s" %
-                  (rank, udemae, kills, deaths, score, prefix_, gender))
+            print("rank %s udemae %s %s/%s score %s %s%s %s" %
+                  (rank, udemae, kills, deaths, score, prefix_, gender, me))
 
     if len(files) > 0:
         cv2.waitKey()
