@@ -271,10 +271,8 @@ class IkaScene_ResultDetail:
 
         if self.udemae_recoginizer and isRankedBattle:
             try:
-                # Udemae will be shown in img_score in ranked battles.
-                udemae = self.udemae_recoginizer.match(entry['img_score'])
-                if udemae:
-                    entry['udemae_pre'] = udemae
+                entry['udemae_pre'] = self.udemae_recoginizer.match(entry[
+                                                                    'img_score'])
             except:
                 IkaUtils.dprint('Exception occured in Udemae recoginization.')
                 IkaUtils.dprint(traceback.format_exc())
@@ -290,7 +288,6 @@ class IkaScene_ResultDetail:
                 if isNawabariBattle:
                     entry['score'] = self.number_recoginizer.matchDigits(entry[
                                                                          'img_score'])
-                # score: ナワバリかガチかで認識方法が変わる
 
             except:
                 IkaUtils.dprint('Exception occured in K/D recoginization.')
@@ -302,6 +299,11 @@ class IkaScene_ResultDetail:
         except:
             IkaUtils.dprint('Exception occured in weapon recoginization.')
             IkaUtils.dprint(traceback.format_exc())
+
+        # Remove 'None' results.
+        for f in entry.keys():
+            if entry[f] is None:
+                del entry[f]
 
         return entry
 
@@ -417,4 +419,4 @@ if __name__ == "__main__":
                   (rank, udemae, kills, deaths, score, prefix_, gender))
 
     if len(files) > 0:
-            cv2.waitKey()
+        cv2.waitKey()
