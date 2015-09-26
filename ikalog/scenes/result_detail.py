@@ -210,6 +210,8 @@ class IkaScene_ResultDetail:
 
         entry_xoffset_nawabari_score = 995 - entry_left
         entry_width_nawabari_score = 115
+        entry_xoffset_score_p = entry_xoffset_nawabari_score + entry_width_nawabari_score
+        entry_width_score_p = 20
 
         entry_xoffset_kd = 1185 - entry_left
         entry_width_kd = 31
@@ -230,6 +232,10 @@ class IkaScene_ResultDetail:
         img_name = img_entry[:, name_left:name_left + entry_width_name]
         img_score = img_entry[
             :, entry_xoffset_nawabari_score:entry_xoffset_nawabari_score + entry_width_nawabari_score]
+        img_score_p = img_entry[
+            :, entry_xoffset_score_p:entry_xoffset_score_p + entry_width_score_p]
+        ret, img_score_p_thresh = cv2.threshold(cv2.cvtColor(
+            img_score_p, cv2.COLOR_BGR2GRAY), 230, 255, cv2.THRESH_BINARY)
 
         img_kills = img_entry[0:entry_height_kd,
                               entry_xoffset_kd:entry_xoffset_kd + entry_width_kd]
@@ -247,11 +253,9 @@ class IkaScene_ResultDetail:
         if is_fes:
             fes_info = self.guessFesTitle(img_fes_title)
 
-        # 左寄せで白文字がない & フェス中でなければガチバトル
-        ret, img_nawabari = cv2.threshold(
-            img_score, 230, 255, cv2.THRESH_BINARY)
-        isRankedBattle = (not is_fes) and (np.sum(img_nawabari[:, int(
-            entry_width_nawabari_score * 0.8): entry_width_nawabari_score]) == 0)
+        # フェス中ではなく、 p の表示があれば(avg = 55.0) ナワバリ。なければガチバトル
+        isRankedBattle = (not is_fes) and (
+            np.average(img_score_p_thresh[:, :]) < 16)
         isNawabariBattle = (not is_fes) and (not isRankedBattle)
 
         entry = {
@@ -272,7 +276,7 @@ class IkaScene_ResultDetail:
         if self.udemae_recoginizer and isRankedBattle:
             try:
                 entry['udemae_pre'] = self.udemae_recoginizer.match(entry[
-                                                                    'img_score'])
+                                                                    'img_score']).upper()
             except:
                 IkaUtils.dprint('Exception occured in Udemae recoginization.')
                 IkaUtils.dprint(traceback.format_exc())
@@ -382,10 +386,10 @@ if __name__ == "__main__":
     import re
     files = sys.argv[1:]
 
+    obj = IkaScene_ResultDetail()
     for file in files:
         target = cv2.imread(file)
         cv2.imshow('input', target)
-        obj = IkaScene_ResultDetail()
 
         context = {
             'engine': {'frame': target},
