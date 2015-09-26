@@ -26,7 +26,6 @@ import time
 import traceback
 
 from . import scenes
-from IkaConfig import IkaConfig
 
 # The IkaLog core engine.
 #
@@ -259,12 +258,3 @@ class IkaEngine:
         self._stop = False
         self._pause = True
         self.reset()
-
-if __name__ == "__main__":
-    from ikalog.IkaConfig import *
-    _capture, _OutputPlugins = IkaConfig().config()
-    engine = IkaEngine()
-    engine.pause(False)
-    engine.setCapture(_capture)
-    engine.setPlugins(_OutputPlugins)
-    engine.run()
