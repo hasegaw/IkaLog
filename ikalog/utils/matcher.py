@@ -21,6 +21,8 @@ import os
 import cv2
 import numpy as np
 
+from ikalog.utils.ikautils import *
+
 # Match images with mask data.
 class IkaMatcher:
 
@@ -134,10 +136,15 @@ class IkaMatcher:
         self.false_positive_method = false_positive_method if not false_positive_method is None else IkaMatcher.FP_FRONT_IS_WHITE
 
         if not img_file is None:
-            img = cv2.imread(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), img_file))
+            img_file2 = os.path.join(ikautils.baseDirectory(), img_file)
+            img = cv2.imread(img_file2)
+
+            if img is None:
+                ikautils.dprint('%s is not available. Retrying with %s' % (img_file2, img_file))
+                img = cv2.imread(img_file)
 
         if img is None:
-            raise Exception('Could not load mask image')
+            raise Exception('Could not load mask image %s (%s)' % (label, img_file))
 
         if len(img.shape) > 2 and img.shape[2] != 1:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
