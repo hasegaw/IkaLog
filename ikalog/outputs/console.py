@@ -60,6 +60,9 @@ class IkaOutput_Console:
         s = '%s ルール:%s' % (s, rule)
         s = '%s %s' % (s, won)
 
+        if ('score' in me):
+            s = '%s %sp' % (s, me['score'])
+
         if ('kills' in me) and ('deaths' in me):
             s = '%s %dK/%dD' % (s, me['kills'], me['deaths'])
 
