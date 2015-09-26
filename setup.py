@@ -38,7 +38,7 @@ addDirectory('masks')
 addDirectory('data')
 
 Mydata_files.append(('', [requests.certs.where()]))
-Mydata_files.append(('libs', ['libs/videoinput.dll']))
+Mydata_files.append(('lib', ['lib/videoinput.dll']))
 Mydata_files.append(('tools', ['tools/ControlOBS.au3']))
 Mydata_files.append(('tools', ['tools/ControlAmarecTV.au3']))
 Mydata_files.append(('screenshots', ['screenshots/.gitkeep']))
@@ -49,6 +49,7 @@ setup(
     zipfile=None,
     options={
         'py2exe': {
+            'packages': ['ikalog'],
             'bundle_files': 1,
             'unbuffered': True,
             'optimize': 2,
