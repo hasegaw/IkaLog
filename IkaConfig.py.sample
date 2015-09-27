@@ -91,7 +91,10 @@ class IkaConfig:
 
             # 開発者向け。
             # イベントトリガをコンソールに出力。イベントトリガ時のスクリーンショット保存
-            outputs.IkaOutput_DebugLog(dir='./screenshots/', screenshot=False)
+            outputs.IkaOutput_DebugLog(dir='./screenshots/', screenshot=False),
+
+            # 入力ソース
+            source,
         ]
 
         return [source, OutputPlugins]
