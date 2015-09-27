@@ -32,6 +32,42 @@ class IkaScene_Lobby:
         if not self.mask_stage.match(frame):
             return False
 
+        # 名前が出ている右側
+        img_blank_left = cv2.cvtColor(
+            frame[:, 670: 730, :], cv2.COLOR_BGR2GRAY)
+        try:
+            # typical positive image: 0.0796207334786
+            # false-positive (Finish!): 0.564226851852
+            v_blank_left = np.sum(img_blank_left) / (60 * 720 * 255)
+        except:  # DivZero?
+            v_blank_left = 0.0
+
+#        if v_blank_left > 0.40:
+#            return False
+
+        # 名前が出ている左側
+        img_blank_right = cv2.cvtColor(
+            frame[:, 1185: 1280, :], cv2.COLOR_BGR2GRAY)
+        try:
+            # typical positive image:
+            # false-positive (Finish!):
+            v_blank_right = np.sum(img_blank_right) / (95 * 720 * 255)
+        except:  # DivZero?
+            v_blank_right = 0.0
+
+        # IkaUtils.dprint('v_blank(L/R)', v_blank_left, v_blank_right)
+
+        #               | Typical score   | Threshold | False-Positive 1 |
+        #               |                 |           | (Finish!)        |
+        # v_blank_left  | 0.0796207334786 |    0.3    | 0.564226851852   |
+        # v_blank_right | 0.0811007911937 |    0.1    | 0.287326052058   |
+
+        if v_blank_left > 0.30:
+            return False
+
+        if v_blank_right > 0.30:
+            return False
+
         # マッチング中は下記文字列のうちひとつがあるはず
         r_pub_matching = self.mask_matching.match(frame)
         r_pub_matched = self.mask_matched.match(frame)
