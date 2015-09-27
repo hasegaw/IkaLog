@@ -38,7 +38,8 @@ class IkaScene_GameFinish:
             0, 0, 1280, 720,
             img_file='masks/ui_finish.png',
             threshold=0.95,
-            orig_threshold=0.001,
+            orig_threshold=0.100, # 画質が悪い場合
+            # orig_threshold=0.001, # 画質が良い場合
             false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
             pre_threshold_value=16,
             label='Finish',
