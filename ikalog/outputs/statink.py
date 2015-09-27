@@ -26,6 +26,7 @@ import urllib3
 import umsgpack
 import traceback
 
+from ikalog.version import IKALOG_VERSION
 from ikalog.utils import *
 
 # Needed in GUI mode
@@ -202,7 +203,7 @@ class statink:
         payload['image_result'] = self.encodeImage(context['engine']['frame'])
 
         payload['agent'] = 'IkaLog'
-        payload['agent_version'] = '0.01'
+        payload['agent_version'] = IKALOG_VERSION
 
         for field in payload.keys():
             if payload[field] is None:
