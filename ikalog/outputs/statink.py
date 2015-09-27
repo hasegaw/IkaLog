@@ -18,9 +18,6 @@
 #  limitations under the License.
 #
 
-# @package IkaOutput_Twitter
-
-
 from datetime import datetime
 import time
 import os
@@ -31,10 +28,75 @@ import traceback
 
 from ikalog.utils import *
 
+# Needed in GUI mode
+try:
+    import wx
+except:
+    pass
+
+# @package ikalog.outputs.statink
+
 # IkaLog Output Plugin for Stat.ink
 
 
 class statink:
+
+    def ApplyUI(self):
+        self.enabled = self.checkEnable.GetValue()
+        self.api_key = self.editApiKey.GetValue()
+
+    def RefreshUI(self):
+        self.checkEnable.SetValue(self.enabled)
+
+        if not self.api_key is None:
+            self.editApiKey.SetValue(self.api_key)
+        else:
+            self.editApiKey.SetValue('')
+
+    def onConfigReset(self, context=None):
+        self.enabled = False
+        self.api_key = None
+
+    def onConfigLoadFromContext(self, context):
+        self.onConfigReset(context)
+        try:
+            conf = context['config']['stat.ink']
+        except:
+            conf = {}
+
+        if 'Enable' in conf:
+            self.enabled = conf['Enable']
+
+        if 'APIKEY' in conf:
+            self.api_key = conf['APIKEY']
+
+        self.RefreshUI()
+        return True
+
+    def onConfigSaveToContext(self, context):
+        context['config']['stat.ink'] = {
+            'Enable': self.enabled,
+            'APIKEY': self.api_key,
+        }
+
+    def onConfigApply(self, context):
+        self.ApplyUI()
+
+    def onOptionTabCreate(self, notebook):
+        self.panel = wx.Panel(notebook, wx.ID_ANY)
+        self.page = notebook.InsertPage(0, self.panel, 'stat.ink')
+        self.layout = wx.BoxSizer(wx.VERTICAL)
+        self.panel.SetSizer(self.layout)
+        self.checkEnable = wx.CheckBox(
+            self.panel, wx.ID_ANY, u'stat.ink へのスコアを送信する')
+        self.editApiKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+
+        self.layout.Add(self.checkEnable)
+        self.layout.Add(wx.StaticText(
+            self.panel, wx.ID_ANY, u'APIキー'))
+        self.layout.Add(self.editApiKey, flag=wx.EXPAND)
+
+        self.panel.SetSizer(self.layout)
 
     def encodeStageName(self, context):
         try:

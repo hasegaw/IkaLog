@@ -227,6 +227,7 @@ if __name__ == "__main__":
             outputs.IkaOutput_Twitter(),
             outputs.IkaOutput_Screenshot(),
             outputs.IkaOutput_Slack(),
+            outputs.statink(),
     ]:
         print('Initializing %s' % plugin)
         plugin.onOptionTabCreate(gui.options.notebookOptions)
