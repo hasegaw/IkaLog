@@ -23,7 +23,7 @@ import time
 import os
 import pprint
 import urllib3
-import msgpack
+import umsgpack
 import traceback
 
 from ikalog.utils import *
@@ -239,7 +239,7 @@ class statink:
 
         try:
             f = open(basename + '.msgpack', 'w')
-            f.write(''.join(map(chr, msgpack.packb(payload))))
+            f.write(''.join(map(chr, umsgpack.packb(payload))))
             f.close()
         except:
             IkaUtils.dprint('%s: Failed to write msgpack file' % self)
@@ -264,7 +264,7 @@ class statink:
         # duplicated.
         payload = payload.copy()
         payload['apikey'] = api_key
-        mp_payload_bytes = msgpack.packb(payload)
+        mp_payload_bytes = umsgpack.packb(payload)
         mp_payload = ''.join(map(chr, mp_payload_bytes))
 
         pool = urllib3.PoolManager()
@@ -317,18 +317,9 @@ class statink:
 
         self.postPayload(payload)
 
-    def checkImport(self):
-        try:
-            from requests_oauthlib import OAuth1Session
-        except:
-            print("モジュール urllib3 がロードできませんでした。 stat.ink 投稿ができません。")
-            print("インストールするには以下のコマンドを利用してください。\n    pip install urllib3\n")
-
     def __init__(self, api_key=None, debug=False):
         self.enabled = not (api_key is None)
         self.api_key = api_key
-
-        self.checkImport()
 
         self.time_start_at = None
         self.time_end_at = None
