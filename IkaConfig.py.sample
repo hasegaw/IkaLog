@@ -59,18 +59,23 @@ class IkaConfig:
             #     tag='ikalog'
             # ),
 
+            # IkaOutput_Hue(host='192.168.0.1',user='newdeveloper'),
+
             # IkaOutput_JSON: JSONログファイルを出力します。
             outputs.IkaOutput_JSON('ika.json'),
 
             # IkaOutput_Screenshot: 戦績画面のスクリーンショットを保存します。
             outputs.IkaOutput_Screenshot('./screenshots/'),
 
-            # IkaOutput_Hue(host='192.168.0.1',user='newdeveloper'),
-
             # IkaOutput_Slack: Slack 連携
             #   url="http://...."   Slack の Inconming Web Hook URL
             #   username="botname"  Slack 上に出す bot 名
             # outputs.IkaOutput_Slack(url='https://hooks.slack.com/services/(incoming hook endpoint)'),
+
+            # statink: stat.ink (スプラトゥーンプレイ実績投稿サイト)
+            # https://stat.ink/ でアカウント登録し API キーを取得してください
+            #
+            # statink(api_key='YOUR_API_KEY_HERE'),
 
             # IkaOutput_Twitter: Twitter 連携
             # outputs.IkaOutput_Twitter(

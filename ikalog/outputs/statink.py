@@ -122,7 +122,7 @@ class statink:
     def encodeRuleName(self, context):
         try:
             return {
-                'ナワバリバドル': 'nawabari',
+                'ナワバリバトル': 'nawabari',
                 'ガチエリア': 'area',
                 'ガチヤグラ': 'yagura',
                 'ガチホコバトル': 'hoko',
@@ -186,7 +186,7 @@ class statink:
             f_type = field[0]
             f_statink = field[1]
             f_ikalog = field[2]
-            if (f_ikalog in me):
+            if (f_ikalog in me) and me[f_ikalog]:
                 if f_type == 'int':
                     try:
                         payload[f_statink] = int(me[f_ikalog])
@@ -204,10 +204,9 @@ class statink:
         payload['agent'] = 'IkaLog'
         payload['agent_version'] = '0.01'
 
-        # Delete any None values
         for field in payload.keys():
             if payload[field] is None:
-                del payload[field]
+                IkaUtils.dprint('%s: [FIXME] payload has blank entry %s:%s' % (self, field, payload[field]))
 
         return payload
 
@@ -247,7 +246,6 @@ class statink:
 
     def postPayload(self, payload, api_key=None):
         url_statink_v1_battle = 'https://stat.ink/api/v1/battle'
-        #url_statink_v1_battle = 'http://192.168.44.232:81'
 
         if api_key is None:
             api_key = self.api_key
