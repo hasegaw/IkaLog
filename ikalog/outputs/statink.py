@@ -186,7 +186,7 @@ class statink:
             f_type = field[0]
             f_statink = field[1]
             f_ikalog = field[2]
-            if (f_ikalog in me) and me[f_ikalog]:
+            if (f_ikalog in me) and (me[f_ikalog] is not None):
                 if f_type == 'int':
                     try:
                         payload[f_statink] = int(me[f_ikalog])
