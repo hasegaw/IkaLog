@@ -54,6 +54,8 @@ pip install "C:\IkaLog\Archives\opencv_python-3.0.0-cp34-none-win32.whl"
 pip install slackweb
 pip install fluent-logger
 pip install requests-oauthlib
+pip install urllib3
+pip install u-msgpack-python
 
 ■ イカログ
 
@@ -71,9 +73,11 @@ c:
 cd \IkaLog\IkaLog-master
 ..\python34\python IkaLog.py
 
-■ GUI プレビュー版（まだ実用レベルではない）
+■ GUI 版
 
-Project Phoenix 3.0.3 (wxPython新版), PyYAML など一部パッケージの追加が
-必要。
+追加で利用されるパッケージ
+
+- Project Phoenix 3.0.3 (wxPython新版)
+- PyYAML
 
 ..\python34\python IkaUI.py
