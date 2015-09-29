@@ -30,16 +30,16 @@ except:
 #
 
 
-class IkaOutput_Fluentd:
+class Fluentd(object):
 
-    def ApplyUI(self):
+    def apply_ui(self):
         self.enabled = self.checkEnable.GetValue()
         self.host = self.editHost.GetValue()
         self.port = self.editPort.GetValue()
         self.tag = self.editTag.GetValue()
         self.username = self.editUsername.GetValue()
 
-    def RefreshUI(self):
+    def refresh_ui(self):
         self._internal_update = True
         self.checkEnable.SetValue(self.enabled)
 
@@ -63,15 +63,15 @@ class IkaOutput_Fluentd:
         else:
             self.editUsername.SetValue('')
 
-    def onConfigReset(self, context=None):
+    def on_config_reset(self, context=None):
         self.enabled = False
         self.host = ''
         self.port = ''
         self.tag = ''
         self.username = ''
 
-    def onConfigLoadFromContext(self, context):
-        self.onConfigReset(context)
+    def on_config_load_from_context(self, context):
+        self.on_config_reset(context)
         try:
             conf = context['config']['fluentd']
         except:
@@ -92,10 +92,10 @@ class IkaOutput_Fluentd:
         if 'Username' in conf:
             self.username = conf['Username']
 
-        self.RefreshUI()
+        self.refresh_ui()
         return True
 
-    def onConfigSaveToContext(self, context):
+    def on_config_save_to_context(self, context):
         context['config']['fluentd'] = {
             'Enable': self.enabled,
             'Host': self.host,
@@ -103,10 +103,10 @@ class IkaOutput_Fluentd:
             'Username': self.username,
         }
 
-    def onConfigApply(self, context):
-        self.ApplyUI()
+    def on_config_apply(self, context):
+        self.apply_ui()
 
-    def onOptionTabCreate(self, notebook):
+    def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY, size=(640, 360))
         self.page = notebook.InsertPage(0, self.panel, 'Fluentd')
         self.layout = wx.BoxSizer(wx.VERTICAL)
@@ -143,7 +143,7 @@ class IkaOutput_Fluentd:
     # @param recordType Record Type (tag)
     # @param record     Record
     #
-    def submitRecord(self, recordType, record):
+    def submit_record(self, recordType, record):
         try:
             from fluent import sender
             from fluent import event
@@ -157,11 +157,11 @@ class IkaOutput_Fluentd:
             print("Fluentd: Failed to submit a record")
 
     ##
-    # Generate a record for onGameIndividualResult.
+    # Generate a record for on_game_individual_result.
     # @param self      The Object Pointer.
     # @param context   IkaLog context
     #
-    def getRecordGameIndividualResult(self, context):
+    def get_record_game_individual_result(self, context):
         map = IkaUtils.map2text(context['game']['map'])
         rule = IkaUtils.rule2text(context['game']['rule'])
         won = IkaUtils.getWinLoseText(
@@ -174,24 +174,24 @@ class IkaOutput_Fluentd:
         }
 
     ##
-    # onGameIndividualResult Hook
+    # on_game_individual_result Hook
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def onGameIndividualResult(self, context):
+    def on_game_individual_result(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
         if not self.enabled:
             return
 
-        record = self.getRecordGameIndividualResult(context)
-        self.submitRecord('gameresult', record)
+        record = self.get_record_game_individual_result(context)
+        self.submit_record('gameresult', record)
 
     ##
     # Check availability of modules this plugin depends on.
     # @param self      The Object Pointer.
     #
-    def checkImport(self):
+    def check_import(self):
         try:
             from fluent import sender
             from fluent import event
@@ -215,7 +215,7 @@ class IkaOutput_Fluentd:
         self.host = host
         self.port = port
 
-        self.checkImport()
+        self.check_import()
 
 if __name__ == "__main__":
-    obj = IkaOutput_Fluentd()
+    obj = Fluentd()

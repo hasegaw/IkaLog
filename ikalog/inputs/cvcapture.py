@@ -17,12 +17,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import os
 import ctypes
 import time
 import threading
 
-from ikalog.utils import *
+import cv2
 
+from ikalog.utils import *
 
 
 # Needed in GUI mode
@@ -32,9 +34,9 @@ except:
     pass
 
 
-class InputSourceEnumerator:
+class InputSourceEnumerator(object):
 
-    def EnumWindows(self):
+    def enum_windows(self):
         numDevices = ctypes.c_int(0)
         r = self.dll.VI_Init()
         if (r != 0):
@@ -50,24 +52,24 @@ class InputSourceEnumerator:
 
         return list
 
-    def EnumDummy(self):
+    def enum_dummy(self):
         cameras = []
         for i in range(10):
             cameras.append('Input source %d' % (i + 1))
 
         return cameras
 
-    def Enumerate(self):
+    def enumerate(self):
         if IkaUtils.isWindows():
             try:
-                cameras = self.EnumWindows()
+                cameras = self.enum_windows()
                 if len(cameras) > 1:
                     return cameras
             except:
                 IkaUtils.dprint(
                     '%s: Failed to enumerate DirectShow devices' % self)
 
-        return self.EnumDummy()
+        return self.enum_dummy()
 
     def __init__(self):
         if IkaUtils.isWindows():
@@ -90,7 +92,7 @@ class InputSourceEnumerator:
                     "%s: Failed to initalize %s" % self, videoinput_dll)
 
 
-class cvcapture:
+class CVCapture(object):
     cap = None
     out_width = 1280
     out_height = 720
@@ -105,14 +107,14 @@ class cvcapture:
     DEV_AMAREC = "AmaRec Video Capture"
 
     source = 'amarec'
-    SourceDevice = None
-    Deinterlace = False
+    source_device = None
+    deinterlace = False
     File = ''
 
     lock = threading.Lock()
 
-    def enumerateInputSources(self):
-        return InputSourceEnumerator().Enumerate()
+    def enumerate_input_sources(self):
+        return InputSourceEnumerator().enumerate()
 
     def read(self):
         if self.cap is None:
@@ -162,22 +164,22 @@ class cvcapture:
         else:
             return frame, t
 
-    def setResolution(self, width, height):
+    def set_resolution(self, width, height):
         self.cap.set(3, width)
         self.cap.set(4, height)
         self.need_resize = (width != self.out_width) or (
             height != self.out_height)
 
-    def initCapture(self, source, width=1280, height=720):
+    def init_capture(self, source, width=1280, height=720):
         self.lock.acquire()
         if not self.cap is None:
             self.cap.release()
 
         self.cap = cv2.VideoCapture(source)
-        self.setResolution(width, height)
+        self.set_resolution(width, height)
         self.lock.release()
 
-    def isWindows(self):
+    def is_windows(self):
         try:
             os.uname()
         except AttributeError:
@@ -185,7 +187,7 @@ class cvcapture:
 
         return False
 
-    def startCamera(self, source_name):
+    def start_camera(self, source_name):
 
         try:
             source = int(source_name)
@@ -198,7 +200,7 @@ class cvcapture:
                 pass
 
             try:
-                source = self.enumerateInputSources().index(source_name)
+                source = self.enumerate_input_sources().index(source_name)
             except:
                 IkaUtils.dprint("%s: Input '%s' not found" %
                                 (self, source_name))
@@ -206,32 +208,32 @@ class cvcapture:
 
         IkaUtils.dprint('%s: initalizing capture device %s' % (self, source))
         self.realtime = True
-        if self.isWindows():
-            self.initCapture(700 + source)
+        if self.is_windows():
+            self.init_capture(700 + source)
         else:
-            self.initCapture(0 + source)
+            self.init_capture(0 + source)
 
-    def startRecordedFile(self, file):
+    def start_recorded_file(self, file):
         IkaUtils.dprint(
             '%s: initalizing pre-recorded video file %s' % (self, file))
         self.realtime = False
-        self.initCapture(file)
+        self.init_capture(file)
 
-    def restartInput(self):
+    def restart_input(self):
         IkaUtils.dprint('RestartInput: source %s file %s device %s' %
-                        (self.source, self.File, self.SourceDevice))
+                        (self.source, self.File, self.source_device))
 
         if self.source == 'camera':
-            self.startCamera(self.SourceDevice)
+            self.start_camera(self.source_device)
 
         elif self.source == 'file':
-            self.startRecordedFile(self.File)
+            self.start_recorded_file(self.File)
         else:
             # Use amarec if available
             self.source = 'amarec'
 
         if self.source == 'amarec':
-            self.startCamera(self.DEV_AMAREC)
+            self.start_camera(self.DEV_AMAREC)
 
         success = True
         if self.cap is None:
@@ -243,7 +245,7 @@ class cvcapture:
 
         return success
 
-    def ApplyUI(self):
+    def apply_ui(self):
         self.source = ''
         for control in [self.radioAmarecTV, self.radioCamera, self.radioFile]:
             if control.GetValue():
@@ -253,14 +255,14 @@ class cvcapture:
                     self.radioFile: 'file',
                 }[control]
 
-        self.SourceDevice = self.listCameras.GetItems(
+        self.source_device = self.listCameras.GetItems(
         )[self.listCameras.GetSelection()]
         self.File = self.editFile.GetValue()
-        self.Deinterlace = self.checkDeinterlace.GetValue()
+        self.deinterlace = self.checkDeinterlace.GetValue()
 
         # この関数は GUI 動作時にしか呼ばれない。カメラが開けなかった
         # 場合にメッセージを出す
-        if not self.restartInput():
+        if not self.restart_input():
             r = wx.MessageDialog(None, u'キャプチャデバイスの初期化に失敗しました。設定を見直してください', 'Error',
                                  wx.OK | wx.ICON_ERROR).ShowModal()
             IkaUtils.dprint(
@@ -268,7 +270,7 @@ class cvcapture:
         else:
             IkaUtils.dprint("%s: activated new input source" % self)
 
-    def RefreshUI(self):
+    def refresh_ui(self):
         if self.source == 'amarec':
             self.radioAmarecTV.SetValue(True)
 
@@ -279,7 +281,7 @@ class cvcapture:
             self.radioFile.SetValue(True)
 
         try:
-            dev = self.SourceDevice
+            dev = self.source_device
             index = self.listCameras.GetItems().index(dev)
             self.listCameras.SetSelection(index)
         except:
@@ -290,14 +292,14 @@ class cvcapture:
         else:
             self.editFile.SetValue(self.File)
 
-        self.checkDeinterlace.SetValue(self.Deinterlace)
+        self.checkDeinterlace.SetValue(self.deinterlace)
 
-    def onConfigReset(self, context=None):
+    def on_config_reset(self, context=None):
         # さすがにカメラはリセットしたくないな
         pass
 
-    def onConfigLoadFromContext(self, context):
-        self.onConfigReset(context)
+    def on_config_load_from_context(self, context):
+        self.on_config_reset(context)
         try:
             conf = context['config']['cvcapture']
         except:
@@ -312,45 +314,45 @@ class cvcapture:
 
         if 'SourceDevice' in conf:
             try:
-                self.SourceDevice = conf['SourceDevice']
+                self.source_device = conf['SourceDevice']
             except:
                 # FIXME
-                self.SourceDevice = 0
+                self.source_device = 0
 
         if 'File' in conf:
             self.File = conf['File']
 
         if 'Deinterlace' in conf:
-            self.Deinterlace = conf['Deinterlace']
+            self.deinterlace = conf['Deinterlace']
 
-        self.RefreshUI()
-        return self.restartInput()
+        self.refresh_ui()
+        return self.restart_input()
 
-    def onConfigSaveToContext(self, context):
+    def on_config_save_to_context(self, context):
         context['config']['cvcapture'] = {
             'Source': self.source,
             'File': self.File,
-            'SourceDevice': self.SourceDevice,
-            'Deinterlace': self.Deinterlace,
+            'SourceDevice': self.source_device,
+            'Deinterlace': self.deinterlace,
         }
 
-    def onConfigApply(self, context):
-        self.ApplyUI()
+    def on_config_apply(self, context):
+        self.apply_ui()
 
-    def OnReloadDevicesButtonClick(self, event=None):
-        cameras = self.enumerateInputSources()
+    def on_reload_devices_button_click(self, event=None):
+        cameras = self.enumerate_input_sources()
         self.listCameras.SetItems(cameras)
         try:
-            index = self.enumerateInputSources().index(self.SourceDevice)
+            index = self.enumerate_input_sources().index(self.source_device)
             self.listCameras.SetSelection(index)
         except:
             IkaUtils.dprint('Error: Device not found')
 
-    def onOptionTabCreate(self, notebook):
+    def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
         self.page = notebook.InsertPage(0, self.panel, 'Input')
 
-        cameras = self.enumerateInputSources()
+        cameras = self.enumerate_input_sources()
 
         self.layout = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.layout)
@@ -382,18 +384,18 @@ class cvcapture:
         self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'Video Offset'))
 
         self.buttonReloadDevices.Bind(
-            wx.EVT_BUTTON, self.OnReloadDevicesButtonClick)
+            wx.EVT_BUTTON, self.on_reload_devices_button_click)
 
 if __name__ == "__main__":
-    obj = cvcapture()
+    obj = CVCapture()
 
-    list = InputSourceEnumerator().Enumerate()
+    list = InputSourceEnumerator().enumerate()
     for n in range(len(list)):
         print("%d: %s" % (n, list[n]))
 
     dev = input("Please input number (or name) of capture device: ")
 
-    obj.startCamera(dev)
+    obj.start_camera(dev)
 
     k = 0
     while k != 27:

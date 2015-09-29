@@ -19,48 +19,45 @@
 #
 
 import threading
-import yaml
 
-from ikalog.inputs.cvcapture import cvcapture
+import wx
+import yaml
+from ikalog.inputs.cvcapture import CVCapture
 from ikalog.engine import *
 from ikalog import outputs
-
-from ikalog.IkaPanel_Preview import *
-from ikalog.IkaPanel_Timeline import *
-from ikalog.IkaPanel_Options import *
-
+from ikalog.ui.panel import *
 from ikalog.utils import *
 
 
-class IkaLogGUI:
+class IkaLogGUI(object):
 
-    def onNextFrame(self, context):
+    def on_next_frame(self, context):
         # This IkaEngine thread a bit, so that GUI thread can process events.
         time.sleep(0.01)
 
-    def OnOptionsApplyClick(self, sender):
-        engine.callPlugins('onConfigApply', debug=True)
-        engine.callPlugins('onConfigSaveToContext', debug=True)
-        self.saveCurrentConfig(engine.context)
+    def on_options_apply_click(self, sender):
+        engine.call_plugins('on_config_apply', debug=True)
+        engine.call_plugins('on_config_save_to_context', debug=True)
+        self.save_current_config(engine.context)
 
-    def OnOptionsResetClick(self, sender):
-        engine.callPlugins('onConfigLoadFromContext', debug=True)
-        engine.callPlugins('onConfigReset', debug=True)
+    def on_options_reset_click(self, sender):
+        engine.call_plugins('on_config_load_from_context', debug=True)
+        engine.call_plugins('on_config_reset', debug=True)
 
-    def OnOptionsLoadDefaultClick(self, sender):
+    def on_options_load_default_click(self, sender):
         r = wx.MessageDialog(None, 'All of IkaLog config will be reset. Are you sure to load default?', 'Confirmation',
                              wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION).ShowModal()
 
         if r != wx.ID_YES:
             return
 
-        engine.callPlugins('onConfigReset', debug=True)
-        engine.callPlugins('onConfigSaveToContext', debug=True)
-        self.saveCurrentConfig(engine.context)
+        engine.call_plugins('on_config_reset', debug=True)
+        engine.call_plugins('on_config_save_to_context', debug=True)
+        self.save_current_config(engine.context)
 
     # 現在の設定値をYAMLファイルからインポート
     #
-    def loadConfig(self, context, filename='IkaConfig.yaml'):
+    def load_config(self, context, filename='IkaConfig.yaml'):
         try:
             yaml_file = open(filename, 'r')
             engine.context['config'] = yaml.load(yaml_file)
@@ -70,21 +67,21 @@ class IkaLogGUI:
 
     # 現在の設定値をYAMLファイルにエクスポート
     #
-    def saveCurrentConfig(self, context, filename='IkaConfig.yaml'):
+    def save_current_config(self, context, filename='IkaConfig.yaml'):
         yaml_file = open(filename, 'w')
         yaml_file.write(yaml.dump(context['config']))
         yaml_file.close
 
     # パネル切り替え時の処理
     #
-    def switchToPanel(self, activeButton):
+    def switch_to_panel(self, activeButton):
 
-        for button in [self.buttonPreview, self.buttonLastResult, self.buttonTimeline, self.buttonOptions]:
+        for button in [self.button_preview, self.button_last_result, self.button_timeline, self.button_options]:
             panel = {
-                self.buttonPreview: self.preview,
-                self.buttonLastResult: self.lastResult,
-                self.buttonTimeline: self.timeline,
-                self.buttonOptions: self.options,
+                self.button_preview: self.preview,
+                self.button_last_result: self.last_result,
+                self.button_timeline: self.timeline,
+                self.button_options: self.options,
             }[button]
 
             if button == activeButton:
@@ -105,66 +102,66 @@ class IkaLogGUI:
             w, h = self.frame.GetClientSizeTuple()
             self.frame.SetSizeWH(w, h)
 
-    def OnSwitchPanel(self, event):
-        activeButton = event.GetEventObject()
-        self.switchToPanel(activeButton)
+    def on_switch_panel(self, event):
+        active_button = event.GetEventObject()
+        self.switch_to_panel(active_button)
 
-    def UpdateEnableButton(self):
+    def update_enable_button(self):
         color = '#00A000' if self.enable else '#C0C0C0'
         label = 'Stop' if self.enable else 'Start'
-        self.buttonEnable.SetBackgroundColour(color)
-        self.buttonEnable.SetLabel(label)
+        self.button_enable.SetBackgroundColour(color)
+        self.button_enable.SetLabel(label)
 
-    def setEnable(self, enable):
+    def set_enable(self, enable):
         self.enable = enable
         engine.pause(not enable)
-        self.UpdateEnableButton()
+        self.update_enable_button()
 
-    def OnEnableButtonClick(self, event):
-        self.setEnable(not self.enable)
+    def on_enable_button_click(self, event):
+        self.set_enable(not self.enable)
 
-    def OnClose(self, event):
+    def on_close(self, event):
         engine.stop()
-        while engineThread.isAlive():
+        while engine_thread.is_alive():
             time.sleep(0.5)
         self.frame.Destroy()
 
-    def CreateButtonsUI(self):
+    def create_buttons_ui(self):
         panel = self.frame
-        self.buttonEnable = wx.Button(panel, wx.ID_ANY, u'Enable')
-        self.buttonPreview = wx.Button(panel, wx.ID_ANY, u'Preview')
-        self.buttonTimeline = wx.Button(panel, wx.ID_ANY, u'Timeline')
-        self.buttonLastResult = wx.Button(panel, wx.ID_ANY, u'Last Result')
-        self.buttonOptions = wx.Button(panel, wx.ID_ANY, u'Options')
-        self.buttonDebugLog = wx.Button(panel, wx.ID_ANY, u'Debug Log')
+        self.button_enable = wx.Button(panel, wx.ID_ANY, u'Enable')
+        self.button_preview = wx.Button(panel, wx.ID_ANY, u'Preview')
+        self.button_timeline = wx.Button(panel, wx.ID_ANY, u'Timeline')
+        self.button_last_result = wx.Button(panel, wx.ID_ANY, u'Last Result')
+        self.button_options = wx.Button(panel, wx.ID_ANY, u'Options')
+        self.button_debug_log = wx.Button(panel, wx.ID_ANY, u'Debug Log')
 
-        self.buttonsLayout = wx.BoxSizer(wx.HORIZONTAL)
-        self.buttonsLayout.Add(self.buttonEnable)
-        self.buttonsLayout.Add(self.buttonPreview)
-        self.buttonsLayout.Add(self.buttonTimeline)
-        self.buttonsLayout.Add(self.buttonLastResult)
-        self.buttonsLayout.Add(self.buttonOptions)
-        self.buttonsLayout.Add(self.buttonDebugLog)
+        self.buttons_layout = wx.BoxSizer(wx.HORIZONTAL)
+        self.buttons_layout.Add(self.button_enable)
+        self.buttons_layout.Add(self.button_preview)
+        self.buttons_layout.Add(self.button_timeline)
+        self.buttons_layout.Add(self.button_last_result)
+        self.buttons_layout.Add(self.button_options)
+        self.buttons_layout.Add(self.button_debug_log)
 
-        self.buttonPreview.Bind(wx.EVT_BUTTON, self.OnSwitchPanel)
-        self.buttonLastResult.Bind(wx.EVT_BUTTON, self.OnSwitchPanel)
-        self.buttonTimeline.Bind(wx.EVT_BUTTON, self.OnSwitchPanel)
-        self.buttonOptions.Bind(wx.EVT_BUTTON, self.OnSwitchPanel)
+        self.button_preview.Bind(wx.EVT_BUTTON, self.on_switch_panel)
+        self.button_last_result.Bind(wx.EVT_BUTTON, self.on_switch_panel)
+        self.button_timeline.Bind(wx.EVT_BUTTON, self.on_switch_panel)
+        self.button_options.Bind(wx.EVT_BUTTON, self.on_switch_panel)
 
     def __init__(self):
         self.frame = wx.Frame(None, wx.ID_ANY, "IkaLog GUI", size=(700, 500))
 
         self.layout = wx.BoxSizer(wx.VERTICAL)
 
-        self.CreateButtonsUI()
-        self.layout.Add(self.buttonsLayout)
+        self.create_buttons_ui()
+        self.layout.Add(self.buttons_layout)
 
         self.preview = PreviewPanel(self.frame, size=(640, 360))
-        self.lastResult = LastResultPanel(self.frame, size=(640, 360))
+        self.last_result = LastResultPanel(self.frame, size=(640, 360))
         self.timeline = TimelinePanel(self.frame, size=(640, 200))
         self.options = OptionsPanel(self.frame, size=(640, 500))
 
-        self.layout.Add(self.lastResult, flag=wx.EXPAND)
+        self.layout.Add(self.last_result, flag=wx.EXPAND)
         self.layout.Add(self.preview, flag=wx.EXPAND)
         self.layout.Add(self.options, flag=wx.EXPAND)
         self.layout.Add(self.timeline, flag=wx.EXPAND)
@@ -172,46 +169,46 @@ class IkaLogGUI:
         self.frame.SetSizer(self.layout)
 
         # Frame events
-        self.frame.Bind(wx.EVT_CLOSE, self.OnClose)
-        self.buttonEnable.Bind(wx.EVT_BUTTON, self.OnEnableButtonClick)
+        self.frame.Bind(wx.EVT_CLOSE, self.on_close)
+        self.button_enable.Bind(wx.EVT_BUTTON, self.on_enable_button_click)
 
         # Set event handlers for options tab
-        self.options.Bind('optionsApply', self.OnOptionsApplyClick)
-        self.options.Bind('optionsReset', self.OnOptionsResetClick)
-        self.options.Bind('optionsLoadDefault', self.OnOptionsLoadDefaultClick)
+        self.options.Bind('optionsApply', self.on_options_apply_click)
+        self.options.Bind('optionsReset', self.on_options_reset_click)
+        self.options.Bind('optionsLoadDefault', self.on_options_load_default_click)
 
-        self.switchToPanel(self.buttonPreview)
+        self.switch_to_panel(self.button_preview)
 
         # Ready.
         self.frame.Show()
 
 
-def engineThread_func():
+def engine_thread_func():
     IkaUtils.dprint('IkaEngine thread started')
     engine.run()
     IkaUtils.dprint('IkaEngine thread terminated')
 
 if __name__ == "__main__":
     application = wx.App()
-    inputPlugin = cvcapture()
+    input_plugin = CVCapture()
     gui = IkaLogGUI()
-    inputPlugin.onOptionTabCreate(gui.options.notebookOptions)
+    input_plugin.on_option_tab_create(gui.options.notebookOptions)
     gui.frame.Show()
     engine = IkaEngine()
 
-    engine.setCapture(inputPlugin)
+    engine.set_capture(input_plugin)
     plugins = []
 
     # とりあえずデバッグ用にコンソールプラグイン
-    plugins.append(outputs.IkaOutput_Console())
+    plugins.append(outputs.Console())
 
     # 各パネルをプラグインしてイベントを受信する
     plugins.append(gui.preview)
-    plugins.append(gui.lastResult)
+    plugins.append(gui.last_result)
     plugins.append(gui.timeline)
 
     # 設定画面を持つ input plugin もイベントを受信する
-    plugins.append(inputPlugin)
+    plugins.append(input_plugin)
 
     # UI 自体もイベントを受信
     plugins.append(gui)
@@ -219,31 +216,31 @@ if __name__ == "__main__":
     # 設定画面を持つ各種 Output Plugin
     # -> 設定画面の生成とプラグインリストへの登録
     for plugin in [
-            outputs.IkaOutput_CSV(),
-            # outputs.IkaOutput_Fluentd(),
-            outputs.IkaOutput_JSON(),
-            # outputs.IkaOutput_Hue(),
-            outputs.IkaOutput_OBS(),
-            outputs.IkaOutput_Twitter(),
-            outputs.IkaOutput_Screenshot(),
-            outputs.IkaOutput_Slack(),
-            outputs.statink(),
+            outputs.CSV(),
+            # outputs.Fluentd(),
+            outputs.JSON(),
+            # outputs.Hue(),
+            outputs.OBS(),
+            outputs.Twitter(),
+            outputs.Screenshot(),
+            outputs.Slack(),
+            outputs.StatInk(),
     ]:
         print('Initializing %s' % plugin)
-        plugin.onOptionTabCreate(gui.options.notebookOptions)
+        plugin.on_option_tab_create(gui.options.notebookOptions)
         plugins.append(plugin)
 
     # プラグインリストを登録
-    engine.setPlugins(plugins)
+    engine.set_plugins(plugins)
 
     # IkaLog GUI 起動時にキャプチャが enable 状態かどうか
-    gui.setEnable(True)
+    gui.set_enable(True)
 
     # Loading config
-    engine.callPlugins('onConfigReset', debug=True)
-    gui.loadConfig(engine.context)
-    engine.callPlugins('onConfigLoadFromContext', debug=True)
+    engine.call_plugins('on_config_reset', debug=True)
+    gui.load_config(engine.context)
+    engine.call_plugins('on_config_load_from_context', debug=True)
 
-    engineThread = threading.Thread(target=engineThread_func)
-    engineThread.start()
+    engine_thread = threading.Thread(target=engine_thread_func)
+    engine_thread.start()
     application.MainLoop()

@@ -18,4 +18,4 @@
 #  limitations under the License.
 #
 
-from .cvcapture import cvcapture
+from .cvcapture import CVCapture

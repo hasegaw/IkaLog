@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 
+import os
 import time
 
 from ikalog.scenes.plaza_user_stat import *  # Fixme...
@@ -34,58 +35,58 @@ except:
 # Save screenshots on certain events
 
 
-class IkaOutput_Screenshot:
+class Screenshot(object):
 
-    def ApplyUI(self):
-        self.resultDetailEnabled = self.checkResultDetailEnable.GetValue()
-        self.miiverseDrawingEnabled = self.checkMiiverseDrawingEnable.GetValue()
+    def apply_ui(self):
+        self.result_detail_enabled = self.checkResultDetailEnable.GetValue()
+        self.miiverse_drawing_enabled = self.checkMiiverseDrawingEnable.GetValue()
         self.dir = self.editDir.GetValue()
 
-    def RefreshUI(self):
+    def refresh_ui(self):
         self._internal_update = True
-        self.checkResultDetailEnable.SetValue(self.resultDetailEnabled)
-        self.checkMiiverseDrawingEnable.SetValue(self.miiverseDrawingEnabled)
+        self.checkResultDetailEnable.SetValue(self.result_detail_enabled)
+        self.checkMiiverseDrawingEnable.SetValue(self.miiverse_drawing_enabled)
 
         if not self.dir is None:
             self.editDir.SetValue(self.dir)
         else:
             self.editDir.SetValue('')
 
-    def onConfigReset(self, context=None):
-        self.resultDetailEnabled = False
-        self.miiverseDrawingEnabled = False
+    def on_config_reset(self, context=None):
+        self.result_detail_enabled = False
+        self.miiverse_drawing_enabled = False
         self.dir = os.path.join(os.getcwd(), 'screenshots')
 
-    def onConfigLoadFromContext(self, context):
-        self.onConfigReset(context)
+    def on_config_load_from_context(self, context):
+        self.on_config_reset(context)
         try:
             conf = context['config']['screenshot']
         except:
             conf = {}
 
         if 'ResultDetailEnable' in conf:
-            self.resultDetailEnabled = conf['ResultDetailEnable']
+            self.result_detail_enabled = conf['ResultDetailEnable']
 
         if 'MiiverseDrawingEnable' in conf:
-            self.miiverseDrawingEnabled = conf['MiiverseDrawingEnable']
+            self.miiverse_drawing_enabled = conf['MiiverseDrawingEnable']
 
         if 'Dir' in conf:
             self.dir = conf['Dir']
 
-        self.RefreshUI()
+        self.refresh_ui()
         return True
 
-    def onConfigSaveToContext(self, context):
+    def on_config_save_to_context(self, context):
         context['config']['screenshot'] = {
-            'ResultDetailEnable': self.resultDetailEnabled,
-            'MiiveseDrawingEnable': self.miiverseDrawingEnabled,
+            'ResultDetailEnable': self.result_detail_enabled,
+            'MiiveseDrawingEnable': self.miiverse_drawing_enabled,
             'Dir': self.dir,
         }
 
-    def onConfigApply(self, context):
-        self.ApplyUI()
+    def on_config_apply(self, context):
+        self.apply_ui()
 
-    def onOptionTabCreate(self, notebook):
+    def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
         self.page = notebook.InsertPage(0, self.panel, 'Screenshot')
         self.layout = wx.BoxSizer(wx.VERTICAL)
@@ -104,7 +105,7 @@ class IkaOutput_Screenshot:
 
         self.panel.SetSizer(self.layout)
 
-    def saveDrawing(self, context):
+    def save_drawing(self, context):
         x1 = 241
         x2 = x1 + 367
         y1 = 528
@@ -119,23 +120,23 @@ class IkaOutput_Screenshot:
         print("スクリーンショット %s を保存しました" % destfile)
 
     ##
-    # onGameIndividualResult Hook
+    # on_game_individual_result Hook
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def onGameIndividualResult(self, context):
+    def on_game_individual_result(self, context):
         timestr = time.strftime("%Y%m%d_%H%M%S", time.localtime())
         destfile = os.path.join(self.dir, 'ikabattle_%s.png' % timestr)
 
         IkaUtils.writeScreenshot(destfile, context['engine']['frame'])
         print("スクリーンショット %s を保存しました" % destfile)
 
-    def onKeyPress(self, context, key):
+    def on_key_press(self, context, key):
         if not (key == 0x53 or key == 0x73):
             return False
 
-        if IkaScene_PlazaUserStat().match(context):
-            self.saveDrawing(context)
+        if PlazaUserStat().match(context):
+            self.save_drawing(context)
 
     ##
     # Constructor
@@ -143,6 +144,6 @@ class IkaOutput_Screenshot:
     # @param dir          Destionation directory (Relative path, or absolute path)
     #
     def __init__(self, dest_dir=None):
-        self.resultDetailEnabled = (not dest_dir is None)
-        self.miiverseDrawingEnabled = False
+        self.result_detail_enabled = (not dest_dir is None)
+        self.miiverse_drawing_enabled = False
         self.dir = dest_dir

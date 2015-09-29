@@ -29,7 +29,7 @@ class PreviewPanel(wx.Panel):
         obj.SetEvtHandlerEnabled(enable)
         return orig_state
 
-    def onFrameRead(self, context):
+    def on_frame_read(self, context):
         self.latest_frame = cv2.resize(context['engine']['frame'], (640, 360))
         self.refresh_at_next = True
 
@@ -82,7 +82,7 @@ class PreviewPanel(wx.Panel):
         self.timer = wx.Timer(self)
         self.timer.Start(100)
         self.Bind(wx.EVT_PAINT, self.OnPaint)
-#		self.Bind(wx.EVT_SIZE, self.OnResize)
+        # self.Bind(wx.EVT_SIZE, self.OnResize)
         self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
 
 

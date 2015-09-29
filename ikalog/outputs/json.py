@@ -17,7 +17,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-
+import os
 from datetime import datetime
 import time
 import json
@@ -36,13 +36,13 @@ except:
 # Write JSON Log file
 
 
-class IkaOutput_JSON:
+class JSON(object):
 
-    def ApplyUI(self):
+    def apply_ui(self):
         self.enabled = self.checkEnable.GetValue()
         self.json_filename = self.editJsonFilename.GetValue()
 
-    def RefreshUI(self):
+    def refresh_ui(self):
         self._internal_update = True
         self.checkEnable.SetValue(self.enabled)
 
@@ -51,12 +51,12 @@ class IkaOutput_JSON:
         else:
             self.editJsonFilename.SetValue('')
 
-    def onConfigReset(self, context=None):
+    def on_config_reset(self, context=None):
         self.enabled = False
         self.json_filename = os.path.join(os.getcwd(), 'ika.json')
 
-    def onConfigLoadFromContext(self, context):
-        self.onConfigReset(context)
+    def on_config_load_from_context(self, context):
+        self.on_config_reset(context)
         try:
             conf = context['config']['json']
         except:
@@ -68,19 +68,19 @@ class IkaOutput_JSON:
         if 'JsonFilename' in conf:
             self.json_filename = conf['JsonFilename']
 
-        self.RefreshUI()
+        self.refresh_ui()
         return True
 
-    def onConfigSaveToContext(self, context):
+    def on_config_save_to_context(self, context):
         context['config']['json'] = {
             'Enable': self.enabled,
             'JsonFilename': self.json_filename,
         }
 
-    def onConfigApply(self, context):
-        self.ApplyUI()
+    def on_config_apply(self, context):
+        self.apply_ui()
 
-    def onOptionTabCreate(self, notebook):
+    def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
         self.page = notebook.InsertPage(0, self.panel, 'JSON')
         self.layout = wx.BoxSizer(wx.VERTICAL)
@@ -99,7 +99,7 @@ class IkaOutput_JSON:
     # @param self     The Object Pointer.
     # @param record   Record (text)
     #
-    def writeRecord(self, record):
+    def write_record(self, record):
         try:
             json_file = open(self.json_filename, "a")
             json_file.write(record)
@@ -108,11 +108,11 @@ class IkaOutput_JSON:
             print("JSON: Failed to write JSON file")
 
     ##
-    # Generate a record for onGameIndividualResult.
+    # Generate a record for on_game_individual_result.
     # @param self      The Object Pointer.
     # @param context   IkaLog context
     #
-    def getRecordGameIndividualResult(self, context):
+    def get_record_game_individual_result(self, context):
         map = IkaUtils.map2text(context['game']['map'])
         rule = IkaUtils.rule2text(context['game']['rule'])
         won = IkaUtils.getWinLoseText(
@@ -134,18 +134,18 @@ class IkaOutput_JSON:
         return json.dumps(record, separators=(',', ':')) + "\n"
 
     ##
-    # onGameIndividualResult Hook
+    # on_game_individual_result Hook
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def onGameIndividualResult(self, context):
+    def on_came_individual_result(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
         if not self.enabled:
             return
 
-        record = self.getRecordGameIndividualResult(context)
-        self.writeRecord(record)
+        record = self.get_record_game_individual_result(context)
+        self.write_record(record)
 
     ##
     # Constructor

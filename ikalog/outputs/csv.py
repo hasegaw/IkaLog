@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 
+import os
 from datetime import datetime
 import time
 
@@ -38,13 +39,13 @@ except:
 # Log Splatoon game results as CSV format.
 
 
-class IkaOutput_CSV:
+class CSV(object):
 
-    def ApplyUI(self):
+    def apply_ui(self):
         self.enabled = self.checkEnable.GetValue()
         self.csv_filename = self.editCsvFilename.GetValue()
 
-    def RefreshUI(self):
+    def refresh_ui(self):
         self._internal_update = True
         self.checkEnable.SetValue(self.enabled)
 
@@ -53,12 +54,12 @@ class IkaOutput_CSV:
         else:
             self.editCsvFilename.SetValue('')
 
-    def onConfigReset(self, context=None):
+    def on_config_reset(self, context=None):
         self.enabled = False
         self.csv_filename = os.path.join(os.getcwd(), 'ika.csv')
 
-    def onConfigLoadFromContext(self, context):
-        self.onConfigReset(context)
+    def on_config_load_from_context(self, context):
+        self.on_config_reset(context)
         try:
             conf = context['config']['csv']
         except:
@@ -70,19 +71,19 @@ class IkaOutput_CSV:
         if 'CsvFilename' in conf:
             self.csv_filename = conf['CsvFilename']
 
-        self.RefreshUI()
+        self.refresh_ui()
         return True
 
-    def onConfigSaveToContext(self, context):
+    def on_config_save_to_context(self, context):
         context['config']['csv'] = {
             'Enable': self.enabled,
             'CsvFilename': self.csv_filename,
         }
 
-    def onConfigApply(self, context):
-        self.ApplyUI()
+    def on_config_apply(self, context):
+        self.apply_ui()
 
-    def onOptionTabCreate(self, notebook):
+    def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
         self.page = notebook.InsertPage(0, self.panel, 'CSV')
         self.layout = wx.BoxSizer(wx.VERTICAL)
@@ -101,7 +102,7 @@ class IkaOutput_CSV:
     # @param self     The Object Pointer.
     # @param record   Record (text)
     #
-    def writeRecord(self, record):
+    def write_record(self, record):
         try:
             csv_file = open(self.csv_filename, "a")
             csv_file.write(record)
@@ -110,11 +111,11 @@ class IkaOutput_CSV:
             print("CSV: Failed to write CSV File")
 
     ##
-    # Generate a message for onGameIndividualResult.
+    # Generate a message for on_game_individual_result.
     # @param self      The Object Pointer.
     # @param context   IkaLog context
     #
-    def getRecordGameIndividualResult(self, context):
+    def get_record_game_individual_result(self, context):
         map = IkaUtils.map2text(context['game']['map'])
         rule = IkaUtils.rule2text(context['game']['rule'])
         won = IkaUtils.getWinLoseText(
@@ -129,18 +130,18 @@ class IkaOutput_CSV:
         return "%s,%s,%s,%s,%s\n" % (t_unix, t_str, map, rule, won)
 
     ##
-    # onGameIndividualResult Hook
+    # on_game_individual_result Hook
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def onGameIndividualResult(self, context):
+    def on_game_individual_result(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
         if not self.enabled:
             return
 
-        record = self.getRecordGameIndividualResult(context)
-        self.writeRecord(record)
+        record = self.get_record_game_individual_result(context)
+        self.write_record(record)
 
     ##
     # Constructor

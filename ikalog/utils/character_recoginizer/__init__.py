@@ -22,7 +22,7 @@ import cv2
 import numpy as np
 import pickle
 
-from ikalog.utils.character_recoginizer.character_recoginizer import *
+from ikalog.utils.character_recoginizer.character import *
 from ikalog.utils.character_recoginizer.number import *
 from ikalog.utils.character_recoginizer.udemae import *
 
@@ -30,7 +30,7 @@ from ikalog.utils.character_recoginizer.udemae import *
 array0to1280 = np.array(range(1280), dtype=np.int32)
 
 
-class fixedwidth:
+class FixedWidth(object):
     # not implemented yet.
     left = 0
     right = 1
@@ -42,7 +42,7 @@ class fixedwidth:
         self.align = align
 
 
-class perCharacter:
+class PerCharacter(object):
 
     def cut(self, img, img_hist_x):
 
@@ -76,10 +76,10 @@ if __name__ == "__main__":
     files = sys.argv[1:]
 
     total = 0
-    numberRecoginizer = number()
-    numberRecoginizer.saveModelToFile('data/number.model')
-    udemaeRecoginizer = udemae()
-    udemaeRecoginizer.saveModelToFile('data/udemae.model')
+    number_recoginizer = NumberRecoginizer()
+    number_recoginizer.save_model_to_file('data/number.model')
+    udemae_recoginizer = UdemaeRecoginizer()
+    udemae_recoginizer.save_model_to_file('data/udemae.model')
 
 #    for d in data:
 #        r = obj.matchSingleDigit(d['img'])
@@ -92,11 +92,11 @@ if __name__ == "__main__":
         num = None
         ude = None
 
-        num = numberRecoginizer.match(target)
-        ude = udemaeRecoginizer.match(target)
+        num = number_recoginizer.match(target)
+        ude = udemae_recoginizer.match(target)
         print(file, num, ude)
 
-        for sample in numberRecoginizer.findSamples(target):
+        for sample in number_recoginizer.find_samples(target):
             cv2.imwrite('/tmp/_samples%d.png' % total, sample)
             total = total + 1
 

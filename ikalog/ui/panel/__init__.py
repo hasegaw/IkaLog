@@ -3,7 +3,7 @@
 #
 #  IkaLog
 #  ======
-#  Copyright (C) 2015 Takeshi HASEGAWA
+#  Copyright (C) 2015 Junki MIZUSHIMA
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -18,24 +18,7 @@
 #  limitations under the License.
 #
 
-import signal
-
-from ikalog.engine import *
-from IkaConfig import *
-from ikalog.utils import *
-
-
-def signal_handler(num, frame):
-    IkaUtils.dprint('IkaLog: got signal %d' % num)
-    if num == 2:
-        engine.stop()
-
-signal.signal(signal.SIGINT, signal_handler)
-
-capture, OutputPlugins = IkaConfig().config()
-engine = IkaEngine()
-engine.pause(False)
-engine.set_capture(capture)
-engine.set_plugins(OutputPlugins)
-engine.run()
-IkaUtils.dprint('bye!')
+from .last_result import LastResultPanel
+from .options import OptionsPanel
+from .preview import PreviewPanel
+from .timeline import TimelinePanel

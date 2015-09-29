@@ -27,46 +27,7 @@ from ikalog.utils.character_recoginizer import *
 array0to1280 = np.array(range(1280), dtype=np.int32)
 
 
-class fixedwidth:
-    left = 0
-    right = 1
-    center = 2
-
-    def __init__(self, width, align=left):
-        assert align in [self.left, self.right, self.center]
-        self.width = width
-        self.align = align
-
-
-class perCharacter:
-
-    def cut(self, img, img_hist_x):
-
-        chars = []
-        in_char = False
-        x_start = None
-        last_x = None
-        for x in range(len(img_hist_x)):
-            if in_char:
-                if img_hist_x[x] > 0:
-                    continue
-                else:
-                    chars.append((x_start, x - 1))
-                    in_char = False
-            else:
-                if img_hist_x[x] > 0:
-                    x_start = x
-                    in_char = True
-                else:
-                    continue
-
-        return chars
-
-    def __init__(self):
-        pass
-
-
-class character_recoginizer:
+class CharacterRecoginizer(object):
 
     def FES_NAME(self, img):
         # フェスの検出の場合は黄色文字を抽出。
@@ -82,19 +43,19 @@ class character_recoginizer:
         white_mask = np.minimum(white_mask_s, white_mask_v)
         return white_mask
 
-    def saveModelToFile(self, file):
+    def save_model_to_file(self, file):
         f = open(file, 'wb')
         pickle.dump([self.samples, self.responses], f)
         f.close()
 
-    def loadModelFromFile(self, file):
+    def load_model_from_file(self, file):
         f = open(file, 'rb')
         l = pickle.load(f)
         f.close()
         self.samples = l[0]
         self.responses = l[1]
 
-    def addSample(self, response, img):
+    def add_sample(self, response, img):
         img = cv2.resize(
             img, (self.sample_width, self.sample_height), interpolation=cv2.INTER_NEAREST)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -124,7 +85,7 @@ class character_recoginizer:
         self.model.train(samples, cv2.ml.ROW_SAMPLE, responses)
         self.trained = True
 
-    def extractCharacters(self, img):
+    def extract_characters(self, img):
         img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         img_chars = self.WHITE_STRING(img_hsv)
 
@@ -145,7 +106,7 @@ class character_recoginizer:
 
         # ToDo: フェスタイトルのように長さが決まっている場合は固定長で切り出す
         # 一文字単位で認識する場合はヒストグラムから文字の位置リストを作る
-        x_cutter = perCharacter()
+        x_cutter = PerCharacter()
 
         char_tuples = x_cutter.cut(img_chars, img_chars1_hist_x)
 
@@ -162,8 +123,8 @@ class character_recoginizer:
 
         return characters
 
-    def findSamples(self, img):
-        characters = self.extractCharacters(img)
+    def find_samples(self, img):
+        characters = self.extract_characters(img)
         samples = []
         for img in characters:
             img_scaled = cv2.resize(
@@ -200,7 +161,7 @@ class character_recoginizer:
         if not self.trained:
             return None
 
-        samples = self.findSamples(img)
+        samples = self.find_samples(img)
 
         s = ''
         for sample in samples:
@@ -209,7 +170,7 @@ class character_recoginizer:
 
         return s
 
-    def matchDigits(self, img):
+    def match_digits(self, img):
         return int(self.match(img))
 
     def __init__(self):

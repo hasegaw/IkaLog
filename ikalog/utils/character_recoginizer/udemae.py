@@ -25,14 +25,14 @@ import numpy as np
 from ikalog.utils.character_recoginizer import *
 
 
-class udemae(character_recoginizer):
+class UdemaeRecoginizer(CharacterRecoginizer):
 
     def __init__(self):
-        super().__init__()
+        super(UdemaeRecoginizer, self).__init__()
 
         model_name = 'data/udemae.model'
         if os.path.isfile(model_name):
-            self.loadModelFromFile(model_name)
+            self.load_model_from_file(model_name)
             self.train()
             print('Loaded udemae recoginization model.')
             return
@@ -50,12 +50,12 @@ class udemae(character_recoginizer):
 
         for d in data:
             d['img'] = cv2.imread(d['file'])
-            self.addSample(d['response'], d['img'])
-            self.addSample(d['response'], d['img'])
-            self.addSample(d['response'], d['img'])
-        self.saveModelToFile(model_name)
+            self.add_sample(d['response'], d['img'])
+            self.add_sample(d['response'], d['img'])
+            self.add_sample(d['response'], d['img'])
+        self.save_model_to_file(model_name)
 
         self.train()
 
 if __name__ == "__main__":
-    udemae()
+    UdemaeRecoginizer()

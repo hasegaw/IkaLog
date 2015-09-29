@@ -17,10 +17,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import sys
+
+import cv2
+
 from ikalog.utils import *
 
 
-class IkaScene_PlazaUserStat:
+class PlazaUserStat(object):
     # 720p サイズでの値
     return_left = 35
     return_top = 633
@@ -66,7 +70,7 @@ if __name__ == "__main__":
     target = cv2.imread(sys.argv[1])
 
     context = {"engine": {'frame': target, 'inGame': True}}
-    obj = IkaScene_PlazaUserStat()
+    obj = PlazaUserStat()
 
     r = obj.match(context)
 

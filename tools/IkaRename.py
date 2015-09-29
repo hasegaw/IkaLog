@@ -26,7 +26,7 @@
 #       などにリネームされる
 
 import time
-from ikalog.inputs import cvcapture
+from ikalog.inputs import CVCapture
 from ikalog.engine import IkaEngine
 from ikalog import outputs
 from ikalog.utils import *
@@ -67,12 +67,12 @@ class IkaRename:
         self.file = file
 
         # インプットとして指定されたファイルを読む
-        source = cvcapture()
-        source.startRecordedFile(file)
+        source = CVCapture()
+        source.start_recorded_file(file)
         source.need_resize = True
 
         # 画面が見えないと進捗が判らないので
-        screen = outputs.IkaOutput_Screen(0, size=(640, 360))
+        screen = outputs.Screen(0, size=(640, 360))
 
         # プラグインとして自分自身（画面）を設定しコールバックを受ける
         outputPlugins = [self, screen]
@@ -80,8 +80,8 @@ class IkaRename:
         # IkaEngine を実行
         self.engine = IkaEngine()
         self.engine.pause(False)
-        self.engine.setCapture(source)
-        self.engine.setPlugins(outputPlugins)
+        self.engine.set_capture(source)
+        self.engine.set_plugins(outputPlugins)
         self.engine.run()
 
 if __name__ == "__main__":

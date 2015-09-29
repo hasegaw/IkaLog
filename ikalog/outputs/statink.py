@@ -18,16 +18,14 @@
 #  limitations under the License.
 #
 
-from datetime import datetime
 import time
 import os
 import pprint
+
 import urllib3
 import umsgpack
-import traceback
-
 from ikalog.version import IKALOG_VERSION
-from ikalog.utils import *
+
 
 # Needed in GUI mode
 try:
@@ -40,29 +38,29 @@ except:
 # IkaLog Output Plugin for Stat.ink
 
 
-class statink:
+class StatInk(object):
 
-    def ApplyUI(self):
+    def apply_ui(self):
         self.enabled = self.checkEnable.GetValue()
-        self.weaponEnabled = self.checkWeaponEnable.GetValue()
+        self.weapon_enabled = self.checkWeaponEnable.GetValue()
         self.api_key = self.editApiKey.GetValue()
 
-    def RefreshUI(self):
+    def refresh_ui(self):
         self.checkEnable.SetValue(self.enabled)
-        self.checkWeaponEnable.SetValue(self.weaponEnabled)
+        self.checkWeaponEnable.SetValue(self.weapon_enabled)
 
         if not self.api_key is None:
             self.editApiKey.SetValue(self.api_key)
         else:
             self.editApiKey.SetValue('')
 
-    def onConfigReset(self, context=None):
+    def on_config_reset(self, context=None):
         self.enabled = False
-        self.weaponEnabled = False
+        self.weapon_enabled = False
         self.api_key = None
 
-    def onConfigLoadFromContext(self, context):
-        self.onConfigReset(context)
+    def on_config_load_from_context(self, context):
+        self.on_config_reset(context)
         try:
             conf = context['config']['stat.ink']
         except:
@@ -72,25 +70,25 @@ class statink:
             self.enabled = conf['Enable']
 
         if 'WeaponEnable' in conf:
-            self.weaponEnabled = conf['WeaponEnable']
+            self.weapon_enabled = conf['WeaponEnable']
 
         if 'APIKEY' in conf:
             self.api_key = conf['APIKEY']
 
-        self.RefreshUI()
+        self.refresh_ui()
         return True
 
-    def onConfigSaveToContext(self, context):
+    def on_config_save_to_context(self, context):
         context['config']['stat.ink'] = {
             'Enable': self.enabled,
-            'WeaponEnable': self.weaponEnabled,
+            'WeaponEnable': self.weapon_enabled,
             'APIKEY': self.api_key,
         }
 
-    def onConfigApply(self, context):
-        self.ApplyUI()
+    def on_config_apply(self, context):
+        self.apply_ui()
 
-    def onOptionTabCreate(self, notebook):
+    def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
         self.page = notebook.InsertPage(0, self.panel, 'stat.ink')
         self.layout = wx.BoxSizer(wx.VERTICAL)
@@ -109,7 +107,7 @@ class statink:
 
         self.panel.SetSizer(self.layout)
 
-    def encodeStageName(self, context):
+    def encode_stage_name(self, context):
         try:
             return {
                 'アロワナモール': 'arowana',
@@ -130,7 +128,7 @@ class statink:
                 '%s: Failed convert staage name to stas.ink value' % self)
             return None
 
-    def encodeRuleName(self, context):
+    def encode_rule_name(self, context):
         try:
             return {
                 'ナワバリバトル': 'nawabari',
@@ -143,7 +141,7 @@ class statink:
                 '%s: Failed convert rule name to stas.ink value' % self)
             return None
 
-    def encodeWeaponName(self, weapon):
+    def encode_weapon_name(self, weapon):
         try:
             return {
                 'ガロン52': '52gal',
@@ -212,7 +210,7 @@ class statink:
                 '%s: Failed convert weapon name %s to stas.ink value' % (self % weapon))
             return None
 
-    def encodeImage(self, img):
+    def encode_image(self, img):
         if IkaUtils.isWindows():
             temp_file = os.path.join(
                 os.environ['TMP'], '_image_for_statink.png')
@@ -221,7 +219,7 @@ class statink:
 
         try:
             # ToDo: statink accepts only 16x9
-            # Memo: This function will be called from onGameIndividualResult,
+            # Memo: This function will be called from on_game_individual_result,
             #       therefore context['engine']['frame'] should have a result.
             IkaUtils.writeScreenshot(temp_file, img)
             f = open(temp_file, 'rb')
@@ -237,15 +235,15 @@ class statink:
 
         return s
 
-    # serializePayload
-    def serializePayload(self, context):
+    # serialize_payload
+    def serialize_payload(self, context):
         payload = {}
 
-        stage = self.encodeStageName(context)
+        stage = self.encode_stage_name(context)
         if stage:
             payload['map'] = stage
 
-        rule = self.encodeRuleName(context)
+        rule = self.encode_rule_name(context)
         if rule:
             payload['rule'] = rule
 
@@ -262,8 +260,8 @@ class statink:
 
         me = IkaUtils.getMyEntryFromContext(context)
 
-        if self.weaponEnabled and 'weapon' in me:
-            weapon = self.encodeWeaponName(me['weapon'])
+        if self.weapon_enabled and 'weapon' in me:
+            weapon = self.encode_weapon_name(me['weapon'])
             if weapon:
                 payload['weapon'] = weapon
 
@@ -294,7 +292,7 @@ class statink:
                 elif f_type == 'str_lower':
                     payload[f_statink] = str(me[f_ikalog]).lower()
 
-        payload['image_result'] = self.encodeImage(context['engine']['frame'])
+        payload['image_result'] = self.encode_image(context['engine']['frame'])
 
         payload['agent'] = 'IkaLog'
         payload['agent_version'] = IKALOG_VERSION
@@ -306,7 +304,7 @@ class statink:
 
         return payload
 
-    def writeResponseToFile(self, r_header, r_body, basename=None):
+    def write_response_to_file(self, r_header, r_body, basename=None):
         if basename is None:
             t = datetime.now().strftime("%Y%m%d_%H%M")
             basename = os.path.join('/tmp', 'statink_%s' % t)
@@ -327,7 +325,7 @@ class statink:
             IkaUtils.dprint('%s: Failed to write file' % self)
             IkaUtils.dprint(traceback.format_exc())
 
-    def writePayloadToFile(self, payload, basename=None):
+    def write_payload_to_file(self, payload, basename=None):
         if basename is None:
             t = datetime.now().strftime("%Y%m%d_%H%M")
             basename = os.path.join('/tmp', 'statink_%s' % t)
@@ -340,7 +338,7 @@ class statink:
             IkaUtils.dprint('%s: Failed to write msgpack file' % self)
             IkaUtils.dprint(traceback.format_exc())
 
-    def postPayload(self, payload, api_key=None):
+    def post_payload(self, payload, api_key=None):
         url_statink_v1_battle = 'https://stat.ink/api/v1/battle'
 
         if api_key is None:
@@ -369,14 +367,14 @@ class statink:
 
         print(req.data.decode('utf-8'))
 
-    def printPayload(self, payload):
+    def print_payload(self, payload):
         payload = payload.copy()
 
         if 'image_result' in payload:
             payload['image_result'] = '(PNG Data)'
         pprint.pprint(payload)
 
-    def onGameGoSign(self, context):
+    def on_game_go_sign(self, context):
         self.time_start_at = int(time.time())
         self.time_end_at = None
 
@@ -385,7 +383,7 @@ class statink:
         if 'msec' in context['engine']:
             self.time_start_at_msec = context['engine']['msec']
 
-    def onGameFinish(self, context):
+    def on_game_finish(self, context):
         self.time_end_at = int(time.time())
         if 'msec' in context['engine']:
             duration_msec = context['engine']['msec'] - self.time_start_at_msec
@@ -394,26 +392,26 @@ class statink:
                 self.time_start_at = int(
                     self.time_end_at - int(duration_msec / 1000))
 
-    def onGameIndividualResult(self, context):
+    def on_game_individual_result(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
         if not self.enabled:
             return False
 
-        payload = self.serializePayload(context)
+        payload = self.serialize_payload(context)
 
-        self.printPayload(payload)
+        self.print_payload(payload)
 
         #del payload['image_result']
 
         if self.debug_writePayloadToFile:
-            self.writePayloadToFile(payload)
+            self.write_payload_to_file(payload)
 
-        self.postPayload(payload)
+        self.post_payload(payload)
 
-    def __init__(self, api_key=None, weaponEnabled=False, debug=False):
+    def __init__(self, api_key=None, weapon_enabled=False, debug=False):
         self.enabled = not (api_key is None)
-        self.weaponEnabled = weaponEnabled
+        self.weapon_enabled = weapon_enabled
         self.api_key = api_key
 
         self.time_start_at = None
@@ -430,12 +428,11 @@ if __name__ == "__main__":
     # APIキーを環境変数 IKALOG_STATINK_APIKEY に設定して
     # おくこと
 
-    import sys
     from ikalog.scenes.result_detail import *
 
-    obj = statink(
+    obj = StatInk(
         api_key=os.environ['IKALOG_STATINK_APIKEY'],
-        weaponEnabled=True,
+        weapon_enabled=True,
         debug=True
     )
 
@@ -452,7 +449,7 @@ if __name__ == "__main__":
     }
 
     # 各プレイヤーの状況を分析
-    IkaScene_ResultDetail().analyze(context)
+    ResultDetail().analyze(context)
 
     # stat.ink へのトリガ
-    obj.onGameIndividualResult(context)
+    obj.on_game_individual_result(context)

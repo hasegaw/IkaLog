@@ -25,14 +25,14 @@ import numpy as np
 from ikalog.utils.character_recoginizer import *
 
 
-class number(character_recoginizer):
+class NumberRecoginizer(CharacterRecoginizer):
 
     def __init__(self):
-        super().__init__()
+        super(NumberRecoginizer, self).__init__()
 
         model_name = 'data/number.model'
         if os.path.isfile(model_name):
-            self.loadModelFromFile(model_name)
+            self.load_model_from_file(model_name)
             self.train()
             print('Loaded number recoginization model.')
             return
@@ -75,9 +75,9 @@ class number(character_recoginizer):
             {'file': 'numbers2/num0_4.png', 'response': 0, },
             {'file': 'numbers2/num0_4.png', 'response': 0, },
             {'file': 'numbers2/num0_4.png', 'response': 0, },
-            #            { 'file': 'numbers2/num1_4.png', 'response': 1, },
-            #            { 'file': 'numbers2/num1_5.png', 'response': 1, },
-            #            { 'file': 'numbers2/num1_6.png', 'response': 1, },
+            # { 'file': 'numbers2/num1_4.png', 'response': 1, },
+            # { 'file': 'numbers2/num1_5.png', 'response': 1, },
+            # { 'file': 'numbers2/num1_6.png', 'response': 1, },
             {'file': 'numbers2/num2_4.png', 'response': 2, },
             {'file': 'numbers2/num2_5.png', 'response': 2, },
             {'file': 'numbers2/num2_6.png', 'response': 2, },
@@ -106,7 +106,7 @@ class number(character_recoginizer):
 
         for d in data:
             d['img'] = cv2.imread(d['file'])
-            self.addSample(d['response'], d['img'])
-        self.saveModelToFile(model_name)
+            self.add_sample(d['response'], d['img'])
+        self.save_model_to_file(model_name)
 
         self.train()

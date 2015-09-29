@@ -32,12 +32,12 @@ from . import scenes
 
 
 class IkaEngine:
-    scn_gamestart = scenes.IkaScene_GameStart()
-    scn_gamefinish = scenes.IkaScene_GameFinish()
-    scn_gameresult = scenes.IkaScene_ResultDetail()
-    scn_ingame = scenes.IkaScene_InGame()
-    scn_towerTracker = scenes.IkaScene_TowerTracker()
-    scn_lobby = scenes.IkaScene_Lobby()
+    scn_gamestart = scenes.GameStart()
+    scn_gamefinish = scenes.GameFinish()
+    scn_gameresult = scenes.ResultDetail()
+    scn_ingame = scenes.InGame()
+    scn_tower_tracker = scenes.TowerTracker()
+    scn_lobby = scenes.Lobby()
 
     last_capture = time.time() - 100
     last_gamestart = time.time() - 100
@@ -47,11 +47,11 @@ class IkaEngine:
     def dprint(self, text):
         print(text, file=sys.stderr)
 
-    def callPlugins(self, event_name, debug=False):
+    def call_plugins(self, event_name, debug=False):
         if debug:
             self.dprint('call plug-in hook (%s):' % event_name)
 
-        for op in self.OutputPlugins:
+        for op in self.output_plugins:
             if hasattr(op, event_name):
                 if debug:
                     self.dprint('Call  %s' % op.__class__.__name__)
@@ -91,7 +91,7 @@ class IkaEngine:
             'engine': {
                 'frame': None,
                 'service': {
-                    'callPlugins': self.callPlugins,
+                    'callPlugins': self.call_plugins,
                 }
             },
             'scene': {
@@ -100,19 +100,19 @@ class IkaEngine:
             }
         }
 
-    def processFrame(self):
+    def process_frame(self):
         context = self.context  # Python のオブジェクトって参照だよね?
-        frame = self.readNextFrame(skip_frames=12)
+        frame = self.read_next_frame(skip_frames=12)
         # FixMe: frame can be a null
 
         context['engine']['frame'] = frame
         context['engine']['inGame'] = self.scn_ingame.matchTimerIcon(context)
 
-        self.callPlugins('onFrameRead')
+        self.call_plugins('on_frame_read')
 
         self.scn_ingame.match(context)
 
-        tower_data = self.scn_towerTracker.match(context)
+        tower_data = self.scn_tower_tracker.match(context)
 
         try:
             # ライフをチェック
@@ -136,13 +136,13 @@ class IkaEngine:
             if context['game']['lobby']['state'] == 'matching':
                 if (time.time() - self.last_lobby_matching) > 60:
                     # マッチングを開始した
-                    self.callPlugins('onLobbyMatching')
+                    self.call_plugins('on_lobby_matching')
                 self.last_lobby_matching = time.time()
 
             if context['game']['lobby']['state'] == 'matched':
                 if (time.time() - self.last_lobby_matched) > 10:
                     # マッチングした直後
-                    self.callPlugins('onLobbyMatched')
+                    self.call_plugins('on_lobby_matched')
                 self.last_lobby_matched = time.time()
 
         # GameStart (マップ名、ルール名が表示されている) ?
@@ -158,16 +158,16 @@ class IkaEngine:
                 'livesTrack': [],
                 'towerTrack': [],
             }
-            self.scn_towerTracker.reset(context)
+            self.scn_tower_tracker.reset(context)
 
             while (r):
-                frame = self.readNextFrame(skip_frames=3)
+                frame = self.read_next_frame(skip_frames=3)
                 context['engine']['frame'] = frame
                 r = self.scn_gamestart.match(context)
 
             self.last_gamestart = time.time()
 
-            self.callPlugins('onGameStart')
+            self.call_plugins('on_game_start')
 
         # GameFinish (ゲームが終了した) ?
         r = False
@@ -175,7 +175,7 @@ class IkaEngine:
             r = self.scn_gamefinish.match(context)
 
         if r:
-            self.callPlugins('onGameFinish')
+            self.call_plugins('on_game_finish')
 
         # GameResult (勝敗の詳細が表示されている）?
         r = (not context['engine']['inGame']) and (
@@ -189,44 +189,44 @@ class IkaEngine:
 
                 # 安定するまで待つ
                 for x in range(10):
-                    frame = self.readNextFrame()
+                    frame = self.read_next_frame()
 
                 # 安定した画像で再度解析
                 context['engine']['frame'] = frame
                 self.scn_gameresult.analyze(context)
 
-                self.callPlugins('onGameIndividualResultAnalyze')
-                self.callPlugins('onGameIndividualResult')
-                self.callPlugins('onGameReset')
+                self.call_plugins('on_game_individual_result_analyze')
+                self.call_plugins('on_game_individual_result')
+                self.call_plugins('on_game_reset')
 
                 self.reset()
 
         key = None
 
-        # FixMe: Since onFrameNext and onKeyPress has non-standard arguments,
-        # self.callPlugins() doesn't work for those.
+        # FixMe: Since on_frame_next and on_key_press has non-standard arguments,
+        # self.call_plugins() doesn't work for those.
 
-        for op in self.OutputPlugins:
-            if hasattr(op, "onFrameNext"):
+        for op in self.output_plugins:
+            if hasattr(op, "on_frame_next"):
                 try:
-                    key = op.onFrameNext(context)
+                    key = op.on_frame_next(context)
                 except:
                     pass
 
-        for op in self.OutputPlugins:
-            if hasattr(op, "onKeyPress"):
+        for op in self.output_plugins:
+            if hasattr(op, "on_key_press"):
                 try:
-                    op.onKeyPress(context, key)
+                    op.on_key_press(context, key)
                 except:
                     pass
 
-    def readNextFrame(self, skip_frames=0):
+    def read_next_frame(self, skip_frames=0):
         for i in range(skip_frames):
             frame, t = self.capture.read()
         frame, t = self.capture.read()
 
         while frame is None:
-            self.callPlugins('onFrameReadFailed')
+            self.call_plugins('on_frame_read_failed')
             if self._stop:
                 return None, None
             cv2.waitKey(1000)
@@ -241,15 +241,15 @@ class IkaEngine:
             if self._pause:
                 time.sleep(0.5)
             else:
-                self.processFrame()
+                self.process_frame()
 
         cv2.destroyAllWindows()
 
-    def setCapture(self, capture):
+    def set_capture(self, capture):
         self.capture = capture
 
-    def setPlugins(self, plugins):
-        self.OutputPlugins = plugins
+    def set_plugins(self, plugins):
+        self.output_plugins = plugins
 
     def pause(self, pause):
         self._pause = pause

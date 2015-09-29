@@ -17,11 +17,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import sys
+
+import cv2
 
 from ikalog.utils import *
 
 
-class IkaScene_GameStart:
+class GameStart(object):
 
     # 720p サイズでの値
     mapname_width = 430
@@ -184,7 +187,7 @@ if __name__ == "__main__":
         'game': {},
     }
 
-    obj = IkaScene_GameStart(debug=True)
+    obj = GameStart(debug=True)
 
     r = obj.match(context)
 

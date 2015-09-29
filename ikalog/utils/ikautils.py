@@ -27,7 +27,7 @@ import cv2
 import numpy as np
 
 
-class ikautils:
+class IkaUtils(object):
 
     @staticmethod
     def isWindows():

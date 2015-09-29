@@ -17,10 +17,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import sys
+
+import cv2
+
 from ikalog.utils import *
 
 
-class IkaScene_Lobby:
+class Lobby(object):
 
     def match(self, context):
         frame = context['engine']['frame']
@@ -150,7 +154,7 @@ class IkaScene_Lobby:
 
 if __name__ == "__main__":
     target = cv2.imread(sys.argv[1])
-    obj = IkaScene_Lobby(debug=True)
+    obj = Lobby(debug=True)
 
     context = {
         'engine': {'frame': target},

@@ -19,25 +19,23 @@
 #
 
 from ikalog.utils import *
-from datetime import datetime
-import time
 
 # IkaLog Output Plugin: Show message on Console
 #
 
 
-class ikadenwa:
+class Ikadenwa(object):
 
-    def onLobbyMatched(self, context):
+    def on_lobby_matched(self, context):
         # ToDo: もし使えるのなら全プレイヤーの情報(ランク、名前のハッシュ的なもの)をイカデンワに送信
         # イカデンワ側でのユーザマッチングに利用してもらう
         pass
 
-    def onGameStart(self, context):
+    def on_game_start(self, context):
         # ゲーム開始でステージ名、ルール名が表示されたタイミング
         IkaUtils.dprint('%s: Ikadenwa 操作 (全員ミュート)' % self)
 
-    def onGameTeamColor(self, context):
+    def on_game_team_color(self, context):
         # チームカラーが判明したらイカデンワに報告する
 
         for n in range(len(context['game']['team_color_hsv'])):
@@ -62,6 +60,6 @@ class ikadenwa:
         #       ±10度ぐらいでおなじ色を持っているプレイヤーとマッチングして
         #       自動的にミュートを解除してもらえると OK
 
-    def onGameFinish(self, context):
+    def on_game_finish(self, context):
         # マッチが終了したと同時に全員ミュート解除
         IkaUtils.dprint('%s: Ikadenwa 操作 (全員ミュート解除)' % self)

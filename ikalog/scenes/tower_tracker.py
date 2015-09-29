@@ -17,13 +17,18 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-from ikalog.utils import *
+import sys
+
+import cv2
+
+import numpy as np
+
 
 # Tracker the control tower, (or rainmaker)
 #
 
 
-class IkaScene_TowerTracker:
+class TowerTracker(object):
     # 720p サイズでの値
     tower_width = 580
     tower_left = 1280 / 2 - tower_width / 2
@@ -40,7 +45,7 @@ class IkaScene_TowerTracker:
             'min': 0,
         }
 
-    def towerPos(self, context):
+    def tower_pos(self, context):
         img = context['engine']['frame'][self.tower_line_top:self.tower_line_top +
                                          self.tower_line_height, self.tower_left:self.tower_left + self.tower_width]
         img2 = cv2.resize(img, (self.tower_width, 100))
@@ -84,7 +89,7 @@ class IkaScene_TowerTracker:
         if not (context['game']['rule']['name'] in applicable_modes):
             return None
 
-        xPos_pct = self.towerPos(context)
+        xPos_pct = self.tower_pos(context)
 
         if xPos_pct != xPos_pct:
             # 値がとれていない
@@ -106,7 +111,7 @@ class IkaScene_TowerTracker:
 
 if __name__ == "__main__":
     target = cv2.imread(sys.argv[1])
-#	target = cv2.resize(target, (1280, 720))
+    # target = cv2.resize(target, (1280, 720))
     obj = IkaScene_RankedBattle()
 
     context = {

@@ -32,7 +32,7 @@ def learnImageGroup(recoginizer=None, name="unknown", dir=None):
 
     train_dir = "%s/%s" % (train_basedir, dir)
     print("%s => %s" % (name, train_dir))
-    recoginizer.learnImageGroup(name=name, dir=train_dir)
+    recoginizer.learn_image_group(name=name, dir=train_dir)
 
 
 def loopbackTest():
@@ -68,9 +68,9 @@ def loopbackTest():
     # miss list 表示
     misses_hist = []
     for sample in misses:
-        param, r = weapons.analyzeImage(sample, debug=True)
+        param, r = weapons.analyze_image(sample, debug=True)
         misses_hist.append(r)
-    weapons.showLearnedWeaponImage(misses_hist, 'Misses', save='misses.png')
+    weapons.show_learned_weapon_image(misses_hist, 'Misses', save='misses.png')
 
     # file にリスト書き出し
     f = open('weapons.html', 'w')
@@ -146,9 +146,9 @@ learnImageGroup(weapons, "ロングブラスター", dir="ロングブラスタ�
 learnImageGroup(weapons, "わかばシューター", dir="わかばシューター")
 
 weapons.knn_train_from_group()
-weapons.saveModelToFile('data/weapons.knn.data')
+weapons.save_model_to_file('data/weapons.knn.data')
 weapons.knn_reset()
-weapons.loadModelFromFile('data/weapons.knn.data')
+weapons.load_model_from_file('data/weapons.knn.data')
 weapons.knn_train()
 if 1:
     s = loopbackTest()
@@ -157,7 +157,7 @@ if 1:
 if __name__ == "__main__":
     from ikalog.scenes.result_detail import *
     from ikalog.utils import *
-    result_detail = IkaScene_ResultDetail()
+    result_detail = ResultDetail()
     result_detail.weapons = weapons
     sort_zumi = {}
     for file in sys.argv[2:]:

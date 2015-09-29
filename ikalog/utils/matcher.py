@@ -17,18 +17,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import os
-import cv2
-import numpy as np
-
 from ikalog.utils.ikautils import *
 
 # Match images with mask data.
-class IkaMatcher:
+class IkaMatcher(object):
 
     # Calculate false-postive score (masked area must be black)
     @classmethod
-    def FP_BACK_IS_BLACK(self, mask_img=None, img_bgr=None, img_gray=None):
+    def FP_BACK_IS_BLACK(cls, mask_img=None, img_bgr=None, img_gray=None):
         fp_img = np.minimum(img_gray, mask_img)
         fp_img = cv2.inRange(fp_img, 16, 256)
         orig_hist = cv2.calcHist([fp_img], [0], None, [3], [0, 256])
@@ -37,7 +33,7 @@ class IkaMatcher:
 
     # Calculate false-postive score (masked area is not white)
     @classmethod
-    def FP_FRONT_IS_WHITE(self, mask_img=None, img_bgr=None, img_gray=None):
+    def FP_FRONT_IS_WHITE(cls, mask_img=None, img_bgr=None, img_gray=None):
         img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
         white_mask_s = cv2.inRange(img_hsv[:, :, 1], 0, 6)
         white_mask_v = cv2.inRange(img_hsv[:, :, 2], 250, 256)
@@ -136,11 +132,11 @@ class IkaMatcher:
         self.false_positive_method = false_positive_method if not false_positive_method is None else IkaMatcher.FP_FRONT_IS_WHITE
 
         if not img_file is None:
-            img_file2 = os.path.join(ikautils.baseDirectory(), img_file)
+            img_file2 = os.path.join(IkaUtils.baseDirectory(), img_file)
             img = cv2.imread(img_file2)
 
             if img is None:
-                ikautils.dprint('%s is not available. Retrying with %s' % (img_file2, img_file))
+                IkaUtils.dprint('%s is not available. Retrying with %s' % (img_file2, img_file))
                 img = cv2.imread(img_file)
 
         if img is None:

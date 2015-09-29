@@ -18,7 +18,7 @@
 #  limitations under the License.
 #
 
-from .IkaPanel_LastResult import *
+from .last_result import *
 
 
 class OptionsPanel(wx.Panel):
@@ -42,7 +42,7 @@ class OptionsPanel(wx.Panel):
 
     # オプションボタン選択時の処理
     #
-    def OnOptionButtonClick(self, event):
+    def on_option_button_click(self, event):
         activeButton = event.GetEventObject()
 
         event_name = {
@@ -75,10 +75,10 @@ class OptionsPanel(wx.Panel):
         buttonsLayout.Add(self.buttonOptionReset)
         buttonsLayout.Add(self.buttonOptionLoadDefault)
 
-        self.buttonOptionApply.Bind(wx.EVT_BUTTON, self.OnOptionButtonClick)
-        self.buttonOptionReset.Bind(wx.EVT_BUTTON, self.OnOptionButtonClick)
+        self.buttonOptionApply.Bind(wx.EVT_BUTTON, self.on_option_button_click)
+        self.buttonOptionReset.Bind(wx.EVT_BUTTON, self.on_option_button_click)
         self.buttonOptionLoadDefault.Bind(
-            wx.EVT_BUTTON, self.OnOptionButtonClick)
+            wx.EVT_BUTTON, self.on_option_button_click)
 
         self.layoutOptions.Add(buttonsLayout, flag=wx.EXPAND)
 

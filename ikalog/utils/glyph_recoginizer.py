@@ -19,13 +19,12 @@
 #
 
 import cv2
-import sys
 import numpy as np
 import os
 import pickle
 
 
-class IkaGlyphRecoginizer:
+class IkaGlyphRecoginizer(object):
     # Maximum Hue Value in OpenCV HSV Color.
     _HSV_COLOR_MAX = 185
 
@@ -37,7 +36,7 @@ class IkaGlyphRecoginizer:
 
     # pre-calculated Hue samples
 
-    def calcurateHueSamples(self, num_colors):
+    def calcurate_hue_samples(self, num_colors):
         samples = []
         for i in range(num_colors):
             c_min = self._HSV_COLOR_MAX / num_colors * i
@@ -56,7 +55,7 @@ class IkaGlyphRecoginizer:
     #
     # @param img    the source image
     # @return (img,out_img)  the result
-    def normalizeWeaponImage(self, img):
+    def normalize_weapon_image(self, img):
         h = img.shape[0]
         w = img.shape[1]
         img = img[2:h - 4, 5:w - 3]
@@ -111,7 +110,7 @@ class IkaGlyphRecoginizer:
             img,
         ]
 
-    def countH(self, img_h, samples):
+    def count_h(self, img_h, samples):
         r = []
         for sample in samples:
             x = cv2.inRange(img_h, sample[0], sample[1])
@@ -121,10 +120,10 @@ class IkaGlyphRecoginizer:
 
     # Analyze a image.
     #
-    def analyzeImage(self, img, blocks_x=3, blocks_y=3, debug=False):
-        samples = self._precalculatedHueSamples
+    def analyze_image(self, img, blocks_x=3, blocks_y=3, debug=False):
+        samples = self._precalculated_hue_samples
 
-        imgs = self.normalizeWeaponImage(img)
+        imgs = self.normalize_weapon_image(img)
         d = imgs[0]
         bw = int(d.shape[1] / blocks_x)
         bh = int(d.shape[0] / blocks_y)
@@ -146,7 +145,7 @@ class IkaGlyphRecoginizer:
                 y2 = bh * (by + 1)
                 part_img_h[:, :] = img_h[y1:y2, x1:x2]
                 part_img_s[:, :] = img_s[y1:y2, x1:x2]
-                hist.extend(self.countH(part_img_h, samples))
+                hist.extend(self.count_h(part_img_h, samples))
 
         param = {'hist': np.array(hist).astype(dtype=np.float)}
         if (not debug):
@@ -184,12 +183,12 @@ class IkaGlyphRecoginizer:
 
         return param, dimg
 
-    def calculateParamersFromSamples(self, l_hist):
+    def calculate_parameters_from_samples(self, l_hist):
         num_samples = len(l_hist)
         colors = len(l_hist[0])
 
         a = np.array(l_hist).astype(dtype=np.float)
-    #	print("num_samples = %d, colors = %d" % (num_samples, colors))
+        # print("num_samples = %d, colors = %d" % (num_samples, colors))
         # print(a)
         # print(len(a[:,1]))
 
@@ -205,14 +204,14 @@ class IkaGlyphRecoginizer:
         for e in a:
             abs_val = np.abs(e - h_avg)
             cond = (abs_val < h_var)
-    #		print(cond)
+            # print(cond)
 
             n = len(np.extract(cond, cond))
-    #		print(n)
+            # print(n)
 
         return {'h_avg': h_avg, 'h_var': h_var}
 
-    def showLearnedWeaponImage(self, l, name='hoge', save=None):
+    def show_learned_weapon_image(self, l, name='hoge', save=None):
         new_h = l[0].shape[0] * len(l)
         new_w = l[0].shape[1]
 
@@ -248,7 +247,7 @@ class IkaGlyphRecoginizer:
         if not self.trained:
             return None, None
 
-        param, dimg = self.analyzeImage(img, debug=True)
+        param, dimg = self.analyze_image(img, debug=True)
         sample = param['hist']
         sample_f = np.array(sample, np.float32).reshape((1, len(sample)))
 
@@ -260,7 +259,7 @@ class IkaGlyphRecoginizer:
         name = self.id2name(id)
         return name, dists[0][0]
 
-    def addSample1(self, name, sample):
+    def add_sample1(self, name, sample):
         id = self.name2id(name)
         print('sample_name %s id %d' % (name, id))
 
@@ -281,7 +280,7 @@ class IkaGlyphRecoginizer:
             print('Group %s' % group['name'])
             for sample_tuple in group['learn_samples']:
                 sample_data = sample_tuple[1]['hist']
-                self.addSample1(group['name'], sample_data)
+                self.add_sample1(group['name'], sample_data)
 
 
     def knn_train(self):
@@ -295,7 +294,7 @@ class IkaGlyphRecoginizer:
         print('done model.train')
         self.trained = True
 
-    def learnImageGroup(self, name=None, dir=None):
+    def learn_image_group(self, name=None, dir=None):
         group_info = {
             'name': name,
             'images': [],
@@ -311,7 +310,7 @@ class IkaGlyphRecoginizer:
                     f = os.path.join(root, file)
                     img = cv2.imread(f)
                     samples.append(img)
-                    param, dimg = self.analyzeImage(img, debug=True)
+                    param, dimg = self.analyze_image(img, debug=True)
                     sample_tuple = (img, param, dimg, f)
                     group_info['images'].append(sample_tuple)
 
@@ -327,12 +326,12 @@ class IkaGlyphRecoginizer:
 
         return group_info
 
-    def saveModelToFile(self, file):
+    def save_model_to_file(self, file):
         f = open(file, 'wb')
         pickle.dump([self.samples, self.responses, self.weapon_names], f)
         f.close()
 
-    def loadModelFromFile(self, file):
+    def load_model_from_file(self, file):
         f = open(file, 'rb')
         l = pickle.load(f)
         f.close()
@@ -341,7 +340,7 @@ class IkaGlyphRecoginizer:
         self.weapon_names = l[2]
 
     def __init__(self):
-        self._precalculatedHueSamples = self.calcurateHueSamples(
+        self._precalculated_hue_samples = self.calcurate_hue_samples(
             self._HSV_COLOR_SAMPLES)
         self.weapon_names = []
         self.knn_reset()

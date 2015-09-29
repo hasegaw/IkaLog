@@ -27,12 +27,12 @@ class TimelinePanel(wx.Panel):
     game_period = max_game_period
     context = None
 
-    def onFrameNext(self, context):
+    def on_frame_next(self, context):
         if self.context is None:
             self.context = context
         self.Refresh()
 
-    def rescaleX(self, context):
+    def rescale_x(self, context):
         self.game_period = self.max_game_period
         if not 'livesTrack' in context['game']:
             return
@@ -48,7 +48,7 @@ class TimelinePanel(wx.Panel):
         t = int((t2 - t1) / 1000 + 0.999)
         self.game_period = t
 
-    def drawLives(self, context):
+    def draw_lives(self, context):
         if not 'livesTrack' in context['game']:
             return False
 
@@ -90,8 +90,8 @@ class TimelinePanel(wx.Panel):
                 h1 = (y1 * 1.0) / ((y1 + y2) * 1.0) * self.gh
                 h2 = self.gh - h1
 
-#			h1 = y1 * 1.0 * (self.gh / 8)
-#			h2 = y2 * 1.0 * (self.gh / 8)
+            # h1 = y1 * 1.0 * (self.gh / 8)
+            # h2 = y2 * 1.0 * (self.gh / 8)
 
             if not last_xPos is None:
                 self.dc.SetPen(wx.Pen(wx.GREEN, 1))
@@ -105,13 +105,13 @@ class TimelinePanel(wx.Panel):
                     self.margin_dots + last_xPos, self.margin_dots + self.gh - h1, xPos - last_xPos,  h1)
             last_xPos = xPos
 
-    def drawTower(self, context):
+    def draw_tower(self, context):
         if not 'towerTrack' in context['game']:
-            #print('drawTower: no track data')
+            #print('draw_tower: no track data')
             return False
 
         if len(context['game']['towerTrack']) < 1:
-            #print('drawTower: no track data 2')
+            #print('draw_tower: no track data 2')
             return False
 
         time_origin = context['game']['towerTrack'][0][0]
@@ -134,7 +134,7 @@ class TimelinePanel(wx.Panel):
             last_xPos = xPos
             last_yPos = yPos
 
-    def drawGraphXaxis(self):
+    def draw_graph_x_axis(self):
         for t in range(int(self.game_period / 60) + 2):
             x = int(self.gw * (t * 60) / self.game_period)
             if (x < self.gw):
@@ -160,11 +160,11 @@ class TimelinePanel(wx.Panel):
                 self.dc.DrawText(s, self.margin_dots + x,
                                  self.margin_dots + self.gh)
 
-    def drawGraphFrame(self):
+    def draw_graph_frame(self):
         self.dc.SetBackground(wx.Brush(wx.WHITE))
         self.dc.Clear()
 
-    def drawGraphFinalize(self):
+    def draw_graph_finalize(self):
         self.dc.SetPen(wx.Pen(wx.BLACK, 3))
         self.dc.DrawLine(self.margin_dots, self.margin_dots,
                          self.margin_dots, self.margin_dots + self.gh)
@@ -188,18 +188,18 @@ class TimelinePanel(wx.Panel):
         self.default_pen = self.dc.GetPen()
         self.default_font = self.dc.GetFont()
 
-        self.drawGraphFrame()
+        self.draw_graph_frame()
 
         if self.context is None:
             # !!
             return
 
-        self.rescaleX(self.context)
-        self.drawLives(self.context)
-        self.drawGraphXaxis()
-        self.drawTower(self.context)
+        self.rescale_x(self.context)
+        self.draw_lives(self.context)
+        self.draw_graph_x_axis()
+        self.draw_tower(self.context)
 
-        self.drawGraphFinalize()
+        self.draw_graph_finalize()
 
         self.dc.SetPen(self.default_pen)
         self.dc.SetFont(self.default_font)
@@ -210,7 +210,7 @@ class TimelinePanel(wx.Panel):
         self.latest_frame = None
         wx.Panel.__init__(self, *args, **kwargs)
         self.Bind(wx.EVT_PAINT, self.OnPaint)
-#		self.Bind(wx.EVT_SIZE, self.OnResize)
+        # self.Bind(wx.EVT_SIZE, self.OnResize)
 
 
 if __name__ == "__main__":

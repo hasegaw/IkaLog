@@ -26,15 +26,15 @@ import cv2
 #
 
 
-class IkaOutput_Screen:
+class Screen(object):
 
     last_update = 0
 
-    def onFrameRead(self, context):
+    def on_frame_read(self, context):
         cv2.imshow('IkaLog', cv2.resize(
             context['engine']['frame'], self.video_size))
 
-    def onFrameNext(self, context):
+    def on_frame_next(self, context):
         r = None
         if (self.wait_ms == 0):
             now = time.time()

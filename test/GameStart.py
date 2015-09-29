@@ -22,7 +22,7 @@ import sys
 
 sys.path.append('.')
 
-from ikalog.inputs import cvcapture
+from ikalog.inputs import CVCapture
 from ikalog.utils import *
 from ikalog.engine import *
 from ikalog import outputs
@@ -49,8 +49,8 @@ class IkaTestGameStart:
 
     def __init__(self, file):
         # インプットとして指定されたファイルを読む
-        source = cvcapture()
-        source.startRecordedFile(file)
+        source = CVCapture()
+        source.start_recorded_file(file)
         source.need_resize = True
 
         # 画面が見えないと進捗が判らないので
@@ -62,8 +62,8 @@ class IkaTestGameStart:
         # IkaEngine を実行
         self.engine = IkaEngine()
         self.engine.pause(False)
-        self.engine.setCapture(source)
-        self.engine.setPlugins(outputPlugins)
+        self.engine.set_capture(source)
+        self.engine.set_plugins(outputPlugins)
         try:
             self.engine.run()
         except:

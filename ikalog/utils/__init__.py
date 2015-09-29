@@ -19,14 +19,9 @@
 #
 from __future__ import print_function
 
-import sys
-import os
-import re
-
-import cv2
-
-import numpy as np
-from .ikautils import ikautils as IkaUtils
+from .ikautils import IkaUtils
 from .matcher import IkaMatcher
 from .glyph_recoginizer import IkaGlyphRecoginizer
-from .character_recoginizer import character_recoginizer
+from .character_recoginizer import CharacterRecoginizer
+from .character_recoginizer.number import NumberRecoginizer
+from .character_recoginizer.udemae import UdemaeRecoginizer

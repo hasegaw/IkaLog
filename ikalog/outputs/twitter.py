@@ -20,8 +20,11 @@
 
 # @package IkaOutput_Twitter
 
+import os
 from datetime import datetime
 import json
+
+import cv2
 
 from ikalog.utils import *
 
@@ -37,11 +40,11 @@ except:
 # Tweet Splatton game events.
 
 
-class IkaOutput_Twitter:
+class Twitter(object):
 
     # TODO
-    _PresetCK = None
-    _PresetCS = None
+    _preset_ck = None
+    _preset_cs = None
 
     # API Endpoint for Tweets
     url = "https://api.twitter.com/1.1/statuses/update.json"
@@ -50,28 +53,28 @@ class IkaOutput_Twitter:
 
     last_me = None
 
-    def ApplyUI(self):
+    def apply_ui(self):
 
         if self.radioIkaLogKey.GetValue():
-            self.ConsumerKeyType = 'ikalog'
+            self.consumer_key_type = 'ikalog'
         if self.radioOwnKey.GetValue():
-            self.ConsumerKeyType = 'own'
-        if self._PresetCK is None:
-            self.ConsumerKeyType = 'own'
+            self.consumer_key_type = 'own'
+        if self._preset_ck is None:
+            self.consumer_key_type = 'own'
 
         self.enabled = self.checkEnable.GetValue()
-        self.AttachImage = self.checkAttachImage.GetValue()
-        self.TweetKd = self.checkTweetKd.GetValue()
-        self.TweetMyScore = self.checkTweetMyScore.GetValue()
-        self.TweetUdemae = self.checkTweetUdemae.GetValue()
-        self.ConsumerKey = self.editConsumerKey.GetValue()
-        self.ConsumerSecret = self.editConsumerSecret.GetValue()
-        self.AccessToken = self.editAccessToken.GetValue()
-        self.AccessTokenSecret = self.editAccessTokenSecret.GetValue()
+        self.attach_image = self.checkAttachImage.GetValue()
+        self.tweet_kd = self.checkTweetKd.GetValue()
+        self.tweet_my_score = self.checkTweetMyScore.GetValue()
+        self.tweet_udemae = self.checkTweetUdemae.GetValue()
+        self.consumer_key = self.editConsumerKey.GetValue()
+        self.consumer_secret = self.editConsumerSecret.GetValue()
+        self.access_token = self.editAccessToken.GetValue()
+        self.access_token_secret = self.editAccessTokenSecret.GetValue()
         self.Footer = self.editFooter.GetValue()
 
-    def OnConsumerKeyModeSwitch(self, event=None):
-        if self._PresetCK is None:
+    def on_consumer_key_mode_switch(self, event=None):
+        if self._preset_ck is None:
             self.radioIkaLogKey.Disable()
             self.radioOwnKey.SetValue(True)
         else:
@@ -86,39 +89,39 @@ class IkaOutput_Twitter:
             self.editConsumerSecret.Disable()
             self.buttonIkaLogAuth.Enable()
 
-    def RefreshUI(self):
+    def refresh_ui(self):
         self._internal_update = True
         self.checkEnable.SetValue(self.enabled)
-        self.checkAttachImage.SetValue(self.AttachImage)
-        self.checkTweetKd.SetValue(self.TweetKd)
-        self.checkTweetMyScore.SetValue(self.TweetMyScore)
-        self.checkTweetUdemae.SetValue(self.TweetUdemae)
+        self.checkAttachImage.SetValue(self.attach_image)
+        self.checkTweetKd.SetValue(self.tweet_kd)
+        self.checkTweetMyScore.SetValue(self.tweet_my_score)
+        self.checkTweetUdemae.SetValue(self.tweet_udemae)
 
         try:
             {
                 'ikalog': self.radioIkaLogKey,
                 'own': self.radioOwnKey,
-            }[self.ConsumerKeyType].SetValue(True)
+            }[self.consumer_key_type].SetValue(True)
         except:
             pass
 
-        if not self.ConsumerKey is None:
-            self.editConsumerKey.SetValue(self.ConsumerKey)
+        if not self.consumer_key is None:
+            self.editConsumerKey.SetValue(self.consumer_key)
         else:
             self.editConsumerKey.SetValue('')
 
-        if not self.ConsumerSecret is None:
-            self.editConsumerSecret.SetValue(self.ConsumerSecret)
+        if not self.consumer_secret is None:
+            self.editConsumerSecret.SetValue(self.consumer_secret)
         else:
             self.editConsumerSecret.SetValue('')
 
-        if not self.AccessToken is None:
-            self.editAccessToken.SetValue(self.AccessToken)
+        if not self.access_token is None:
+            self.editAccessToken.SetValue(self.access_token)
         else:
             self.editAccessToken.SetValue('')
 
-        if not self.AccessTokenSecret is None:
-            self.editAccessTokenSecret.SetValue(self.AccessTokenSecret)
+        if not self.access_token_secret is None:
+            self.editAccessTokenSecret.SetValue(self.access_token_secret)
         else:
             self.editAccessTokenSecret.SetValue('')
 
@@ -126,24 +129,24 @@ class IkaOutput_Twitter:
             self.editFooter.SetValue(self.Footer)
         else:
             self.editFooter.SetValue('')
-        self.OnConsumerKeyModeSwitch()
+        self.on_consumer_key_mode_switch()
         self._internal_update = False
 
-    def onConfigReset(self, context=None):
+    def on_config_reset(self, context=None):
         self.enabled = False
-        self.AttachImage = False
-        self.TweetKd = False
-        self.TweetMyScore = False
-        self.TweetUdemae = False
-        self.ConsumerKeyType = 'ikalog'
-        self.ConsumerKey = ''
-        self.ConsumerSecret = ''
-        self.AccessToken = ''
-        self.AccessTokenSecret = ''
+        self.attach_image = False
+        self.tweet_kd = False
+        self.tweet_my_score = False
+        self.tweet_udemae = False
+        self.consumer_key_type = 'ikalog'
+        self.consumer_key = ''
+        self.consumer_secret = ''
+        self.access_token = ''
+        self.access_token_secret = ''
         self.Footer = ''
 
-    def onConfigLoadFromContext(self, context):
-        self.onConfigReset(context)
+    def on_config_load_from_context(self, context):
+        self.on_config_reset(context)
 
         try:
             conf = context['config']['twitter']
@@ -154,69 +157,69 @@ class IkaOutput_Twitter:
             self.enabled = conf['Enable']
 
         if 'AttachImage' in conf:
-            self.AttachImage = conf['AttachImage']
+            self.attach_image = conf['AttachImage']
 
         if 'TweetMyScore' in conf:
-            self.TweetMyScore = conf['TweetMyScore']
+            self.tweet_my_score = conf['TweetMyScore']
 
         if 'TweetKd' in conf:
-            self.TweetKd = conf['TweetKd']
+            self.tweet_kd = conf['TweetKd']
 
         if 'TweetUdemae' in conf:
-            self.TweetUdemae = conf['TweetUdemae']
+            self.tweet_udemae = conf['TweetUdemae']
 
         if 'ConsumerKey' in conf:
-            self.ConsumerKey = conf['ConsumerKey']
+            self.consumer_key = conf['ConsumerKey']
 
         if 'ConsumerSecret' in conf:
-            self.ConsumerSecret = conf['ConsumerSecret']
+            self.consumer_secret = conf['ConsumerSecret']
 
         if 'AccessToken' in conf:
-            self.AccessToken = conf['AccessToken']
+            self.access_token = conf['AccessToken']
 
         if 'AccessTokenSecret' in conf:
-            self.AccessTokenSecret = conf['AccessTokenSecret']
+            self.access_token_secret = conf['AccessTokenSecret']
 
         if 'Footer' in conf:
             self.Footer = conf['Footer']
 
-        self.RefreshUI()
+        self.refresh_ui()
         return True
 
-    def onConfigSaveToContext(self, context):
+    def on_config_save_to_context(self, context):
         context['config']['twitter'] = {
             'Enable': self.enabled,
-            'AttachImage': self.AttachImage,
-            'TweetMyScore': self.TweetMyScore,
-            'TweetKd': self.TweetKd,
-            'TweetUdemae': self.TweetUdemae,
-            'ConsumerKey': self.ConsumerKey,
-            'ConsumerSecret': self.ConsumerSecret,
-            'AccessToken': self.AccessToken,
-            'AccessTokenSecret': self.AccessTokenSecret,
+            'AttachImage': self.attach_image,
+            'TweetMyScore': self.tweet_my_score,
+            'TweetKd': self.tweet_kd,
+            'TweetUdemae': self.tweet_udemae,
+            'ConsumerKey': self.consumer_key,
+            'ConsumerSecret': self.consumer_secret,
+            'AccessToken': self.access_token,
+            'AccessTokenSecret': self.access_token_secret,
             'Footer': self.Footer,
         }
 
-    def onConfigApply(self, context):
-        self.ApplyUI()
+    def on_config_apply(self, context):
+        self.apply_ui()
 
-        if not self.ConsumerKey is None:
-            self.editConsumerKey.SetValue(self.ConsumerKey)
+        if not self.consumer_key is None:
+            self.editConsumerKey.SetValue(self.consumer_key)
         else:
             self.editConsumerKey.SetValue('')
 
-        if not self.ConsumerSecret is None:
-            self.editConsumerSecret.SetValue(self.ConsumerSecret)
+        if not self.consumer_secret is None:
+            self.editConsumerSecret.SetValue(self.consumer_secret)
         else:
             self.editConsumerSecret.SetValue('')
 
-        if not self.AccessToken is None:
-            self.editAccessToken.SetValue(self.AccessToken)
+        if not self.access_token is None:
+            self.editAccessToken.SetValue(self.access_token)
         else:
             self.editAccessToken.SetValue('')
 
-        if not self.AccessTokenSecret is None:
-            self.editAccessTokenSecret.SetValue(self.AccessTokenSecret)
+        if not self.access_token_secret is None:
+            self.editAccessTokenSecret.SetValue(self.access_token_secret)
         else:
             self.editAccessTokenSecret.SetValue('')
 
@@ -227,7 +230,7 @@ class IkaOutput_Twitter:
 
         self._internal_update = False
 
-    def OnTestButtonClick(self, event):
+    def on_test_button_click(self, event):
         dlg = wx.TextEntryDialog(
             None, '投稿内容を入力してください', caption='投稿テスト', value='マンメンミ')
         r = dlg.ShowModal()
@@ -246,7 +249,7 @@ class IkaOutput_Twitter:
 
         # FixMe
 
-    def OnIkaLogAuthButtonClick(self, event):
+    def on_ika_log_auth_button_click(self, event):
         from requests_oauthlib import OAuth1Session
 
         request_token_url = 'https://api.twitter.com/oauth/request_token'
@@ -254,7 +257,7 @@ class IkaOutput_Twitter:
         access_token_url = 'https://api.twitter.com/oauth/access_token'
 
         oauth_session = OAuth1Session(
-            self._PresetCK, client_secret=self._PresetCS, callback_uri='oob')
+            self._preset_ck, client_secret=self._preset_cs, callback_uri='oob')
         step1 = oauth_session.fetch_request_token(request_token_url)
         auth_web_url = oauth_session.authorization_url(authorization_url)
 
@@ -287,14 +290,14 @@ class IkaOutput_Twitter:
         ATS = d['oauth_token_secret']
 
         self.radioIkaLogKey.SetValue(True)
-        self.ConsumerKeyType = 'ikalog'
-        self.AccessToken = AT
-        self.AccessTokenSecret = ATS
+        self.consumer_key_type = 'ikalog'
+        self.access_token = AT
+        self.access_token_secret = ATS
         self.ScreenName = d['screen_name']
 
-        self.RefreshUI()
+        self.refresh_ui()
 
-    def onOptionTabCreate(self, notebook):
+    def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
         self.page = notebook.InsertPage(0, self.panel, 'Twitter')
         self.layout = wx.BoxSizer(wx.VERTICAL)
@@ -360,10 +363,10 @@ class IkaOutput_Twitter:
         self.panel.SetSizer(self.layout)
 
         self.radioIkaLogKey.Bind(
-            wx.EVT_RADIOBUTTON, self.OnConsumerKeyModeSwitch)
-        self.radioOwnKey.Bind(wx.EVT_RADIOBUTTON, self.OnConsumerKeyModeSwitch)
-        self.buttonIkaLogAuth.Bind(wx.EVT_BUTTON, self.OnIkaLogAuthButtonClick)
-        self.buttonTest.Bind(wx.EVT_BUTTON, self.OnTestButtonClick)
+            wx.EVT_RADIOBUTTON, self.on_consumer_key_mode_switch)
+        self.radioOwnKey.Bind(wx.EVT_RADIOBUTTON, self.on_consumer_key_mode_switch)
+        self.buttonIkaLogAuth.Bind(wx.EVT_BUTTON, self.on_ika_log_auth_button_click)
+        self.buttonTest.Bind(wx.EVT_BUTTON, self.on_test_button_click)
 
     ##
     # Post a tweet
@@ -379,11 +382,11 @@ class IkaOutput_Twitter:
 
         from requests_oauthlib import OAuth1Session
 
-        CK = self._PresetCK if self.ConsumerKeyType == 'ikalog' else self.ConsumerKey
-        CS = self._PresetCS if self.ConsumerKeyType == 'ikalog' else self.ConsumerSecret
+        CK = self._preset_ck if self.consumer_key_type == 'ikalog' else self.consumer_key
+        CS = self._preset_cs if self.consumer_key_type == 'ikalog' else self.consumer_secret
 
         twitter = OAuth1Session(
-            CK, CS, self.AccessToken, self.AccessTokenSecret)
+            CK, CS, self.access_token, self.access_token_secret)
         twitter.post(self.url, params=params)
 
     ##
@@ -392,7 +395,7 @@ class IkaOutput_Twitter:
     # @param  frame   The image to be posted.
     # @return media   The media ID
     #
-    def postMedia(self, frame):
+    def post_media(self, frame):
 
         if IkaUtils.isWindows():
             temp_file = os.path.join(
@@ -404,12 +407,12 @@ class IkaOutput_Twitter:
 
         files = {"media": open(temp_file, "rb")}
 
-        CK = self._PresetCK if self.ConsumerKeyType == 'ikalog' else self.ConsumerKey
-        CS = self._PresetCS if self.ConsumerKeyType == 'ikalog' else self.ConsumerSecret
+        CK = self._preset_ck if self.consumer_key_type == 'ikalog' else self.consumer_key
+        CS = self._preset_cs if self.consumer_key_type == 'ikalog' else self.consumer_secret
 
         from requests_oauthlib import OAuth1Session
         twitter = OAuth1Session(
-            CK, CS, self.AccessToken, self.AccessTokenSecret)
+            CK, CS, self.access_token, self.access_token_secret)
         req = twitter.post(self.url_media, files=files)
 
         if req.status_code == 200:
@@ -418,12 +421,12 @@ class IkaOutput_Twitter:
         return None
 
     ##
-    # getTextGameIndividualResult
-    # Generate a record for onGameIndividualResult.
+    # get_text_game_individual_result
+    # Generate a record for on_game_individual_result.
     # @param self      The Object Pointer.
     # @param context   IkaLog context
     #
-    def getTextGameIndividualResult(self, context):
+    def get_text_game_individual_result(self, context):
         map = IkaUtils.map2text(context['game']['map'], unknown='スプラトゥーン')
         rule = IkaUtils.rule2text(context['game']['rule'], unknown='バトル')
         won = IkaUtils.getWinLoseText(
@@ -434,13 +437,13 @@ class IkaOutput_Twitter:
 
         me = IkaUtils.getMyEntryFromContext(context)
 
-        if ('score' in me) and self.TweetMyScore:
+        if ('score' in me) and self.tweet_my_score:
             s = '%s %sp' % (s, me['score'])
 
-        if ('kills' in me) and ('deaths' in me) and self.TweetKd:
+        if ('kills' in me) and ('deaths' in me) and self.tweet_kd:
             s = '%s %dk/%dd' % (s, me['kills'], me['deaths'])
 
-        if ('udemae_pre' in me) and self.TweetUdemae:
+        if ('udemae_pre' in me) and self.tweet_udemae:
             s = '%s ウデマエ %s' % (s, me['udemae_pre'])
 
         fes_title = IkaUtils.playerTitle(me)
@@ -451,29 +454,29 @@ class IkaOutput_Twitter:
         return s
 
     ##
-    # onGameIndividualResult Hook
+    # on_game_individual_result Hook
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def onGameIndividualResult(self, context):
+    def on_game_individual_result(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
         if not self.enabled:
             return False
 
-        s = self.getTextGameIndividualResult(context)
+        s = self.get_text_game_individual_result(context)
         IkaUtils.dprint('投稿内容 %s' % s)
 
-        media = self.postMedia(
-            context['engine']['frame']) if self.AttachImage else None
+        media = self.post_media(
+            context['engine']['frame']) if self.attach_image else None
         self.tweet(s, media=media)
 
     ##
-    # checkImport
+    # check_import
     # Check availability of modules this plugin depends on.
     # @param self      The Object Pointer.
     #
-    def checkImport(self):
+    def check_import(self):
         try:
             from requests_oauthlib import OAuth1Session
         except:
@@ -482,38 +485,42 @@ class IkaOutput_Twitter:
 
     ##
     # Constructor
-    # @param self            The Object Pointer.
-    # @param ConsumerKey     Consumer key of the application.
-    # @param ConsumerSecret  Comsumer secret.
-    # @param AuthToken       Authentication token of the user account.
-    # @param AuthTokenSecret Authentication token secret.
-    # @param AttachImage     If true, post screenshots.
+    # @param self              The Object Pointer.
+    # @param consumer_key      Consumer key of the application.
+    # @param consumer_secret   Comsumer secret.
+    # @param auth_token        Authentication token of the user account.
+    # @param auth_token_secret Authentication token secret.
+    # @param attach_image      If true, post screenshots.
+    # @param footer            Footer text.
+    # @param tweet_my_score    If true, post score.
+    # @param tweet_kd          If true, post killed/death.
+    # @param tweet_udemae      If true, post udemae(rank).
     #
-    def __init__(self, ConsumerKey=None, ConsumerSecret=None, AccessToken=None, AccessTokenSecret=None, attachImage=False, Footer='', TweetMyScore=False, TweetKd=False, TweetUdemae=False):
-        self.enabled = not((ConsumerKey is None) or (ConsumerSecret is None) or (
-            AccessToken is None) or (AccessTokenSecret is None))
-        self.ConsumerKeyType = 'own'
-        self.ConsumerKey = ConsumerKey
-        self.ConsumerSecret = ConsumerSecret
-        self.AccessToken = AccessToken
-        self.AccessTokenSecret = AccessTokenSecret
-        self.AttachImage = attachImage
-        self.TweetMyScore = TweetMyScore
-        self.TweetKd = TweetKd
-        self.TweetUdemae = TweetUdemae
-        self.Footer = ''
+    def __init__(self, consumer_key=None, consumer_secret=None, access_token=None, access_token_secret=None, attach_image=False, footer='', tweet_my_score=False, tweet_kd=False, tweet_udemae=False):
+        self.enabled = not((consumer_key is None) or (consumer_secret is None) or (
+            access_token is None) or (access_token_secret is None))
+        self.consumer_key_type = 'own'
+        self.consumer_key = consumer_key
+        self.consumer_secret = consumer_secret
+        self.access_token = access_token
+        self.access_token_secret = access_token_secret
+        self.attach_image = attach_image
+        self.tweet_my_score = tweet_my_score
+        self.tweet_kd = tweet_kd
+        self.tweet_udemae = tweet_udemae
+        self.footer = footer
 
-        self.checkImport()
+        self.check_import()
 
 if __name__ == "__main__":
     import sys
-    obj = IkaOutput_Twitter(
-        ConsumerKey=sys.argv[1],
-        ConsumerSecret=sys.argv[2],
-        AccessToken=sys.argv[3],
-        AccessTokenSecret=sys.argv[4]
+    obj = Twitter(
+        consumer_key=sys.argv[1],
+        consumer_secret=sys.argv[2],
+        access_token=sys.argv[3],
+        access_token_secret=sys.argv[4]
     )
-    print(obj.getTextGameIndividualResult({
+    print(obj.get_text_game_individual_result({
         "game": {
             "map": {"name": "map_name"},
             "rule": {"name": "rule_name"},

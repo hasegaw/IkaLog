@@ -17,12 +17,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import numpy as np
 import cv2
-import time
+
+import numpy as np
 
 
-def isEntryMe(entry_img):
+def is_entry_me(entry_img):
     # ヒストグラムから、入力エントリが自分かを判断
     me_img = entry_img[:, 0:43]
 
@@ -76,7 +76,7 @@ def anonymize(img,
         entry_id = entry_id + 1
         img_entry = thresh1[top:top + entry_height,
                             entry_left:entry_left + entry_width]
-        if (isEntryMe(img_entry)):
+        if (is_entry_me(img_entry)):
             me = entry_id
             myteam = 1 if entry_id < 5 else 2
 

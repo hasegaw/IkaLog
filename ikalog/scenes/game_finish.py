@@ -17,10 +17,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import sys
+
+import cv2
+
 from ikalog.utils import *
 
 
-class IkaScene_GameFinish:
+class GameFinish(object):
 
     last_matched = False
 
@@ -47,7 +51,7 @@ class IkaScene_GameFinish:
 
 if __name__ == "__main__":
     target = cv2.imread(sys.argv[1])
-    obj = IkaScene_GameFinish(debug=True)
+    obj = GameFinish(debug=True)
 
     context = {
         'engine': {'frame': target},

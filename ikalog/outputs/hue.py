@@ -35,14 +35,14 @@ except:
 #
 
 
-class IkaOutput_Hue:
+class Hue(object):
 
-    def ApplyUI(self):
+    def apply_ui(self):
         self.enabled = self.checkEnable.GetValue()
         self.editHost = self.editHueHost.GetValue()
         self.dir = self.editHueUsername.GetValue()
 
-    def RefreshUI(self):
+    def refresh_ui(self):
         self._internal_update = True
         self.checkEnable.SetValue(self.enabled)
 
@@ -56,13 +56,13 @@ class IkaOutput_Hue:
         else:
             self.editHueUsername.SetValue('')
 
-    def onConfigReset(self, context=None):
+    def on_config_reset(self, context=None):
         self.enabled = False
         self.hueHost = ''
         self.hueUsername = ''
 
-    def onConfigLoadFromContext(self, context):
-        self.onConfigReset(context)
+    def on_config_load_from_context(self, context):
+        self.on_config_reset(context)
         try:
             conf = context['config']['hue']
         except:
@@ -77,20 +77,20 @@ class IkaOutput_Hue:
         if 'HueHost' in conf:
             self.hueUsername = conf['HueUsername']
 
-        self.RefreshUI()
+        self.refresh_ui()
         return True
 
-    def onConfigSaveToContext(self, context):
+    def on_config_save_to_context(self, context):
         context['config']['hue'] = {
             'Enable': self.enabled,
             'HueHost': self.hueHost,
             'HueUsername': self.hueUsername,
         }
 
-    def onConfigApply(self, context):
-        self.ApplyUI()
+    def on_config_apply(self, context):
+        self.apply_ui()
 
-    def onOptionTabCreate(self, notebook):
+    def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY, size=(640, 360))
         self.page = notebook.InsertPage(0, self.panel, 'Hue')
         self.layout = wx.BoxSizer(wx.VERTICAL)
@@ -111,38 +111,38 @@ class IkaOutput_Hue:
         self.layout.Add(self.checkEnable)
         self.layout.Add(layout)
 
-    # EnhanceColor and RGBtoXY is imported from:
+    # enhance_color and rgb2xy is imported from:
     # https://gist.githubusercontent.com/error454/6b94c46d1f7512ffe5ee/raw/73b190ce256c3d8dd540cc34e6dae43848cbce4c/gistfile1.py
 
     # All the rights belongs to the author.
-    def EnhanceColor(self, normalized):
+    def enhance_color(self, normalized):
         if normalized > 0.04045:
             return math.pow((normalized + 0.055) / (1.0 + 0.055), 2.4)
         else:
             return normalized / 12.92
 
-    def RGBtoXY(self, r, g, b):
-        rNorm = r / 255.0
-        gNorm = g / 255.0
-        bNorm = b / 255.0
+    def rgb2xy(self, r, g, b):
+        r_norm = r / 255.0
+        g_norm = g / 255.0
+        b_norm = b / 255.0
 
-        rFinal = self.EnhanceColor(rNorm)
-        gFinal = self.EnhanceColor(gNorm)
-        bFinal = self.EnhanceColor(bNorm)
+        r_final = self.enhance_color(r_norm)
+        g_final = self.enhance_color(g_norm)
+        b_final = self.enhance_color(b_norm)
 
-        X = rFinal * 0.649926 + gFinal * 0.103455 + bFinal * 0.197109
-        Y = rFinal * 0.234327 + gFinal * 0.743075 + bFinal * 0.022598
-        Z = rFinal * 0.000000 + gFinal * 0.053077 + bFinal * 1.035763
+        x = r_final * 0.649926 + g_final * 0.103455 + b_final * 0.197109
+        y = r_final * 0.234327 + g_final * 0.743075 + b_final * 0.022598
+        z = r_final * 0.000000 + g_final * 0.053077 + b_final * 1.035763
 
-        if X + Y + Z == 0:
+        if x + y + z == 0:
             return (0, 0)
         else:
-            xFinal = X / (X + Y + Z)
-            yFinal = Y / (X + Y + Z)
+            x_final = x / (x + y + z)
+            y_final = y / (x + y + z)
 
-            return (xFinal, yFinal)
+            return (x_final, y_final)
 
-    def lightTeamColor(self, context):
+    def light_team_color(self, context):
         if not ('team_color_bgr' in context['game']):
             return
 
@@ -154,8 +154,8 @@ class IkaOutput_Hue:
 
         # print(team1, team2)
 
-        c1 = self.RGBtoXY(team1[2], team1[1], team1[0])
-        c2 = self.RGBtoXY(team2[2], team2[1], team2[0])
+        c1 = self.rgb2xy(team1[2], team1[1], team1[0])
+        c2 = self.rgb2xy(team2[2], team2[1], team2[0])
 
         b1 = (team1[2] * 3 + team1[0] + team1[1] * 3) / 6 / 2
         b2 = (team2[2] * 3 + team2[0] + team2[1] * 3) / 6 / 2
@@ -163,11 +163,11 @@ class IkaOutput_Hue:
         self.hue_bridge.lights(1, 'state', xy=c1, bri=255, sat=255)
         self.hue_bridge.lights(2, 'state', xy=c2, bri=255, sat=255)
 
-    def onFrameNext(self, context):
+    def on_frame_next(self, context):
         if context['engine']['inGame']:
-            self.lightTeamColor(context)
+            self.light_team_color(context)
 
-    def checkImport(self):
+    def check_import(self):
         try:
             import qhue
         except:
@@ -189,7 +189,7 @@ class IkaOutput_Hue:
             self.hue_bridge = None
             return None
 
-        self.checkImport()
+        self.check_import()
 
         import qhue
         try:
@@ -199,7 +199,7 @@ class IkaOutput_Hue:
             IkaUtils.dprint(traceback.format_exc())
 
 if __name__ == "__main__":
-    obj = IkaOutput_Hue(host='192.168.44.87', user='newdeveloper')
+    obj = Hue(host='192.168.44.87', user='newdeveloper')
 
     context = {
         'game': {
@@ -208,4 +208,4 @@ if __name__ == "__main__":
         }
     }
 
-    obj.lightTeamColor(context)
+    obj.light_team_color(context)

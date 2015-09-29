@@ -28,24 +28,24 @@ from ikalog.utils import *
 #
 
 
-class IkaOutput_Console:
+class Console(object):
 
     ##
-    # onGameStart Hook
+    # on_game_start Hook
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def onGameStart(self, context):
+    def on_game_start(self, context):
         map = IkaUtils.map2text(context['game']['map'])
         rule = IkaUtils.rule2text(context['game']['rule'])
         print("ゲームスタート。マップ %s ルール %s" % (map, rule))
 
     ##
-    # Generate a message for onGameIndividualResult.
+    # Generate a message for on_game_individual_result.
     # @param self      The Object Pointer.
     # @param context   IkaLog context
     #
-    def getTextGameIndividualResult(self, context):
+    def get_text_game_individual_result(self, context):
         map = IkaUtils.map2text(context['game']['map'])
         rule = IkaUtils.rule2text(context['game']['rule'])
         won = IkaUtils.getWinLoseText(
@@ -78,10 +78,10 @@ class IkaOutput_Console:
         return s
 
     ##
-    # onGameIndividualResult Hook
+    # on_game_individual_result Hook
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def onGameIndividualResult(self, context):
-        s = self.getTextGameIndividualResult(context)
+    def on_game_individual_result(self, context):
+        s = self.get_text_game_individual_result(context)
         print(s)

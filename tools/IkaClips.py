@@ -117,12 +117,12 @@ class IkaClips:
         self.t_GameStart = None
 
         # インプットとして指定されたファイルを読む
-        source = cvcapture()
-        source.startRecordedFile(file)
+        source = CVCapture()
+        source.start_recorded_file(file)
         source.need_resize = True
 
         # 画面が見えないと進捗が判らないので
-        screen = IkaOutput_Screen(0, size=(640, 360))
+        screen = Screen(0, size=(640, 360))
 
         # プラグインとして自分自身（画面）を設定しコールバックを受ける
         outputPlugins = [self, screen]
@@ -130,8 +130,8 @@ class IkaClips:
         # IkaEngine を実行
         self.engine = IkaEngine()
         self.engine.pause(False)
-        self.engine.setCapture(source)
-        self.engine.setPlugins(outputPlugins)
+        self.engine.set_capture(source)
+        self.engine.set_plugins(outputPlugins)
         try:
             self.engine.run()
         except:

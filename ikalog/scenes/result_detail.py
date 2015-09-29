@@ -17,18 +17,19 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import pickle
+import sys
 import traceback
 from datetime import datetime
 
+import cv2
+
+import numpy as np
 from ikalog.utils import *
-from ikalog.utils.character_recoginizer.number import *
-from ikalog.utils.character_recoginizer.udemae import *
 
 
-class IkaScene_ResultDetail:
+class ResultDetail(object):
 
-    def isEntryMe(self, entry_img):
+    def is_entry_me(self, entry_img):
         # ヒストグラムから、入力エントリが自分かを判断
         if len(entry_img.shape) > 2 and entry_img.shape[2] != 1:
             me_img = cv2.cvtColor(entry_img[:, 0:43], cv2.COLOR_BGR2GRAY)
@@ -55,7 +56,7 @@ class IkaScene_ResultDetail:
     plot_img2 = np.zeros((2000, 1000, 1), np.uint8)
 
     # FixMe: character_recoginizer を使って再実装
-    def guessFesTitle(self, img_fes_title):
+    def guess_fes_title(self, img_fes_title):
         img_fes_title_hsv = cv2.cvtColor(img_fes_title, cv2.COLOR_BGR2HSV)
         yellow = cv2.inRange(img_fes_title_hsv[:, :, 0], 32 - 2, 32 + 2)
         yellow2 = cv2.inRange(img_fes_title_hsv[:, :, 2], 240, 255)
@@ -99,8 +100,8 @@ class IkaScene_ResultDetail:
 
         #self.plot_img[y:y + img_gender.shape[0], x:x + img_gender.shape[1], 0] = img_gender
 
-#		cv2.imshow('fes_gender', img_gender)
-#		cv2.waitKey()
+        # cv2.imshow('fes_gender', img_gender)
+        # cv2.waitKey()
 
         # ふつうの/まことの/スーパー/カリスマ/えいえん
         img_fes_rank = img_fes_title_mask[:, 0:52]
@@ -176,10 +177,10 @@ class IkaScene_ResultDetail:
                 self.rank_imgs[prefix] = []
             self.rank_imgs[prefix].append(img_fes_rank)
 
-#		cv2.imshow('plot_all_values', self.plot_img)
-#		cv2.imshow('plot_xy', self.plot_img2)
-#		cv2.imshow('fes_rank', img_fes_rank)
-#		cv2.waitKey()
+        # cv2.imshow('plot_all_values', self.plot_img)
+        # cv2.imshow('plot_xy', self.plot_img2)
+        # cv2.imshow('fes_rank', img_fes_rank)
+        # cv2.waitKey()
 
         if (score4 < 1.1):
             gender = "ガール"
@@ -191,7 +192,7 @@ class IkaScene_ResultDetail:
 
         return {'img_fes_title_new': img_fes_title_new, 'gender': gender, 'prefix': prefix}
 
-    def analyzeEntry(self, img_entry):
+    def analyze_entry(self, img_entry):
         # 各プレイヤー情報のスタート左位置
         entry_left = 610
         # 各プレイヤー報の横幅
@@ -217,7 +218,7 @@ class IkaScene_ResultDetail:
         entry_width_kd = 31
         entry_height_kd = 21
 
-        me = self.isEntryMe(img_entry)
+        me = self.is_entry_me(img_entry)
         if me:
             weapon_left = entry_xoffset_weapon_me
             name_left = entry_xoffset_name_me
@@ -251,7 +252,7 @@ class IkaScene_ResultDetail:
             0] * img_fes_title_mask.shape[1] * 16
 
         if is_fes:
-            fes_info = self.guessFesTitle(img_fes_title)
+            fes_info = self.guess_fes_title(img_fes_title)
 
         # フェス中ではなく、 p の表示があれば(avg = 55.0) ナワバリ。なければガチバトル
         isRankedBattle = (not is_fes) and (
@@ -307,7 +308,7 @@ class IkaScene_ResultDetail:
 
         return entry
 
-    def isWin(self, context):
+    def is_win(self, context):
         return context['game']['won']
 
     def analyze(self, context):
@@ -330,7 +331,7 @@ class IkaScene_ResultDetail:
             img_entry = img[top:top + entry_height,
                             entry_left:entry_left + entry_width]
 
-            e = self.analyzeEntry(img_entry)
+            e = self.analyze_entry(img_entry)
 
             e['team'] = 1 if entry_id < 4 else 2
             e['rank_in_team'] = entry_id if entry_id < 4 else entry_id - 4
@@ -340,7 +341,7 @@ class IkaScene_ResultDetail:
             if e['me']:
                 context['game']['won'] = True if entry_id < 5 else False
 
-        context['game']['won'] = self.isWin(context)
+        context['game']['won'] = self.is_win(context)
         context['game']['timestamp'] = datetime.now()
 
         return True
@@ -353,15 +354,15 @@ class IkaScene_ResultDetail:
 
         try:
             self.weapons = IkaGlyphRecoginizer()
-            self.weapons.loadModelFromFile("data/weapons.knn.data")
+            self.weapons.load_model_from_file("data/weapons.knn.data")
             self.weapons.knn_train()
             IkaUtils.dprint('Loaded weapons recoginization model.')
         except:
             IkaUtils.dprint("Could not initalize weapons recoginiton model")
 
         try:
-            self.number_recoginizer = number()
-#            self.chara_recoginizer.loadModelFromFile('data/kd.model')
+            self.number_recoginizer = NumberRecoginizer()
+#            self.chara_recoginizer.load_model_from_file('data/kd.model')
 #            self.kd_recoginizer.train()
         except:
             IkaUtils.dprint("Could not initalize KD recoginiton model")
@@ -369,7 +370,7 @@ class IkaScene_ResultDetail:
             self.number_recoginizer = None
 
         try:
-            self.udemae_recoginizer = udemae()
+            self.udemae_recoginizer = UdemaeRecoginizer()
         except:
             IkaUtils.dprint("Could not initalize Udemae recoginiton model")
             IkaUtils.dprint(traceback.format_exc())
@@ -384,7 +385,7 @@ if __name__ == "__main__":
     import re
     files = sys.argv[1:]
 
-    obj = IkaScene_ResultDetail()
+    obj = ResultDetail()
     for file in files:
         target = cv2.imread(file)
         cv2.imshow('input', target)
@@ -420,7 +421,7 @@ if __name__ == "__main__":
             me = '*' if e['me'] else ''
 
             print("rank %s udemae %s %s/%s weapon %s score %s %s%s %s" %
-                  (rank, udemae, kills, deaths, weapon, score, prefix_, gender, me))
+                  (rank, UdemaeRecoginizer, kills, deaths, weapon, score, prefix_, gender, me))
 
     if len(files) > 0:
         cv2.waitKey()

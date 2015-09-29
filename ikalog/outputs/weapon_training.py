@@ -18,23 +18,27 @@
 #  limitations under the License.
 #
 
+import sys
 import time
 
+import cv2
+
 from ikalog.utils import *
+
 
 # IkaOutput_WeaponTraining: IkaLog Output Plugin for gathering weapon data for training
 #
 # Save screenshots on certain events
 
 
-class IkaOutput_WeaponTraining:
+class WeaponTraining(object):
     ##
-    # onGameIndividualResult Hook
+    # on_game_individual_result Hook
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
 
-    def onGameIndividualResult(self, context, basename=None):
+    def on_game_individual_result(self, context, basename=None):
         if basename is None:
             basename = time.strftime("ikabattle_%Y%m%d_%H%M", time.localtime())
         i = 0
@@ -69,7 +73,7 @@ if __name__ == "__main__":
     for in_file in args:
         target = cv2.imread(in_file)
         basename, ext = os.path.splitext(os.path.basename(in_file))
-        obj = result_detail.IkaScene_ResultDetail()
+        obj = result_detail.ResultDetail()
 
         context = {
             'engine': {'frame': target},
@@ -82,5 +86,5 @@ if __name__ == "__main__":
             context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
         print("matched %s analyzed %s result %s" % (matched, analyzed, won))
 
-        out = IkaOutput_WeaponTraining()
-        out.onGameIndividualResult(context, basename=basename)
+        out = WeaponTraining()
+        out.on_game_individual_result(context, basename=basename)

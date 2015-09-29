@@ -18,11 +18,11 @@
 #  limitations under the License.
 #
 
+import os
 import traceback
 import threading
 
 from ikalog.utils import *
-
 
 
 # Needed in GUI mode
@@ -35,21 +35,21 @@ except:
 #
 
 
-class IkaOutput_OBS:
+class OBS(object):
 
-    def ApplyUI(self):
+    def apply_ui(self):
         self.enabled = self.checkEnable.GetValue()
-        self.AutoRenameEnabled = self.checkAutoRenameEnable.GetValue()
-        self.ControlOBS = self.editControlOBS.GetValue()
+        self.auto_rename_enabled = self.checkAutoRenameEnable.GetValue()
+        self.control_obs = self.editControlOBS.GetValue()
         self.dir = self.editDir.GetValue()
 
-    def RefreshUI(self):
+    def refresh_ui(self):
         self._internal_update = True
         self.checkEnable.SetValue(self.enabled)
-        self.checkAutoRenameEnable.SetValue(self.AutoRenameEnabled)
+        self.checkAutoRenameEnable.SetValue(self.auto_rename_enabled)
 
-        if not self.ControlOBS is None:
-            self.editControlOBS.SetValue(self.ControlOBS)
+        if not self.control_obs is None:
+            self.editControlOBS.SetValue(self.control_obs)
         else:
             self.editControlOBS.SetValue('')
 
@@ -58,14 +58,14 @@ class IkaOutput_OBS:
         else:
             self.editDir.SetValue('')
 
-    def onConfigReset(self, context=None):
+    def on_config_reset(self, context=None):
         self.enabled = False
-        self.AutoRenameEnabled = False
-        self.ControlOBS = os.path.join(os.getcwd(), 'tools', 'ControlOBS.au3')
+        self.auto_rename_enabled = False
+        self.control_obs = os.path.join(os.getcwd(), 'tools', 'ControlOBS.au3')
         self.dir = ''
 
-    def onConfigLoadFromContext(self, context):
-        self.onConfigReset(context)
+    def on_config_load_from_context(self, context):
+        self.on_config_reset(context)
         try:
             conf = context['config']['obs']
         except:
@@ -75,29 +75,29 @@ class IkaOutput_OBS:
             self.enabled = conf['Enable']
 
         if 'AutoRenameEnable' in conf:
-            self.AutoRenameEnabled = conf['AutoRenameEnable']
+            self.auto_rename_enabled = conf['AutoRenameEnable']
 
         if 'ControlOBS' in conf:
-            self.ControlOBS = conf['ControlOBS']
+            self.control_obs = conf['ControlOBS']
 
         if 'Dir' in conf:
             self.dir = conf['Dir']
 
-        self.RefreshUI()
+        self.refresh_ui()
         return True
 
-    def onConfigSaveToContext(self, context):
+    def on_config_save_to_context(self, context):
         context['config']['obs'] = {
             'Enable': self.enabled,
-            'AutoRenameEnable': self.AutoRenameEnabled,
-            'ControlOBS': self.ControlOBS,
+            'AutoRenameEnable': self.auto_rename_enabled,
+            'ControlOBS': self.control_obs,
             'Dir': self.dir,
         }
 
-    def onConfigApply(self, context):
-        self.ApplyUI()
+    def on_config_apply(self, context):
+        self.apply_ui()
 
-    def onOptionTabCreate(self, notebook):
+    def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
         self.page = notebook.InsertPage(0, self.panel, 'OBS')
         self.layout = wx.BoxSizer(wx.VERTICAL)
@@ -125,7 +125,7 @@ class IkaOutput_OBS:
     # @param self    The object.
     # @param context IkaLog context.
     # @return        File name generated (without directory/path)
-    def createMP4Filename(self, context):
+    def create_mp4_filename(self, context):
         map = IkaUtils.map2text(context['game']['map'], unknown='マップ不明')
         rule = IkaUtils.rule2text(context['game']['rule'], unknown='ルール不明')
         won = IkaUtils.getWinLoseText(
@@ -137,8 +137,8 @@ class IkaOutput_OBS:
         return newname
 
     # RunControlOBS
-    def runControlOBS(self, mode):
-        cmd = '%s %s' % (self.ControlOBS, mode)
+    def run_control_obs(self, mode):
+        cmd = '%s %s' % (self.control_obs, mode)
         print('Running %s' % cmd)
         try:
             os.system(cmd)
@@ -149,16 +149,16 @@ class IkaOutput_OBS:
     #
     # @param self    The object.
     # @param context IkaLog context.
-    def onLobbyMatched(self, context):
+    def on_lobby_matched(self, context):
         if not self.enabled:
             return False
 
-        self.runControlOBS('start')
+        self.run_control_obs('start')
 
     def worker(self):
-        self.runControlOBS('stop')
+        self.run_control_obs('stop')
 
-    def onGameIndividualResult(self, context):
+    def on_game_individual_result(self, context):
         if not self.enabled:
             return False
 
@@ -173,9 +173,9 @@ class IkaOutput_OBS:
         os.environ['IKALOG_WON'] = won
         #os.environ['IKALOG_TIMESTAMP'] = time.strftime("%Y%m%d_%H%M", context['game']['timestamp'])
 
-        if self.AutoRenameEnabled:
+        if self.auto_rename_enabled:
             os.environ['IKALOG_MP4_DESTNAME'] = '%s%s' % (
-                self.dir, self.createMP4Filename(context))
+                self.dir, self.create_mp4_filename(context))
             os.environ['IKALOG_MP4_DESTDIR'] = self.dir
 
         # Since we want to stop recording asyncnously,
@@ -185,10 +185,10 @@ class IkaOutput_OBS:
         thread = threading.Thread(target=self.worker)
         thread.start()
 
-    def __init__(self, ControlOBS=None, dir=None):
-        self.enabled = (not ControlOBS is None)
-        self.AutoRenameEnabled = (not dir is None)
-        self.ControlOBS = ControlOBS
+    def __init__(self, control_obs=None, dir=None):
+        self.enabled = (not control_obs is None)
+        self.auto_rename_enabled = (not dir is None)
+        self.control_obs = control_obs
         self.dir = dir
 
 if __name__ == "__main__":
@@ -203,8 +203,8 @@ if __name__ == "__main__":
         }
     }
 
-    obs = IkaOutput_OBS('P:/IkaLog/tools/ControlOBS.au3', dir='K:/')
+    obs = OBS('P:/IkaLog/tools/ControlOBS.au3', dir='K:/')
 
-    obs.onLobbyMatched(context)
+    obs.on_lobby_matched(context)
     time.sleep(10)
-    obs.onGameIndividualResult(context)
+    obs.on_game_individual_result(context)

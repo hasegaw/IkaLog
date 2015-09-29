@@ -24,7 +24,7 @@ import cv2
 
 class LastResultPanel(wx.Panel):
 
-    def onGameIndividualResult(self, context):
+    def on_game_individual_result(self, context):
         self.latest_frame = cv2.resize(context['engine']['frame'], (640, 360))
         self.Refresh()
 
@@ -50,4 +50,4 @@ class LastResultPanel(wx.Panel):
         self.latest_frame = None
         wx.Panel.__init__(self, *args, **kwargs)
         self.Bind(wx.EVT_PAINT, self.OnPaint)
-#		self.Bind(wx.EVT_SIZE, self.OnResize)
+        # self.Bind(wx.EVT_SIZE, self.OnResize)

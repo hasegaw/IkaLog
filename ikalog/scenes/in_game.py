@@ -17,10 +17,15 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import sys
+
+import cv2
+
+import numpy as np
 from ikalog.utils import *
 
 
-class IkaScene_InGame:
+class InGame(object):
     # 720p サイズでの値
     timer_left = 60
     timer_width = 28
@@ -41,13 +46,13 @@ class IkaScene_InGame:
                                          self.meter_height, self.meter_left:self.meter_left + self.meter_width]
         img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         img2 = cv2.resize(img, (self.meter_width, 100))
-#		for i in range(2):
-#			img2[20:40,:, i] = cv2.resize(img_hsv[:,:,0], (self.meter_width, 20))
-#			img2[40:60,:, i] = cv2.resize(img_hsv[:,:,1], (self.meter_width, 20))
-#			img2[60:80,:, i] = cv2.resize(img_hsv[:,:,2], (self.meter_width, 20))
-
-#		cv2.imshow('yagura',     img2)
-#		cv2.imshow('yagura_hsv', cv2.resize(img_hsv, (self.meter_width, 100)))
+        # for i in range(2):
+        #     img2[20:40,:, i] = cv2.resize(img_hsv[:,:,0], (self.meter_width, 20))
+        #     img2[40:60,:, i] = cv2.resize(img_hsv[:,:,1], (self.meter_width, 20))
+        #     img2[60:80,:, i] = cv2.resize(img_hsv[:,:,2], (self.meter_width, 20))
+        #
+        # cv2.imshow('yagura',     img2)
+        # cv2.imshow('yagura_hsv', cv2.resize(img_hsv, (self.meter_width, 100)))
 
         # VS 文字の位置（白）を検出する (s が低く v が高い)
         white_mask_s = cv2.inRange(img_hsv[:, :, 1], 0, 8)
@@ -143,11 +148,11 @@ class IkaScene_InGame:
 
             cv2.rectangle(context['engine']['frame'], (self.meter_left +
                                                        i - 4,  44), (self.meter_left + i + 4, 50), (255, 255, 255), 1)
-#		print("色: 味方 %d 敵 %d" % (team1_color, team2_color))
-        #print("味方 %s 敵 %s" % (a,b))
-#		cv2.imshow('yagura_gray', img_gray2)
-#		cv2.imshow('yagura_gray2', img_gray3)
-#		cv2.imshow('eyes', eye_white_mask)
+        # print("色: 味方 %d 敵 %d" % (team1_color, team2_color))
+        # print("味方 %s 敵 %s" % (a,b))
+        # cv2.imshow('yagura_gray', img_gray2)
+        # cv2.imshow('yagura_gray2', img_gray3)
+        # cv2.imshow('eyes', eye_white_mask)
 
         hasTeamColor = ('team_color_bgr' in context['game'])
 
@@ -162,7 +167,7 @@ class IkaScene_InGame:
             ]
 
             callPlugins = context['engine']['service']['callPlugins']
-            callPlugins('onGameTeamColor')
+            callPlugins('on_game_team_color')
 
         return (a, b)
 
@@ -224,13 +229,13 @@ class IkaScene_InGame:
         # ゴーサイン (60秒に1度まで)
         if (context['scene'][self]['lastGoSign'] + 60 * 1000) < msec:
             if self.matchGoSign(context):
-                callPlugins('onGameGoSign')
+                callPlugins('on_game_go_sign')
                 context['scene'][self]['lastGoSign'] = msec
 
         # 誰かをキルしたか
         kills = self.matchKilled(context)
         if context['scene'][self]['kills'] < kills:
-            callPlugins('onGameKilled')
+            callPlugins('on_game_killed')
             context['scene'][self]['kills'] = kills
             context['scene'][self]['lastKill'] = msec
         else:
@@ -242,7 +247,7 @@ class IkaScene_InGame:
         # 死亡状態（「復活まであとｎ秒」）
         if self.matchDead(context):
             if (context['scene'][self]['lastDead'] + 5 * 1000) < msec:
-                callPlugins('onGameDead')
+                callPlugins('on_game_dead')
             context['scene'][self]['lastDead'] = msec
         return True
 
@@ -301,7 +306,7 @@ if __name__ == "__main__":
         'game': {},
     }
 
-    obj = IkaScene_InGame()
+    obj = InGame()
 
     r = obj.matchTimerIcon(context)
 

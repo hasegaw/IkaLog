@@ -29,14 +29,14 @@ from datetime import datetime
 #
 
 
-class IkaOutput_CSV_AliveSquids:
+class AliveSquidsCSV(object):
 
     ##
     # Write a line to text file.
     # @param self     The Object Pointer.
     # @param record   Record (text)
     #
-    def writeRecord(self, file, record):
+    def write_record(self, file, record):
         try:
             csv_file = open(file, "a")
             csv_file.write(record)
@@ -44,7 +44,7 @@ class IkaOutput_CSV_AliveSquids:
         except:
             print("CSV: Failed to write CSV File")
 
-    def writeAliveSquidsCSV(self, context, basename="ikabattle_log", debug=False):
+    def write_alive_squids_csv(self, context, basename="ikabattle_log", debug=False):
         csv = ["tick,y\n", "tick,y\n"]
 
         for sample in context['game']['livesTrack']:
@@ -69,11 +69,11 @@ class IkaOutput_CSV_AliveSquids:
         t_str = t.strftime("%Y%m%d_%H%M")
 
         for f in csv:
-            self.writeRecord('%s/%s_team%d.csv' %
+            self.write_record('%s/%s_team%d.csv' %
                              (self.dest_dir, basename, num_team), f)
             num_team = num_team + 1
 
-    def writeFlagsCSV(self, context, basename="ikabattle_log", debug=False):
+    def write_flags_csv(self, context, basename="ikabattle_log", debug=False):
         # データがない場合は書かない
         if len(context['game']['towerTrack']) == 0:
             return
@@ -88,18 +88,18 @@ class IkaOutput_CSV_AliveSquids:
             csv = "%s%d, %d, %d, %d\n" % (
                 csv, time, sample['pos'], sample['max'], sample['min'])
 
-        self.writeRecord('%s/%s_tower.csv' % (self.dest_dir, basename), csv)
+        self.write_record('%s/%s_tower.csv' % (self.dest_dir, basename), csv)
 
     ##
-    # onGameIndividualResult Hook
+    # on_game_individual_result Hook
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def onGameIndividualResult(self, context):
+    def on_game_individual_result(self, context):
         t = datetime.now()
         basename = t.strftime("ikabattle_log_%Y%m%d_%H%M")
-        self.writeAliveSquidsCSV(context, basename=basename, debug=self.debug)
-        self.writeFlagsCSV(context, basename=basename, debug=self.debug)
+        self.write_alive_squids_csv(context, basename=basename, debug=self.debug)
+        self.write_flags_csv(context, basename=basename, debug=self.debug)
 
     ##
     # Constructor
