@@ -179,7 +179,7 @@ class IkaGlyphRecoginizer:
         h = imgs[0].shape[0]
         dimg[:h, :w] = imgs[0][:, :]
         dimg[:h, w:w * 2] = imgs[1][:, :]
-        cv2.imshow(':D', dimg)
+        # cv2.imshow(':D', dimg)
         # cv2.waitKey(3000)
 
         return param, dimg
