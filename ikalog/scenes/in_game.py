@@ -172,7 +172,7 @@ class IkaScene_InGame:
                 'frame'], self.timer_left, self.timer_top, self.timer_width, self.timer_height
         )
 
-        return IkaUtils.matchWithMask(img, self.mask_timer, 0.85, 0.6)
+        return self.mask_timer.match(context['engine']['frame'])
 
     # FixMe
     _last_killed = 0
@@ -247,8 +247,16 @@ class IkaScene_InGame:
         return True
 
     def __init__(self):
-        self.mask_timer = IkaUtils.loadMask(
-            'masks/ingame_timer.png', self.timer_left, self.timer_top, self.timer_top, self.timer_height)
+        self.mask_timer = IkaMatcher(
+            self.timer_left, self.timer_top, self.timer_top, self.timer_height,
+            img_file='masks/ingame_timer.png',
+            threshold=0.7,
+            orig_threshold=0.7,
+            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
+            pre_threshold_value=230,
+            label='timer_icon',
+            debug=True
+        )
 
         self.mask_goSign = IkaMatcher(
             1280 / 2 - 420 / 2, 130, 420, 170,
