@@ -43,6 +43,7 @@ class udemae(character_recoginizer):
             {'file': 'numbers2/b1.png', 'response': 'b'},
             {'file': 'numbers2/c1.png', 'response': 'c'},
             {'file': 'numbers2/s1.png', 'response': 's'},
+            {'file': 'numbers2/s2.png', 'response': 's'},
             {'file': 'numbers2/plus.png', 'response': '+'},
             {'file': 'numbers2/minus.png', 'response': '-'},
         ]
