@@ -26,12 +26,12 @@
 # By downloading, copying, installing or using the software you agree to this license.
 # If you do not agree to this license, do not download, install,
 # copy or use the software.
-# 
-# 
+#
+#
 #                           License Agreement
 #                For Open Source Computer Vision Library
 #                        (3-clause BSD License)
-# 
+#
 # Copyright (C) 2000-2015, Intel Corporation, all rights reserved.
 # Copyright (C) 2009-2011, Willow Garage Inc., all rights reserved.
 # Copyright (C) 2009-2015, NVIDIA Corporation, all rights reserved.
@@ -39,21 +39,21 @@
 # Copyright (C) 2015, OpenCV Foundation, all rights reserved.
 # Copyright (C) 2015, Itseez Inc., all rights reserved.
 # Third party copyrights are property of their respective owners.
-# 
+#
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
-# 
+#
 #   * Redistributions of source code must retain the above copyright notice,
 #     this list of conditions and the following disclaimer.
-# 
+#
 #   * Redistributions in binary form must reproduce the above copyright notice,
 #     this list of conditions and the following disclaimer in the documentation
 #     and/or other materials provided with the distribution.
-# 
+#
 #   * Neither the names of the copyright holders nor the names of the contributors
 #     may be used to endorse or promote products derived from this software
 #     without specific prior written permission.
-# 
+#
 # This software is provided by the copyright holders and contributors "as is" and
 # any express or implied warranties, including, but not limited to, the implied
 # warranties of merchantability and fitness for a particular purpose are disclaimed.
@@ -64,7 +64,7 @@
 # and on any theory of liability, whether in contract, strict liability,
 # or tort (including negligence or otherwise) arising in any way out of
 # the use of this software, even if advised of the possibility of such damage.
-# 
+#
 
 import ctypes
 import time
@@ -137,6 +137,7 @@ class InputSourceEnumerator:
                 IkaUtils.dprint(
                     "%s: Failed to initalize %s" % self, videoinput_dll)
 
+
 class webcam:
     cap = None
     out_width = 1280
@@ -192,13 +193,13 @@ class webcam:
 
         return t
 
-    def filter_matches(self, kp1, kp2, matches, ratio = 0.75):
+    def filter_matches(self, kp1, kp2, matches, ratio=0.75):
         mkp1, mkp2 = [], []
         for m in matches:
             if len(m) == 2 and m[0].distance < m[1].distance * ratio:
                 m = m[0]
-                mkp1.append( kp1[m.queryIdx] )
-                mkp2.append( kp2[m.trainIdx] )
+                mkp1.append(kp1[m.queryIdx])
+                mkp2.append(kp2[m.trainIdx])
         p1 = np.float32([kp.pt for kp in mkp1])
         p2 = np.float32([kp.pt for kp in mkp2])
         kp_pairs = zip(mkp1, mkp2)
@@ -207,19 +208,19 @@ class webcam:
     #
     # Color balance calibration and filtering
     #
-    def getColorBalance(self,img):
+    def getColorBalance(self, img):
         r = (1052, 41, 70, 41)
         white = img[r[1]:r[1] + r[3], r[0]: r[0] + r[2], :]
 
-        avg_b = np.average(white[: ,:, 0]) * 1.0
-        avg_g = np.average(white[: ,:, 1]) * 1.0
-        avg_r = np.average(white[: ,:, 2]) * 1.0
+        avg_b = np.average(white[:, :, 0]) * 1.0
+        avg_g = np.average(white[:, :, 1]) * 1.0
+        avg_r = np.average(white[:, :, 2]) * 1.0
 
         avg = np.average(white)
 
-        coff_b =  (avg / avg_b)
-        coff_g =  (avg / avg_g)
-        coff_r =  (avg / avg_r)
+        coff_b = (avg / avg_b)
+        coff_g = (avg / avg_g)
+        coff_r = (avg / avg_r)
 
         return avg, (avg_b, avg_g, avg_r), (coff_b, coff_g, coff_r)
 
@@ -231,7 +232,6 @@ class webcam:
             img_work[img_work > 255] = 255
 
         return np.array(img_work, np.uint8)
-
 
     def calibrateColor(self, capture_image):
         img_720p = cv2.resize(capture_image, (1280, 720))
@@ -247,26 +247,21 @@ class webcam:
         #print('HDMI   avg', avg_hdmi, avgs_hdmi)
         #print('HDMI   coff', coffs_hdmi)
         avg_hdmi = 233.203252033
-        
+
         # gain
         coffs_with_gain = (
-            coffs[0] * avg_hdmi / avg, 
-            coffs[1] * avg_hdmi / avg, 
-            coffs[2] * avg_hdmi / avg, 
+            coffs[0] * avg_hdmi / avg,
+            coffs[1] * avg_hdmi / avg,
+            coffs[2] * avg_hdmi / avg,
         )
-        
+
         img_out = self.filterImage(img_720p, coffs_with_gain)
         avg_out, avgs_out, coffs_out = self.getColorBalance(img_out)
-    
+
         print('output avg', avg_out)
-       
-        if self.debug: 
-            cv2.imshow('src', cv2.resize(img_720p, (640, 360)))
-            cv2.imshow('calibrated', cv2.resize(img_out, (640, 360)))
-            cv2.imshow('hdmi',cv2.resize( img_hdmi, (640, 360)))
 
         self.white_filter_coffs = coffs_with_gain
-        
+
     #
     # Warp calibration
     #
@@ -274,15 +269,16 @@ class webcam:
     def calibrateWarp(self, capture_image):
         capture_image_gray = cv2.cvtColor(capture_image, cv2.COLOR_BGR2GRAY)
 
-        capture_image_keypoints, capture_image_descriptors = self.detector.detectAndCompute(capture_image_gray, None)
+        capture_image_keypoints, capture_image_descriptors = self.detector.detectAndCompute(
+            capture_image_gray, None)
         print('caputure_image - %d features' % (len(capture_image_keypoints)))
 
         print('matching...')
 
         raw_matches = self.matcher.knnMatch(
             self.calibration_image_descriptors,
-            trainDescriptors = capture_image_descriptors,
-            k = 2
+            trainDescriptors=capture_image_descriptors,
+            k=2
         )
         p1, p2, kp_pairs = self.filter_matches(
             self.calibration_image_keypoints,
@@ -308,17 +304,18 @@ class webcam:
 
         corners = np.float32(
             [[0, 0],
-            [calibration_image_width, 0],
-            [calibration_image_width, calibration_image_height],
-            [0, calibration_image_height]]
+             [calibration_image_width, 0],
+             [calibration_image_width, calibration_image_height],
+             [0, calibration_image_height]]
         )
 
-        pts1 = np.float32(cv2.perspectiveTransform( corners.reshape(1, -1, 2), H).reshape(-1, 2) + (0, 0) )
+        pts1 = np.float32(cv2.perspectiveTransform(
+            corners.reshape(1, -1, 2), H).reshape(-1, 2) + (0, 0))
 
-        IkaUtils.dprint('pts1: %s' %[pts1])
-        IkaUtils.dprint('pts2: %s'% [self.pts2])
+        IkaUtils.dprint('pts1: %s' % [pts1])
+        IkaUtils.dprint('pts2: %s' % [self.pts2])
 
-        self.M = cv2.getPerspectiveTransform(pts1,self.pts2)
+        self.M = cv2.getPerspectiveTransform(pts1, self.pts2)
 
         self.warp_mode = True
         self.calibration_requested = False
@@ -327,20 +324,21 @@ class webcam:
         return True
 
     def warpImage(self, frame):
-        return cv2.warpPerspective(frame,self.M,(1280,720))
+        return cv2.warpPerspective(frame, self.M, (1280, 720))
 
     def tuples2keyPoints(self, tuples):
         new_l = []
         for point in tuples:
             pt, size, angle, response, octave, class_id = point
-            new_l.append(cv2.KeyPoint(pt[0], pt[1], size, angle, response, octave, class_id))
+            new_l.append(cv2.KeyPoint(
+                pt[0], pt[1], size, angle, response, octave, class_id))
         return new_l
 
     def keyPoints2tuples(self, points):
         new_l = []
         for point in points:
-            new_l.append((point.pt, point.size, point.angle, point.response, point.octave, 
-                    point.class_id))
+            new_l.append((point.pt, point.size, point.angle, point.response, point.octave,
+                          point.class_id))
         return new_l
 
     def loadModelFromFile(self, file):
@@ -362,7 +360,8 @@ class webcam:
 
     def initializeCalibration(self):
         # Calibration stuff.
-        model_filename = os.path.join(IkaUtils.baseDirectory(), 'data','webcam_calibration.model')
+        model_filename = os.path.join(
+            IkaUtils.baseDirectory(), 'data', 'webcam_calibration.model')
         print(model_filename)
 
         self.detector = cv2.AKAZE_create()
@@ -375,22 +374,23 @@ class webcam:
             IkaUtils.dprint('%s: Loaded model data')
         except:
 
-
-
             calibration_image = cv2.imread('camera/ika_usbcam/Pause.png', 0)
             self.calibration_image_size = calibration_image.shape[:2]
-            calibration_image_hight, calibration_image_width = calibration_image.shape[:2]
+            calibration_image_hight, calibration_image_width = calibration_image.shape[
+                :2]
 
-            self.calibration_image_keypoints, self.calibration_image_descriptors = self.detector.detectAndCompute(calibration_image, None)
+            self.calibration_image_keypoints, self.calibration_image_descriptors = self.detector.detectAndCompute(
+                calibration_image, None)
             print(self.calibration_image_keypoints)
             print(self.calibration_image_descriptors)
 
             self.saveModelToFile(model_filename)
             IkaUtils.dprint('%s: Created model data')
 
-        print('calibration_image - %d features' % (len(self.calibration_image_keypoints)))
+        print('calibration_image - %d features' %
+              (len(self.calibration_image_keypoints)))
 
-        self.pts2 = np.float32([[0,0],[1280,0],[1280,720],[0,720]])
+        self.pts2 = np.float32([[0, 0], [1280, 0], [1280, 720], [0, 720]])
         self.M = cv2.getPerspectiveTransform(self.pts2, self.pts2)
 
     #
@@ -408,9 +408,9 @@ class webcam:
         if not ret:
             return None, None
 
-        self.last_raw_frame =frame
+        self.last_raw_frame = frame.copy()
 
-        calibrate_color = False 
+        calibrate_color = False
         if self.calibration_requested:
             calibrate_color = self.calibrateWarp(frame)
 
@@ -422,18 +422,40 @@ class webcam:
             self.last_pre_offset_frame = frame
             frame = offset_frame
 
-        if calibrate_color:
-                self.calibrateColor(frame)
+        if calibrate_color and self.enableWhiteColorCalibration:
+            self.calibrateColor(frame)
+            print(self.white_filter_coffs)
+
+            if max(self.white_filter_coffs) > 2.2 or min(self.white_filter_coffs) < 0.8:
+                IkaUtils.dprint(
+                    '%s: White balance failed. probaby warp calibration failure. trying...' % self)
+                self.white_filter_coffs = None
+#                self.calibration_requested = True
+                self.warp_mode = False
 
         if self.white_filter_coffs:
-                self.last_pre_filter_frame = frame
-                frame = self.filterImage(frame, self.white_filter_coffs)
+            self.last_pre_filter_frame = frame
+            frame = self.filterImage(frame, self.white_filter_coffs)
 
         self.last_frame = frame
 
-        t = self.getVideoTime()
+        frame_final = cv2.resize(frame, (self.out_width, self.out_height))
 
-        return cv2.resize(frame, (self.out_width, self.out_height)), t
+        if self.debug:
+            # img_hdmi is available only in development site.
+            try:
+                frame_with_mask = cv2.cvtColor(frame_final, cv2.COLOR_BGR2GRAY)
+                frame_with_mask = abs(
+                    frame_with_mask - cv2.cvtColor(self.img_hdmi, cv2.COLOR_BGR2GRAY))
+                cv2.imshow('frame_with_mask', cv2.resize(
+                    frame_with_mask, (640, 320)))
+            except:
+                pass
+
+            cv2.imshow('camera', cv2.resize(self.last_raw_frame, (640, 320)))
+
+        t = self.getVideoTime()
+        return frame_final, t
 
     def setResolution(self, width, height):
         self.cap.set(3, width)
@@ -445,7 +467,7 @@ class webcam:
             self.cap.release()
 
         self.cap = cv2.VideoCapture(source)
-        self.setResolution(width, height)
+        #self.setResolution(width, height)
         self.lock.release()
 
     def isWindows(self):
@@ -491,7 +513,6 @@ class webcam:
     def restartInput(self):
         IkaUtils.dprint('RestartInput: source %s file %s device %s' %
                         (self.source, self.File, self.SourceDevice))
-
 
         if self.source == 'file':
             self.startRecordedFile(self.File)
@@ -648,10 +669,14 @@ class webcam:
     def onKeyPress(self, context, key):
         if not (key == ord('c') or key == ord('C')):
             return False
+
         # 次回キャリブレーションを行う
         self.calibration_requested = True
+
     def __init__(self, debug=False):
+        self.img_hdmi = cv2.imread('camera/color_balance/pause_hdmi.bmp')
         self.debug = debug
+        self.enableWhiteColorCalibration = False
 
         # Whether user(or application request webcam calibration)
         self.calibration_requested = False
@@ -667,9 +692,9 @@ class webcam:
 
         # last frame, before offseting.
         self.last_pre_offset_frame = None
-     
-        # last frame that read() returned to the application. 
-        self.last_frame = None     
+
+        # last frame that read() returned to the application.
+        self.last_frame = None
 
         # White color calibration coefficient parameters. None = no filtering
         self.white_filter_coffs = None
