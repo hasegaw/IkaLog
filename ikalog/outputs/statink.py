@@ -44,10 +44,12 @@ class statink:
 
     def ApplyUI(self):
         self.enabled = self.checkEnable.GetValue()
+        self.weaponEnabled = self.checkWeaponEnable.GetValue()
         self.api_key = self.editApiKey.GetValue()
 
     def RefreshUI(self):
         self.checkEnable.SetValue(self.enabled)
+        self.checkWeaponEnable.SetValue(self.weaponEnabled)
 
         if not self.api_key is None:
             self.editApiKey.SetValue(self.api_key)
@@ -56,6 +58,7 @@ class statink:
 
     def onConfigReset(self, context=None):
         self.enabled = False
+        self.weaponEnabled = False
         self.api_key = None
 
     def onConfigLoadFromContext(self, context):
@@ -68,6 +71,9 @@ class statink:
         if 'Enable' in conf:
             self.enabled = conf['Enable']
 
+        if 'WeaponEnable' in conf:
+            self.weaponEnabled = conf['WeaponEnable']
+
         if 'APIKEY' in conf:
             self.api_key = conf['APIKEY']
 
@@ -77,6 +83,7 @@ class statink:
     def onConfigSaveToContext(self, context):
         context['config']['stat.ink'] = {
             'Enable': self.enabled,
+            'WeaponEnable': self.weaponEnabled,
             'APIKEY': self.api_key,
         }
 
@@ -90,9 +97,12 @@ class statink:
         self.panel.SetSizer(self.layout)
         self.checkEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, u'stat.ink へのスコアを送信する')
+        self.checkWeaponEnable = wx.CheckBox(
+            self.panel, wx.ID_ANY, u'stat.ink へ使用ブキを送信する（誤認識が多いかもしれません）')
         self.editApiKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
         self.layout.Add(self.checkEnable)
+        self.layout.Add(self.checkWeaponEnable)
         self.layout.Add(wx.StaticText(
             self.panel, wx.ID_ANY, u'APIキー'))
         self.layout.Add(self.editApiKey, flag=wx.EXPAND)
@@ -133,6 +143,75 @@ class statink:
                 '%s: Failed convert rule name to stas.ink value' % self)
             return None
 
+    def encodeWeaponName(self, weapon):
+        try:
+            return {
+                'ガロン52': '52gal',
+                'ガロンデコ52': '52gal_deco',
+                'ガロン96': '96gal',
+                'ガロンデコ96': '96gal_deco',
+                'ボールドマーカー': 'bold',
+                'デュアルスイーパー': 'dualsweeper',
+                'デュアルスイーパーカスタム': 'dualsweeper_custom',
+                'H3リールガン': 'h3reelgun',
+                'ヒーローシューターレプリカ': 'heroshooter_replica',
+                'ホットブラスター': 'hotblaster',
+                'ホットブラスターカスタム': 'hotblaster_custom',
+                'ジェットスイーパー': 'jetsweeper',
+                'ジェットスイーパーカスタム': 'jetsweeper_custom',
+                'L3リールガン': 'l3reelgun',
+                'L3リールガン': 'l3reelgun_d',
+                'ロングブラスター': 'longblaster',
+                'もみじシューター': 'momiji',
+                'ノヴァブラスター': 'nova',
+                'N-ZAP85': 'nzap85',
+                'N-ZAP89': 'nzap89',
+                'オクタシューターレプリカ': 'octoshooter_replica',
+                'プライムシューター': 'prime',
+                'プライムシューターコラボ': 'prime_collabo',
+                'プロモデラーMG': 'promodeler_mg',
+                'プロモデラーRG': 'promodeler_rg',
+                'ラピッドブラスター': 'rapid',
+                'ラピッドブラスターデコ': 'rapid_deco',
+                'シャープマーカー': 'sharp',
+                'シャープマーカーネオ': 'sharp_neo',
+                'スプラシューター': 'sshooter',
+                'スプラシューターコラボ': 'sshooter_collabo',
+                'わかばシューター': 'wakaba',
+
+                'カーボンローラー': 'carbon',
+                'ダイナモローラー': 'dynamo',
+                'ダイナモローラーテスラ': 'dynamo_tesla',
+                'ヒーローローラー': 'heroroller_repilca',
+                'ホクサイ': 'hokusai',
+                'パブロ': 'pablo',
+                'パブロ・ヒュー': 'pablo_hue',
+                'スプラローラー': 'splatroller',
+                'スプラローラーコラボ': 'splatroller_collabo',
+
+                '14式竹筒銃・甲': 'bamboo14mk1',
+                'ヒーローチャージャーレプリカ': 'herocharger_replica',
+                'リッター3k': 'liter3k',
+                'リッター3kカスタム': 'liter3k_custom',
+                '3kスコープ': 'liter3k_scope',
+                'スプラチャージャー': 'splatcharger',
+                'スプラチャージャーワカメ': 'splatcharger_wakame',
+                'スプラスコープ': 'splatscope',
+                'スプラスコープワカメ': 'splatscope_wakame',
+                'スクイックリンα': 'squiclean_a',
+                'スクイックリンβ': 'squiclean_b',
+
+                'バケットスローシャー': 'bucketslosher',
+                'ヒッセン': 'hissen',
+
+                'バレルスピナー': 'barrelspinner',
+                'スプラスピナー': 'splatspinner',
+            }[weapon]
+        except:
+            IkaUtils.dprint(
+                '%s: Failed convert weapon name %s to stas.ink value' % (self % weapon))
+            return None
+
     def encodeImage(self, img):
         if IkaUtils.isWindows():
             temp_file = os.path.join(
@@ -162,16 +241,31 @@ class statink:
     def serializePayload(self, context):
         payload = {}
 
-        payload['map'] = self.encodeStageName(context)
-        payload['rule'] = self.encodeRuleName(context)
+        stage = self.encodeStageName(context)
+        if stage:
+            payload['map'] = stage
+
+        rule = self.encodeRuleName(context)
+        if rule:
+            payload['rule'] = rule
+
         payload['result'] = IkaUtils.getWinLoseText(
-            context['game']['won'], win_text='win', lose_text='lose', unknown_text=None)
+            context['game']['won'],
+            win_text='win',
+            lose_text='lose',
+            unknown_text=None
+        )
 
         if self.time_start_at and self.time_end_at:
             payload['start_at'] = int(self.time_start_at)
             payload['end_at'] = int(self.time_end_at)
 
         me = IkaUtils.getMyEntryFromContext(context)
+
+        if self.weaponEnabled and 'weapon' in me:
+            weapon = self.encodeWeaponName(me['weapon'])
+            if weapon:
+                payload['weapon'] = weapon
 
         int_fields = [
             # 'type', 'IkaLog Field', 'stat.ink Field'
@@ -207,7 +301,8 @@ class statink:
 
         for field in payload.keys():
             if payload[field] is None:
-                IkaUtils.dprint('%s: [FIXME] payload has blank entry %s:%s' % (self, field, payload[field]))
+                IkaUtils.dprint('%s: [FIXME] payload has blank entry %s:%s' % (
+                    self, field, payload[field]))
 
         return payload
 
@@ -316,8 +411,9 @@ class statink:
 
         self.postPayload(payload)
 
-    def __init__(self, api_key=None, debug=False):
+    def __init__(self, api_key=None, weaponEnabled=False, debug=False):
         self.enabled = not (api_key is None)
+        self.weaponEnabled = weaponEnabled
         self.api_key = api_key
 
         self.time_start_at = None
@@ -339,6 +435,7 @@ if __name__ == "__main__":
 
     obj = statink(
         api_key=os.environ['IKALOG_STATINK_APIKEY'],
+        weaponEnabled=True,
         debug=True
     )
 
