@@ -255,7 +255,7 @@ class IkaScene_InGame:
             false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
             pre_threshold_value=230,
             label='timer_icon',
-            debug=True
+            debug=False,
         )
 
         self.mask_goSign = IkaMatcher(
