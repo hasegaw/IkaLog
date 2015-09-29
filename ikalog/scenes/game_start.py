@@ -90,9 +90,9 @@ class IkaScene_GameStart:
 
         # 必要票数
         quorum = 1 # max(3, len(self.votes) / 2)
-        print(maps)
-        print(rules)
-        print('quorum = %s' % quorum)
+        #print(maps)
+        #print(rules)
+        #print('quorum = %s' % quorum)
 
         # 必要票数が達しなかった場合
         if map_top[0] < quorum:
@@ -106,7 +106,7 @@ class IkaScene_GameStart:
             context['game']['map'] = map_top[1]
         if rule_top[1] is not None:
             context['game']['rule'] = rule_top[1]
-        print(map_top, rule_top)
+        #print(map_top, rule_top)
 
         return map_top[1], rule_top[1]
 
