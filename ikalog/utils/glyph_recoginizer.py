@@ -275,7 +275,7 @@ class IkaGlyphRecoginizer:
         self.samples = np.append(self.samples, sample_f, 0)
         self.responses.append(id)
 
-    def knn_train(self):
+    def knn_train_from_group(self):
         # 各グループからトレーニング対象を読み込む
         for group in self.groups:
             print('Group %s' % group['name'])
@@ -283,13 +283,14 @@ class IkaGlyphRecoginizer:
                 sample_data = sample_tuple[1]['hist']
                 self.addSample1(group['name'], sample_data)
 
+
+    def knn_train(self):
         # 終わったら
         samples = np.array(self.samples, np.float32)
         responses = np.array(self.responses, np.float32)
         responses = responses.reshape((responses.size, 1))
-        responses = np.array(self.responses, np.float32)
 
-        print('start model.train', samples.shape, responses.shape)
+        print('start model.train', len(responses))
         self.model.train(samples, cv2.ml.ROW_SAMPLE, responses)
         print('done model.train')
         self.trained = True
