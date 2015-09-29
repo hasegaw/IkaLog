@@ -50,6 +50,11 @@ class udemae(character_recoginizer):
         for d in data:
             d['img'] = cv2.imread(d['file'])
             self.addSample(d['response'], d['img'])
+            self.addSample(d['response'], d['img'])
+            self.addSample(d['response'], d['img'])
         self.saveModelToFile(model_name)
 
         self.train()
+
+if __name__ == "__main__":
+    udemae()
