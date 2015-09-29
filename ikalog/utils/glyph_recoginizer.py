@@ -33,7 +33,7 @@ class IkaGlyphRecoginizer:
     _HSV_COLOR_SAMPLES = 36
 
     # Models
-    models = []
+    groups = []
 
     # pre-calculated Hue samples
 
@@ -121,7 +121,7 @@ class IkaGlyphRecoginizer:
 
     # Analyze a image.
     #
-    def analyzeImage(self, img, blocks_x=5, blocks_y=5, debug=False):
+    def analyzeImage(self, img, blocks_x=3, blocks_y=3, debug=False):
         samples = self._precalculatedHueSamples
 
         imgs = self.normalizeWeaponImage(img)
@@ -212,26 +212,6 @@ class IkaGlyphRecoginizer:
 
         return {'h_avg': h_avg, 'h_var': h_var}
 
-    def matchImageWithParameter(self, img_param, trained):
-        h_avg = trained['h_avg']
-        h_var = trained['h_var']
-
-        abs_val = np.abs(img_param['hist'] - h_avg)
-
-        cond0 = (h_var < 50)
-        cond1 = (abs_val < (h_var))
-        cond = np.logical_and(cond0, cond1)
-
-        # 分散を使用した重み付け
-        scores = np.minimum(1000, (abs_val / (h_var + 0.1))) * h_avg
-        score = np.sum(np.extract(cond, scores))
-        scores_max = np.sum(np.extract(cond0, scores))
-        score_normalized = (score * 100) / scores_max
-
-        return score_normalized
-        cv2.imshow(':D', img)
-        # cv2.waitKey(1000)
-
     def showLearnedWeaponImage(self, l, name='hoge', save=None):
         new_h = l[0].shape[0] * len(l)
         new_w = l[0].shape[1]
@@ -248,18 +228,79 @@ class IkaGlyphRecoginizer:
         if save:
             cv2.imwrite(save, dest)
 
-    def testModel(self, model):
-        scores = []
-        for sample in model['samples']:
-            score = self.guessImage1(img=sample, model=model)
-            try:
-                scores.append(int(score * 10) / 10)
-            except:
-                pass
+    def name2id(self, name):
+        try:
+            return self.weapon_names.index(name)
+        except:
+            self.weapon_names.append(name)
+        return self.weapon_names.index(name)
 
-        print("%s %s" % (model['name'], scores))
+    def id2name(self, id):
+        return self.weapon_names[id]
+
+    def knn_reset(self):
+        self.samples = None  # np.empty((0, 21 * 14))
+        self.responses = []
+        self.model = cv2.ml.KNearest_create()
+        self.trained = False
+
+    def match(self, img):
+        if not self.trained:
+            return None, None
+
+        param, dimg = self.analyzeImage(img, debug=True)
+        sample = param['hist']
+        sample_f = np.array(sample, np.float32).reshape((1, len(sample)))
+
+        k = 3
+        retval, results, neigh_resp, dists = self.model.findNearest(
+            sample_f, k)
+
+        id = int(results.ravel())
+        name = self.id2name(id)
+        return name, dists[0][0]
+
+    def addSample1(self, name, sample):
+        id = self.name2id(name)
+        print('sample_name %s id %d' % (name, id))
+
+        sample_f = np.array(sample).reshape((1, len(sample)))
+        sample_f = np.array(sample_f, np.float32)
+
+        if self.samples is None:
+                # すべてのデータは同じ次元であると仮定する
+            self.samples = np.empty((0, len(sample)))
+            self.responses = []
+        # 追加
+        self.samples = np.append(self.samples, sample_f, 0)
+        self.responses.append(id)
+
+    def knn_train(self):
+        # 各グループからトレーニング対象を読み込む
+        for group in self.groups:
+            print('Group %s' % group['name'])
+            for sample_tuple in group['learn_samples']:
+                sample_data = sample_tuple[1]['hist']
+                self.addSample1(group['name'], sample_data)
+
+        # 終わったら
+        samples = np.array(self.samples, np.float32)
+        responses = np.array(self.responses, np.float32)
+        responses = responses.reshape((responses.size, 1))
+        responses = np.array(self.responses, np.float32)
+
+        print('start model.train', samples.shape, responses.shape)
+        self.model.train(samples, cv2.ml.ROW_SAMPLE, responses)
+        print('done model.train')
+        self.trained = True
 
     def learnImageGroup(self, name=None, dir=None):
+        group_info = {
+            'name': name,
+            'images': [],
+            'learn_samples': [],
+        }
+
         l = []
         l_hist = []
         samples = []
@@ -269,59 +310,38 @@ class IkaGlyphRecoginizer:
                     f = os.path.join(root, file)
                     img = cv2.imread(f)
                     samples.append(img)
+                    param, dimg = self.analyzeImage(img, debug=True)
+                    sample_tuple = (img, param, dimg, f)
+                    group_info['images'].append(sample_tuple)
 
-                    param, r = self.analyzeImage(img, debug=True)
-                    l.append(r)
-                    l_hist.append(param['hist'])
+#                    if len(group_info['images']) > 50:
+#                        return
 
-        self.showLearnedWeaponImage(l, name)
-        trained = self.calculateParamersFromSamples(l_hist)
-        model = {'name': name, 'model': trained, 'samples': samples}
+        # とりあえず最初のいくつかを学習
+        for sample_tuple in group_info['images'][1:20]:
+            group_info['learn_samples'].append(sample_tuple)
 
-        self.models.append(model)
+        print('  読み込み画像数', len(group_info['images']))
+        self.groups.append(group_info)
 
-        return model
-
-    def guessImage1(self, img=None, img_param=None, model=None):
-        if img_param is None:
-            img_param = self.analyzeImage(img)
-
-        return self.matchImageWithParameter(img_param, model['model'])
-
-    def guessImage(self, img=None, img_param=None, models=None):
-        if models is None:
-            models = self.models
-
-        if img_param is None:
-            img_param = self.analyzeImage(img)
-
-        result = {'name': None, 'score': 0}
-        for model in models:
-            s = self.guessImage1(img_param=img_param, model=model)
-            if s > result['score']:
-                result['score'] = s
-                result['name'] = model['name']
-            model_matched = model
-        return (result, model)
-
-    def stripModel(self):
-        models = self.models.copy()
-        for model in models:
-            if "samples" in model:
-                del model["samples"]
-        return models
+        return group_info
 
     def saveModelToFile(self, file):
-        f = open(file, "wb")
-        pickle.dump([self.stripModel()], f)
+        f = open(file, 'wb')
+        pickle.dump([self.samples, self.responses, self.weapon_names], f)
         f.close()
 
     def loadModelFromFile(self, file):
-        f = open(file, "rb")
+        f = open(file, 'rb')
         l = pickle.load(f)
         f.close()
-        self.models = l[0]
+        self.samples = l[0]
+        self.responses = l[1]
+        self.weapon_names = l[2]
 
     def __init__(self):
         self._precalculatedHueSamples = self.calcurateHueSamples(
             self._HSV_COLOR_SAMPLES)
+        self.weapon_names = []
+        self.knn_reset()
+        self.groups = []

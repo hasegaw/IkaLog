@@ -297,17 +297,13 @@ class IkaScene_ResultDetail:
                 IkaUtils.dprint('Exception occured in K/D recoginization.')
                 IkaUtils.dprint(traceback.format_exc())
 
-        try:
-            result, model = self.weapons.guessImage(entry['img_weapon'])
-            entry['weapon'] = result['name']
-        except:
-            IkaUtils.dprint('Exception occured in weapon recoginization.')
-            IkaUtils.dprint(traceback.format_exc())
-
-        # Remove 'None' results.
-        for f in entry.keys():
-            if entry[f] is None:
-                del entry[f]
+        if self.weapons and self.weapons.trained:
+            try:
+                result, distance = self.weapons.match(entry['img_weapon'])
+                entry['weapon'] = result
+            except:
+                IkaUtils.dprint('Exception occured in weapon recoginization.')
+                IkaUtils.dprint(traceback.format_exc())
 
         return entry
 
@@ -357,7 +353,9 @@ class IkaScene_ResultDetail:
 
         try:
             self.weapons = IkaGlyphRecoginizer()
-            self.weapons.loadModelFromFile("data/weapons.trained")
+            self.weapons.loadModelFromFile("data/weapons.knn.data")
+            self.weapons.knn_train()
+            IkaUtils.dprint('Loaded weapons recoginization model.')
         except:
             IkaUtils.dprint("Could not initalize weapons recoginiton model")
 
@@ -417,11 +415,12 @@ if __name__ == "__main__":
             rank = e['rank'] if ('rank' in e) else None
             kills = e['kills'] if ('kills' in e) else None
             deaths = e['deaths'] if ('deaths' in e) else None
+            weapon = e['weapon'] if ('weapon' in e) else None
             score = e['score'] if ('score' in e) else None
             me = '*' if e['me'] else ''
 
-            print("rank %s udemae %s %s/%s score %s %s%s %s" %
-                  (rank, udemae, kills, deaths, score, prefix_, gender, me))
+            print("rank %s udemae %s %s/%s weapon %s score %s %s%s %s" %
+                  (rank, udemae, kills, deaths, weapon, score, prefix_, gender, me))
 
     if len(files) > 0:
         cv2.waitKey()

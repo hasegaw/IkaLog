@@ -35,12 +35,65 @@ def learnImageGroup(recoginizer=None, name="unknown", dir=None):
     recoginizer.learnImageGroup(name=name, dir=train_dir)
 
 
+def loopbackTest():
+    results = {}
+    misses = []
+    total = 0
+    correct = 0
+
+    sort_zumi = {}
+
+    for weapon in weapons.groups:
+        for sample_tuple in weapon['images']:
+            sample = sample_tuple[0]
+            answer, distance = weapons.match(sample)  # = img
+
+            total = total + 1
+            if (weapon['name'] == answer):
+                correct = correct + 1
+                msg = "正解"
+            else:
+                msg = "　 "
+                misses.append(sample)
+
+            if not answer in sort_zumi:
+                sort_zumi[answer] = []
+            sort_zumi[answer].append((distance, sample_tuple[3]))
+
+            #print("%s: %s 結果: %s<br>" % (msg, weapon['name'], r['name']))
+
+    s = ("%d 問中 %d 問正解　　学習内容に対する正答率 %3.1f％" %
+         (total, correct, correct / total * 100))
+
+    # miss list 表示
+    misses_hist = []
+    for sample in misses:
+        param, r = weapons.analyzeImage(sample, debug=True)
+        misses_hist.append(r)
+    weapons.showLearnedWeaponImage(misses_hist, 'Misses', save='misses.png')
+
+    # file にリスト書き出し
+    f = open('weapons.html', 'w')
+    f.write('<p>%s</p>' % s)
+    for weapon in sorted(sort_zumi.keys()):
+        f.write('<h3>%s</h3>' % weapon)
+        print('<h3>%s</h3>' % weapon)
+        for t in sorted(sort_zumi[weapon]):
+            f.write('<font size=-4>%s</font><img src=%s alt="%s">' %
+                    (t[0], t[1], t[0]))
+            print('<font size=-4>%s</font><img src=%s alt="%s">' %
+                  (t[0], t[1], t[0]))
+
+    f.close()
+    return s
+
 weapons = IkaGlyphRecoginizer()
 
 learnImageGroup(weapons, "14式竹筒銃・甲", dir="14式竹筒銃・甲")
 learnImageGroup(weapons, "3Kスコープ", dir="3Kスコープ")
 learnImageGroup(weapons, "L3リールガン", dir="L3リールガン")
-#learnImageGroup(weapons, "L3リールガンD", dir = "L3リールガンD")
+learnImageGroup(weapons, "L3リールガンD", dir="L3リールガンD")
+learnImageGroup(weapons, "H3リールガン", dir="H3リールガン")
 learnImageGroup(weapons, "N-ZAP85", dir="N-ZAP85")
 learnImageGroup(weapons, "N-ZAP89", dir="N-ZAP89")
 learnImageGroup(weapons, "オクタシューター", dir="オクタシューター")
@@ -59,6 +112,7 @@ learnImageGroup(weapons, "スプラシューター", dir="スプラシュータ�
 learnImageGroup(weapons, "スプラシューターコラボ", dir="スプラシューターコラボ")
 learnImageGroup(weapons, "スプラスコープ", dir="スプラスコープ")
 learnImageGroup(weapons, "スプラスコープワカメ", dir="スプラスコープワカメ")
+learnImageGroup(weapons, "スプラスピナー", dir="スプラスピナー")
 learnImageGroup(weapons, "スプラチャージャー", dir="スプラチャージャー")
 learnImageGroup(weapons, "スプラチャージャーワカメ", dir="スプラチャージャーワカメ")
 learnImageGroup(weapons, "スプラローラー", dir="スプラローラー")
@@ -74,6 +128,7 @@ learnImageGroup(weapons, "パブロ・ヒュー", dir="パブロ・ヒュー")
 learnImageGroup(weapons, "ヒーローシューターレプリカ", dir="ヒーローシューターレプリカ")
 learnImageGroup(weapons, "ヒーローチャージャーレプリカ", dir="ヒーローチャージャーレプリカ")
 learnImageGroup(weapons, "ヒーローローラーレプリカ", dir="ヒーローローラーレプリカ")
+learnImageGroup(weapons, "ヒッセン", dir="ヒッセン")
 learnImageGroup(weapons, "プライムシューター", dir="プライムシューター")
 learnImageGroup(weapons, "プライムシューターコラボ", dir="プライムシューターコラボ")
 learnImageGroup(weapons, "プロモデラーMG", dir="プロモデラーMG銀")
@@ -90,50 +145,46 @@ learnImageGroup(weapons, "リッター3kカスタム", dir="リッター3kカス
 learnImageGroup(weapons, "ロングブラスター", dir="ロングブラスター")
 learnImageGroup(weapons, "わかばシューター", dir="わかばシューター")
 
+weapons.knn_train()
+weapons.saveModelToFile('data/weapons.knn.data')
+weapons.knn_reset()
+weapons.loadModelFromFile('data/weapons.knn.data')
+weapons.knn_train()
+if 1:
+    s = loopbackTest()
+    print(s)
 
-def loopbackTest():
-    results = {}
-    misses = []
-    total = 0
-    correct = 0
+if __name__ == "__main__":
+    from ikalog.scenes.result_detail import *
+    from ikalog.utils import *
+    result_detail = IkaScene_ResultDetail()
+    result_detail.weapons = weapons
+    sort_zumi = {}
+    for file in sys.argv[2:]:
+        context = {
+            'engine': {
+                'frame': cv2.imread(file),
+            },
+            'game': {
+                'map': {'name': 'ハコフグ倉庫', },
+                'rule': {'name': 'ガチエリア'},
+            },
+        }
+        print('file ', file, context['engine']['frame'].shape)
 
-    for weapon in weapons.models:
-        for sample in weapon['samples']:
-            r, model = weapons.guessImage(sample)
+        # 各プレイヤーの状況を分析
+        result_detail.analyze(context)
+        srcname, ext = os.path.splitext(os.path.basename(file))
 
-            total = total + 1
-            if (weapon['name'] == r['name']):
-                correct = correct + 1
-                msg = "正解"
-            else:
-                msg = "　 "
-                misses.append(sample)
-
-            #print("%s: %s 結果: %s<br>" % (msg, weapon['name'], r['name']))
-
-    s = ("%d 問中 %d 問正解　　学習内容に対する正答率 %3.1f％" %
-         (total, correct, correct / total * 100))
-
-    # miss list 表示
-    misses_hist = []
-    for sample in misses:
-        param, r = weapons.analyzeImage(sample, debug=True)
-        misses_hist.append(r)
-    weapons.showLearnedWeaponImage(misses_hist, 'Misses', save='misses.png')
-    return s
-
-
-def testModel():
-    for weapon in weapons.models:
-        weapons.testModel(weapon)
-
-testModel()
-
-#import timeit
-#print(timeit.timeit('loopbackTest()', number=1, setup="from __main__ import loopbackTest,guessImage,guessImage1,weapons"))
-print(loopbackTest())
-# cv2.waitKey()
-# sys.exit()
-
-weapons.saveModelToFile("data/weapons.trained")
-weapons = None
+        for n in range(len(context['game']['players'])):
+            player = context['game']['players'][n]
+            if 'weapon' in player:
+                img_dir = os.path.join(
+                    'test_result', 'weapons', player['weapon'])
+                img_file = os.path.join(img_dir, '%s.%d.png' % (srcname, n))
+                print(img_file)
+                try:
+                    os.makedirs(img_dir)
+                except:
+                    pass
+                cv2.imwrite(img_file, player['img_weapon'])
