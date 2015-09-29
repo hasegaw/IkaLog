@@ -52,6 +52,64 @@ class IkaScene_GameStart:
                 return rule
         return None
 
+    def elect(self, context):
+        # 古すぎる投票は捨てる
+        election_start = context['engine']['msec'] - self.election_period
+        while (len(self.votes) and self.votes[0][0] < election_start):
+            del self.votes[0]
+
+        # 考えづらいがゼロ票なら開票しない
+        if len(self.votes) == 0:
+            return None, None
+
+        # 3秒以上たっていたら開票開始
+        #election_start2 = context['engine']['msec'] - (3 * 1000)
+        #if election_start2 < self.votes[0][0]:
+        #    return None, None
+
+        # 開票作業
+        maps = {}
+        rules = {}
+
+        count = 0
+        map_top = (0, None)  # 最高票数の tuple   (17[票], <IkaMatcher>)
+        rule_top = (0, None)
+
+        for vote in self.votes:
+            if vote[1] is not None:
+                map = vote[1]['name']
+                maps[map] = maps[map] + 1 if map in maps else 1
+                if  map_top[0] < maps[map]:
+                    map_top = (maps[map], vote[1])
+
+            if vote[2] is not None:
+                rule = vote[2]['name']
+                rules[rule] = rules[rule] + 1 if rule in rules else 1
+                if  rule_top[0] < rules[rule]:
+                    rule_top = (rules[rule], vote[2])
+
+        # 必要票数
+        quorum = 1 # max(3, len(self.votes) / 2)
+        print(maps)
+        print(rules)
+        print('quorum = %s' % quorum)
+
+        # 必要票数が達しなかった場合
+        if map_top[0] < quorum:
+            map_top = (0, None)
+
+        if rule_top[0] < quorum:
+            rule_top = (0, None)
+
+        # 必要票数に達したものだけ更新
+        if map_top[1] is not None:
+            context['game']['map'] = map_top[1]
+        if rule_top[1] is not None:
+            context['game']['rule'] = rule_top[1]
+        print(map_top, rule_top)
+
+        return map_top[1], rule_top[1]
+
     def match(self, context):
         map = self.guess_map(context['engine']['frame'])
         rule = self.guess_rule(context['engine']['frame'])
@@ -61,9 +119,17 @@ class IkaScene_GameStart:
         if not rule is None:
             context['game']['rule'] = rule
 
+        if len(self.votes) or map or rule:
+            self.votes.append((context['engine']['msec'], map, rule))
+
+        self.elect(context)
+
         return (map or rule)
 
     def __init__(self, debug=False):
+        self.election_period = 5 * 1000 # msec
+        self.votes = []
+
         self.map_list = [
             {'name': 'タチウオパーキング', 'file': 'masks/gachi_tachiuo.png'},
             {'name': 'モズク農園',         'file': 'masks/nawabari_mozuku.png'},
@@ -114,7 +180,7 @@ if __name__ == "__main__":
     target = cv2.imread(sys.argv[1])
 
     context = {
-        'engine': {'frame': target},
+        'engine': {'frame': target, 'msec': 0, },
         'game': {},
     }
 
