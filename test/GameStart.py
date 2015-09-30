@@ -19,6 +19,8 @@
 #
 
 import sys
+import json
+import argparse
 
 sys.path.append('.')
 
@@ -30,20 +32,68 @@ from ikalog import outputs
 
 class IkaTestGameStart:
 
-    def onFrameRead(self, context):
+    # 正解ファイルを作成する
+    def answer_filename(self, video_file, answer_type, context):
+        #basename_fullpath, ext = os.path.splitext(video_file)
+        basename_fullpath = video_file
+        answer_fullpath = basename_fullpath + '.answer.' + answer_type
+        return answer_fullpath
+
+    # 正解ファイルを作成する
+    def write_answer_file(self, video_file, context):
+        answer_fullpath = self.answer_filename(
+            video_file, 'GameStart', context)
+
+        record = {
+            'stage': IkaUtils.map2text(self.engine.context['game'][
+                'map'], unknown='None'),
+            'rule': IkaUtils.rule2text(self.engine.context['game'][
+                'rule'], unknown='None'),
+        }
+
+        f = open(answer_fullpath, 'w')
+        f.write(json.dumps(record, separators=(',', ':')) + '\n')
+        f.close()
+
+        IkaUtils.dprint('wrote answer file %s' % answer_fullpath)
+        return True
+
+    def read_answer_file(self, video_file):
+        answer_fullpath = self.answer_filename(video_file, 'GameStart', None)
+
+        f = open(answer_fullpath, 'r')
+        record = json.load(f)
+        f.close()
+        return record
+
+    def test_regression(self, context, answer):
+        stage = IkaUtils.map2text(self.engine.context['game'][
+            'map'], unknown='None')
+        rule = IkaUtils.rule2text(self.engine.context['game'][
+                                  'rule'], unknown='None')
+
+        IkaUtils.dprint('  detected: stage %s rule %s' % (stage, rule))
+        IkaUtils.dprint('  answer  : stage %s rule %s' %
+                        (answer['stage'], answer['rule']))
+
+        assert(stage == answer['stage'])
+        assert(rule == answer['rule'])
+        return True
+
+    def on_frame_read(self, context):
         if (context['engine']['msec'] > 60 * 1000):
             IkaUtils.dprint('%s: プレイから60秒以内にマップが検出できませんでした' % self)
             self.engine.stop()
 
-    def onGameGoSign(self, context):
+    def on_game_go_sign(self, context):
         IkaUtils.dprint('%s: ゴーサインがでました' % self)
         self.engine.stop()
 
-    def onFrameReadFailed(self, context):
+    def on_frame_read_failed(self, context):
         IkaUtils.dprint('%s: たぶんファイルの終端にたどり着きました' % self)
         self.engine.stop()
 
-    def onGameStart(self, context):
+    def on_game_start(self, context):
         IkaUtils.dprint('%s: ゲーム検出' % self)
         self.engine.stop()
 
@@ -54,7 +104,7 @@ class IkaTestGameStart:
         source.need_resize = True
 
         # 画面が見えないと進捗が判らないので
-        screen = outputs.IkaOutput_Screen(0, size=(640, 360))
+        screen = outputs.Screen(0, size=(640, 360))
 
         # プラグインとして自分自身（画面）を設定しコールバックを受ける
         outputPlugins = [self, screen]
@@ -69,12 +119,39 @@ class IkaTestGameStart:
         except:
             pass
 
-        map = IkaUtils.map2text(self.engine.context['game'][
-                                'map'], unknown='None')
-        rule = IkaUtils.rule2text(self.engine.context['game'][
-                                  'rule'], unknown='None')
-        print(file, map, rule)
+        if args.write:
+            # 正解ファイルを生成する
+            self.write_answer_file(file, self.engine.context)
+
+        elif args.regression:
+            # リグレッションテスト
+            answer = self.read_answer_file(file)
+            self.test_regression(self.engine.context, answer)
+
+        else:
+            args.stdout = True
+
+        if args.stdout:
+            # 標準出力に表示
+            map = IkaUtils.map2text(self.engine.context['game'][
+                                    'map'], unknown='None')
+            rule = IkaUtils.rule2text(self.engine.context['game'][
+                                      'rule'], unknown='None')
+            print(file, map, rule)
+
 
 if __name__ == "__main__":
-    for file in sys.argv[1:]:
-        IkaTestGameStart(file)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--auto', action='store_true')
+    parser.add_argument('--write', action='store_true')
+    parser.add_argument('--regression', action='store_true')
+    parser.add_argument('--stdout', action='store_true')
+    parser.add_argument('file')
+
+    args = parser.parse_args()
+
+    print(args.auto)
+    print(args.write)
+    print(args.file)
+
+    IkaTestGameStart(args.file)
