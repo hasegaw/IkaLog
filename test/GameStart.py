@@ -153,8 +153,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    print(args.auto)
-    print(args.write)
-    print(args.file)
-
     sys.exit(IkaTestGameStart(args.file).exit_code)
