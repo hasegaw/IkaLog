@@ -284,14 +284,14 @@ class ResultDetail(object):
 
         if self.number_recoginizer:
             try:
-                entry['rank'] = self.number_recoginizer.matchDigits(entry[
+                entry['rank'] = self.number_recoginizer.match_digits(entry[
                                                                     'img_rank'])
-                entry['kills'] = self.number_recoginizer.matchDigits(entry[
+                entry['kills'] = self.number_recoginizer.match_digits(entry[
                                                                      'img_kills'])
-                entry['deaths'] = self.number_recoginizer.matchDigits(entry[
+                entry['deaths'] = self.number_recoginizer.match_digits(entry[
                                                                       'img_deaths'])
                 if isNawabariBattle:
-                    entry['score'] = self.number_recoginizer.matchDigits(entry[
+                    entry['score'] = self.number_recoginizer.match_digits(entry[
                                                                          'img_score'])
 
             except:
