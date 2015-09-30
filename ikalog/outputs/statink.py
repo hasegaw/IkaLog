@@ -25,6 +25,7 @@ import pprint
 import urllib3
 import umsgpack
 from ikalog.version import IKALOG_VERSION
+from ikalog.utils import *
 
 
 # Needed in GUI mode
