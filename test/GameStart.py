@@ -121,15 +121,18 @@ class IkaTestGameStart:
 
         if args.write:
             # 正解ファイルを生成する
-            self.write_answer_file(file, self.engine.context)
+            if self.write_answer_file(file, self.engine.context):
+                self.exit_code = 0
 
         elif args.regression:
             # リグレッションテスト
             answer = self.read_answer_file(file)
-            self.test_regression(self.engine.context, answer)
+            if self.test_regression(self.engine.context, answer):
+                self.exit_code = 0
 
         else:
             args.stdout = True
+            self.exit_code = 0
 
         if args.stdout:
             # 標準出力に表示
@@ -154,4 +157,4 @@ if __name__ == "__main__":
     print(args.write)
     print(args.file)
 
-    IkaTestGameStart(args.file)
+    sys.exit(IkaTestGameStart(args.file).exit_code)
