@@ -24,6 +24,33 @@ import pickle
 
 from ikalog.utils.character_recoginizer import *
 
+class PerCharacter(object):
+
+    def cut(self, img, img_hist_x):
+
+        chars = []
+        in_char = False
+        x_start = None
+        last_x = None
+        for x in range(len(img_hist_x)):
+            if in_char:
+                if img_hist_x[x] > 0:
+                    continue
+                else:
+                    chars.append((x_start, x - 1))
+                    in_char = False
+            else:
+                if img_hist_x[x] > 0:
+                    x_start = x
+                    in_char = True
+                else:
+                    continue
+
+        return chars
+
+    def __init__(self):
+        pass
+
 array0to1280 = np.array(range(1280), dtype=np.int32)
 
 
