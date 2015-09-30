@@ -138,7 +138,7 @@ class JSON(object):
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def on_came_individual_result(self, context):
+    def on_game_individual_result(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
         if not self.enabled:
