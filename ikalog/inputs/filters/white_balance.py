@@ -18,9 +18,10 @@
 #  limitations under the License.
 #
 
+import ikalog.inputs.filters.filter
 from ikalog.utils import *
 
-class white_balance:
+class white_balance(ikalog.inputs.filters.filter.filter):
 
     def getColorBalance(self, img):
         r = (1052, 41, 70, 41)
@@ -38,7 +39,21 @@ class white_balance:
 
         return avg, (avg_b, avg_g, avg_r), (coff_b, coff_g, coff_r)
 
-    def filterImage(self, img, coffs):
+    def pre_execute(self, img):
+        return (self.coffs is not None)
+
+    def execute(self, img):
+        if not (self.pre_execute(img)):
+            return img
+        return self.filterImage(img)
+            
+    def filterImage(self, img, coffs = None):
+        if coffs is None:
+            coffs = self.coffs
+
+        if coffs is None:
+            return img
+
         img_work = np.array(img, np.float32)
 
         for n in range(len(coffs)):
@@ -74,7 +89,12 @@ class white_balance:
 
         print('output avg', avg_out)
 
-        self.white_filter_coffs = coffs_with_gain
+        self.coffs = coffs_with_gain
 
-    def __init__(self, debug=False):
+    def reset(self):
+        self.coffs = None
+
+    def __init__(self, parent, debug=False):
+        super().__init__(parent, debug=debug)
+        
         self.img_hdmi = cv2.imread('camera/color_balance/pause_hdmi.bmp')

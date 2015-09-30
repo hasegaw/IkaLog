@@ -18,14 +18,17 @@
 #  limitations under the License.
 #
 
+import ikalog.inputs.filters.filter
 from ikalog.utils import *
 
-class offset:
-    offset = (0, 0)
+class offset(ikalog.inputs.filters.filter.filter):
 
-    def offsetImage(self, img):
-        if (self.offset[0] == 0 and self.offset[1] == 0):
-            return None
+    def pre_execute(self, frame):
+        return (self.offset[0] != 0) or (self.offset[1] != 0)
+
+    def execute(self, frame):
+        if not (self.enabled and self.pre_execute(frame)):
+            return frame
 
         ox = self.offset[0]
         oy = self.offset[1]
@@ -36,12 +39,20 @@ class offset:
         dx1 = max(ox, 0)
         dy1 = max(oy, 0)
 
-        w = min(self.out_width - dx1, self.out_width - sx1)
-        h = min(self.out_height - dy1, self.out_height - sy1)
+        out_width = self.parent.out_width
+        out_height = self.parent.out_height
+
+        w = min(out_width - dx1, out_width - sx1)
+        h = min(out_height - dy1, out_height - sy1)
 
         new_frame = np.zeros((out_height, out_width, 3), np.uint8)
         new_frame[dy1:dy1 + h, dx1:dx1 + w] = frame[sy1:sy1 + h, sx1:sx1 + w]
         return new_frame
 
-    def __init__(self, debug=False):
+    def reset(self):
         pass
+
+    def __init__(self, parent, debug=False):
+        super().__init__(parent, debug=debug)
+
+        self.offset = (0, 0)

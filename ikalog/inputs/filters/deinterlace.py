@@ -18,5 +18,25 @@
 #  limitations under the License.
 #
 
-from .cvcapture import cvcapture
-#from .filters import filters
+import ikalog.inputs.filters.filter
+from ikalog.utils import *
+
+class deinterlace(ikalog.inputs.filters.filter.filter):
+
+    def pre_execute(self, frame):
+        return True
+
+    def execute(self, img):
+        if not (self.enabled):
+            return img
+
+        for y in range(img.shape[0])[1::2]:
+            img[y, :] = img[y - 1, :]
+
+        return img
+
+    def reset(self):
+        pass
+
+    def __init__(self, parent, debug=False):
+        super().__init__(parent, debug=debug)

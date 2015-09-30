@@ -66,12 +66,11 @@
 # the use of this software, even if advised of the possibility of such damage.
 #
 
-import time
 import pickle
-
+import ikalog.inputs.filters.filter
 from ikalog.utils import *
 
-class warp
+class warp(ikalog.inputs.filters.filter.filter):
 
     def filter_matches(self, kp1, kp2, matches, ratio=0.75):
         mkp1, mkp2 = [], []
@@ -135,15 +134,7 @@ class warp
         IkaUtils.dprint('pts2: %s' % [self.pts2])
 
         self.M = cv2.getPerspectiveTransform(pts1, self.pts2)
-
-        self.warp_mode = True
-        self.calibration_requested = False
-        self.last_calibration_time = time.time()
-
         return True
-
-    def warpImage(self, frame):
-        return cv2.warpPerspective(frame, self.M, (1280, 720))
 
     def tuples2keyPoints(self, tuples):
         new_l = []
@@ -208,28 +199,26 @@ class warp
         print('calibration_image - %d features' %
               (len(self.calibration_image_keypoints)))
 
-        self.pts2 = np.float32([[0, 0], [1280, 0], [1280, 720], [0, 720]])
+        self.reset()
+
+    def reset(self):
+        # input source
+        w = 1280
+        h = 720
+
+        self.pts2 = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
         self.M = cv2.getPerspectiveTransform(self.pts2, self.pts2)
 
-    def __init__(self, debug=False):
+    def pre_execute(self, frame):
+        return True
+
+    def execute(self, frame):
+        if not (self.enabled and self.pre_execute(frame)):
+            return frame
+
+        return cv2.warpPerspective(frame, self.M, (1280, 720))
+
+    def __init__(self, parent, debug=False):
+        super().__init__(parent, debug=debug)
         self.initializeCalibration()
 
-if __name__ == "__main__":
-    obj = webcam()
-
-    list = InputSourceEnumerator().Enumerate()
-    for n in range(len(list)):
-        print("%d: %s" % (n, list[n]))
-
-    if len(sys.argv) > 1:
-        obj.startRecordedFile(sys.argv[1])
-    else:
-        dev = input("Please input number (or name) of capture device: ")
-        obj.startCamera(dev)
-
-    k = 0
-    while k != 27:
-        frame, t = obj.read()
-        cv2.imshow(obj.__class__.__name__, frame)
-        k = cv2.waitKey(1)
-        obj.onKeyPress(None, k)

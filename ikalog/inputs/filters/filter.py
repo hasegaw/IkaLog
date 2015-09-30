@@ -3,6 +3,7 @@
 #
 #  IkaLog
 #  ======
+#  Copyright (C) 2015 Hiromichi Itou
 #  Copyright (C) 2015 Takeshi HASEGAWA
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,5 +19,24 @@
 #  limitations under the License.
 #
 
-from .cvcapture import cvcapture
-#from .filters import filters
+class filter:
+
+    def enable(self):
+        self.enabled = True
+
+    def disable(self):
+        self.enabled = True
+
+    # フィルタをスキップしてもいいとフィルタが思っていたら False
+    # フィルタが出力画像をいじる気まんまんなら True を返してください
+    def pre_execute(self, frame):
+        return True
+
+    def execute(self, frame):
+        raise('Please override execute().')
+
+    def __init__(self, parent, debug=False):
+        self.parent = parent
+        self.disable()
+        self.reset()
+        self.enabled = False
