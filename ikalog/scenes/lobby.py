@@ -78,22 +78,24 @@ class Lobby(object):
 
     def __init__(self, debug=False):
         self.mask_rule = IkaMatcher(
-            0, 220, 737, 94,
+            #0, 220, 737, 94,
+            72, 269, 90, 25,
             img_file='masks/ui_lobby_public.png',
-            threshold=0.95,
-            orig_threshold=0.10,
-            false_positive_method=IkaMatcher.FP_FRONT_IS_WHITE,
+            threshold=0.80,
+            orig_threshold=0.30,
+            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
             pre_threshold_value=230,
             label='Rule',
             debug=debug
         )
 
         self.mask_stage = IkaMatcher(
-            0, 345, 737, 94,
+            #0, 345, 737, 94,
+            72, 386, 110, 35,
             img_file='masks/ui_lobby_public.png',
-            threshold=0.95,
-            orig_threshold=0.10,
-            false_positive_method=IkaMatcher.FP_FRONT_IS_WHITE,
+            threshold=0.80,
+            orig_threshold=0.30,
+            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
             pre_threshold_value=230,
             label='Stage',
             debug=debug
