@@ -204,27 +204,23 @@ class IkaEngine:
 
         # ResultUdemae
         r = (not context['engine']['inGame'])
-
         if r:
             r = self.scn_result_udemae.match(context)
 
-        if r:
-            while ('udemae_str_pre' in context['scenes']['result_udemae']):
-                frame = self.read_next_frame()
-                context['engine']['frame'] = frame
-                self.scn_result_udemae.match(context)
+        while r:
+            frame = self.read_next_frame()
+            context['engine']['frame'] = frame
+            r = self.scn_result_udemae.match(context)
 
         # result_gears
         r = (not context['engine']['inGame'])
-
         if r:
             r = self.scn_result_gears.match(context)
-
         if r:
-            while (self.scn_result_gears.match(context)):
+            while r:
                 frame = self.read_next_frame()
                 context['engine']['frame'] = frame
-            self.skip_frames_requested = 99
+                r = self.scn_result_gears.match(context)
 
             self.call_plugins('on_game_session_end')
             self.call_plugins('on_game_reset')
