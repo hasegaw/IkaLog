@@ -138,11 +138,11 @@ class Slack(object):
         return "%sで%sに%sました" % (map, rule, won)
 
     ##
-    # on_game_individual_result Hook
+    # on_game_session_end Hook
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def on_game_individual_result(self, context):
+    def on_game_session_end(self, context):
         if not self.enabled:
             return False
 
