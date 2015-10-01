@@ -26,7 +26,7 @@ class IkaMatcher(object):
     @classmethod
     def FP_BACK_IS_BLACK(cls, mask_img=None, img_bgr=None, img_gray=None):
         fp_img = np.minimum(img_gray, mask_img)
-        fp_img = cv2.inRange(fp_img, 16, 256)
+        fp_img = cv2.inRange(fp_img, 32, 256)
         orig_hist = cv2.calcHist([fp_img], [0], None, [3], [0, 256])
         orig_raito = orig_hist[2] / np.sum(orig_hist)
         return orig_raito, fp_img
