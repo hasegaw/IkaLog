@@ -25,7 +25,9 @@ import sys
 import time
 import traceback
 
+from ikalog.utils import *
 from . import scenes
+
 
 # The IkaLog core engine.
 #
@@ -35,6 +37,7 @@ class IkaEngine:
     scn_gamestart = scenes.GameStart()
     scn_gamefinish = scenes.GameFinish()
     scn_gameresult = scenes.ResultDetail()
+    scn_result_gears = scenes.ResultGears()
     scn_ingame = scenes.InGame()
     scn_tower_tracker = scenes.TowerTracker()
     scn_lobby = scenes.Lobby()
@@ -197,9 +200,22 @@ class IkaEngine:
 
                 self.call_plugins('on_game_individual_result_analyze')
                 self.call_plugins('on_game_individual_result')
-                self.call_plugins('on_game_reset')
 
-                self.reset()
+        # result_gears
+        r = (not context['engine']['inGame'])
+
+        if r:
+            r = self.scn_result_gears.match(context)
+
+        if r:
+            while (self.scn_result_gears.match(context)):
+                frame = self.read_next_frame()
+                context['engine']['frame'] = frame
+            self.skip_frames_requested = 99
+
+            self.call_plugins('on_game_session_end')
+            self.call_plugins('on_game_reset')
+            self.reset()
 
         key = None
 
