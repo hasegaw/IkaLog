@@ -130,11 +130,11 @@ class CSV(object):
         return "%s,%s,%s,%s,%s\n" % (t_unix, t_str, map, rule, won)
 
     ##
-    # on_game_individual_result Hook
+    # on_game_session_end Hook
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def on_game_individual_result(self, context):
+    def on_game_session_end(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
         if not self.enabled:
