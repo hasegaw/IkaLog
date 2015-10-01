@@ -44,7 +44,7 @@ class ResultUdemae(object):
             udemae_exp = None
 
             if self.number_recoginizer:
-                udemae_exp = self.number_recoginizer.match(img_udemae_exp)
+                udemae_exp = self.number_recoginizer.match_digits(img_udemae_exp)
                 if udemae_exp < 0 or udemae_exp > 100:
                     udemae_exp = None
 
@@ -74,6 +74,7 @@ class ResultUdemae(object):
 
         while True:
             context = (yield in_trigger)
+            callPlugins = context['engine']['service']['callPlugins']
             t = context['engine']['msec']
 
             if self.match1(context):
@@ -89,11 +90,7 @@ class ResultUdemae(object):
                         'result_udemae']['last_update']
                     if ((last_match + 100) < t):
                         # トリガ状態だが未検出状態がしばらく続いた
-                        callPlugins = context['engine'][
-                            'service']['callPlugins']
-                        print(context['scenes']['result_udemae'])
                         callPlugins('on_result_udemae')
-                        context['scenes']['result_udemae'] = {}
                         in_trigger = False
 
     def match(self, context):
