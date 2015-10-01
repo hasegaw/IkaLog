@@ -132,14 +132,11 @@ class JSON(object):
 
         # ウデマエ
         try:
-            record['udemae_pre'] = context['scene'][
-                'result_udemae']['udemae_exp_pre']
-            record['udemae_exp_pre'] = context['scene'][
-                'result_udemae']['udemae_exp_pre']
-            record['udemae_after'] = context['scene'][
-                'result_udemae']['udemae_str_after']
-            record['udemae_exp_after'] = context['scene'][
-                'result_udemae']['udemae_exp_after']
+            udemae = context['scenes']['result_udemae']
+            record['udemae_pre'] = result_udemae['udemae_exp_pre']
+            record['udemae_exp_pre'] = udemae['udemae_exp_pre']
+            record['udemae_after'] = udemae['udemae_str_after']
+            record['udemae_exp_after'] = udemae['udemae_exp_after']
         except:
             pass
 
