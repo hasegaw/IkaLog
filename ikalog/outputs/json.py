@@ -108,11 +108,11 @@ class JSON(object):
             print("JSON: Failed to write JSON file")
 
     ##
-    # Generate a record for on_game_individual_result.
+    # Generate a record
     # @param self      The Object Pointer.
     # @param context   IkaLog context
     #
-    def get_record_game_individual_result(self, context):
+    def get_record_game_result(self, context):
         map = IkaUtils.map2text(context['game']['map'])
         rule = IkaUtils.rule2text(context['game']['rule'])
         won = IkaUtils.getWinLoseText(
@@ -122,14 +122,48 @@ class JSON(object):
         t_str = t.strftime("%Y,%m,%d,%H,%M")
         t_unix = int(time.mktime(t.timetuple()))
 
-        record = {'time': t_unix, 'event': 'GameResult',
-                  'map': map, 'rule': rule, 'result': won}
+        record = {
+            'time': t_unix,
+            'event': 'GameResult',
+            'map': map,
+            'rule': rule,
+            'result': won
+        }
 
+        # ウデマエ
+        try:
+            record['udemae_pre'] = context['scene'][
+                'result_udemae']['udemae_exp_pre']
+            record['udemae_exp_pre'] = context['scene'][
+                'result_udemae']['udemae_exp_pre']
+            record['udemae_after'] = context['scene'][
+                'result_udemae']['udemae_str_after']
+            record['udemae_exp_after'] = context['scene'][
+                'result_udemae']['udemae_exp_after']
+        except:
+            pass
+
+        # オカネ
+        try:
+            record['cash_after'] = context['scenes']['result_gears']['cash']
+        except:
+            pass
+
+        # 個人成績
         me = IkaUtils.getMyEntryFromContext(context)
 
-        for field in ['score', 'kills', 'deaths', 'rank_in_team', 'udemae_pre']:
+        for field in ['team', 'kills', 'deaths', 'score', 'udemae_pre', 'weapon', 'rank_in_team']:
             if field in me:
                 record[field] = me[field]
+
+        # 全プレイヤーの成績
+        record['players'] = []
+        for player in context['game']['players']:
+            player_record = {}
+            for field in ['team', 'kills', 'deaths', 'score', 'udemae_pre', 'weapon', 'rank_in_team']:
+                if field in player:
+                    player_record[field] = player[field]
+            record['players'].append(player_record)
 
         return json.dumps(record, separators=(',', ':')) + "\n"
 
@@ -138,13 +172,13 @@ class JSON(object):
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def on_game_individual_result(self, context):
+    def on_game_session_end(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
         if not self.enabled:
             return
 
-        record = self.get_record_game_individual_result(context)
+        record = self.get_record_game_result(context)
         self.write_record(record)
 
     ##
