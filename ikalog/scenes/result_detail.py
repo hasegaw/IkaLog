@@ -421,7 +421,7 @@ if __name__ == "__main__":
             me = '*' if e['me'] else ''
 
             print("rank %s udemae %s %s/%s weapon %s score %s %s%s %s" %
-                  (rank, UdemaeRecoginizer, kills, deaths, weapon, score, prefix_, gender, me))
+                  (rank, udemae, kills, deaths, weapon, score, prefix_, gender, me))
 
     if len(files) > 0:
         cv2.waitKey()
