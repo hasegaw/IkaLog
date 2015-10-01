@@ -135,7 +135,7 @@ class ResultGears(object):
             threshold=0.7,
             orig_threshold=0.300,
             false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
-            pre_threshold_value=230,
+            pre_threshold_value=128, # 緑色!
             label='result_gaers/okane',
             debug=debug,
         )
