@@ -54,7 +54,6 @@ class Twitter(object):
     last_me = None
 
     def apply_ui(self):
-
         if self.radioIkaLogKey.GetValue():
             self.consumer_key_type = 'ikalog'
         if self.radioOwnKey.GetValue():
@@ -168,6 +167,9 @@ class Twitter(object):
         if 'TweetUdemae' in conf:
             self.tweet_udemae = conf['TweetUdemae']
 
+        if 'ConsumerKeyType' in conf:
+            self.consumer_key_type = conf['ConsumerKeyType']
+
         if 'ConsumerKey' in conf:
             self.consumer_key = conf['ConsumerKey']
 
@@ -193,6 +195,7 @@ class Twitter(object):
             'TweetMyScore': self.tweet_my_score,
             'TweetKd': self.tweet_kd,
             'TweetUdemae': self.tweet_udemae,
+            'ConsumerKeyType': self.consumer_key_type,
             'ConsumerKey': self.consumer_key,
             'ConsumerSecret': self.consumer_secret,
             'AccessToken': self.access_token,
@@ -202,6 +205,20 @@ class Twitter(object):
 
     def on_config_apply(self, context):
         self.apply_ui()
+
+        if not self.consumer_key_type is None:
+            try:
+                {
+                    'ikalog': self.radioIkaLogKey,
+                    'own': self.radioOwnKey,
+                }[self.consumer_key_type].SetValue(True)
+            except:
+                if self._preset_ck is None:
+                    self.radioOwnKey.SetValue(True)
+                else:
+                    self.radioIkaLogKey.SetValue(True)
+        else:
+            self.editConsumerKey.SetValue('')
 
         if not self.consumer_key is None:
             self.editConsumerKey.SetValue(self.consumer_key)
