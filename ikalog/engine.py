@@ -107,7 +107,9 @@ class IkaEngine:
     def process_frame(self):
         context = self.context  # Python のオブジェクトって参照だよね?
         frame = self.read_next_frame(skip_frames=12)
-        # FixMe: frame can be a null
+
+        if frame is None:
+            return False
 
         context['engine']['frame'] = frame
         context['engine']['inGame'] = self.scn_ingame.matchTimerIcon(context)
