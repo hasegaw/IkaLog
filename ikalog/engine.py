@@ -37,6 +37,7 @@ class IkaEngine:
     scn_gamestart = scenes.GameStart()
     scn_gamefinish = scenes.GameFinish()
     scn_gameresult = scenes.ResultDetail()
+    scn_result_udemae = scenes.ResultUdemae()
     scn_result_gears = scenes.ResultGears()
     scn_ingame = scenes.InGame()
     scn_tower_tracker = scenes.TowerTracker()
@@ -200,6 +201,18 @@ class IkaEngine:
 
                 self.call_plugins('on_game_individual_result_analyze')
                 self.call_plugins('on_game_individual_result')
+
+        # ResultUdemae
+        r = (not context['engine']['inGame'])
+
+        if r:
+            r = self.scn_result_udemae.match(context)
+
+        if r:
+            while ('udemae_str_pre' in context['scenes']['result_udemae']):
+                frame = self.read_next_frame()
+                context['engine']['frame'] = frame
+                self.scn_result_udemae.match(context)
 
         # result_gears
         r = (not context['engine']['inGame'])
