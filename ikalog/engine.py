@@ -94,7 +94,7 @@ class IkaEngine:
                     'callPlugins': self.call_plugins,
                 }
             },
-            'scene': {
+            'scenes': {
             },
             'config': {
             }

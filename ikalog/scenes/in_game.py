@@ -216,39 +216,39 @@ class InGame(object):
         callPlugins = context['engine']['service']['callPlugins']
         msec = context['engine']['msec']
 
-        if not self in context['scene']:
-            context['scene'][self] = {
+        if not self in context['scenes']:
+            context['scenes'][self] = {
                 'lastGoSign': msec - 60 * 1000,
                 'lastDead': msec - 60 * 1000,
                 'lastKill': msec - 60 * 1000,
                 'kills': 0,
             }
 
-        context['scene'][self]['lastTimerIcon'] = msec
+        context['scenes'][self]['lastTimerIcon'] = msec
 
         # ゴーサイン (60秒に1度まで)
-        if (context['scene'][self]['lastGoSign'] + 60 * 1000) < msec:
+        if (context['scenes'][self]['lastGoSign'] + 60 * 1000) < msec:
             if self.matchGoSign(context):
                 callPlugins('on_game_go_sign')
-                context['scene'][self]['lastGoSign'] = msec
+                context['scenes'][self]['lastGoSign'] = msec
 
         # 誰かをキルしたか
         kills = self.matchKilled(context)
-        if context['scene'][self]['kills'] < kills:
+        if context['scenes'][self]['kills'] < kills:
             callPlugins('on_game_killed')
-            context['scene'][self]['kills'] = kills
-            context['scene'][self]['lastKill'] = msec
+            context['scenes'][self]['kills'] = kills
+            context['scenes'][self]['lastKill'] = msec
         else:
             # 品質が悪いムービーのチャタリング対策
             # 長すぎると連続キル検出をミスする可能性あり
-            if (context['scene'][self]['lastKill'] + 1 * 1000) < msec:
-                context['scene'][self]['kills'] = kills
+            if (context['scenes'][self]['lastKill'] + 1 * 1000) < msec:
+                context['scenes'][self]['kills'] = kills
 
         # 死亡状態（「復活まであとｎ秒」）
         if self.matchDead(context):
-            if (context['scene'][self]['lastDead'] + 5 * 1000) < msec:
+            if (context['scenes'][self]['lastDead'] + 5 * 1000) < msec:
                 callPlugins('on_game_dead')
-            context['scene'][self]['lastDead'] = msec
+            context['scenes'][self]['lastDead'] = msec
         return True
 
     def __init__(self):
