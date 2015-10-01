@@ -33,18 +33,16 @@ class ResultUdemae(object):
 
     def analyze(self, context):
         try:
-            img_udemae = context['engine']['frame'][
-                357:357 + 108, 450:450 + 190]
-            cv2.imshow('udemae', img_udemae)
-            img_udemae_exp = context['engine'][
-                'frame'][310:310 + 185, 770:770 + 110]
-            cv2.imshow('udemae_exp', img_udemae_exp)
+            frame = context['engine']['frame']
+            img_udemae = frame[357:357 + 108, 450:450 + 190]
+            img_udemae_exp = frame[310:310 + 185, 770:770 + 110]
 
             udemae_str = None
             udemae_exp = None
 
             if self.number_recoginizer:
-                udemae_exp = self.number_recoginizer.match_digits(img_udemae_exp)
+                udemae_exp = self.number_recoginizer.match_digits(
+                    img_udemae_exp)
                 if udemae_exp < 0 or udemae_exp > 100:
                     udemae_exp = None
 
