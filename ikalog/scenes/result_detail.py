@@ -276,23 +276,23 @@ class ResultDetail(object):
 
         if self.udemae_recoginizer and isRankedBattle:
             try:
-                entry['udemae_pre'] = self.udemae_recoginizer.match(entry[
-                                                                    'img_score']).upper()
+                entry['udemae_pre'] = self.udemae_recoginizer.match(
+                    entry['img_score']).upper()
             except:
                 IkaUtils.dprint('Exception occured in Udemae recoginization.')
                 IkaUtils.dprint(traceback.format_exc())
 
         if self.number_recoginizer:
             try:
-                entry['rank'] = self.number_recoginizer.match_digits(entry[
-                                                                    'img_rank'])
-                entry['kills'] = self.number_recoginizer.match_digits(entry[
-                                                                     'img_kills'])
-                entry['deaths'] = self.number_recoginizer.match_digits(entry[
-                                                                      'img_deaths'])
+                entry['rank'] = self.number_recoginizer.match_digits(
+                    entry['img_rank'])
+                entry['kills'] = self.number_recoginizer.match_digits(
+                    entry['img_kills'])
+                entry['deaths'] = self.number_recoginizer.match_digits(
+                    entry['img_deaths'])
                 if isNawabariBattle:
-                    entry['score'] = self.number_recoginizer.match_digits(entry[
-                                                                         'img_score'])
+                    entry['score'] = self.number_recoginizer.match_digits(
+                        entry['img_score'])
 
             except:
                 IkaUtils.dprint('Exception occured in K/D recoginization.')
@@ -361,19 +361,13 @@ class ResultDetail(object):
             IkaUtils.dprint("Could not initalize weapons recoginiton model")
 
         try:
-            self.number_recoginizer = NumberRecoginizer()
-#            self.chara_recoginizer.load_model_from_file('data/kd.model')
-#            self.kd_recoginizer.train()
+            self.number_recoginizer = character_recoginizer.NumberRecoginizer()
         except:
-            IkaUtils.dprint("Could not initalize KD recoginiton model")
-            IkaUtils.dprint(traceback.format_exc())
             self.number_recoginizer = None
 
         try:
-            self.udemae_recoginizer = UdemaeRecoginizer()
+            self.udemae_recoginizer = character_recoginizer.UdemaeRecoginizer()
         except:
-            IkaUtils.dprint("Could not initalize Udemae recoginiton model")
-            IkaUtils.dprint(traceback.format_exc())
             self.udemae_recoginizer = None
 
         if winlose is None:
