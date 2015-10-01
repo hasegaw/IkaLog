@@ -85,3 +85,6 @@ class Console(object):
     def on_game_individual_result(self, context):
         s = self.get_text_game_individual_result(context)
         print(s)
+
+    def on_game_session_end(self, context):
+        print('ゲームセッション終了')
