@@ -24,20 +24,23 @@ import pickle
 
 from ikalog.utils.character_recoginizer import *
 
+
 class PerCharacter(object):
 
     def cut(self, img, img_hist_x):
-
         chars = []
         in_char = False
         x_start = None
         last_x = None
+
         for x in range(len(img_hist_x)):
             if in_char:
                 if img_hist_x[x] > 0:
                     continue
                 else:
-                    chars.append((x_start, x - 1))
+                    char = (x_start, x - 1)
+                    if char[1] - char[0] > 2:
+                        chars.append((x_start, x - 1))
                     in_char = False
             else:
                 if img_hist_x[x] > 0:
@@ -141,12 +144,15 @@ class CharacterRecoginizer(object):
         img_chars = np.sum(img_chars[:, :], axis=1)  # 行毎の検出dot数
         img_char_extract_y = np.extract(
             img_chars > 0, array0to1280[0:len(img_chars)])
-        y1 = np.amin(img_char_extract_y)
-        y2 = np.amax(img_char_extract_y) + 1
-        for t in char_tuples:
 
-            img_char_final = img[y1:y2, t[0]: t[1]]
-            characters.append(img_char_final)
+        if len(img_char_extract_y) > 1:
+            y1 = np.amin(img_char_extract_y)
+            y2 = np.amax(img_char_extract_y) + 1
+
+            if (y2 - y1) > 2: # 最低高さ4ドットなければサンプルとして認識しない
+                for t in char_tuples:
+                    img_char_final = img[y1:y2, t[0]: t[1]]
+                    characters.append(img_char_final)
 
         return characters
 
