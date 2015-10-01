@@ -23,21 +23,33 @@ import os
 import numpy as np
 
 from ikalog.utils.character_recoginizer import *
+from ikalog.utils import *
 
 
 class NumberRecoginizer(CharacterRecoginizer):
 
+    def __new__(cls, *args, **kwargs):
+
+        if not hasattr(cls, '__instance__'):
+            cls.__instance__ = super(
+                NumberRecoginizer, cls).__new__(cls, *args, **kwargs)
+
+        return cls.__instance__
+
     def __init__(self):
+
+        if hasattr(self, 'trained') and self.trained:
+            return
+
         super(NumberRecoginizer, self).__init__()
 
         model_name = 'data/number.model'
         if os.path.isfile(model_name):
             self.load_model_from_file(model_name)
             self.train()
-            print('Loaded number recoginization model.')
             return
 
-        print('Building number recoginization model.')
+        IkaUtils.dprint('Building number recoginization model.')
         # try to rebuild model
         data = [
             {'file': 'numbers2/num0_1.png', 'response': 0, },

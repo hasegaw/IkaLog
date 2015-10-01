@@ -23,21 +23,33 @@ import os
 import numpy as np
 
 from ikalog.utils.character_recoginizer import *
+from ikalog.utils import *
 
 
 class UdemaeRecoginizer(CharacterRecoginizer):
 
+    def __new__(cls, *args, **kwargs):
+
+        if not hasattr(cls, '__instance__'):
+            cls.__instance__ = super(
+                UdemaeRecoginizer, cls).__new__(cls, *args, **kwargs)
+
+        return cls.__instance__
+
     def __init__(self):
+
+        if hasattr(self, 'trained') and self.trained:
+            return
+
         super(UdemaeRecoginizer, self).__init__()
 
         model_name = 'data/udemae.model'
         if os.path.isfile(model_name):
             self.load_model_from_file(model_name)
             self.train()
-            print('Loaded udemae recoginization model.')
             return
 
-        print('Building udemae recoginization model.')
+        IkaUtils.dprint('Building udemae recoginization model.')
         data = [
             {'file': 'numbers2/a1.png', 'response': 'a'},
             {'file': 'numbers2/b1.png', 'response': 'b'},
