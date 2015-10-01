@@ -235,6 +235,25 @@ class StatInk(object):
             return None
 
         return s
+    def _set_values(self, fields, dest, src):
+        for field in fields:
+
+            f_type = field[0]
+            f_statink = field[1]
+            f_ikalog = field[2]
+
+            if (f_ikalog in src) and (src[f_ikalog] is not None):
+                if f_type == 'int':
+                    try:
+                        dest[f_statink] = int(src[f_ikalog])
+                    except:  # ValueError
+                        IkaUtils.dprint('%s: field %s failed: src[%s] == %s' % (
+                            self, f_statink, f_ikalog, src[f_ikalog]))
+                        pass
+                elif f_type == 'str':
+                    dest[f_statink] = str(src[f_ikalog])
+                elif f_type == 'str_lower':
+                    dest[f_statink] = str(src[f_ikalog]).lower()
 
     # serialize_payload
     def serialize_payload(self, context):
@@ -266,32 +285,29 @@ class StatInk(object):
             if weapon:
                 payload['weapon'] = weapon
 
-        int_fields = [
-            # 'type', 'IkaLog Field', 'stat.ink Field'
-            ['int', 'rank_in_team', 'rank_in_team'],
-            ['int', 'kill', 'kills'],
-            ['int', 'death', 'deaths'],
-            ['int', 'level', 'rank'],
-            ['int', 'my_point', 'score'],
-            ['str_lower', 'rank', 'udemae_pre'],
-        ]
+        self._set_values(
+            [ # 'type', 'stat.ink Field', 'IkaLog Field'
+                ['int', 'rank_in_team', 'rank_in_team'],
+                ['int', 'kill', 'kills'],
+                ['int', 'death', 'deaths'],
+                ['int', 'level', 'rank'],
+                ['int', 'my_point', 'score'],
+                ['str_lower', 'rank', 'udemae_pre'],
+            ], payload, me)
 
-        for field in int_fields:
-            f_type = field[0]
-            f_statink = field[1]
-            f_ikalog = field[2]
-            if (f_ikalog in me) and (me[f_ikalog] is not None):
-                if f_type == 'int':
-                    try:
-                        payload[f_statink] = int(me[f_ikalog])
-                    except:  # ValueError
-                        IkaUtils.dprint('%s: field %s failed: me[%s] == %s' % (
-                            self, f_statink, f_ikalog, me[f_ikalog]))
-                        pass
-                elif f_type == 'str':
-                    payload[f_statink] = str(me[f_ikalog])
-                elif f_type == 'str_lower':
-                    payload[f_statink] = str(me[f_ikalog]).lower()
+        if 'result_udemae' in context['scenes']:
+            self._set_values(
+                [ # 'type', 'stat.ink Field', 'IkaLog Field'
+                    ['int', 'rank_exp', 'udemae_exp_pre'], 
+                    ['int', 'rank_exp_after', 'udemae_exp_after'],
+                    ['str_lower', 'rank_after', 'udemae_str_after'],
+                ], payload, context['scenes']['result_udemae'])
+
+        if 'result_gears' in context['scenes']:
+            self._set_values(
+                [ # 'type', 'stat.ink Field', 'IkaLog Field'
+                    ['int', 'cash_after', 'cash'],
+                ], payload, context['scenes']['result_gears'])
 
         payload['image_result'] = self.encode_image(context['engine']['frame'])
 
@@ -375,6 +391,8 @@ class StatInk(object):
             payload['image_result'] = '(PNG Data)'
         pprint.pprint(payload)
 
+
+
     def on_game_go_sign(self, context):
         self.time_start_at = int(time.time())
         self.time_end_at = None
@@ -384,16 +402,21 @@ class StatInk(object):
         if 'msec' in context['engine']:
             self.time_start_at_msec = context['engine']['msec']
 
+    def on_game_start(self, context):
+        # ゴーサインをベースにカウントするが、ゴーサインを認識
+        # できなかった場合の保険として on_game_start も拾っておく
+        self.on_game_go_sign(context)
+
     def on_game_finish(self, context):
         self.time_end_at = int(time.time())
-        if 'msec' in context['engine']:
+        if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
             duration_msec = context['engine']['msec'] - self.time_start_at_msec
 
             if duration_msec >= 0.0:
                 self.time_start_at = int(
                     self.time_end_at - int(duration_msec / 1000))
 
-    def on_game_individual_result(self, context):
+    def on_game_session_end(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
         if not self.enabled:
@@ -417,6 +440,7 @@ class StatInk(object):
 
         self.time_start_at = None
         self.time_end_at = None
+        self.time_start_at_msec = None
 
         self.debug_writePayloadToFile = debug
 
@@ -447,10 +471,12 @@ if __name__ == "__main__":
             'map': {'name': 'ハコフグ倉庫', },
             'rule': {'name': 'ガチエリア'},
         },
+        'scenes': {
+        },
     }
 
     # 各プレイヤーの状況を分析
     ResultDetail().analyze(context)
 
     # stat.ink へのトリガ
-    obj.on_game_individual_result(context)
+    obj.on_game_session_end(context)
