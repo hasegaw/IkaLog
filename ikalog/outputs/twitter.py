@@ -458,18 +458,26 @@ class Twitter(object):
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
+    def on_game_individual_result(self, context):
+        self.img_result_detail  = context['engine']['frame']
+
     def on_game_session_end(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
         if not self.enabled:
             return False
 
+        if self.img_result_detail is None:
+            return False
+
         s = self.get_text_game_individual_result(context)
         IkaUtils.dprint('投稿内容 %s' % s)
 
-        media = self.post_media(
-            context['engine']['frame']) if self.attach_image else None
+        media = self.post_media(self.img_result_detail
+            ) if self.attach_image else None
         self.tweet(s, media=media)
+
+        self.img_result_detail = None
 
     ##
     # check_import
@@ -509,6 +517,8 @@ class Twitter(object):
         self.tweet_kd = tweet_kd
         self.tweet_udemae = tweet_udemae
         self.footer = footer
+
+        self.img_result_detail = None
 
         self.check_import()
 
