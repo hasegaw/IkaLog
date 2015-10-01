@@ -29,13 +29,13 @@ from ikalog.utils import *
 
 class DebugLog(object):
 
-    def write_debug_log(self, event, context):
+    def write_debug_log(self, event, context,text=''):
         gt = int(context['engine']['msec'] / 1000)
         mm = '{0:02d}'.format(int(gt / 60))
         ss = '{0:02d}'.format(int(gt % 60))
 
         # Write to console
-        print('[event] %s:%s %s' % (mm, ss, event))
+        print('[event] %s:%s %s  %s' % (mm, ss, event, text))
 
         # Write to screenshot if enabled
         if self.screenshot:
@@ -64,16 +64,30 @@ class DebugLog(object):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     def on_lobby_matching(self, context):
-        self.write_debug_log(sys._getframe().f_code.co_name, context)
+        self.write_debug_log(sys._getframe().f_code.co_name, context, text=
+        'Lobby_type: %s' % context['game']['lobby']['type'])
 
     def on_lobby_matched(self, context):
-        self.write_debug_log(sys._getframe().f_code.co_name, context)
+        self.write_debug_log(sys._getframe().f_code.co_name, context, text=
+        'Lobby_type: %s' % context['game']['lobby']['type'])
 
     def on_game_finish(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     def on_game_individual_result(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_result_udemae(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_result_gears(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_session_end(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_option_tab_create(self, notebook):
+        pass
 
     def __init__(self, dir='debug/', screenshot=False):
         self.dir = dir
