@@ -333,8 +333,8 @@ class ResultDetail(object):
 
             e = self.analyze_entry(img_entry)
 
-            e['team'] = 1 if entry_id < 4 else 2
-            e['rank_in_team'] = entry_id if entry_id < 4 else entry_id - 4
+            e['team'] = 1 if entry_id < 5 else 2
+            e['rank_in_team'] = entry_id if e['team'] == 1 else entry_id - 4
 
             context['game']['players'].append(e)
 
@@ -414,8 +414,8 @@ if __name__ == "__main__":
             score = e['score'] if ('score' in e) else None
             me = '*' if e['me'] else ''
 
-            print("rank %s udemae %s %s/%s weapon %s score %s %s%s %s" %
-                  (rank, udemae, kills, deaths, weapon, score, prefix_, gender, me))
+            print("rank %s udemae %s %s/%s weapon %s score %s %s%s %s, team %s rank_in_team %s" %
+                  (rank, udemae, kills, deaths, weapon, score, prefix_, gender, me, e['team'], e['rank_in_team']))
 
     if len(files) > 0:
         cv2.waitKey()
