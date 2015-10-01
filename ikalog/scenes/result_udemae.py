@@ -26,48 +26,65 @@ from ikalog.utils import *
 
 class ResultUdemae(object):
 
+    valid_udemae_list = [
+        's+', 's', 'a+', 'a', 'a-', 'b+', 'b', 'b-', 'c+', 'c', 'c-'
+    ]
+
     def match1(self, context):
         frame = context['engine']['frame']
         matched = self.mask_udemae_msg.match(frame)
         return matched
 
     def analyze(self, context):
-        try:
-            frame = context['engine']['frame']
-            img_udemae = frame[357:357 + 108, 450:450 + 190]
-            img_udemae_exp = frame[310:310 + 185, 770:770 + 110]
+        udemae_str = None
+        udemae_exp = None
 
+        frame = context['engine']['frame']
+        img_udemae = frame[357:357 + 108, 450:450 + 190]
+        img_udemae_exp = frame[310:310 + 185, 770:770 + 110]
+
+        # ウデマエ(文字部分)
+        if self.udemae_recoginizer:
+            udemae_str = self.udemae_recoginizer.match(img_udemae)
+
+        if not (udemae_str in self.valid_udemae_list):
             udemae_str = None
-            udemae_exp = None
 
-            if self.number_recoginizer:
-                udemae_exp = self.number_recoginizer.match_digits(
-                    img_udemae_exp)
-                if udemae_exp < 0 or udemae_exp > 100:
-                    udemae_exp = None
+        # ウデマエ(数値部分)
+        if self.number_recoginizer:
+            udemae_exp = self.number_recoginizer.match_digits(
+                img_udemae_exp)
 
-            if self.udemae_recoginizer:
-                udemae_str = self.udemae_recoginizer.match(img_udemae)
-                if not (udemae_str in ['s+', 's', 'a+', 'a', 'a-', 'b+', 'b', 'b-', 'c+', 'c', 'c-']):
-                    udemae_str = None
-        except:
-            return False
+        if (udemae_exp is not None):
+            # ウデマエの数字は 0~100 (99?) しかありえない
+            if (udemae_exp < 0) or (udemae_exp > 100):
+                udemae_exp = None
+
+        # ウデマエが正しく取得できない場合は別の画面を誤認識している
+        # 可能性が高い
 
         if not (udemae_str and udemae_exp):
             return False
+
+        # 認識開始直後なら udemae_(str|exp)_pre を設定
+        # FIXME
 
         if not ('result_udemae' in context['scenes']):
             context['scenes']['result_udemae'] = {
                 'udemae_str_pre': udemae_str,
                 'udemae_exp_pre': udemae_exp,
             }
+
+        # udemae_(str|exp)_after は常に最新の値を指す
+
         context['scenes']['result_udemae']['udemae_str_after'] = udemae_str
         context['scenes']['result_udemae']['udemae_exp_after'] = udemae_exp
 
         return True
 
     def match_loop(self):
-
+        # FIXME: チャタリング対策
+        # FIXME: 投票ベース検出にする
         in_trigger = False
 
         while True:
@@ -81,6 +98,7 @@ class ResultUdemae(object):
                     context['scenes']['result_udemae'][
                         'last_update'] = context['engine']['msec']
                     in_trigger = True
+                # FIXME: r == False の場合別シーンの誤認識 or チャタリング
 
             else:
                 if in_trigger:
@@ -110,15 +128,8 @@ class ResultUdemae(object):
             debug=debug,
         )
 
-        try:
-            self.number_recoginizer = character_recoginizer.NumberRecoginizer()
-        except:
-            self.number_recoginizer = None
-
-        try:
-            self.udemae_recoginizer = character_recoginizer.UdemaeRecoginizer()
-        except:
-            self.udemae_recoginizer = None
+        self.number_recoginizer = character_recoginizer.NumberRecoginizer()
+        self.udemae_recoginizer = character_recoginizer.UdemaeRecoginizer()
 
 
 if __name__ == "__main__":
