@@ -78,6 +78,25 @@ class IkaEngine:
                     self.dprint(traceback.format_exc())
                     self.dprint('<<<<<')
 
+    def read_next_frame(self, skip_frames=0):
+        for i in range(skip_frames):
+            frame, t = self.capture.read()
+        frame, t = self.capture.read()
+
+        while frame is None:
+            self.call_plugins('on_frame_read_failed')
+            if self._stop:
+                return None, None
+            cv2.waitKey(1000)
+            frame, t = self.capture.read()
+
+        self.context['engine']['msec'] = t
+        self.context['engine']['frame'] = frame
+
+        self.call_plugins('on_debug_read_next_frame')
+
+        return frame, t
+
     def stop(self):
         self._stop = True
 
@@ -103,6 +122,15 @@ class IkaEngine:
             'config': {
             }
         }
+        self.session_close_wdt = None
+
+    def session_close(self):
+        self.session_close_wdt = None
+
+        self.call_plugins('on_game_session_end')
+        self.call_plugins('on_game_reset')
+
+        self.reset()
 
     def process_frame(self):
         context = self.context
@@ -206,27 +234,38 @@ class IkaEngine:
                 self.call_plugins('on_game_individual_result_analyze')
                 self.call_plugins('on_game_individual_result')
 
+                self.session_close_wdt = context['engine']['msec'] + (20 * 1000)
+
         # ResultUdemae
         r = (not context['engine']['inGame'])
         if r:
             r = self.scn_result_udemae.match(context)
 
-        while r:
-            frame, t = self.read_next_frame()
-            r = self.scn_result_udemae.match(context)
+        if r:
+            self.dprint('Entering result_udemae loop')
+            while r:
+                frame, t = self.read_next_frame()
+                r = self.scn_result_udemae.match(context)
+            self.dprint('Escaped result_udemae loop')
 
         # result_gears
         r = (not context['engine']['inGame'])
         if r:
             r = self.scn_result_gears.match(context)
+
         if r:
+            self.dprint('Entering result_gears loop')
             while r:
                 frame, t = self.read_next_frame()
                 r = self.scn_result_gears.match(context)
+            self.dprint('Escaped result_gears loop')
 
-            self.call_plugins('on_game_session_end')
-            self.call_plugins('on_game_reset')
-            self.reset()
+            self.session_close()
+
+        if self.session_close_wdt is not None:
+            if self.session_close_wdt < context['engine']['msec']:
+                self.dprint('Watchdog fired. Closing current session')
+                self.session_close()
 
         key = None
 
@@ -246,25 +285,6 @@ class IkaEngine:
                     op.on_key_press(context, key)
                 except:
                     pass
-
-    def read_next_frame(self, skip_frames=0):
-        for i in range(skip_frames):
-            frame, t = self.capture.read()
-        frame, t = self.capture.read()
-
-        while frame is None:
-            self.call_plugins('on_frame_read_failed')
-            if self._stop:
-                return None, None
-            cv2.waitKey(1000)
-            frame, t = self.capture.read()
-
-        self.context['engine']['msec'] = t
-        self.context['engine']['frame'] = frame
-
-        self.call_plugins('on_debug_read_next_frame')
-
-        return frame, t
 
     def run(self):
         # Main loop.
