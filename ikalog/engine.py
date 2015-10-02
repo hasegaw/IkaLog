@@ -260,8 +260,6 @@ class IkaEngine:
                 r = self.scn_result_gears.match(context)
             self.dprint('Escaped result_gears loop')
 
-            self.session_close()
-
         if self.session_close_wdt is not None:
             if self.session_close_wdt < context['engine']['msec']:
                 self.dprint('Watchdog fired. Closing current session')
