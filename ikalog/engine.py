@@ -105,13 +105,17 @@ class IkaEngine:
         }
 
     def process_frame(self):
-        context = self.context  # Python のオブジェクトって参照だよね?
-        frame = self.read_next_frame(skip_frames=12)
+        context = self.context
+
+        skip_frames = 0
+        if (self.capture.from_file and self.capture.fps > 28):
+            skip_frames = int(self.capture.fps / 3)
+
+        frame, t = self.read_next_frame(skip_frames=skip_frames)
 
         if frame is None:
             return False
 
-        context['engine']['frame'] = frame
         context['engine']['inGame'] = self.scn_ingame.matchTimerIcon(context)
 
         self.call_plugins('on_frame_read')
@@ -167,8 +171,7 @@ class IkaEngine:
             self.scn_tower_tracker.reset(context)
 
             while (r):
-                frame = self.read_next_frame(skip_frames=3)
-                context['engine']['frame'] = frame
+                frame, t = self.read_next_frame(skip_frames=3)
                 r = self.scn_gamestart.match(context)
 
             self.last_gamestart = time.time()
@@ -195,10 +198,9 @@ class IkaEngine:
 
                 # 安定するまで待つ
                 for x in range(10):
-                    frame = self.read_next_frame()
+                    frame, t = self.read_next_frame()
 
                 # 安定した画像で再度解析
-                context['engine']['frame'] = frame
                 self.scn_gameresult.analyze(context)
 
                 self.call_plugins('on_game_individual_result_analyze')
@@ -210,8 +212,7 @@ class IkaEngine:
             r = self.scn_result_udemae.match(context)
 
         while r:
-            frame = self.read_next_frame()
-            context['engine']['frame'] = frame
+            frame, t = self.read_next_frame()
             r = self.scn_result_udemae.match(context)
 
         # result_gears
@@ -220,8 +221,7 @@ class IkaEngine:
             r = self.scn_result_gears.match(context)
         if r:
             while r:
-                frame = self.read_next_frame()
-                context['engine']['frame'] = frame
+                frame, t = self.read_next_frame()
                 r = self.scn_result_gears.match(context)
 
             self.call_plugins('on_game_session_end')
@@ -260,7 +260,11 @@ class IkaEngine:
             frame, t = self.capture.read()
 
         self.context['engine']['msec'] = t
-        return frame
+        self.context['engine']['frame'] = frame
+
+        self.call_plugins('on_debug_read_next_frame')
+
+        return frame, t
 
     def run(self):
         # Main loop.

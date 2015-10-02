@@ -208,6 +208,7 @@ class CVCapture(object):
 
         IkaUtils.dprint('%s: initalizing capture device %s' % (self, source))
         self.realtime = True
+        self.from_file = False
         if self.is_windows():
             self.init_capture(700 + source)
         else:
@@ -217,7 +218,9 @@ class CVCapture(object):
         IkaUtils.dprint(
             '%s: initalizing pre-recorded video file %s' % (self, file))
         self.realtime = False
+        self.from_file = True
         self.init_capture(file)
+        self.fps = self.cap.get(5)
 
     def restart_input(self):
         IkaUtils.dprint('RestartInput: source %s file %s device %s' %
