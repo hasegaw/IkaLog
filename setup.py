@@ -42,6 +42,7 @@ Mydata_files.append(('lib', ['lib/videoinput.dll']))
 Mydata_files.append(('tools', ['tools/ControlOBS.au3']))
 Mydata_files.append(('tools', ['tools/ControlAmarecTV.au3']))
 Mydata_files.append(('screenshots', ['screenshots/.gitkeep']))
+Mydata_files.append(('debug_videos', ['debug_videos/.gitkeep']))
 
 setup(
     console=['IkaUI.py'],
