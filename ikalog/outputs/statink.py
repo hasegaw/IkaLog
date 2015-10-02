@@ -220,8 +220,6 @@ class StatInk(object):
 
         try:
             # ToDo: statink accepts only 16x9
-            # Memo: This function will be called from on_game_individual_result,
-            #       therefore context['engine']['frame'] should have a result.
             IkaUtils.writeScreenshot(temp_file, img)
             f = open(temp_file, 'rb')
             s = f.read()
@@ -309,7 +307,8 @@ class StatInk(object):
                     ['int', 'cash_after', 'cash'],
                 ], payload, context['scenes']['result_gears'])
 
-        payload['image_result'] = self.encode_image(context['engine']['frame'])
+        if self.img_result_detail is not None:
+            payload['image_result'] = self.encode_image(self.img_result_detail)
 
         payload['agent'] = 'IkaLog'
         payload['agent_version'] = IKALOG_VERSION
@@ -391,8 +390,6 @@ class StatInk(object):
             payload['image_result'] = '(PNG Data)'
         pprint.pprint(payload)
 
-
-
     def on_game_go_sign(self, context):
         self.time_start_at = int(time.time())
         self.time_end_at = None
@@ -408,6 +405,7 @@ class StatInk(object):
         self.on_game_go_sign(context)
 
     def on_game_finish(self, context):
+        
         self.time_end_at = int(time.time())
         if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
             duration_msec = context['engine']['msec'] - self.time_start_at_msec
@@ -415,6 +413,17 @@ class StatInk(object):
             if duration_msec >= 0.0:
                 self.time_start_at = int(
                     self.time_end_at - int(duration_msec / 1000))
+
+        # 戦績画面はこの後にくるはずなので今までにあるデータは捨てる
+        self.img_result_detail = None
+
+    ##
+    # on_game_individual_result Hook
+    # @param self      The Object Pointer
+    # @param context   IkaLog context
+    #
+    def on_game_individual_result(self, context):
+        self.img_result_detail  = context['engine']['frame']
 
     def on_game_session_end(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
@@ -425,8 +434,6 @@ class StatInk(object):
         payload = self.serialize_payload(context)
 
         self.print_payload(payload)
-
-        #del payload['image_result']
 
         if self.debug_writePayloadToFile:
             self.write_payload_to_file(payload)
@@ -441,6 +448,7 @@ class StatInk(object):
         self.time_start_at = None
         self.time_end_at = None
         self.time_start_at_msec = None
+        self.img_result_detail = None
 
         self.debug_writePayloadToFile = debug
 
