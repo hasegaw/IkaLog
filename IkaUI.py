@@ -225,6 +225,7 @@ if __name__ == "__main__":
             outputs.Screenshot(),
             outputs.Slack(),
             outputs.StatInk(),
+            outputs.DebugVideoWriter(),
     ]:
         print('Initializing %s' % plugin)
         plugin.on_option_tab_create(gui.options.notebookOptions)

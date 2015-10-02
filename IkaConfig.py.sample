@@ -43,7 +43,7 @@ class IkaConfig:
             # Screen: IkaLog 実行中にキャプチャ画像を表示します。
             #   wait_ms=1        キャプチャ画像表示後に停止するミリ秒数。 ただし0=2秒毎に1ms
             #   size=(1280, 720) ウインドウサイズ。
-            outputs.Screen(wait_ms=1, size=(1280,720)),
+            outputs.Screen(wait_ms=1, size=(1280, 720)),
 
             # Console(): 各種メッセージを表示します。
             outputs.Console(),
@@ -89,9 +89,13 @@ class IkaConfig:
             #     TweetUdemae=True
             # ),
 
-            # 開発者向け。
+            # 不具合調査向け。
             # イベントトリガをコンソールに出力。イベントトリガ時のスクリーンショット保存
             outputs.DebugLog(dir='./screenshots/', screenshot=False),
+
+            # 不具合調査向け。
+            # ウインドウに対して v キー押下でデバッグ録画を開始する
+            outputs.DebugVideoWriter(dir='./debug_videos/'),
 
             # 入力ソース
             source,
