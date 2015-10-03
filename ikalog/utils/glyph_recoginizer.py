@@ -72,20 +72,24 @@ class IkaGlyphRecoginizer(object):
         bg_h_color1 = int(bg_h_color - rad)
         bg_h_color2 = int(bg_h_color + rad)
 
+        img_mask = cv2.inRange(img_hsv[:, :, 0], bg_h_color1, bg_h_color2)
+        img_mask2 = 255 - cv2.inRange(img_hsv[:, :, 2], 165, 255)  # Visibility
+        img_mask = np.minimum(img_mask, img_mask2)
+
+        # TODO: ブキの色（下の方）が明るいものはさらに抜く
+
+        # 中間画像に対してマスクを適用
+        for i in range(3):
+            out_img[:, :, i] = np.minimum(out_img[:, :, i], 255 - img_mask)
+
+
         # デコ/カスタム要素で認識を優先するため画像で該当部分を拡大
         x1 = 0
         x2 = int(w * 0.7)
         y1 = h - 10
         out_img[y1: h - 1, x1:w - 1, :] = cv2.resize(
-            img[y1: h - 1, x2: w - 1], (w - x1 - 1, h - y1 - 1), interpolation=cv2.INTER_NEAREST)
+            out_img[y1: h - 1, x2: w - 1], (w - x1 - 1, h - y1 - 1), interpolation=cv2.INTER_NEAREST)
         img_hsv = cv2.cvtColor(out_img, cv2.COLOR_BGR2HSV)
-
-        img_mask = cv2.inRange(img_hsv[:, :, 0], bg_h_color1, bg_h_color2)
-        img_mask2 = 255 - cv2.inRange(img_hsv[:, :, 2], 165, 255)  # Visibility
-        img_mask = np.minimum(img_mask, img_mask2)
-
-        for i in range(3):
-            out_img[:, :, i] = np.minimum(out_img[:, :, i], 255 - img_mask)
 
         # 白いところを検出する (s が低く v が高い)
         white_mask_s = cv2.inRange(img_hsv[:, :, 1], 0, 48)
@@ -305,7 +309,7 @@ class IkaGlyphRecoginizer(object):
         l_hist = []
         samples = []
         for root, dirs, files in os.walk(dir):
-            for file in files:
+            for file in sorted(files):
                 if file.endswith(".png"):
                     f = os.path.join(root, file)
                     img = cv2.imread(f)
