@@ -43,6 +43,8 @@ class WeaponTraining(object):
             basename = time.strftime("ikabattle_%Y%m%d_%H%M", time.localtime())
         i = 0
         for e in context['game']['players']:
+            if not ('weapon' in e):
+                continue
             destdir = "%s/%s" % (self.dest_dir, e['weapon'])
             destfile = "%s/%s.%d.png" % (destdir, basename, i)
             print(destfile)
@@ -67,11 +69,14 @@ if __name__ == "__main__":
     from ikalog.scenes import result_detail
     import os
 
-    args = sys.argv.copy()
-    del args[0]
-
-    for in_file in args:
+    for in_file in sys.argv[1:]:
         target = cv2.imread(in_file)
+
+        if target is None:
+            continue
+        if (target.shape[0] != 720) or (target.shape[1] != 1280) or (target.shape[2] != 3):
+            continue
+
         basename, ext = os.path.splitext(os.path.basename(in_file))
         obj = result_detail.ResultDetail()
 

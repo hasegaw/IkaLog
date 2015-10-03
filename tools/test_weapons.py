@@ -28,31 +28,27 @@ base_dir = sys.argv[1]
 from ikalog.utils import IkaGlyphRecoginizer
 
 weapons = IkaGlyphRecoginizer()
-weapons.load_model_from_file("data/weapons.trained")
+weapons.load_model_from_file('data/weapons.knn.data')
+weapons.knn_train()
 
 for root, dirs, files in os.walk(base_dir):
     l = []
     results = {}
     for file in files:
         if file.endswith(".png"):
-            f = os.path.join(root, file)
-            img = cv2.imread(f)
-            r, model = weapons.guessImage(img)
-            #print("<br> %s %d<img src=%s>" % (r['name'], r['score'], f))
-            name = r['name']
-            if not name in results:
-                results[name] = []
+            filename = os.path.join(root, file)
+            img = cv2.imread(filename)
+            answer, distance = weapons.match(img)
+            if not answer in results:
+                results[answer] = []
 
-            results[name].append( { 'img': f, 'score': r['score'] } )
+            results[answer].append( { 'filename': filename, 'distance': distance } )
 
-for weapon in weapons.models:
-    name = weapon['name']
-    if not name in results:
-        count = 0
-    else:
-        count = len(results[name])
-    print("<h3>%s (%d)</h1>" % (name, count))
-    if count == 0:
-        continue
-    for e in results[name]:
-        print("<!-- %d --><img src=%s>" % (e['score'], e['img']))
+for weapon in sorted(results.keys()):
+    count = 0
+    for e in results[weapon]:
+        count = count + 1
+    print("<h3>%s (%d)</h1>" % (weapon, count))
+
+    for e in results[weapon]:
+        print("<!-- %s %s --><img src=%s>" % (weapon, e['distance'], e['filename']))
