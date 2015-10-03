@@ -69,6 +69,8 @@ if __name__ == "__main__":
     from ikalog.scenes import result_detail
     import os
 
+    obj = result_detail.ResultDetail()
+    out = WeaponTraining()
     for in_file in sys.argv[1:]:
         target = cv2.imread(in_file)
 
@@ -78,7 +80,6 @@ if __name__ == "__main__":
             continue
 
         basename, ext = os.path.splitext(os.path.basename(in_file))
-        obj = result_detail.ResultDetail()
 
         context = {
             'engine': {'frame': target},
@@ -91,5 +92,4 @@ if __name__ == "__main__":
             context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
         print("matched %s analyzed %s result %s" % (matched, analyzed, won))
 
-        out = WeaponTraining()
         out.on_game_individual_result(context, basename=basename)
