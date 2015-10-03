@@ -125,6 +125,7 @@ class IkaGlyphRecoginizer(object):
         return [
             out_img,
             img,
+            img_mask
         ]
 
     def count_h(self, img_h, samples):
