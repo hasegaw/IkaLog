@@ -89,7 +89,6 @@ class ResultDetail(object):
 
         try:
             if self.fes_level_recoginizer:
-                cv2.imshow('gender', img_fes_gender)
                 level = self.fes_level_recoginizer.match(cv2.cvtColor(img_fes_level, cv2.COLOR_GRAY2BGR))
         except:
             IkaUtils.dprint(traceback.format_exc())
