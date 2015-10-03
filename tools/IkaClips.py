@@ -34,10 +34,10 @@ from ikalog.utils import *
 
 class IkaClips:
 
-    def onGameStart(self, context):
+    def on_game_start(self, context):
         self.t_GameStart = context['engine']['msec']
 
-    def onGameGoSign(self, context):
+    def on_game_go_sign(self, context):
         start = context['engine'][
             'msec'] if not self.t_GameStart else self.t_GameStart
 
@@ -49,7 +49,7 @@ class IkaClips:
         }
         self.clips.append(clip)
 
-    def onGameKilled(self, context):
+    def on_game_killed(self, context):
         clip = {
             'file': self.file,
             'type': 'kill',
@@ -58,7 +58,7 @@ class IkaClips:
         }
         self.clips.append(clip)
 
-    def onGameDead(self, context):
+    def on_game_dead(self, context):
         clip = {
             'file': self.file,
             'type': 'death',
@@ -67,7 +67,7 @@ class IkaClips:
         }
         self.clips.append(clip)
 
-    def onGameFinish(self, context):
+    def on_game_finish(self, context):
         clip = {
             'file': self.file,
             'type': 'finish',
@@ -76,10 +76,10 @@ class IkaClips:
         }
         self.clips.append(clip)
 
-    def onFrameReadFailed(self, context):
+    def on_frame_read_failed(self, context):
         self.engine.stop()
 
-    def onGameIndividualResult(self, context):
+    def on_game_individual_result(self, context):
         # 強制的にキャプチャを閉じて IkaEngine も止める
         self.engine.capture.cap.release()
         self.engine.capture.cap = None
