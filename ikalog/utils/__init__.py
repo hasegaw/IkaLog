@@ -25,3 +25,5 @@ from .glyph_recoginizer import IkaGlyphRecoginizer
 from .character_recoginizer import CharacterRecoginizer
 from .character_recoginizer.number import NumberRecoginizer
 from .character_recoginizer.udemae import UdemaeRecoginizer
+from .character_recoginizer.fes_gender import FesGenderRecoginizer
+from .character_recoginizer.fes_level import FesLevelRecoginizer 
