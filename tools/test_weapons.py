@@ -31,24 +31,21 @@ weapons = IkaGlyphRecoginizer()
 weapons.load_model_from_file('data/weapons.knn.data')
 weapons.knn_train()
 
+results = {}
 for root, dirs, files in os.walk(base_dir):
     l = []
-    results = {}
     for file in files:
         if file.endswith(".png"):
             filename = os.path.join(root, file)
             img = cv2.imread(filename)
             answer, distance = weapons.match(img)
-            if not answer in results:
+            if not (answer in results):
                 results[answer] = []
 
             results[answer].append( { 'filename': filename, 'distance': distance } )
 
-for weapon in sorted(results.keys()):
-    count = 0
-    for e in results[weapon]:
-        count = count + 1
-    print("<h3>%s (%d)</h1>" % (weapon, count))
+for weapon in sorted(results):
+    print("<h3>%s (%d)</h1>" % (weapon, len(results[weapon])))
 
     for e in results[weapon]:
         print("<!-- %s %s --><img src=%s>" % (weapon, e['distance'], e['filename']))
