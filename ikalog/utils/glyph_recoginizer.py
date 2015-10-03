@@ -64,6 +64,19 @@ class IkaGlyphRecoginizer(object):
         h = img.shape[0]
         w = img.shape[1]
 
+        laplacian_threshold = 68
+
+        img_laplacian = cv2.Laplacian(out_img, cv2.CV_64F)
+        img_laplacian_abs = cv2.convertScaleAbs(img_laplacian)
+        img_laplacian_gray = cv2.cvtColor(
+            img_laplacian_abs, cv2.COLOR_BGR2GRAY)
+        ret, img_laplacian_mask = cv2.threshold(
+            img_laplacian_gray, laplacian_threshold, 255, 0)
+        #out_img = cv2.bitwise_and(out_img, out_img, mask=img_laplacian_mask )
+        img_contours, contours, hierarchy = cv2.findContours(
+            img_laplacian_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
+        cv2.drawContours(out_img, contours, -1, (0, 255, 0), cv2.FILLED)
+
         img_hsv = cv2.cvtColor(out_img, cv2.COLOR_BGR2HSV)
 
         bgcolor_sample = img_hsv[h - 3:h, 0:3, 0]  # Hue
@@ -81,7 +94,6 @@ class IkaGlyphRecoginizer(object):
         # 中間画像に対してマスクを適用
         for i in range(3):
             out_img[:, :, i] = np.minimum(out_img[:, :, i], 255 - img_mask)
-
 
         # デコ/カスタム要素で認識を優先するため画像で該当部分を拡大
         x1 = 0
@@ -285,7 +297,6 @@ class IkaGlyphRecoginizer(object):
             for sample_tuple in group['learn_samples']:
                 sample_data = sample_tuple[1]['hist']
                 self.add_sample1(group['name'], sample_data)
-
 
     def knn_train(self):
         # 終わったら
