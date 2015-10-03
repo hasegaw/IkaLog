@@ -49,12 +49,6 @@ class ResultDetail(object):
 
         return (me_score_normalized > 1)
 
-    _n = 0
-    rank_imgs = {}
-
-    plot_img = np.zeros((2000, 1000, 1), np.uint8)
-    plot_img2 = np.zeros((2000, 1000, 1), np.uint8)
-
     # FixMe: character_recoginizer を使って再実装
     def guess_fes_title(self, img_fes_title):
         img_fes_title_hsv = cv2.cvtColor(img_fes_title, cv2.COLOR_BGR2HSV)
@@ -73,124 +67,37 @@ class ResultDetail(object):
         x1 = np.amin(b)
         x2 = np.amax(b)
 
+        if (x2 - x1) < 4:
+            return None, None, None
+
         # 最小枠で crop
         img_fes_title_new = img_fes_title[:, x1:x2]
 
         # ボーイ/ガールは経験上横幅 56 ドット
         gender_x1 = x2 - 36
         gender_x2 = x2
-        img_gender = img_fes_title_mask[:, gender_x1:gender_x2]
-
-        x_center = int(img_gender.shape[1] / 2)
-        y_center = int(img_gender.shape[0] * 0.6)
-
-        score1 = np.sum(img_gender[:y_center, :x_center] / 255)
-        score2 = np.sum(img_gender[:y_center, x_center:] / 255)
-        score3 = score1 / score2
-
-        score1 = np.sum(img_gender[y_center:, :x_center] / 255)
-        score2 = np.sum(img_gender[y_center:, x_center:] / 255)
-        score4 = score1 / score2
-
-        #print("%d, %d " % (score1, score2))
-        #print("%f,%f" % (score3, score4))
-
-        x = score3 * 100
-        y = score4 * 100
-
-        #self.plot_img[y:y + img_gender.shape[0], x:x + img_gender.shape[1], 0] = img_gender
-
-        # cv2.imshow('fes_gender', img_gender)
-        # cv2.waitKey()
-
+        img_fes_gender = img_fes_title_mask[:, gender_x1:gender_x2]
         # ふつうの/まことの/スーパー/カリスマ/えいえん
-        img_fes_rank = img_fes_title_mask[:, 0:52]
-        # 4ブロックで処理
-        blocks = 6
-        block_w = img_fes_rank.shape[1] / blocks
-        y_center = int(img_fes_rank.shape[0] * 0.4)
-        scores = []
-        for i in range(blocks):
-            rank_x1 = x1 + block_w * i
-            rank_x2 = x1 + block_w * (i + 1)
-            score = np.sum(img_fes_rank[:y_center, rank_x1:rank_x2] / 255)
-            scores.append(score)
-            score = np.sum(img_fes_rank[y_center:, rank_x1:rank_x2] / 255)
-            scores.append(score)
+        img_fes_level = img_fes_title_mask[:, 0:52]
 
-        norm = scores[1]
+        try:
+            if self.fes_gender_recoginizer:
+                gender = self.fes_gender_recoginizer.match(cv2.cvtColor(img_fes_gender, cv2.COLOR_GRAY2BGR))
+        except:
+            IkaUtils.dprint(traceback.format_exc())
+            gender = None
 
-        norm_scores = []
-        for i in range(len(scores)):
-            norm_scores.append(scores[i] / norm)
+        try:
+            if self.fes_level_recoginizer:
+                cv2.imshow('gender', img_fes_gender)
+                level = self.fes_level_recoginizer.match(cv2.cvtColor(img_fes_level, cv2.COLOR_GRAY2BGR))
+        except:
+            IkaUtils.dprint(traceback.format_exc())
+            level = None
 
-        x = int(scores[7] / norm * 300)
-        y = int(scores[3] / norm * 300)
-        print("normalised_scores = %s", norm_scores)
-        x2 = img_fes_rank.shape[1] + x
-        y2 = img_fes_rank.shape[0] + y
+        team = None
 
-        cond1 = scores[0] / norm > 0.75  # カリスマ、スーパー |
-        cond2 = scores[6] / norm > 0.75  # カリスマ
-        cond3 = scores[3] / norm > 0.75  # ふつうの
-        cond7 = scores[7] / norm > 0.75  # まことの or えいえんの
-
-        cond = cond7
-
-        prefix = None
-        if cond2:
-            prefix = "カリスマ"
-
-        if (not prefix) and cond1 and (not cond2):
-            prefix = "スーパー"
-
-        if (not prefix) and cond3:
-            prefix = "ふつうの"
-
-        if (not prefix) and cond7:
-            prefix = "まことの"
-
-        if (not prefix):
-            prefix = "えいえんの"
-
-        if (not prefix):
-            if cond:
-                self.plot_img2[y:y2, x:x2, 0] = 255 - img_fes_rank
-            else:
-                self.plot_img2[y:y2, x:x2, 0] = img_fes_rank
-
-        # まだわからないものだけ
-        if (not prefix):
-            for i in range(len(scores)):
-                x = i * img_fes_rank.shape[1] * 1.3
-                y = int(scores[i] / norm * 300)
-                x2 = img_fes_rank.shape[1] + x
-                y2 = img_fes_rank.shape[0] + y
-                print(x, y, x2, y2)
-                self.plot_img[y:y2, x:x2, 0] = img_fes_rank
-
-        if (not prefix):
-            prefix = "others"
-
-        if prefix:
-            if not prefix in self.rank_imgs:
-                self.rank_imgs[prefix] = []
-            self.rank_imgs[prefix].append(img_fes_rank)
-
-        # cv2.imshow('plot_all_values', self.plot_img)
-        # cv2.imshow('plot_xy', self.plot_img2)
-        # cv2.imshow('fes_rank', img_fes_rank)
-        # cv2.waitKey()
-
-        if (score4 < 1.1):
-            gender = "ガール"
-        else:
-            gender = "ボーイ"
-
-        self._n = self._n + 1
-        cv2.imwrite('_fes_title.%d.png' % self._n, img_fes_title_new)
-
-        return {'img_fes_title_new': img_fes_title_new, 'gender': gender, 'prefix': prefix}
+        return gender, level, team
 
     def analyze_entry(self, img_entry):
         # 各プレイヤー情報のスタート左位置
@@ -252,7 +159,7 @@ class ResultDetail(object):
             0] * img_fes_title_mask.shape[1] * 16
 
         if is_fes:
-            fes_info = self.guess_fes_title(img_fes_title)
+            fes_gender, fes_level, fes_team = self.guess_fes_title(img_fes_title)
 
         # フェス中ではなく、 p の表示があれば(avg = 55.0) ナワバリ。なければガチバトル
         isRankedBattle = (not is_fes) and (
@@ -270,9 +177,13 @@ class ResultDetail(object):
         }
 
         if is_fes:
-            entry["img_fes_title"] = img_fes_title
-            entry["gender"] = fes_info["gender"]
-            entry["prefix"] = fes_info["prefix"]
+            entry['img_fes_title'] = img_fes_title
+
+            if fes_gender and ('ja' in fes_gender):
+                entry['gender'] = fes_gender['ja']
+
+            if fes_level and ('ja' in fes_level):
+                entry['prefix'] = fes_level['ja']
 
         if self.udemae_recoginizer and isRankedBattle:
             try:
@@ -369,6 +280,16 @@ class ResultDetail(object):
             self.udemae_recoginizer = character_recoginizer.UdemaeRecoginizer()
         except:
             self.udemae_recoginizer = None
+
+        try:
+            self.fes_gender_recoginizer = character_recoginizer.FesGenderRecoginizer()
+        except:
+            self.fes_gender_recoginizer = None
+
+        try:
+            self.fes_level_recoginizer = character_recoginizer.FesLevelRecoginizer()
+        except:
+            self.fes_gender_recoginizer = None
 
         if winlose is None:
             print("勝敗画面のマスクデータが読み込めませんでした。")
