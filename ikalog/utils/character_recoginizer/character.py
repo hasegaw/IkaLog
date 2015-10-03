@@ -54,6 +54,37 @@ class PerCharacter(object):
     def __init__(self):
         pass
 
+
+class FixedWidth(object):
+
+    def cut(self, img, img_hist_x):
+        w = len(img_hist_x)
+
+        if self.from_left:
+            x1 = 0
+            x2 = self.sample_width
+        else:
+            x2 = len(img_hist_x)
+            x1 = x2 - self.sample_width
+
+        chars = []
+
+        if (x2 - x1) > 2:
+            char_tuple = [x1, x2]
+            chars.append(char_tuple)
+
+        return chars
+
+    def __init__(self, sample_width, from_left=None, from_right=None):
+        if from_right:
+            self.from_left = False
+        else:
+            self.from_left = True
+
+        self.sample_width = sample_width
+        pass
+
+
 array0to1280 = np.array(range(1280), dtype=np.int32)
 
 
@@ -134,11 +165,7 @@ class CharacterRecoginizer(object):
         img_chars1_hist_x = np.minimum(
             img_chars1, array0to1280[0:len(img_chars1)])
 
-        # ToDo: フェスタイトルのように長さが決まっている場合は固定長で切り出す
-        # 一文字単位で認識する場合はヒストグラムから文字の位置リストを作る
-        x_cutter = PerCharacter()
-
-        char_tuples = x_cutter.cut(img_chars, img_chars1_hist_x)
+        char_tuples = self.x_cutter.cut(img_chars, img_chars1_hist_x)
 
         characters = []
         img_chars = np.sum(img_chars[:, :], axis=1)  # 行毎の検出dot数
@@ -149,7 +176,7 @@ class CharacterRecoginizer(object):
             y1 = np.amin(img_char_extract_y)
             y2 = np.amax(img_char_extract_y) + 1
 
-            if (y2 - y1) > 2: # 最低高さ4ドットなければサンプルとして認識しない
+            if (y2 - y1) > 2:  # 最低高さ4ドットなければサンプルとして認識しない
                 for t in char_tuples:
                     img_char_final = img[y1:y2, t[0]: t[1]]
                     characters.append(img_char_final)
@@ -211,6 +238,10 @@ class CharacterRecoginizer(object):
 
     def __init__(self):
         self.trained = False
+
+        # ToDo: フェスタイトルのように長さが決まっている場合は固定長で切り出す
+        # 一文字単位で認識する場合はヒストグラムから文字の位置リストを作る
+        self.x_cutter = PerCharacter()
 
         self.sample_width = 13
         self.sample_height = 17
