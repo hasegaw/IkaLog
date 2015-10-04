@@ -6,6 +6,7 @@ from .in_game import InGame
 from .lobby import Lobby
 from .plaza_user_stat import PlazaUserStat
 from .result_detail import ResultDetail
+from .result_judge import ResultJudge
 from .result_udemae import ResultUdemae
 from .result_gears import ResultGears
 from .tower_tracker import TowerTracker

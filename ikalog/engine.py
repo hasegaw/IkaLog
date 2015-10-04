@@ -37,6 +37,7 @@ class IkaEngine:
     scn_gamestart = scenes.GameStart()
     scn_gamefinish = scenes.GameFinish()
     scn_gameresult = scenes.ResultDetail()
+    scn_result_judge = scenes.ResultJudge()
     scn_result_udemae = scenes.ResultUdemae()
     scn_result_gears = scenes.ResultGears()
     scn_ingame = scenes.InGame()
@@ -214,6 +215,16 @@ class IkaEngine:
         if r:
             self.call_plugins('on_game_finish')
 
+        # ResultJudge
+        r = (not context['engine']['inGame'])
+        if r:
+            r = self.scn_result_judge.match(context)
+
+        while r:
+            frame, t = self.read_next_frame()
+            context['engine']['frame'] = frame
+            r = self.scn_result_judge.match(context)
+
         # GameResult (勝敗の詳細が表示されている）?
         r = (not context['engine']['inGame']) and (
             time.time() - self.last_capture) > 60
@@ -234,7 +245,8 @@ class IkaEngine:
                 self.call_plugins('on_game_individual_result_analyze')
                 self.call_plugins('on_game_individual_result')
 
-                self.session_close_wdt = context['engine']['msec'] + (20 * 1000)
+                self.session_close_wdt = context[
+                    'engine']['msec'] + (20 * 1000)
 
         # ResultUdemae
         r = (not context['engine']['inGame'])
