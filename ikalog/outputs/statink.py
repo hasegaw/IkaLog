@@ -179,6 +179,7 @@ class StatInk(object):
                 'わかばシューター': 'wakaba',
 
                 'カーボンローラー': 'carbon',
+                'カーボンローラーデコ': 'carbon_deco',
                 'ダイナモローラー': 'dynamo',
                 'ダイナモローラーテスラ': 'dynamo_tesla',
                 'ヒーローローラー': 'heroroller_repilca',
@@ -309,6 +310,18 @@ class StatInk(object):
 
         if self.img_result_detail is not None:
             payload['image_result'] = self.encode_image(self.img_result_detail)
+        else:
+            IkaUtils.dprint('%s: img_result_detail is empty.' % self)
+
+        if self.img_judge is not None:
+            payload['image_judge'] = self.encode_image(self.img_judge)
+        else:
+            IkaUtils.dprint('%s: img_judge is empty.' % self)
+
+
+        knockout = context['game'].get('knockout', None)
+        if (payload['rule'] != 'nawabari') and (knockout is not None):
+            payload['knock_out'] = { True: 'yes', False: 'no' }[knockout]
 
         payload['agent'] = 'IkaLog'
         payload['agent_version'] = IKALOG_VERSION
@@ -388,6 +401,9 @@ class StatInk(object):
 
         if 'image_result' in payload:
             payload['image_result'] = '(PNG Data)'
+        if 'image_judge' in payload:
+            payload['image_result'] = '(PNG Data)'
+
         pprint.pprint(payload)
 
     def on_game_go_sign(self, context):
@@ -416,6 +432,7 @@ class StatInk(object):
 
         # 戦績画面はこの後にくるはずなので今までにあるデータは捨てる
         self.img_result_detail = None
+        self.img_judge = None
 
     ##
     # on_game_individual_result Hook
@@ -424,6 +441,9 @@ class StatInk(object):
     #
     def on_game_individual_result(self, context):
         self.img_result_detail  = context['engine']['frame']
+
+    def on_result_judge(self, context):
+        self.img_judge = context['game'].get('image_judge', None)
 
     def on_game_session_end(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
@@ -448,7 +468,9 @@ class StatInk(object):
         self.time_start_at = None
         self.time_end_at = None
         self.time_start_at_msec = None
+
         self.img_result_detail = None
+        self.img_judge = None
 
         self.debug_writePayloadToFile = debug
 
