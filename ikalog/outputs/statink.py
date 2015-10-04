@@ -402,7 +402,7 @@ class StatInk(object):
         if 'image_result' in payload:
             payload['image_result'] = '(PNG Data)'
         if 'image_judge' in payload:
-            payload['image_result'] = '(PNG Data)'
+            payload['image_judge'] = '(PNG Data)'
 
         pprint.pprint(payload)
 
