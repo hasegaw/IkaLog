@@ -159,7 +159,7 @@ class StatInk(object):
                 'ジェットスイーパー': 'jetsweeper',
                 'ジェットスイーパーカスタム': 'jetsweeper_custom',
                 'L3リールガン': 'l3reelgun',
-                'L3リールガン': 'l3reelgun_d',
+                'L3リールガンD': 'l3reelgun_d',
                 'ロングブラスター': 'longblaster',
                 'もみじシューター': 'momiji',
                 'ノヴァブラスター': 'nova',
