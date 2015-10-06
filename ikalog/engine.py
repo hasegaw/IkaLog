@@ -103,15 +103,23 @@ class IkaEngine:
 
     def reset(self):
         # Initalize the context
+        self.context['game'] = {
+            'map': None,
+            'rule': None,
+            'won': None,
+            'players': None,
+
+            'kills': 0,
+            'dead': False,
+            'death_reasons': {},
+
+            'livesTrack': [],
+            'towerTrack': [],
+        }
+
+
+    def create_context(self):
         self.context = {
-            'game': {
-                'map': None,
-                'rule': None,
-                'won': None,
-                'players': None,
-                'livesTrack': [],
-                'towerTrack': [],
-            },
             'engine': {
                 'frame': None,
                 'service': {
@@ -123,6 +131,7 @@ class IkaEngine:
             'config': {
             }
         }
+        self.reset()
         self.session_close_wdt = None
 
     def session_close(self):
@@ -191,12 +200,6 @@ class IkaEngine:
             r = self.scn_gamestart.match(context)
 
         if r:
-            context["game"] = {
-                'map': None,
-                'rule': None,
-                'livesTrack': [],
-                'towerTrack': [],
-            }
             self.scn_tower_tracker.reset(context)
 
             while (r):
@@ -318,4 +321,4 @@ class IkaEngine:
     def __init__(self):
         self._stop = False
         self._pause = True
-        self.reset()
+        self.create_context()
