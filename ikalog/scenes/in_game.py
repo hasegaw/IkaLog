@@ -237,21 +237,151 @@ class InGame(object):
     def matchGoSign(self, context):
         return self.mask_goSign.match(context['engine']['frame'])
 
-    def matchDead(self, context):
+    def match_kills1(self, context):
+        img_gray = cv2.cvtColor(
+            context['engine']['frame'][:, 502:778],
+            cv2.COLOR_BGR2GRAY)
+        ret, img_thresh = cv2.threshold(img_gray, 90, 255, cv2.THRESH_BINARY)
+
+        killed_y = [652, 652 - 40, 652 - 80, 652 - 120]  # たぶん...。
+        killed = 0
+
+        list = []
+        for n in range(len(killed_y)):
+            y = killed_y[n]
+            box = img_thresh[y:y + 30, :]
+            r = self.mask_killed.match(box)
+
+            if r:
+                list.append(n)
+            else:
+                break
+
+        return len(list)
+
+    def match_kills_loop(self):
+        # ToDo: 誰をキルしたか認識してカウントする
+        in_trigger = False
+        last_kills = 0
+        context = (yield in_trigger)
+        context['scenes']['in_game']['msec_last_kill'] = - 60 * 1000
+        context['scenes']['in_game']['frames_since_last_kill'] = 0
+
+        while True:
+            context = (yield in_trigger)
+            callPlugins = context['engine']['service']['callPlugins']
+            # タイマーアイコンが検出された状態で呼ばれる
+
+            # 誰かをキルしたか
+            kills = self.match_kills1(context)
+            if last_kills < kills:
+                delta = kills - last_kills
+                context['game']['kills'] = context['game']['kills'] + delta
+                callPlugins('on_game_killed')
+
+                context['scenes']['in_game']['msec_last_kill'] = msec
+                context['scenes']['in_game']['frames_since_last_kill'] = 0
+                last_kills = kills
+            else:
+                context['scenes']['in_game']['frames_since_last_kill'] = context[
+                    'scenes']['in_game'].get('frames_since_last_kill', 0) + 1
+
+            # 3秒以上 or 5 フレーム間は last_kill の値を維持する
+            msec = context['engine']['msec']
+            c1 = (context['scenes']['in_game'][
+                  'msec_last_kill'] + 3 * 1000) < msec
+            c2 = (5 < context['scenes']['in_game']['frames_since_last_kill'])
+
+            if (c1 or c2):
+                last_kills = min(last_kills, kills)
+
+    def match_dead(self, context):
         return self.mask_dead.match(context['engine']['frame'])
+
+    def match_death_loop(self):
+        in_trigger = False
+        context = (yield in_trigger)
+
+        context['scenes']['in_game']['msec_last_death'] = 0
+
+        dead = False
+
+        while True:
+            while not dead:
+                context = (yield dead)
+
+                dead = self.match_dead(context)
+
+            # 死亡した場合
+
+            msec = context['engine']['msec']
+            data = context['scenes']['in_game']
+
+            data['msec_last_death'] = msec
+
+            context['game']['dead'] = True
+
+            callPlugins = context['engine']['service']['callPlugins']
+            callPlugins('on_game_dead')
+
+            # TODO: 自分を殺した相手の情報を解析
+
+            while dead:
+                context = (yield dead)
+
+                if self.match_dead(context):
+                    continue
+
+                # 3秒以上 or 5 フレーム間は last_kill の値を維持する
+                msec = context['engine']['msec']
+                data = context['scenes']['in_game']
+                c1 = (data['msec_last_death'] + 3 * 1000) < msec
+                if c1:
+                    dead = False
+
+            dead = False
+            context['game']['dead'] = False
+
+    def match1(self, context):
+        context['engine']['inGame'] = self.matchTimerIcon(context)
+        callPlugins = context['engine']['service']['callPlugins']
+
+        if not context['engine']['inGame']:
+            return False
+
+            msec = context['engine']['msec']
+
+            context['scenes']['in_game'] = {
+                'lastGoSign': msec - 60 * 1000,
+                'lastDead': msec - 60 * 1000,
+                'lastKill': msec - 60 * 1000,
+                'kills': 0,
+            }
+
+        #context['scenes']['in_game']['lastTimerIcon'] = msec
+
+        # self.match_go_sign(context)
+
+        return context['engine']['inGame']
 
     def match_loop(self):
         in_trigger = False
+
+        _match_kills_loop = self.match_kills_loop()
+        _match_kills_loop.send(None)
+
+        _match_death_loop = self.match_death_loop()
+        _match_death_loop.send(None)
 
         while True:
             context = (yield in_trigger)
 
             in_trigger = self.match1(context)
             if in_trigger:
-                pass
+                _match_kills_loop.send(context)
+                _match_death_loop.send(context)
 
     def match(self, context):
-
         if not 'in_game' in context['scenes']:
             context['scenes']['in_game'] = {
                 'dead': False,
@@ -262,29 +392,13 @@ class InGame(object):
 
         self._match_loop.send(context)
 
-
         # 塗りポイント(ナワバリのみ)
         self.matchPaintScore(context)
 
-        # ゴーサイン (60秒に1度まで)
-        if (context['scenes'][self]['lastGoSign'] + 60 * 1000) < msec:
-            if self.matchGoSign(context):
-                callPlugins('on_game_go_sign')
-                context['scenes'][self]['lastGoSign'] = msec
-
-        # 誰かをキルしたか
-        kills = self.matchKilled(context)
-        if context['scenes'][self]['kills'] < kills:
-            callPlugins('on_game_killed')
-            context['scenes'][self]['kills'] = kills
-            context['scenes'][self]['lastKill'] = msec
-        else:
-            # 品質が悪いムービーのチャタリング対策
-            # 長すぎると連続キル検出をミスする可能性あり
-            if (context['scenes'][self]['lastKill'] + 1 * 1000) < msec:
-                context['scenes'][self]['kills'] = kills
-
     def __init__(self):
+        self._match_loop = self.match_loop()
+        self._match_loop.send(None)
+
         self.mask_timer = IkaMatcher(
             self.timer_left, self.timer_top, self.timer_top, self.timer_height,
             img_file='masks/ingame_timer.png',
