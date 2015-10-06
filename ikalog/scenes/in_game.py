@@ -20,7 +20,6 @@
 import sys
 
 import cv2
-
 import numpy as np
 from ikalog.utils import *
 
@@ -179,6 +178,45 @@ class InGame(object):
 
         return self.mask_timer.match(context['engine']['frame'])
 
+    def matchPaintScore(self, context):
+        x_list = [938, 988, 1032, 1079]
+
+        paint_score = 0
+        for x in x_list:
+            # Extract a digit.
+            img = context['engine']['frame'][33:33 + 41, x:x + 37, :]
+
+            # Check if the colr distribution in in expected range.
+            img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            hist = cv2.calcHist([img_gray], [0], None, [5], [0, 256])
+            try:
+                black_raito = hist[0] / np.sum(hist)
+                black_white_raito = (hist[0] + hist[4]) / np.sum(hist)
+            except ZeroDivisionError:
+                score = 0
+
+            if (black_raito < 0.5) or (0.8 < black_raito) or \
+                    (black_white_raito < 0.8):
+                # Seems not to be a white character on black background.
+                return None
+
+            # Recoginize a digit.
+            digit = self.number_recoginizer.match_digits(
+                img,
+                num_digits=(1, 1),
+                char_width=(11, 40),
+                char_height=(28, 33),
+            )
+
+            if digit is None:
+                return None
+
+            paint_score = (paint_score * 10) + digit
+
+        # Set latest paint_score to the context.
+        context['game']['paint_score'] = \
+            max(context['game'].get('paint_score', 0), paint_score)
+
     # FixMe
     _last_killed = 0
 
@@ -225,6 +263,9 @@ class InGame(object):
             }
 
         context['scenes'][self]['lastTimerIcon'] = msec
+
+        # 塗りポイント(ナワバリのみ)
+        self.matchPaintScore(context)
 
         # ゴーサイン (60秒に1度まで)
         if (context['scenes'][self]['lastGoSign'] + 60 * 1000) < msec:
@@ -296,6 +337,7 @@ class InGame(object):
             label='dead',
         )
 
+        self.number_recoginizer = NumberRecoginizer()
 
 if __name__ == "__main__":
     print(sys.argv)
