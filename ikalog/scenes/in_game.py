@@ -424,9 +424,9 @@ class InGame(object):
         # ビットレートが低いと threshold = 0.80 か
         # ビットレートが低い場合はイベントのチャタリング対策なども必要
         self.mask_killed = IkaMatcher(
-            0, 0, 50, 30,
+            0, 0, 25, 30,
             img_file='masks/ui_killed.png',
-            threshold=0.80,
+            threshold=0.90,
             orig_threshold=0.10,
             false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
             pre_threshold_value=90,
