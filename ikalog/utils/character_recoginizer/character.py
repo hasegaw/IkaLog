@@ -230,7 +230,7 @@ class CharacterRecoginizer(object):
 
         retval, results, neigh_resp, dists = self.model.findNearest(sample, k)
 
-        d = chr(int(results.ravel()))
+        d = int(results.ravel())
         return d
 
     def match(self, img, num_digits=None, char_width=None, char_height=None):
@@ -246,19 +246,14 @@ class CharacterRecoginizer(object):
 
         s = ''
         for sample in samples:
-            c = self.match1(sample)
+            c = chr(self.match1(sample))
             s = s + c
 
         return s
 
-    def match_digits(self, img, num_digits=None, char_width=None, char_height=None):
+    def match_digits(self, img):
         try:
-            return int(self.match(
-                img,
-                num_digits=num_digits,
-                char_width=char_width,
-                char_height=char_height,
-            ))
+            return int(self.match(img))
         except ValueError:
             return None
 
