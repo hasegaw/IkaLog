@@ -171,11 +171,6 @@ class InGame(object):
         return (a, b)
 
     def matchTimerIcon(self, context):
-        img = IkaUtils.cropImageGray(
-            context['engine'][
-                'frame'], self.timer_left, self.timer_top, self.timer_width, self.timer_height
-        )
-
         return self.mask_timer.match(context['engine']['frame'])
 
     def matchPaintScore(self, context):
