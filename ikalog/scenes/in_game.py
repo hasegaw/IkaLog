@@ -240,24 +240,28 @@ class InGame(object):
     def matchDead(self, context):
         return self.mask_dead.match(context['engine']['frame'])
 
+    def match_loop(self):
+        in_trigger = False
+
+        while True:
+            context = (yield in_trigger)
+
+            in_trigger = self.match1(context)
+            if in_trigger:
+                pass
+
     def match(self, context):
-        context['engine']['inGame'] = self.matchTimerIcon(context)
 
-        if not context['engine']['inGame']:
-            return False
-
-        callPlugins = context['engine']['service']['callPlugins']
-        msec = context['engine']['msec']
-
-        if not self in context['scenes']:
-            context['scenes'][self] = {
-                'lastGoSign': msec - 60 * 1000,
-                'lastDead': msec - 60 * 1000,
-                'lastKill': msec - 60 * 1000,
-                'kills': 0,
+        if not 'in_game' in context['scenes']:
+            context['scenes']['in_game'] = {
+                'dead': False,
             }
+            context['game']['kills'] = 0
+            context['game']['dead'] = False
+            context['game']['inGame'] = False
 
-        context['scenes'][self]['lastTimerIcon'] = msec
+        self._match_loop.send(context)
+
 
         # 塗りポイント(ナワバリのみ)
         self.matchPaintScore(context)
@@ -279,13 +283,6 @@ class InGame(object):
             # 長すぎると連続キル検出をミスする可能性あり
             if (context['scenes'][self]['lastKill'] + 1 * 1000) < msec:
                 context['scenes'][self]['kills'] = kills
-
-        # 死亡状態（「復活まであとｎ秒」）
-        if self.matchDead(context):
-            if (context['scenes'][self]['lastDead'] + 5 * 1000) < msec:
-                callPlugins('on_game_dead')
-            context['scenes'][self]['lastDead'] = msec
-        return True
 
     def __init__(self):
         self.mask_timer = IkaMatcher(
