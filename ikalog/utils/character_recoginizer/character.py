@@ -183,13 +183,29 @@ class CharacterRecoginizer(object):
 
         return characters
 
-    def find_samples(self, img):
+    def find_samples(self, img, num_digits=None, char_width=None, char_height=None):
         characters = self.extract_characters(img)
         samples = []
         for img in characters:
+            # Validate character geometry
+            if char_height is not None:
+                if (img.shape[0] < char_height[0]) or (char_height[1] < img.shape[0]):
+                    continue
+
+            if char_width is not None:
+                if (img.shape[1] < char_width[0]) or (char_width[1] < img.shape[1]):
+                    continue
+
+            # Scale the character to match with KNN trained dataset.
             img_scaled = cv2.resize(
                 img, (self.sample_width, self.sample_height), interpolation=cv2.INTER_NEAREST)
+
             samples.append(img)
+
+        if num_digits is not None:
+            if (len(samples) < num_digits[0]) or (num_digits[1] < len(samples)):
+                return []
+
         return samples
 
     def match1(self, img):
@@ -217,11 +233,16 @@ class CharacterRecoginizer(object):
         d = chr(int(results.ravel()))
         return d
 
-    def match(self, img):
+    def match(self, img, num_digits=None, char_width=None, char_height=None):
         if not self.trained:
             return None
 
-        samples = self.find_samples(img)
+        samples = self.find_samples(
+            img,
+            num_digits=num_digits,
+            char_width=char_width,
+            char_height=char_height,
+        )
 
         s = ''
         for sample in samples:
@@ -230,9 +251,14 @@ class CharacterRecoginizer(object):
 
         return s
 
-    def match_digits(self, img):
+    def match_digits(self, img, num_digits=None, char_width=None, char_height=None):
         try:
-            return int(self.match(img))
+            return int(self.match(
+                img,
+                num_digits=num_digits,
+                char_width=char_width,
+                char_height=char_height,
+            ))
         except ValueError:
             return None
 
