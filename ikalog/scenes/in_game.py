@@ -22,6 +22,7 @@ import sys
 import cv2
 import numpy as np
 from ikalog.utils import *
+from ikalog.utils.character_recoginizer import *
 
 
 class InGame(object):
@@ -306,6 +307,55 @@ class InGame(object):
     def match_dead(self, context):
         return self.mask_dead.match(context['engine']['frame'])
 
+    def recoginize_and_vote_death_reason(self, context):
+        if self.deadly_weapon_recoginizer is None:
+            return False
+
+        img_weapon = context['engine']['frame'][218:218 + 51, 452:452 + 410]
+        img_weapon_gray = cv2.cvtColor(img_weapon, cv2.COLOR_BGR2GRAY)
+        ret, img_weapon_b = cv2.threshold(
+            img_weapon_gray, 230, 255, cv2.THRESH_BINARY)
+
+        # (覚) 学習用に保存しておくのはこのデータ
+        if 0: # (self.time_last_write + 5000 < context['engine']['msec']):
+            filename = os.path.join(
+                'training', '_deadly_weapons.%s.png' % time.time())
+            cv2.imwrite(filename, img_weapon_b)
+            self.time_last_write = context['engine']['msec']
+
+        img_weapon_b_bgr = cv2.cvtColor(img_weapon_b, cv2.COLOR_GRAY2BGR)
+        weapon_id = self.deadly_weapon_recoginizer.match( img_weapon_b_bgr)
+
+        # 投票する(あとでまとめて開票)
+        data = context['scenes']['in_game']
+        data['deadly_weapons'][weapon_id] = \
+            data['deadly_weapons'].get(weapon_id, 0) + 1
+
+    def count_death_reason_votes(self, context):
+        data = context['scenes']['in_game']
+        if len(data['deadly_weapons']) == 0:
+            return None
+
+        most_possible_id = None
+        most_possible_count = 0
+        for weapon_id in data['deadly_weapons'].keys():
+            weapon_count = data['deadly_weapons'][weapon_id]
+            if most_possible_count < weapon_count:
+                most_possible_id = weapon_id
+                most_possible_count = weapon_count
+
+        if (most_possible_count == 0) or (most_possible_id is None):
+            return None
+
+        context['game']['last_death_reason'] = most_possible_id
+        context['game']['death_reasons'][most_possible_id] = \
+            context['game']['death_reasons'].get( most_possible_id, 0) + 1
+
+        callPlugins = context['engine']['service']['callPlugins']
+        callPlugins('on_game_death_reason_identified')
+
+        return most_possible_id
+
     def match_death_loop(self):
         in_trigger = False
         context = (yield in_trigger)
@@ -325,6 +375,7 @@ class InGame(object):
             msec = context['engine']['msec']
             data = context['scenes']['in_game']
 
+            data['deadly_weapons'] = {}
             data['msec_last_death'] = msec
 
             context['game']['dead'] = True
@@ -338,6 +389,7 @@ class InGame(object):
                 context = (yield dead)
 
                 if self.match_dead(context):
+                    self.recoginize_and_vote_death_reason(context)
                     continue
 
                 # 3秒以上 or 5 フレーム間は last_kill の値を維持する
@@ -347,7 +399,11 @@ class InGame(object):
                 if c1:
                     dead = False
 
-            dead = False
+            # 死亡状態を抜けた。
+
+            # 死因が判れば特定、イベントを発生させる
+            self.count_death_reason_votes(context)
+
             context['game']['dead'] = False
 
     def match1(self, context):
@@ -452,6 +508,11 @@ class InGame(object):
             label='dead',
             debug=debug,
         )
+
+        try:
+            self.deadly_weapon_recoginizer = DeadlyWeaponRecoginizer()
+        except:
+            self.deadly_weapon_recoginizer = None
 
 
 if __name__ == "__main__":

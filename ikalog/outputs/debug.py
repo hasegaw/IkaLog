@@ -54,6 +54,10 @@ class DebugLog(object):
     def on_game_dead(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
+    def on_game_death_reason_identified(self, context):
+        s = "weapon = %s" % (context['game']['last_death_reason'])
+        self.write_debug_log(sys._getframe().f_code.co_name, context, text = s)
+
     def on_game_go_sign(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
@@ -78,13 +82,19 @@ class DebugLog(object):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     def on_result_udemae(self, context):
-        self.write_debug_log(sys._getframe().f_code.co_name, context)
+        result = context['scenes']['result_udemae']
+        for field in result:
+            if field.startswith('img_'):
+                value = '(image)'
+
+        self.write_debug_log(sys._getframe().f_code.co_name, context, text=result)
 
     def on_result_gears(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     def on_game_session_end(self, context):
-        self.write_debug_log(sys._getframe().f_code.co_name, context)
+        s = "death_reasons = %s" % (context['game']['death_reasons'])
+        self.write_debug_log(sys._getframe().f_code.co_name, context, text = s)
 
     def on_option_tab_create(self, notebook):
         pass
