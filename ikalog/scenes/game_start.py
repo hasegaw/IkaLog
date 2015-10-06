@@ -39,21 +39,25 @@ class GameStart(object):
     rulename_bottom = 310
     rulename_height = rulename_bottom - rulename_top
 
-    def guess_map(self, frame):
-        # マップ名を判断
-        for map in self.map_list:
-            r = map['mask'].match(frame)
-            if r:
-                return map
-        return None
+    def guess_stage(self, frame):
+        most_possible_stage = (0, None)
+
+        for stage in self.map_list:
+            matched, fg_score, bg_score = stage['mask'].match_score(frame)
+            if matched and (most_possible_stage[0] < fg_score):
+                most_possible_stage = (fg_score, stage)
+
+        return most_possible_stage[1]
 
     def guess_rule(self, frame):
-        # モード名を判断
+        most_possible_rule = (0, None)
+
         for rule in self.rule_list:
-            r = rule['mask'].match(frame)
-            if r:
-                return rule
-        return None
+            matched, fg_score, bg_score = rule['mask'].match_score(frame)
+            if matched and (most_possible_rule[0] < fg_score):
+                most_possible_rule = (fg_score, rule)
+
+        return most_possible_rule[1]
 
     def elect(self, context):
         # 古すぎる投票は捨てる
@@ -71,19 +75,19 @@ class GameStart(object):
         #    return None, None
 
         # 開票作業
-        maps = {}
+        stages = {}
         rules = {}
 
         count = 0
-        map_top = (0, None)  # 最高票数の tuple   (17[票], <IkaMatcher>)
+        stage_top = (0, None)  # 最高票数の tuple   (17[票], <IkaMatcher>)
         rule_top = (0, None)
 
         for vote in self.votes:
             if vote[1] is not None:
-                map = vote[1]['name']
-                maps[map] = maps[map] + 1 if map in maps else 1
-                if map_top[0] < maps[map]:
-                    map_top = (maps[map], vote[1])
+                stage = vote[1]['name']
+                stages[stage] = stages[stage] + 1 if map in stages else 1
+                if stage_top[0] < stages[stage]:
+                    stage_top = (stages[stage], vote[1])
 
             if vote[2] is not None:
                 rule = vote[2]['name']
@@ -98,23 +102,22 @@ class GameStart(object):
         #print('quorum = %s' % quorum)
 
         # 必要票数が達しなかった場合
-        if map_top[0] < quorum:
-            map_top = (0, None)
+        if stage_top[0] < quorum:
+            stage_top = (0, None)
 
         if rule_top[0] < quorum:
             rule_top = (0, None)
 
         # 必要票数に達したものだけ更新
-        if map_top[1] is not None:
-            context['game']['map'] = map_top[1]
+        if stage_top[1] is not None:
+            context['game']['map'] = stage_top[1]
         if rule_top[1] is not None:
             context['game']['rule'] = rule_top[1]
-        #print(map_top, rule_top)
 
-        return map_top[1], rule_top[1]
+        return stage_top[1], rule_top[1]
 
     def match(self, context):
-        map = self.guess_map(context['engine']['frame'])
+        map = self.guess_stage(context['engine']['frame'])
         rule = self.guess_rule(context['engine']['frame'])
 
         if not map is None:
