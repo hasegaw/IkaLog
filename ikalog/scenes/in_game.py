@@ -234,8 +234,16 @@ class InGame(object):
 
         return len(list)
 
-    def matchGoSign(self, context):
-        return self.mask_goSign.match(context['engine']['frame'])
+    def match_go_sign(self, context):
+        # ゴーサイン (60秒に1度まで)
+        msec = context['engine']['msec']
+        if (context['scenes']['in_game']['last_go_sign'] + 60 * 1000) < msec:
+            if self.mask_go_sign.match(context['engine']['frame']):
+                context['scenes']['in_game']['last_go_sign'] = msec
+                callPlugins = context['engine']['service']['callPlugins']
+                callPlugins('on_game_go_sign')
+
+        return self.mask_go_sign.match(context['engine']['frame'])
 
     def match_kills1(self, context):
         img_gray = cv2.cvtColor(
@@ -352,15 +360,11 @@ class InGame(object):
             msec = context['engine']['msec']
 
             context['scenes']['in_game'] = {
-                'lastGoSign': msec - 60 * 1000,
+                'last_go_sign': msec - 60 * 1000,
                 'lastDead': msec - 60 * 1000,
                 'lastKill': msec - 60 * 1000,
                 'kills': 0,
             }
-
-        #context['scenes']['in_game']['lastTimerIcon'] = msec
-
-        # self.match_go_sign(context)
 
         return context['engine']['inGame']
 
@@ -380,20 +384,13 @@ class InGame(object):
             if in_trigger:
                 _match_kills_loop.send(context)
                 _match_death_loop.send(context)
-
-            # ゴーサイン (60秒に1度まで)
-            msec = context['engine']['msec']
-            if (context['scenes']['in_game']['lastGoSign'] + 60 * 1000) < msec:
-                if self.matchGoSign(context):
-                    callPlugins = context['engine']['service']['callPlugins']
-                    callPlugins('on_game_go_sign')
-                    context['scenes']['in_game']['lastGoSign'] = msec
+                self.match_go_sign(context)
 
     def match(self, context):
         if not 'in_game' in context['scenes']:
             context['scenes']['in_game'] = {
                 'dead': False,
-                'lastGoSign': - 60 * 1000,
+                'last_go_sign': - 60 * 1000,
             }
             context['game']['kills'] = 0
             context['game']['dead'] = False
@@ -416,7 +413,7 @@ class InGame(object):
             debug=debug,
         )
 
-        self.mask_goSign = IkaMatcher(
+        self.mask_go_sign = IkaMatcher(
             1280 / 2 - 420 / 2, 130, 420, 170,
             img_file='masks/ui_go.png',
             threshold=0.90,
