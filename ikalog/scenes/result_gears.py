@@ -80,12 +80,22 @@ class ResultGears(object):
         img_cash = context['engine']['frame'][110:110 + 55, 798:798 + 294]
         img_level = context['engine']['frame'][284:284 + 63, 643:643 + 103]
         img_exp = context['engine']['frame'][335:335 + 43, 1007:1007 + 180]
+
         try:
-            cash = self.number_recoginizer.match_digits(img_cash)
+            cash = self.number_recoginizer.match_digits(
+                img_cash,
+                num_digits = (7, 7),
+                char_width = (5, 34),
+                char_height = (28 , 37),
+            )
             level = self.number_recoginizer.match_digits(img_level)
             exp = self.number_recoginizer.match(img_exp)  # 整数ではない
         except:
+            # FIXME
             pass
+
+        if (cash is None) or (level is None) or (exp is None):
+            return False
 
         gears = self.analyzeGears(context)
         if not ('result_gears' in context['scenes']):
