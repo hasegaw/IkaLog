@@ -27,3 +27,4 @@ from ikalog.utils.character_recoginizer.number import *
 from ikalog.utils.character_recoginizer.udemae import *
 from ikalog.utils.character_recoginizer.fes_gender import *
 from ikalog.utils.character_recoginizer.fes_level import *
+from ikalog.utils.character_recoginizer.deadly_weapon import *
