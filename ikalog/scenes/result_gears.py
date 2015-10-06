@@ -108,26 +108,50 @@ class ResultGears(object):
         context['scenes']['result_gears']['level'] = level
         context['scenes']['result_gears']['gears'] = gears
         context['scenes']['result_gears']['exp'] = exp
-        # FixMe: Slash が処理できるようになったら exp を数値化
+        # TODO: Slash が処理できるようになったら exp を数値化
         return True
 
     def match_loop(self):
-        # 左上の数字が白くなくなったら検出ドキ
-        in_trigger = False
 
         while True:
-            context = (yield in_trigger)
+            msec_last = 0
+            in_trigger = False
 
-            if self.match1(context):
-                self.analyze(context)
-                in_trigger = True
+            while not in_trigger:
+                context = (yield in_trigger)
 
-            else:
-                if (in_trigger):
-                    callPlugins = context['engine']['service']['callPlugins']
-                    callPlugins('on_result_gears')
+                if context['engine']['msec'] < (msec_last + 3 * 1000):
+                    continue
+                in_trigger = self.match1(context)
 
-                in_trigger = False
+            # in_trigger = True
+            msec_start = context['engine']['msec']
+            missed_frames = 0
+
+            # Now entered to the scene.
+
+            # TODO: 左上の数字が白くなくなったら?
+
+            while in_trigger:
+                context = (yield in_trigger)
+                if self.match1(context):
+                    msec_last = context['engine']['msec']
+                    missed_frames = 0
+                    self.analyze(context)
+                else:
+
+                    missed_frames = missed_frames + 1
+                    if missed_frames > 5:
+                        break
+
+            # Now escaped from the scene.
+
+            duration = (msec_last - msec_start)
+            IkaUtils.dprint('%s: duration = %d ms' % (self, duration))
+
+            if 1:  # if duration > 3 * 1000:
+                callPlugins = context['engine']['service']['callPlugins']
+                callPlugins('on_result_gears')
 
     def match(self, context):
         return self.cor.send(context)
