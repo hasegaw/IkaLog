@@ -26,7 +26,37 @@ from ikalog.utils import *
 
 class Lobby(object):
 
-    def match(self, context):
+    def match_tag_lobby(self, context):
+        frame = context['engine']['frame']
+
+        # 「ルール」「ステージ」
+        if not self.mask_tag_rule.match(frame):
+            return False
+
+        if not self.mask_tag_stage.match(frame):
+            return False
+
+        r_tag_matching = self.mask_tag_matching.match(frame)
+        r_tag_matched = self.mask_tag_matched.match(frame)
+
+        matched = (r_tag_matching or r_tag_matched)
+        matched = matched and not (r_tag_matching and r_tag_matched)
+
+        if not matched:
+            return False
+
+        context['game']['lobby'] = {
+            'type': 'tag',
+        }
+
+        if (r_tag_matching):
+            context['game']['lobby']['state'] = 'matching'
+        else:
+            context['game']['lobby']['state'] = 'matched'
+
+        return True
+
+    def match_public_lobby(self, context):
         frame = context['engine']['frame']
 
         # 「ルール」「ステージ」
@@ -39,53 +69,54 @@ class Lobby(object):
         # マッチング中は下記文字列のうちひとつがあるはず
         r_pub_matching = self.mask_matching.match(frame)
         r_pub_matched = self.mask_matched.match(frame)
-        r_tag_matching = self.mask_tag_matching.match(frame)
-        r_tag_matched = self.mask_tag_matched.match(frame)
         r_fes_matched = self.mask_fes_matched.match(frame)
 
         match_count = 0
-        for matched in [r_pub_matching, r_pub_matched, r_tag_matching, r_tag_matched, r_fes_matched]:
+        for matched in [r_pub_matching, r_pub_matched, r_fes_matched]:
             if matched:
                 match_count = match_count + 1
 
         if match_count > 1:
             return False
 
-        r_matching = r_pub_matching or r_tag_matching
-        r_matched = r_pub_matched or r_tag_matched or r_fes_matched
-
         context['game']['lobby'] = {
             'type': None,
             'state': None,
         }
 
-        if (r_pub_matching or r_pub_matched):
-            context['game']['lobby']['type'] = 'public'
-
-        if (r_tag_matching or r_tag_matched):
-            context['game']['lobby']['type'] = 'tag'
-
         if (r_fes_matched):
             context['game']['lobby']['type'] = 'festa'
+        else:
+            context['game']['lobby']['type'] = 'public'
 
-        if (r_matching):
+        if (r_pub_matching):
             context['game']['lobby']['state'] = 'matching'
 
-        if (r_matched):
+        if (r_pub_matched or r_fes_matched):
             context['game']['lobby']['state'] = 'matched'
 
         return True
 
+    def match(self, context):
+        if self.match_public_lobby(context):
+            return True
+
+        if self.match_tag_lobby(context):
+            return True
+
+        # FIXME: match_private_lobby
+
+        return False
+
     def __init__(self, debug=False):
         self.mask_rule = IkaMatcher(
-            #0, 220, 737, 94,
             72, 269, 90, 25,
             img_file='masks/ui_lobby_public.png',
             threshold=0.80,
             orig_threshold=0.30,
             false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
             pre_threshold_value=230,
-            label='Rule',
+            label='Pub/Rule',
             debug=debug
         )
 
@@ -97,10 +128,31 @@ class Lobby(object):
             orig_threshold=0.30,
             false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
             pre_threshold_value=230,
-            label='Stage',
+            label='Pub/Stage',
             debug=debug
         )
 
+        self.mask_tag_rule = IkaMatcher(
+            126, 249, 76, 26,
+            img_file='masks/ui_lobby_tag_matching.png',
+            threshold=0.80,
+            orig_threshold=0.30,
+            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
+            label='Tag/Rule',
+            debug=debug
+        )
+
+        self.mask_tag_stage = IkaMatcher(
+            156, 360, 94, 36,
+            img_file='masks/ui_lobby_tag_matching.png',
+            threshold=0.80,
+            orig_threshold=0.30,
+            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
+            label='Tag/Stage',
+            debug=debug
+        )
+
+        # 背景：緑、赤、黒　文字：白
         self.mask_matching = IkaMatcher(
             826, 37, 280, 34,
             img_file='masks/ui_lobby_public.png',
@@ -112,6 +164,7 @@ class Lobby(object):
             debug=debug
         )
 
+        # 背景：緑、赤、黒　文字：黄色
         self.mask_matched = IkaMatcher(
             826, 37, 280, 34,
             img_file='masks/ui_lobby_public_matched.png',
@@ -123,6 +176,7 @@ class Lobby(object):
             debug=debug
         )
 
+        # 背景：暗い赤、黒　文字：黄色
         self.mask_tag_matched = IkaMatcher(
             826, 24, 280, 34,
             img_file='masks/ui_lobby_tag_matched.png',
@@ -134,6 +188,7 @@ class Lobby(object):
             debug=debug
         )
 
+        # 背景：暗い赤、黒　文字：白
         self.mask_tag_matching = IkaMatcher(
             826, 24, 280, 34,
             img_file='masks/ui_lobby_tag_matching.png',
