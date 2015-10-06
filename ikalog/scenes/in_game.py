@@ -461,8 +461,8 @@ class InGame(object):
         self.mask_timer = IkaMatcher(
             self.timer_left, self.timer_top, self.timer_top, self.timer_height,
             img_file='masks/ingame_timer.png',
-            threshold=0.7,
-            orig_threshold=0.7,
+            threshold=0.9,
+            orig_threshold=0.2,
             bg_method=matcher.MM_BLACK(visibility=(0, 32)),
             fg_method=matcher.MM_WHITE(visibility=(160, 256)),
             label='timer_icon',
