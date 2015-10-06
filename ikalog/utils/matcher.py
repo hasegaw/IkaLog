@@ -17,37 +17,150 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+
+import traceback
 from ikalog.utils.ikautils import *
 
-# Match images with mask data.
+
+class MM_WHITE(object):
+
+    def evaluate_gray_image(self, img_gray):
+        assert(len(img_gray.shape) == 2)
+
+        vis_min = min(self.visibility_range)
+        vis_max = max(self.visibility_range)
+
+        assert(vis_min >= 0 and vis_max <= 256)
+
+        img_match_v = cv2.inRange(img_gray, vis_min, vis_max)
+        return img_match_v
+
+    def evaluate(self, img_bgr=None, img_gray=None):
+        if (img_bgr is None):
+            return self.evaluate_gray_image(img_gray)
+
+        # カラー画像から白い部分だけ抜き出した白黒画像を作る
+
+        assert(len(img_bgr.shape) == 3)
+        assert(img_bgr.shape[2] == 3)
+
+        sat_min = min(self.sat_range)
+        sat_max = max(self.sat_range)
+        vis_min = min(self.visibility_range)
+        vis_max = max(self.visibility_range)
+
+        assert(sat_min >= 0 and sat_max <= 256)
+        assert(vis_min >= 0 and vis_max <= 256)
+
+        img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
+        img_match_s = cv2.inRange(img_hsv[:, :, 1], sat_min, sat_max)
+        img_match_v = cv2.inRange(img_hsv[:, :, 2], vis_min, vis_max)
+        img_match = np.minimum(img_match_s, img_match_v)
+        return img_match
+
+    def __init__(self, sat=(0, 60), visibility=(230, 256)):
+        self.sat_range = sat  # assume tuple
+        self.visibility_range = visibility  # assume tuple
+
+
+class MM_NOT_WHITE(MM_WHITE):
+
+    def evaluate(self, img_bgr=None, img_gray=None):
+        img_result = super(MM_NOT_WHITE, self).evaluate(
+            img_bgr=img_bgr, img_gray=img_gray)
+        return 255 - img_result
+
+
+class MM_BLACK(object):
+
+    def evaluate(self, img_bgr=None, img_gray=None):
+        assert((img_bgr is not None) or (img_gray is not None))
+
+        if (img_gray is None):
+            assert(len(img_bgr.shape) == 3)
+            assert(img_bgr.shape[2] == 3)
+            img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+
+        vis_min = min(self.visibility_range)
+        vis_max = max(self.visibility_range)
+
+        assert(vis_min >= 0 and vis_max <= 256)
+        img_match_v = cv2.inRange(img_gray[:, :], vis_min, vis_max)
+        return img_match_v
+
+    def __init__(self, visibility=(0, 16)):
+        self.visibility_range = visibility
+
+
+class MM_DARK(MM_BLACK):
+
+    def __init__(self, visibility=(0, 64)):
+        super(MM_DARK, self).__init__(visibility=visibility)
+
+
+class MM_NOT_BLACK(MM_BLACK):
+
+    def evaluate(self, img_bgr=None, img_gray=None):
+        img_result = super(MM_NOT_BLACK, self).evaluate(
+            img_bgr=img_bgr, img_gray=img_gray)
+        return 255 - img_result
+
+# MM_COLOR_BY_HUE:
+
+
+class MM_COLOR_BY_HUE(object):
+
+    def _hue_range_to_list(self, r):
+        # FIXME: 0, 180をまたぐ場合にふたつに分ける
+        return [r]
+
+    def evaluate(self, img_bgr=None, img_gray=None):
+        assert(img_bgr is not None)
+        assert(len(img_bgr.shape) >= 3)
+        assert(img_bgr.shape[2] == 3)
+        assert(len(self._hue_range_to_list(self.hue_range)) == 1)  # FIXME
+
+        img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
+
+        vis_min = min(self.visibility_range)
+        vis_max = max(self.visibility_range)
+
+        assert(vis_min >= 0)
+        assert(vis_max <= 256)
+
+        for hue_range in self._hue_range_to_list(self.hue_range):
+            hue_min = min(self.hue_range)
+            hue_max = max(self.hue_range)
+
+            assert(hue_min >= 0)
+            assert(hue_max <= 256)
+
+            #print('vis_min %d vis_max %d hue_min %d hue_max %d' % (vis_min, vis_max, hue_min, hue_max))
+            img_match_h = cv2.inRange(img_hsv[:, :, 0], hue_min, hue_max)
+            img_match_v = cv2.inRange(img_hsv[:, :, 2], vis_min, vis_max)
+            img_match = np.minimum(img_match_h, img_match_v)
+        return img_match
+
+    def __init__(self, hue=None, visibility=None):
+        self.hue_range = hue  # assume tuple
+        self.visibility_range = visibility  # assume tuple
+
+
+class MM_NOT_COLOR_BY_HUE(MM_COLOR_BY_HUE):
+
+    def evaluate(self, img_bgr=None, img_gray=None):
+        img_result = super(MM_NOT_COLOR_BY_HUE, self).evaluate(
+            img_bgr=img_bgr, img_gray=img_gray)
+        return 255 - img_result
+
+
 class IkaMatcher(object):
 
-    # Calculate false-postive score (masked area must be black)
-    @classmethod
-    def FP_BACK_IS_BLACK(cls, mask_img=None, img_bgr=None, img_gray=None):
-        fp_img = np.minimum(img_gray, mask_img)
-        fp_img = cv2.inRange(fp_img, 32, 256)
-        orig_hist = cv2.calcHist([fp_img], [0], None, [3], [0, 256])
-        orig_raito = orig_hist[2] / np.sum(orig_hist)
-        return orig_raito, fp_img
-
-    # Calculate false-postive score (masked area is not white)
-    @classmethod
-    def FP_FRONT_IS_WHITE(cls, mask_img=None, img_bgr=None, img_gray=None):
-        img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
-        white_mask_s = cv2.inRange(img_hsv[:, :, 1], 0, 6)
-        white_mask_v = cv2.inRange(img_hsv[:, :, 2], 250, 256)
-        # マスク範囲=0, 白以外=0, 白=255
-        fp_img = np.minimum(mask_img, white_mask_s, white_mask_v)
-        orig_hist = cv2.calcHist([fp_img], [0], None, [3], [0, 256])
-        orig_raito = orig_hist[2] / np.sum(orig_hist)
-        return orig_raito, fp_img
-
-    # Match the image.
-    # @param self   The object.
-    # @param img    Frame data.
-    # @param debug  If true, show debug information.
-    def match(self, img, debug=None):
+        # Match the image.
+        # @param self   The object.
+        # @param img    Frame data.
+        # @param debug  If true, show debug information.
+    def match_score(self, img, debug=None):
         if debug is None:
             debug = self.debug
 
@@ -66,45 +179,54 @@ class IkaMatcher(object):
             img_bgr = None
             img_gray = img
 
-        # Check false-positive
-        #orig_raito  = self.FP_BACK_IS_BLACK(img_gray = img)
-        orig_raito, img_fp = self.false_positive_method(
-            mask_img=self.mask_img, img_bgr=img_bgr, img_gray=img_gray)
-        raito = 0
+        # Check background score
+        try:
+            img_bg = 255 - \
+                self.bg_method.evaluate(img_bgr=img_bgr, img_gray=img_gray)
+            img_bg = np.minimum(img_bg, self.mask_img)
+        except:
+            IkaUtils.dprint('%s (%s): bg_method %s caused a exception.' % (
+                self, self.label, self.bg_method.__class__.__name__))
+            IkaUtils.dprint(traceback.format_exc())
 
-        match = True
+        img_bg = np.minimum(img_bg, self.mask_img)
+
+        orig_hist = cv2.calcHist([img_bg], [0], None, [3], [0, 256])
+        orig_raito = (orig_hist[2] / np.sum(orig_hist))[0]
 
         if orig_raito > self.orig_threshold:
+            raito = 0.0
             match = False
-            if debug:
-                pass
-                #print("original image exceeded orig_threshold")
-
-        if match and not (self.pre_threshold_value is None):
-            ret, img_gray = cv2.threshold(
-                img_gray, self.pre_threshold_value, 255, cv2.THRESH_BINARY)
-
-        if match:
-            added = np.maximum(img_gray, self.mask_img)
-
-            hist = cv2.calcHist([added], [0], None, [3], [0, 256])
-
-            raito = hist[2] / np.sum(hist)
-            match = raito > self.threshold
+            img_added = None
+            img_fg = None
         else:
-            added = None
+            # フォアグラウンド色の一致を調べる
+            img_fg = self.fg_method.evaluate(
+                img_bgr=img_bgr, img_gray=img_gray)
+            img_added = np.maximum(img_fg, self.mask_img)
+
+            hist = cv2.calcHist([img_added], [0], None, [3], [0, 256])
+
+            raito = (hist[2] / np.sum(hist))[0]
+            match = (raito > self.threshold)
 
         if debug:  # and (match > threshold):
             label = self.label if not self.label is None else self
-            print("%s(%s): result=%s raito %f orig_raito %f, threshold %3.3f orig_threshold %3.3f" %
-                  (self.__class__.__name__, label, match, raito, orig_raito, self.threshold, self.orig_threshold))
-            cv2.imshow('img_fp: %s' % label, img_fp)
-            cv2.imshow('img_gray: %s' % label, img_gray)
+            print("%s: result=%s raito BG %1.3f FG %1.3f (threshold BG %1.3f FG %1.3f) label:%s" %
+                  (self.__class__.__name__, match, orig_raito, raito, self.orig_threshold, self.threshold, label))
+            # FIXME: 一枚の画像として表示する
             cv2.imshow('mask: %s' % label, self.mask_img)
-            if not added is None:
-                cv2.imshow('result: %s' % label, added)
+            cv2.imshow('img_gray: %s' % label, img_gray)
+            cv2.imshow('img_bg: %s' % label, img_bg)
+            if img_fg is not None:
+                cv2.imshow('img_fg: %s' % label, img_fg)
+            if img_added is not None:
+                cv2.imshow('result: %s' % label, img_added)
+        return (match, raito, orig_raito)
 
-        return match
+    def match(self, img, debug=None):
+        matched, fg_score, bg_score = self.match_score(img, debug)
+        return matched
 
     # Constructor.
     # @param self                 The object.
@@ -119,28 +241,36 @@ class IkaMatcher(object):
     # @prram pre_threshold_value  Threshold target frame with this level before matching.
     # @param debug                If true, show debug information.
     # @param label                Label (text data) to distingish this mask.
-    def __init__(self, left, top, width, height, img=None, img_file=None, threshold=0.9, false_positive_method=None, orig_threshold=0.7, pre_threshold_value=230, debug=False, label=None):
+    def __init__(self, left, top, width, height, img=None, img_file=None, threshold=0.9, fg_method=None, bg_method=None, orig_threshold=0.7, debug=False, label=None):
         self.top = top
         self.left = left
         self.width = width
         self.height = height
         self.threshold = threshold
         self.orig_threshold = orig_threshold
-        self.pre_threshold_value = pre_threshold_value
         self.debug = debug
         self.label = label
-        self.false_positive_method = false_positive_method if not false_positive_method is None else IkaMatcher.FP_FRONT_IS_WHITE
+
+        self.fg_method = fg_method
+        if self.fg_method is None:
+            self.fg_method = MM_WHITE()
+
+        self.bg_method = bg_method
+        if self.bg_method is None:
+            self.bg_method = MM_NOT_WHITE()
 
         if not img_file is None:
             img_file2 = os.path.join(IkaUtils.baseDirectory(), img_file)
             img = cv2.imread(img_file2)
 
             if img is None:
-                IkaUtils.dprint('%s is not available. Retrying with %s' % (img_file2, img_file))
+                IkaUtils.dprint(
+                    '%s is not available. Retrying with %s' % (img_file2, img_file))
                 img = cv2.imread(img_file)
 
         if img is None:
-            raise Exception('Could not load mask image %s (%s)' % (label, img_file))
+            raise Exception('Could not load mask image %s (%s)' %
+                            (label, img_file))
 
         if len(img.shape) > 2 and img.shape[2] != 1:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

@@ -41,10 +41,10 @@ class GameFinish(object):
         self.mask_finish = IkaMatcher(
             0, 0, 1280, 720,
             img_file='masks/ui_finish.png',
-            threshold=0.95,
-            orig_threshold=0.001,
-            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
-            pre_threshold_value=16,
+            threshold=0.950,
+            orig_threshold=0.05,
+            bg_method=matcher.MM_BLACK(),
+            fg_method=matcher.MM_WHITE(sat=(0, 255), visibility=(16, 255)),
             label='Finish',
             debug=debug,
         )

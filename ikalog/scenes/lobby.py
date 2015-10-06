@@ -114,8 +114,8 @@ class Lobby(object):
             img_file='masks/ui_lobby_public.png',
             threshold=0.80,
             orig_threshold=0.30,
-            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
-            pre_threshold_value=230,
+            bg_method=matcher.MM_NOT_BLACK(),
+            fg_method=matcher.MM_WHITE(),
             label='Pub/Rule',
             debug=debug
         )
@@ -126,18 +126,20 @@ class Lobby(object):
             img_file='masks/ui_lobby_public.png',
             threshold=0.80,
             orig_threshold=0.30,
-            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
-            pre_threshold_value=230,
+            bg_method=matcher.MM_NOT_BLACK(),
+            fg_method=matcher.MM_WHITE(),
             label='Pub/Stage',
             debug=debug
         )
 
         self.mask_tag_rule = IkaMatcher(
+            #0, 220, 737, 94,
             126, 249, 76, 26,
             img_file='masks/ui_lobby_tag_matching.png',
             threshold=0.80,
             orig_threshold=0.30,
-            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
+            bg_method=matcher.MM_NOT_BLACK(),
+            fg_method=matcher.MM_WHITE(),
             label='Tag/Rule',
             debug=debug
         )
@@ -147,7 +149,8 @@ class Lobby(object):
             img_file='masks/ui_lobby_tag_matching.png',
             threshold=0.80,
             orig_threshold=0.30,
-            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
+            bg_method=matcher.MM_NOT_BLACK(),
+            fg_method=matcher.MM_WHITE(),
             label='Tag/Stage',
             debug=debug
         )
@@ -158,8 +161,8 @@ class Lobby(object):
             img_file='masks/ui_lobby_public.png',
             threshold=0.90,
             orig_threshold=0.10,
-            false_positive_method=IkaMatcher.FP_FRONT_IS_WHITE,
-            pre_threshold_value=230,
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
             label='Matching',
             debug=debug
         )
@@ -170,8 +173,10 @@ class Lobby(object):
             img_file='masks/ui_lobby_public_matched.png',
             threshold=0.90,
             orig_threshold=0.10,
-            false_positive_method=IkaMatcher.FP_FRONT_IS_WHITE,
-            pre_threshold_value=160,
+            bg_method=matcher.MM_COLOR_BY_HUE(
+                hue=(30 - 5, 30 + 5), visibility=(200, 255)),
+            fg_method=matcher.MM_COLOR_BY_HUE(
+                hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='Matched',
             debug=debug
         )
@@ -182,8 +187,10 @@ class Lobby(object):
             img_file='masks/ui_lobby_tag_matched.png',
             threshold=0.90,
             orig_threshold=0.10,
-            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
-            pre_threshold_value=160,
+            bg_method=matcher.MM_COLOR_BY_HUE(
+                hue=(30 - 5, 30 + 5), visibility=(200, 255)),
+            fg_method=matcher.MM_COLOR_BY_HUE(
+                hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='TagMatched',
             debug=debug
         )
@@ -194,7 +201,8 @@ class Lobby(object):
             img_file='masks/ui_lobby_tag_matching.png',
             threshold=0.90,
             orig_threshold=0.10,
-            pre_threshold_value=160,
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
             label='TagMatching',
             debug=debug
         )
@@ -204,7 +212,8 @@ class Lobby(object):
             img_file='masks/ui_lobby_fes_matched.png',
             threshold=0.90,
             orig_threshold=0.10,
-            pre_threshold_value=160,
+            fg_method=matcher.MM_COLOR_BY_HUE(
+                hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='FestaMatched',
             debug=debug
         )
@@ -221,5 +230,5 @@ if __name__ == "__main__":
     matched = obj.match(context)
     print("matched %s" % (matched))
     print(context['game'])
-
+    #cv2.imshow('target', target)
     cv2.waitKey()

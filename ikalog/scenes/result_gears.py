@@ -84,9 +84,9 @@ class ResultGears(object):
         try:
             cash = self.number_recoginizer.match_digits(
                 img_cash,
-                num_digits = (7, 7),
-                char_width = (5, 34),
-                char_height = (28 , 37),
+                num_digits=(7, 7),
+                char_width=(5, 34),
+                char_height=(28, 37),
             )
             level = self.number_recoginizer.match_digits(img_level)
             exp = self.number_recoginizer.match(img_exp)  # 整数ではない
@@ -144,8 +144,8 @@ class ResultGears(object):
             img_file='masks/result_gears.png',
             threshold=0.7,
             orig_threshold=0.300,
-            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
-            pre_threshold_value=128, # 緑色!
+            bg_method=matcher.MM_BLACK(visibility=(0, 64)),
+            fg_method=matcher.MM_WHITE(),
             label='result_gaers/okane',
             debug=debug,
         )
@@ -155,8 +155,9 @@ class ResultGears(object):
             img_file='masks/result_gears.png',
             threshold=0.5,
             orig_threshold=0.300,
-            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
-            pre_threshold_value=230,
+            bg_method=matcher.MM_BLACK(),
+            fg_method=matcher.MM_COLOR_BY_HUE(
+                hue=(40 - 5, 40 + 5), visibility=(200, 255)),
             label='result_gaers/level',
             debug=debug,
         )
@@ -166,8 +167,8 @@ class ResultGears(object):
             img_file='masks/result_gears.png',
             threshold=0.7,
             orig_threshold=0.300,
-            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
-            pre_threshold_value=230,
+            bg_method=matcher.MM_BLACK(),
+            fg_method=matcher.MM_WHITE(),
             label='result_gaers/gears',
             debug=debug,
         )

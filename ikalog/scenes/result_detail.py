@@ -82,14 +82,16 @@ class ResultDetail(object):
 
         try:
             if self.fes_gender_recoginizer:
-                gender = self.fes_gender_recoginizer.match(cv2.cvtColor(img_fes_gender, cv2.COLOR_GRAY2BGR))
+                gender = self.fes_gender_recoginizer.match(
+                    cv2.cvtColor(img_fes_gender, cv2.COLOR_GRAY2BGR))
         except:
             IkaUtils.dprint(traceback.format_exc())
             gender = None
 
         try:
             if self.fes_level_recoginizer:
-                level = self.fes_level_recoginizer.match(cv2.cvtColor(img_fes_level, cv2.COLOR_GRAY2BGR))
+                level = self.fes_level_recoginizer.match(
+                    cv2.cvtColor(img_fes_level, cv2.COLOR_GRAY2BGR))
         except:
             IkaUtils.dprint(traceback.format_exc())
             level = None
@@ -158,7 +160,8 @@ class ResultDetail(object):
             0] * img_fes_title_mask.shape[1] * 16
 
         if is_fes:
-            fes_gender, fes_level, fes_team = self.guess_fes_title(img_fes_title)
+            fes_gender, fes_level, fes_team = self.guess_fes_title(
+                img_fes_title)
 
         # フェス中ではなく、 p の表示があれば(avg = 55.0) ナワバリ。なければガチバトル
         isRankedBattle = (not is_fes) and (

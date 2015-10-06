@@ -22,6 +22,7 @@ import sys
 import cv2
 
 from ikalog.utils import *
+import ikalog.utils.matcher as matcher
 
 
 class ResultUdemae(object):
@@ -122,8 +123,9 @@ class ResultUdemae(object):
             img_file='masks/result_udemae.png',
             threshold=0.5,
             orig_threshold=0.250,
-            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
-            pre_threshold_value=205,
+            fg_method=matcher.MM_COLOR_BY_HUE(
+                hue=(11 - 5, 11 + 5), visibility=(200, 255)),
+            bg_method=matcher.MM_BLACK(visibility=(0, 64)),
             label='result_udemae/Udemae',
             debug=debug,
         )
@@ -136,13 +138,30 @@ if __name__ == "__main__":
     target = cv2.imread(sys.argv[1])
     obj = ResultUdemae(debug=True)
 
+    def callPlugins(event):
+        pass
+
     context = {
-        'engine': {'frame': target},
-        'game': {},
+        'engine': {
+            'msec': 0,
+            'frame': target,
+            'service': {
+                'callPlugins': callPlugins
+            },
+        },
+        'game': {
+        },
+        'scenes': {
+        },
     }
 
     matched = obj.match(context)
     analyzed = obj.analyze(context)
     print("matched %s" % (matched))
+
+    for field in context['scenes']['result_udemae']:
+        if field.startswith('img_'):
+            value = '(image)'
+    print(context['scenes'])
 
     cv2.waitKey()

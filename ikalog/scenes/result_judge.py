@@ -143,8 +143,8 @@ class ResultJudge(object):
             img_file='masks/result_judge_win.png',
             threshold=0.9,
             orig_threshold=0.100,
-            false_positive_method=IkaMatcher.FP_FRONT_IS_WHITE,
-            # fg_method = matcher.FG_WHITE(),
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
             label='result_judge/win',
             debug=debug,
         )
@@ -154,8 +154,8 @@ class ResultJudge(object):
             img_file='masks/result_judge_win.png',
             threshold=0.9,
             orig_threshold=0.100,
-            false_positive_method=IkaMatcher.FP_FRONT_IS_WHITE,
-            # fg_method = matcher.FG_WHITE(),
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
             label='result_judge/win_ko',
             debug=debug,
         )
@@ -165,8 +165,8 @@ class ResultJudge(object):
             img_file='masks/result_judge_lose.png',
             threshold=0.9,
             orig_threshold=0.100,
-            false_positive_method=IkaMatcher.FP_FRONT_IS_WHITE,
-            # fg_method = matcher.FG_WHITE(),
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
             label='result_judge/lose',
             debug=debug,
         )
@@ -176,8 +176,8 @@ class ResultJudge(object):
             img_file='masks/result_judge_lose.png',
             threshold=0.9,
             orig_threshold=0.100,
-            false_positive_method=IkaMatcher.FP_FRONT_IS_WHITE,
-            # fg_method = matcher.FG_WHITE(),
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
             label='result_judge/lose_ko',
             debug=debug,
         )

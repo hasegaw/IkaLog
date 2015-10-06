@@ -381,10 +381,19 @@ class InGame(object):
                 _match_kills_loop.send(context)
                 _match_death_loop.send(context)
 
+            # ゴーサイン (60秒に1度まで)
+            msec = context['engine']['msec']
+            if (context['scenes']['in_game']['lastGoSign'] + 60 * 1000) < msec:
+                if self.matchGoSign(context):
+                    callPlugins = context['engine']['service']['callPlugins']
+                    callPlugins('on_game_go_sign')
+                    context['scenes']['in_game']['lastGoSign'] = msec
+
     def match(self, context):
         if not 'in_game' in context['scenes']:
             context['scenes']['in_game'] = {
                 'dead': False,
+                'lastGoSign': - 60 * 1000,
             }
             context['game']['kills'] = 0
             context['game']['dead'] = False
@@ -392,10 +401,7 @@ class InGame(object):
 
         self._match_loop.send(context)
 
-        # 塗りポイント(ナワバリのみ)
-        self.matchPaintScore(context)
-
-    def __init__(self):
+    def __init__(self, debug=False):
         self._match_loop = self.match_loop()
         self._match_loop.send(None)
 
@@ -404,58 +410,76 @@ class InGame(object):
             img_file='masks/ingame_timer.png',
             threshold=0.7,
             orig_threshold=0.7,
-            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
-            pre_threshold_value=230,
+            bg_method=matcher.MM_BLACK(visibility=(0, 32)),
+            fg_method=matcher.MM_WHITE(visibility=(160, 256)),
             label='timer_icon',
-            debug=False,
+            debug=debug,
         )
 
         self.mask_goSign = IkaMatcher(
             1280 / 2 - 420 / 2, 130, 420, 170,
             img_file='masks/ui_go.png',
-            threshold=0.98,
+            threshold=0.90,
             orig_threshold=0.5,
-            pre_threshold_value=240,
             label='Go!',
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
+            debug=debug,
         )
 
         # mask_killed
+        # 例外的に別途スレッショルド済みのグレー2値画像でマッチングする
+        # ため fg_method で visibility=(128, 255) を指定
         # 高画質動画なら threshold = 0.90 でいける
         # ビットレートが低いと threshold = 0.80 か
         # ビットレートが低い場合はイベントのチャタリング対策なども必要
+
         self.mask_killed = IkaMatcher(
             0, 0, 25, 30,
             img_file='masks/ui_killed.png',
             threshold=0.90,
             orig_threshold=0.10,
-            false_positive_method=IkaMatcher.FP_BACK_IS_BLACK,
-            pre_threshold_value=90,
+            bg_method=matcher.MM_WHITE(sat=(0, 255), visibility=(0, 48)),
+            fg_method=matcher.MM_WHITE(visibility=(192, 255)),
             label='killed',
-            debug=False
+            debug=debug,
         )
 
         self.mask_dead = IkaMatcher(
-            1057, 648, 140, 40,
+            1057, 657, 137, 26,
             img_file='masks/ui_dead.png',
-            threshold=0.8,
-            orig_threshold=0.3,
-            pre_threshold_value=220,
+            threshold=0.90,
+            orig_threshold=0.30,
+            bg_method=matcher.MM_WHITE(sat=(0, 255), visibility=(0, 48)),
+            fg_method=matcher.MM_WHITE(visibility=(192, 255)),
             label='dead',
+            debug=True,
         )
 
-        self.number_recoginizer = NumberRecoginizer()
 
 if __name__ == "__main__":
-    print(sys.argv)
+
+    def callPlugins(context):
+        pass
+
     target = cv2.imread(sys.argv[1])
 
     context = {
-        'engine': {'frame': target},
+        'engine': {
+            'msec': 0,
+            'frame': target,
+            'service': {
+                'callPlugins': callPlugins,
+            },
+        },
         'game': {},
+        'scenes': {},
     }
 
-    obj = InGame()
+    obj = InGame(debug=True)
 
-    r = obj.matchTimerIcon(context)
+    r = obj.match(context)
 
-    print(r)
+    print(obj.matchTimerIcon(context))
+    print(context['scenes'][obj])
+    cv2.waitKey()

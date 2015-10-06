@@ -67,7 +67,7 @@ class GameStart(object):
 
         # 3秒以上たっていたら開票開始
         #election_start2 = context['engine']['msec'] - (3 * 1000)
-        #if election_start2 < self.votes[0][0]:
+        # if election_start2 < self.votes[0][0]:
         #    return None, None
 
         # 開票作業
@@ -82,19 +82,19 @@ class GameStart(object):
             if vote[1] is not None:
                 map = vote[1]['name']
                 maps[map] = maps[map] + 1 if map in maps else 1
-                if  map_top[0] < maps[map]:
+                if map_top[0] < maps[map]:
                     map_top = (maps[map], vote[1])
 
             if vote[2] is not None:
                 rule = vote[2]['name']
                 rules[rule] = rules[rule] + 1 if rule in rules else 1
-                if  rule_top[0] < rules[rule]:
+                if rule_top[0] < rules[rule]:
                     rule_top = (rules[rule], vote[2])
 
         # 必要票数
-        quorum = 1 # max(3, len(self.votes) / 2)
-        #print(maps)
-        #print(rules)
+        quorum = 1  # max(3, len(self.votes) / 2)
+        # print(maps)
+        # print(rules)
         #print('quorum = %s' % quorum)
 
         # 必要票数が達しなかった場合
@@ -130,7 +130,7 @@ class GameStart(object):
         return (map or rule)
 
     def __init__(self, debug=False):
-        self.election_period = 5 * 1000 # msec
+        self.election_period = 5 * 1000  # msec
         self.votes = []
 
         self.map_list = [
@@ -160,11 +160,11 @@ class GameStart(object):
                 self.mapname_left, self.mapname_top, self.mapname_width, self.mapname_height,
                 img_file=map['file'],
                 threshold=0.95,
-                orig_threshold=0.20,
-                false_positive_method=IkaMatcher.FP_FRONT_IS_WHITE,
-                pre_threshold_value=230,
+                orig_threshold=0.30,
+                bg_method=matcher.MM_NOT_WHITE(),
+                fg_method=matcher.MM_WHITE(),
                 label='map:%s' % map['name'],
-                debug=False,
+                debug=debug,
             )
 
         for rule in self.rule_list:
@@ -172,11 +172,11 @@ class GameStart(object):
                 self.rulename_left, self.rulename_top, self.rulename_width, self.rulename_height,
                 img_file=rule['file'],
                 threshold=0.95,
-                orig_threshold=0.20,
-                false_positive_method=IkaMatcher.FP_FRONT_IS_WHITE,
-                pre_threshold_value=230,
+                orig_threshold=0.30,
+                bg_method=matcher.MM_NOT_WHITE(),
+                fg_method=matcher.MM_WHITE(),
                 label='rule:%s' % rule['name'],
-                debug=False,
+                debug=debug,
             )
 
 if __name__ == "__main__":
