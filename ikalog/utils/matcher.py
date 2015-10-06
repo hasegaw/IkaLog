@@ -88,7 +88,7 @@ class MM_BLACK(object):
         img_match_v = cv2.inRange(img_gray[:, :], vis_min, vis_max)
         return img_match_v
 
-    def __init__(self, visibility=(0, 16)):
+    def __init__(self, visibility=(0, 32)):
         self.visibility_range = visibility
 
 
