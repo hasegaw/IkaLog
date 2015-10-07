@@ -37,6 +37,7 @@ IkaLog GUI 版 (IkaUI) は IkaLog をウインドウアプリとして動くよ�
 - Hue (Phillips製フルカラーLED電球)にチーム色を設定
 - キャプチャボードの表示ズレ対策 (IkaInput_CVCapture.offset)
 - そのほか自分でプラグインを自由に追加可能
+- [自分の Python スクリプトから IkaLog を利用する (Embedded IkaLog)](EmbeddedIkaLog.md)
 - etc...
 
 <br>
