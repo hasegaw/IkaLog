@@ -166,8 +166,8 @@ class ResultGears(object):
         self.mask_okane_msg = IkaMatcher(
             866, 48, 99, 41,
             img_file='masks/result_gears.png',
-            threshold=0.7,
-            orig_threshold=0.300,
+            threshold=0.90,
+            orig_threshold=0.20,
             bg_method=matcher.MM_BLACK(visibility=(0, 64)),
             fg_method=matcher.MM_WHITE(),
             label='result_gaers/okane',
@@ -177,8 +177,8 @@ class ResultGears(object):
         self.mask_level_msg = IkaMatcher(
             869, 213, 91, 41,
             img_file='masks/result_gears.png',
-            threshold=0.5,
-            orig_threshold=0.300,
+            threshold=0.90,
+            orig_threshold=0.20,
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(40 - 5, 40 + 5), visibility=(200, 255)),
@@ -189,8 +189,8 @@ class ResultGears(object):
         self.mask_gears_msg = IkaMatcher(
             887, 410, 73, 45,
             img_file='masks/result_gears.png',
-            threshold=0.7,
-            orig_threshold=0.300,
+            threshold=0.90,
+            orig_threshold=0.20,
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='result_gaers/gears',
@@ -212,9 +212,12 @@ if __name__ == "__main__":
         'scenes': {},
     }
 
-    matched = obj.match(context)
+    matched = obj.match1(context)
     analyzed = obj.analyze(context)
     print("matched %s analyzed %s" % (matched, analyzed))
-    obj.dump(context)
+    try:
+        obj.dump(context)
+    except:
+        pass
 
     cv2.waitKey()

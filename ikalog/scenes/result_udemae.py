@@ -121,8 +121,8 @@ class ResultUdemae(object):
         self.mask_udemae_msg = IkaMatcher(
             561, 245, 144, 52,
             img_file='masks/result_udemae.png',
-            threshold=0.5,
-            orig_threshold=0.250,
+            threshold=0.90,
+            orig_threshold=0.200,
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(11 - 5, 11 + 5), visibility=(200, 255)),
             bg_method=matcher.MM_BLACK(visibility=(0, 64)),

@@ -278,6 +278,7 @@ class InGame(object):
 
         while True:
             context = (yield in_trigger)
+            msec = context['engine']['msec']
             callPlugins = context['engine']['service']['callPlugins']
             # タイマーアイコンが検出された状態で呼ばれる
 
@@ -296,7 +297,6 @@ class InGame(object):
                     'scenes']['in_game'].get('frames_since_last_kill', 0) + 1
 
             # 3秒以上 or 5 フレーム間は last_kill の値を維持する
-            msec = context['engine']['msec']
             c1 = (context['scenes']['in_game'][
                   'msec_last_kill'] + 3 * 1000) < msec
             c2 = (5 < context['scenes']['in_game']['frames_since_last_kill'])
@@ -462,7 +462,7 @@ class InGame(object):
             self.timer_left, self.timer_top, self.timer_top, self.timer_height,
             img_file='masks/ingame_timer.png',
             threshold=0.9,
-            orig_threshold=0.2,
+            orig_threshold=0.35,
             bg_method=matcher.MM_BLACK(visibility=(0, 32)),
             fg_method=matcher.MM_WHITE(visibility=(160, 256)),
             label='timer_icon',
@@ -470,14 +470,14 @@ class InGame(object):
         )
 
         self.mask_go_sign = IkaMatcher(
-            1280 / 2 - 420 / 2, 130, 420, 170,
+            472, 140, 332, 139,
             img_file='masks/ui_go.png',
-            threshold=0.90,
+            threshold=0.95,
             orig_threshold=0.5,
             label='Go!',
-            bg_method=matcher.MM_NOT_WHITE(),
+            bg_method=matcher.MM_WHITE(sat=(0, 255), visibility=(0, 210)),
             fg_method=matcher.MM_WHITE(),
-            debug=debug,
+            debug=False,
         )
 
         # mask_killed

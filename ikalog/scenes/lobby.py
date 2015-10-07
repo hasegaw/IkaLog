@@ -92,8 +92,13 @@ class Lobby(object):
         if (r_pub_matching):
             context['game']['lobby']['state'] = 'matching'
 
-        if (r_pub_matched or r_fes_matched):
+        elif (r_pub_matched or r_fes_matched):
             context['game']['lobby']['state'] = 'matched'
+
+        else:
+            # FIXME: マスクを使って評価したほうがいい
+            context['game']['lobby']['type'] = 'festa'
+            context['game']['lobby']['state'] = 'matching'
 
         return True
 
@@ -112,9 +117,9 @@ class Lobby(object):
         self.mask_rule = IkaMatcher(
             72, 269, 90, 25,
             img_file='masks/ui_lobby_public.png',
-            threshold=0.80,
-            orig_threshold=0.30,
-            bg_method=matcher.MM_NOT_BLACK(),
+            threshold=0.90,
+            orig_threshold=0.15,
+            bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Pub/Rule',
             debug=debug
@@ -124,21 +129,20 @@ class Lobby(object):
             #0, 345, 737, 94,
             72, 386, 110, 35,
             img_file='masks/ui_lobby_public.png',
-            threshold=0.80,
-            orig_threshold=0.30,
-            bg_method=matcher.MM_NOT_BLACK(),
+            threshold=0.90,
+            orig_threshold=0.15,
+            bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Pub/Stage',
             debug=debug
         )
 
         self.mask_tag_rule = IkaMatcher(
-            #0, 220, 737, 94,
             126, 249, 76, 26,
             img_file='masks/ui_lobby_tag_matching.png',
-            threshold=0.80,
-            orig_threshold=0.30,
-            bg_method=matcher.MM_NOT_BLACK(),
+            threshold=0.90,
+            orig_threshold=0.15,
+            bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Tag/Rule',
             debug=debug
@@ -147,9 +151,9 @@ class Lobby(object):
         self.mask_tag_stage = IkaMatcher(
             156, 360, 94, 36,
             img_file='masks/ui_lobby_tag_matching.png',
-            threshold=0.80,
-            orig_threshold=0.30,
-            bg_method=matcher.MM_NOT_BLACK(),
+            threshold=0.90,
+            orig_threshold=0.15,
+            bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Tag/Stage',
             debug=debug
@@ -160,8 +164,8 @@ class Lobby(object):
             826, 37, 280, 34,
             img_file='masks/ui_lobby_public.png',
             threshold=0.90,
-            orig_threshold=0.10,
-            bg_method=matcher.MM_NOT_WHITE(),
+            orig_threshold=0.15,
+            bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Matching',
             debug=debug
@@ -172,9 +176,8 @@ class Lobby(object):
             826, 37, 280, 34,
             img_file='masks/ui_lobby_public_matched.png',
             threshold=0.90,
-            orig_threshold=0.10,
-            bg_method=matcher.MM_COLOR_BY_HUE(
-                hue=(30 - 5, 30 + 5), visibility=(200, 255)),
+            orig_threshold=0.15,
+            bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='Matched',
@@ -186,9 +189,8 @@ class Lobby(object):
             826, 24, 280, 34,
             img_file='masks/ui_lobby_tag_matched.png',
             threshold=0.90,
-            orig_threshold=0.10,
-            bg_method=matcher.MM_COLOR_BY_HUE(
-                hue=(30 - 5, 30 + 5), visibility=(200, 255)),
+            orig_threshold=0.15,
+            bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='TagMatched',
@@ -200,7 +202,7 @@ class Lobby(object):
             826, 24, 280, 34,
             img_file='masks/ui_lobby_tag_matching.png',
             threshold=0.90,
-            orig_threshold=0.10,
+            orig_threshold=0.15,
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='TagMatching',
@@ -211,7 +213,7 @@ class Lobby(object):
             851, 383, 225, 30,
             img_file='masks/ui_lobby_fes_matched.png',
             threshold=0.90,
-            orig_threshold=0.10,
+            orig_threshold=0.15,
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='FestaMatched',
