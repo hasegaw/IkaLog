@@ -40,6 +40,16 @@ class Console(object):
         rule = IkaUtils.rule2text(context['game']['rule'])
         print("ゲームスタート。マップ %s ルール %s" % (map, rule))
 
+    def on_game_killed(self, context):
+        print("プレイヤーをたおした！")
+
+    def on_game_dead(self, context):
+        print("たおされた！")
+
+    def on_game_death_reason_identified(self, context):
+        s = "死因: %s" % (context['game']['last_death_reason'])
+        print(s)
+
     ##
     # Generate a message for on_game_individual_result.
     # @param self      The Object Pointer.
