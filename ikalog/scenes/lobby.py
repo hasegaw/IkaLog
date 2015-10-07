@@ -45,14 +45,45 @@ class Lobby(object):
         if not matched:
             return False
 
-        context['game']['lobby'] = {
+        context['lobby'] = {
             'type': 'tag',
         }
 
         if (r_tag_matching):
-            context['game']['lobby']['state'] = 'matching'
+            context['lobby']['state'] = 'matching'
         else:
-            context['game']['lobby']['state'] = 'matched'
+            context['lobby']['state'] = 'matched'
+
+        return True
+
+    def match_private_lobby(self, context):
+        frame = context['engine']['frame']
+
+        r = self.mask_private_rule.match(frame) and \
+            self.mask_private_stage.match(frame)
+
+        # r == False ならプライベートロビーではない
+        if not r:
+            return False
+
+        # Matching? or Matched?
+        r_matching = self.mask_private_matching_alpha.match(frame) and \
+            self.mask_private_matching_bravo.match(frame)
+
+        r_matched = self.mask_private_matched_alpha.match(frame) and \
+            self.mask_private_matched_bravo.match(frame)
+
+        # マッチング中かつマッチング完了はありえない
+        if (not (r_matching or r_matched)) or (r_matching and r_matched):
+            return False
+
+        context['lobby']['type'] = 'private'
+
+        if r_matching:
+            context['lobby']['state'] = 'matching'
+
+        else:  # r_matched:
+            context['lobby']['state'] = 'matched'
 
         return True
 
@@ -79,39 +110,63 @@ class Lobby(object):
         if match_count > 1:
             return False
 
-        context['game']['lobby'] = {
-            'type': None,
-            'state': None,
-        }
-
         if (r_fes_matched):
-            context['game']['lobby']['type'] = 'festa'
+            context['lobby']['type'] = 'festa'
+            context['lobby']['type'] = 'matched'
+            return True
+
         else:
-            context['game']['lobby']['type'] = 'public'
+            context['lobby']['type'] = 'public'
 
         if (r_pub_matching):
-            context['game']['lobby']['state'] = 'matching'
+            context['lobby']['state'] = 'matching'
 
-        elif (r_pub_matched or r_fes_matched):
-            context['game']['lobby']['state'] = 'matched'
+        elif (r_pub_matched):
+            context['lobby']['state'] = 'matched'
 
         else:
             # FIXME: マスクを使って評価したほうがいい
-            context['game']['lobby']['type'] = 'festa'
-            context['game']['lobby']['state'] = 'matching'
+            context['lobby']['type'] = 'festa'
+            context['lobby']['state'] = 'matching'
 
         return True
 
-    def match(self, context):
+    def match_any_lobby(self, context):
         if self.match_public_lobby(context):
             return True
 
         if self.match_tag_lobby(context):
             return True
 
-        # FIXME: match_private_lobby
+        if self.match_private_lobby(context):
+            return True
 
         return False
+
+    def match(self, context):
+        r = self.match_any_lobby(context)
+
+        if not r:
+            return False
+
+        msec = context['engine']['msec']
+        call_plugins = context['engine']['service']['callPlugins']
+
+        if context['lobby']['state'] == 'matching':
+            last_matching = context['lobby'].get('last_matching', -60 * 1000)
+            context['lobby']['last_matching'] = msec
+            if (msec - last_matching) > (60 * 1000):
+                # マッチングを開始した
+                call_plugins('on_lobby_matching')
+
+        if context['lobby']['state'] == 'matched':
+            last_matched = context['lobby'].get('last_matched', -60 * 1000)
+            context['lobby']['last_matched'] = msec
+            if (msec - last_matched) > (60 * 1000):
+                # マッチングを開始した
+                call_plugins('on_lobby_matched')
+
+        return True
 
     def __init__(self, debug=False):
         self.mask_rule = IkaMatcher(
@@ -214,11 +269,90 @@ class Lobby(object):
             img_file='masks/ui_lobby_fes_matched.png',
             threshold=0.90,
             orig_threshold=0.15,
+            bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='FestaMatched',
             debug=debug
         )
+
+        self.mask_private_rule = IkaMatcher(
+            78, 133, 74, 24,
+            img_file='masks/ui_lobby_private_matched.png',
+            threshold=0.90,
+            orig_threshold=0.15,
+            bg_method=matcher.MM_BLACK(),
+            fg_method=matcher.MM_WHITE(),
+            label='lobby/private/matched/rule',
+            debug=debug
+        )
+
+        self.mask_private_stage = IkaMatcher(
+            78, 272, 93, 24,
+            img_file='masks/ui_lobby_private_matched.png',
+            threshold=0.80,
+            orig_threshold=0.15,
+            bg_method=matcher.MM_BLACK(),
+            fg_method=matcher.MM_WHITE(),
+            label='lobby/private/matched/stage',
+            debug=debug
+        )
+
+        self.mask_private_matching_alpha = IkaMatcher(
+            738, 39, 170, 27,
+            img_file='masks/ui_lobby_private_matching.png',
+            threshold=0.80,
+            orig_threshold=0.15,
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
+            label='lobby/private/matching/alpha',
+            debug=debug
+        )
+
+        self.mask_private_matching_bravo = IkaMatcher(
+            738, 384, 160, 26,
+            img_file='masks/ui_lobby_private_matching.png',
+            threshold=0.80,
+            orig_threshold=0.15,
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
+            label='lobby/private/matching/alpha',
+            debug=debug
+        )
+
+        self.mask_private_stage = IkaMatcher(
+            78, 272, 93, 24,
+            img_file='masks/ui_lobby_private_matched.png',
+            threshold=0.80,
+            orig_threshold=0.15,
+            bg_method=matcher.MM_BLACK(),
+            fg_method=matcher.MM_WHITE(),
+            label='lobby/private/matched/stage',
+            debug=debug
+        )
+
+        self.mask_private_matched_alpha = IkaMatcher(
+            737, 36, 240, 30,
+            img_file='masks/ui_lobby_private_matched.png',
+            threshold=0.80,
+            orig_threshold=0.15,
+            fg_method=matcher.MM_COLOR_BY_HUE(
+                hue=(30 - 5, 30 + 5), visibility=(200, 255)),
+            label='lobby/private/matched/a',
+            debug=debug
+        )
+
+        self.mask_private_matched_bravo = IkaMatcher(
+            737, 380, 240, 30,
+            img_file='masks/ui_lobby_private_matched.png',
+            threshold=0.80,
+            orig_threshold=0.15,
+            fg_method=matcher.MM_COLOR_BY_HUE(
+                hue=(30 - 5, 30 + 5), visibility=(200, 255)),
+            label='lobby/private/match/b',
+            debug=debug
+        )
+
 
 if __name__ == "__main__":
     target = cv2.imread(sys.argv[1])
@@ -227,10 +361,11 @@ if __name__ == "__main__":
     context = {
         'engine': {'frame': target},
         'game': {},
+        'lobby': {},
     }
 
     matched = obj.match(context)
     print("matched %s" % (matched))
-    print(context['game'])
+    print(context['lobby'])
     #cv2.imshow('target', target)
     cv2.waitKey()

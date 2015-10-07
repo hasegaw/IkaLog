@@ -69,11 +69,11 @@ class DebugLog(object):
 
     def on_lobby_matching(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context, text=
-        'Lobby_type: %s' % context['game']['lobby']['type'])
+        'Lobby_type: %s' % context['lobby']['type'])
 
     def on_lobby_matched(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context, text=
-        'Lobby_type: %s' % context['game']['lobby']['type'])
+        'Lobby_type: %s' % context['lobby']['type'])
 
     def on_game_finish(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)

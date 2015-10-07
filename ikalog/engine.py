@@ -46,8 +46,6 @@ class IkaEngine:
 
     last_capture = time.time() - 100
     last_gamestart = time.time() - 100
-    last_lobby_matching = time.time() - 100
-    last_lobby_matched = time.time() - 100
 
     def dprint(self, text):
         print(text, file=sys.stderr)
@@ -117,7 +115,6 @@ class IkaEngine:
             'towerTrack': [],
         }
 
-
     def create_context(self):
         self.context = {
             'engine': {
@@ -129,6 +126,8 @@ class IkaEngine:
             'scenes': {
             },
             'config': {
+            },
+            'lobby': {
             }
         }
         self.reset()
@@ -179,19 +178,6 @@ class IkaEngine:
         r = False
         if not context['engine']['inGame']:
             r = self.scn_lobby.match(context)
-
-        if r:
-            if context['game']['lobby']['state'] == 'matching':
-                if (time.time() - self.last_lobby_matching) > 60:
-                    # マッチングを開始した
-                    self.call_plugins('on_lobby_matching')
-                self.last_lobby_matching = time.time()
-
-            if context['game']['lobby']['state'] == 'matched':
-                if (time.time() - self.last_lobby_matched) > 10:
-                    # マッチングした直後
-                    self.call_plugins('on_lobby_matched')
-                self.last_lobby_matched = time.time()
 
         # GameStart (マップ名、ルール名が表示されている) ?
 
