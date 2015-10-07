@@ -234,6 +234,7 @@ class StatInk(object):
             return None
 
         return s
+
     def _set_values(self, fields, dest, src):
         for field in fields:
 
@@ -284,8 +285,14 @@ class StatInk(object):
             if weapon:
                 payload['weapon'] = weapon
 
+        # In-game logs
+
+        payload['death_reasons'] = context['game']['death_reasons'].copy()
+
+        # ResultDetail
+
         self._set_values(
-            [ # 'type', 'stat.ink Field', 'IkaLog Field'
+            [  # 'type', 'stat.ink Field', 'IkaLog Field'
                 ['int', 'rank_in_team', 'rank_in_team'],
                 ['int', 'kill', 'kills'],
                 ['int', 'death', 'deaths'],
@@ -294,19 +301,29 @@ class StatInk(object):
                 ['str_lower', 'rank', 'udemae_pre'],
             ], payload, me)
 
+        # ResultUdemae
+
         if 'result_udemae' in context['scenes']:
             self._set_values(
-                [ # 'type', 'stat.ink Field', 'IkaLog Field'
-                    ['int', 'rank_exp', 'udemae_exp_pre'], 
+                [  # 'type', 'stat.ink Field', 'IkaLog Field'
+                    ['int', 'rank_exp', 'udemae_exp_pre'],
                     ['int', 'rank_exp_after', 'udemae_exp_after'],
                     ['str_lower', 'rank_after', 'udemae_str_after'],
                 ], payload, context['scenes']['result_udemae'])
 
+        knockout = context['game'].get('knockout', None)
+        if (payload['rule'] != 'nawabari') and (knockout is not None):
+            payload['knock_out'] = {True: 'yes', False: 'no'}[knockout]
+
+        # ResultGears
+
         if 'result_gears' in context['scenes']:
             self._set_values(
-                [ # 'type', 'stat.ink Field', 'IkaLog Field'
+                [  # 'type', 'stat.ink Field', 'IkaLog Field'
                     ['int', 'cash_after', 'cash'],
                 ], payload, context['scenes']['result_gears'])
+
+        # Screenshots
 
         if self.img_result_detail is not None:
             payload['image_result'] = self.encode_image(self.img_result_detail)
@@ -318,10 +335,7 @@ class StatInk(object):
         else:
             IkaUtils.dprint('%s: img_judge is empty.' % self)
 
-
-        knockout = context['game'].get('knockout', None)
-        if (payload['rule'] != 'nawabari') and (knockout is not None):
-            payload['knock_out'] = { True: 'yes', False: 'no' }[knockout]
+        # Agent Information
 
         payload['agent'] = 'IkaLog'
         payload['agent_version'] = IKALOG_VERSION
@@ -421,7 +435,7 @@ class StatInk(object):
         self.on_game_go_sign(context)
 
     def on_game_finish(self, context):
-        
+
         self.time_end_at = int(time.time())
         if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
             duration_msec = context['engine']['msec'] - self.time_start_at_msec
@@ -440,7 +454,7 @@ class StatInk(object):
     # @param context   IkaLog context
     #
     def on_game_individual_result(self, context):
-        self.img_result_detail  = context['engine']['frame']
+        self.img_result_detail = context['engine']['frame']
 
     def on_result_judge(self, context):
         self.img_judge = context['game'].get('image_judge', None)
