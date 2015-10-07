@@ -63,29 +63,29 @@ IkaLog が何かの場面を検出すると、プラグインが持っている�
 
 | メソッド名 | 場面 |
 |------------|------|
-| onFrameRead | 入力ソースから（間引きされた）フレームが読み込まれた |
-| onLobbyMatching | 待ち合わせロビー。プレイヤーはまだ8人揃っていない |
-| onLobbyMatched | 待ち合わせロビー。 プレイヤーが8人揃い、間もなくゲーム開始 |
-| onGameStart | ゲームのステージとルールが判明した |
-| onGameGoSign | ゲーム開始の合図(Go!) の瞬間 |
-| onGameFinish | ゲーム終了（タイムアップもしくはノックアウト）の瞬間 |
-| onGameKilled | IkaLog ユーザーのインクリングが誰かを倒した |
-| onGameDead |  IkaLog ユーザーのインクリングが死亡 |
-| onGameIndividualResultAnalyze | 戦績画面(K/D)が表示された |
-| onGameIndividualResult | 戦績画面(K/D)が表示され、分析が完了 |
-| onGameReset | 一回のゲームが完了した。次のイベントからは別のゲームと見なす |
+| on_frame_read | 入力ソースから（間引きされた）フレームが読み込まれた |
+| on_lobby_matching | 待ち合わせロビー。プレイヤーはまだ8人揃っていない |
+| on_lobby_matched | 待ち合わせロビー。 プレイヤーが8人揃い、間もなくゲーム開始 |
+| on_game_start | ゲームのステージとルールが判明した |
+| on_game_go_sign | ゲーム開始の合図(Go!) の瞬間 |
+| on_game_finish | ゲーム終了（タイムアップもしくはノックアウト）の瞬間 |
+| on_game_killed | IkaLog ユーザーのインクリングが誰かを倒した |
+| on_game_dead |  IkaLog ユーザーのインクリングが死亡 |
+| on_game_individual_result_analyze | 戦績画面(K/D)が表示された |
+| on_game_individual_result | 戦績画面(K/D)が表示され、分析が完了 |
+| on_game_reset | 一回のゲームが完了した。次のイベントからは別のゲームと見なす |
 
 これらのコールバックは下記の引数で呼び出されます。
 
 ````Python
-plugin.onGameStart(context)
+plugin.on_game_start(context)
 ````
 
 このため各コールバックは下記のとおり定義しなければなりません。
 
 ````
 class IkaOutput_MyPlugin:
-    def onGameStart(self, context):
+    def on_game_start(self, context):
 ````
 
 #### コールバックが呼ばれないこともある
@@ -125,6 +125,8 @@ context は、 IkaLog のエンジンである IkaEngine が持つコンテク�
 
 #### コンテキストからステージ名を知る
 
+※ 関数名が PEP8 準拠修正前のまま
+
 ````Python
 map = IkaUtils.map2text(context['game']['map'])
 rule = IkaUtils.rule2text(context['game']['rule'])
@@ -138,6 +140,8 @@ print('%s で %s を遊びました' % (map2, rule2))
 
 #### 勝敗を知る
 
+※ 関数名が PEP8 準拠修正前のまま
+
 ````Python
     def onGameIndividualResult(self, context):
         result         = IkaUtils.getWinLoseText(context['game']['won'])
@@ -148,12 +152,16 @@ print('%s で %s を遊びました' % (map2, rule2))
 
 #### スクリーンショットを保存する
 
+※ 関数名が PEP8 準拠修正前のまま
+
 ````Python
 IkaUtils.writeScreenshot('i_was_the_hero.png', context['engine']['frame'])
 ````
 
 
 ## GUI に対応する
+
+※ 関数名が PEP8 準拠修正前のまま
 
 IkaUI による GUI で動作する場合は、追加のコールバックが利用されます。
 
@@ -179,6 +187,8 @@ except:
 ````
 
 ### onOptionTabCreate
+
+※ 関数名が PEP8 準拠修正前のまま
 
 呼び出されるときの引数が他のプラグインと違いますので注意が必要です。(今後どうするか未定)
 

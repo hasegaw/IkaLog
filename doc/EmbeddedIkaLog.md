@@ -1,37 +1,39 @@
 # Embedded IkaLog
 
-IkaLog のコア部分は IkaEngine クラスとしてまとまっています。
+IkaLog のコア部分は ikalog モジュールとしてしてまとまっています。
 このクラスを自前で初期化してあげることで、自分の好きな Python プログラムに IkaLog をエンベッド動作させることもできなくはありません。
 
 このような利用はこれまで想定してこなかったので、細かな問題が発生することは
 承知の上利用を検討してください。
 
+本ページの内容は関数名が PEP8 準拠に変更される前のもので書かれています。
+
 ## サンプル
 
-utils/IkaRename.py を読んでみてください。
-
-IkaRename.py はビデオファイルを再生し、そのビデオファイルでの Splatoon プレイ内容をもとに
-ビデオファイル名をリネームする例です。
+| サンプル名 | 説明 |
+|------------|------|
+| tools/IkaRename.py | スプラトゥーンプレイ動画のマップ、勝敗を解析し、動画ファイル名に反映する |
+| tools/IkaClips.py | スプラトゥーンプレイ動画からゲーム開始、キル・デス、終了のみを抜き出したサマリ動画を生成する |
 
 ## IkaLog Engine の初期化
 
-このプラグインのコンストラクタ内で IkaEngine を初期化して動かしましょう。
+このプラグインのコンストラクタ内で ikalog.engine を初期化して動かしましょう。
 
 ````Python
-    def __init__(self, file):
-        input = IkaInput_CVCapture()
-        input.startRecordedFile(file)
-        input.need_resize = True #1280x720 に入力ソースを強制変更
+    def __init__(self, filename):
+        source = inputs.CVCapture()
+        source.start_recorded_file(filename)
+        source.need_resize = True #1280x720 に入力ソースを強制変更
 
 	# IkaEngine からのコールバックを受けるのは自分
-        outputPlugins = [ self ]
+        output_plugins = [ self ]
 
         # IkaEngine を実行
-        self.engine = IkaEngine()
+        self.engine = engine()
 
 	# インプット、アウトプットプラグインを設定
-        self.engine.setCapture(input)
-        self.engine.setPlugins(outputPlugins)
+        self.engine.set_capture(source)
+        self.engine.set_plugins(output_plugins)
 
 	# ポーズ状態を解除
         self.engine.pause(False)
@@ -45,7 +47,7 @@ IkaLog の基本はプラグインに対するコールバックです。なの�
 ````Python
 class MyClass:
 
-    def onGameIndividualResult(self, context):
+    def on_game_individual_result(self, context):
         print('組み込まれた IkaLog のなかで戦績が検出されました')
 ````
 
@@ -53,7 +55,7 @@ class MyClass:
 本コールバックが発生したら IkaEngine の stop() メソッドを呼び出して IkaEngine をメインループから脱出させます。
 
 ````Python
-    def onFrameReadFailed(self, context):
+    def on_frame_read_failed(self, context):
         print('%s: たぶんファイルの終端にたどり着きました' % self.file)
         # もういいので IkaEngine を止める
 ````
@@ -66,5 +68,5 @@ class MyClass:
 
 ````Python
 if __name__ == "__main__":
-   IkaRename(sys.argv[1])
+   MyClass(sys.argv[1])
 ````
