@@ -475,9 +475,9 @@ class InGame(object):
             threshold=0.95,
             orig_threshold=0.5,
             label='Go!',
-            bg_method=matcher.MM_WHITE(sat=(0, 255), visibility=(0, 210)),
+            bg_method=matcher.MM_WHITE(sat=(32, 255), visibility=(0, 210)),
             fg_method=matcher.MM_WHITE(),
-            debug=False,
+            debug=debug,
         )
 
         # mask_killed

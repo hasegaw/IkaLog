@@ -58,7 +58,7 @@ class MM_WHITE(object):
         img_match = np.minimum(img_match_s, img_match_v)
         return img_match
 
-    def __init__(self, sat=(0, 60), visibility=(230, 256)):
+    def __init__(self, sat=(0, 32), visibility=(230, 256)):
         self.sat_range = sat  # assume tuple
         self.visibility_range = visibility  # assume tuple
 
