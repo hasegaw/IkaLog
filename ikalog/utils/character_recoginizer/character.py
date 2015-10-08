@@ -251,9 +251,10 @@ class CharacterRecoginizer(object):
 
         return s
 
-    def match_digits(self, img):
+    def match_digits(self, img, num_digits=None, char_width=None, char_height=None):
         try:
-            return int(self.match(img))
+            return int(self.match(img, num_digits=num_digits,
+                char_width=char_width, char_height=char_height))
         except ValueError:
             return None
 
