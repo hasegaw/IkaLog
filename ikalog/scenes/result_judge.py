@@ -30,7 +30,7 @@ class ResultJudge(object):
         frame = context['engine']['frame']
 
         if frame is None:
-            return
+            return False
 
         match_win = self.mask_win.match(frame)
         match_lose = self.mask_lose.match(frame)
@@ -50,14 +50,18 @@ class ResultJudge(object):
 
         if (raito > 0.9):
             context['game']['judge'] = 'win' if match_win else 'lose'
-            return True
+
+        return True
 
     def analyze(self, context):
 
-        win_ko = self.mask_win_ko.match(context['engine']['frame'])
-        lose_ko = self.mask_lose_ko.match(context['engine']['frame'])
+        win_ko = bool(self.mask_win_ko.match(context['engine']['frame']))
+        lose_ko = bool(self.mask_lose_ko.match(context['engine']['frame']))
 
-        knockout = bool(win_ko) or bool(lose_ko)
+        # win_ko もしくは lose_ko が検出されたらノックアウト。
+        # ただし以前のフレームで検出したノックアウトが検出できなくなっている
+        # 場合があるので、すでにノックアウト状態であればノックアウトのまま。
+        knockout = win_ko or lose_ko or context['game'].get('knockout', False)
 
         context['game']['knockout'] = knockout
 
