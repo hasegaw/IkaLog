@@ -29,7 +29,7 @@ from ikalog.utils import *
 
 class DebugLog(object):
 
-    def write_debug_log(self, event, context,text=''):
+    def write_debug_log(self, event, context, text=''):
         gt = int(context['engine']['msec'] / 1000)
         mm = '{0:02d}'.format(int(gt / 60))
         ss = '{0:02d}'.format(int(gt % 60))
@@ -56,7 +56,7 @@ class DebugLog(object):
 
     def on_game_death_reason_identified(self, context):
         s = "weapon = %s" % (context['game']['last_death_reason'])
-        self.write_debug_log(sys._getframe().f_code.co_name, context, text = s)
+        self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
 
     def on_game_go_sign(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
@@ -68,15 +68,22 @@ class DebugLog(object):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     def on_lobby_matching(self, context):
-        self.write_debug_log(sys._getframe().f_code.co_name, context, text=
-        'Lobby_type: %s' % context['lobby']['type'])
+        self.write_debug_log(sys._getframe().f_code.co_name, context,
+                             text='Lobby_type: %s' % context['game']['lobby']['type'])
 
     def on_lobby_matched(self, context):
-        self.write_debug_log(sys._getframe().f_code.co_name, context, text=
-        'Lobby_type: %s' % context['lobby']['type'])
+        self.write_debug_log(sys._getframe().f_code.co_name, context,
+                             text='Lobby_type: %s' % context['game']['lobby']['type'])
 
     def on_game_finish(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_result_judge(self, context):
+        s = "judge: %s, knockout: %s" % (
+            context['game']['judge'], context['game'].get('knockout', None))
+
+        self.write_debug_log(sys._getframe().f_code.co_name, context,
+                             text=s)
 
     def on_game_individual_result(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
@@ -87,14 +94,15 @@ class DebugLog(object):
             if field.startswith('img_'):
                 value = '(image)'
 
-        self.write_debug_log(sys._getframe().f_code.co_name, context, text=result)
+        self.write_debug_log(
+            sys._getframe().f_code.co_name, context, text=result)
 
     def on_result_gears(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     def on_game_session_end(self, context):
         s = "death_reasons = %s" % (context['game']['death_reasons'])
-        self.write_debug_log(sys._getframe().f_code.co_name, context, text = s)
+        self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
 
     def on_option_tab_create(self, notebook):
         pass
