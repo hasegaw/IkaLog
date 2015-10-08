@@ -317,14 +317,14 @@ class InGame(object):
             img_weapon_gray, 230, 255, cv2.THRESH_BINARY)
 
         # (覚) 学習用に保存しておくのはこのデータ
-        if 0: # (self.time_last_write + 5000 < context['engine']['msec']):
+        if 0:  # (self.time_last_write + 5000 < context['engine']['msec']):
             filename = os.path.join(
                 'training', '_deadly_weapons.%s.png' % time.time())
             cv2.imwrite(filename, img_weapon_b)
             self.time_last_write = context['engine']['msec']
 
         img_weapon_b_bgr = cv2.cvtColor(img_weapon_b, cv2.COLOR_GRAY2BGR)
-        weapon_id = self.deadly_weapon_recoginizer.match( img_weapon_b_bgr)
+        weapon_id = self.deadly_weapon_recoginizer.match(img_weapon_b_bgr)
 
         # 投票する(あとでまとめて開票)
         data = context['scenes']['in_game']
@@ -349,7 +349,7 @@ class InGame(object):
 
         context['game']['last_death_reason'] = most_possible_id
         context['game']['death_reasons'][most_possible_id] = \
-            context['game']['death_reasons'].get( most_possible_id, 0) + 1
+            context['game']['death_reasons'].get(most_possible_id, 0) + 1
 
         callPlugins = context['engine']['service']['callPlugins']
         callPlugins('on_game_death_reason_identified')
@@ -365,10 +365,10 @@ class InGame(object):
         dead = False
 
         while True:
+
             while not dead:
                 context = (yield dead)
-
-                dead = self.match_dead(context)
+                dead = context['engine']['inGame'] and self.match_dead(context)
 
             # 死亡した場合
 
@@ -438,9 +438,10 @@ class InGame(object):
 
             in_trigger = self.match1(context)
             if in_trigger:
-                _match_kills_loop.send(context)
-                _match_death_loop.send(context)
                 self.match_go_sign(context)
+                _match_kills_loop.send(context)
+            # XXX: 遅延してイベントが発生するのでループがとまるのは困る
+            _match_death_loop.send(context)
 
     def match(self, context):
         if not 'in_game' in context['scenes']:
