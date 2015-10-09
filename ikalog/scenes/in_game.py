@@ -360,7 +360,7 @@ class InGame(object):
         in_trigger = False
         context = (yield in_trigger)
 
-        context['scenes']['in_game']['msec_last_death'] = 0
+        context['scenes']['in_game']['msec_last_death'] = - 10 * 1000
 
         dead = False
 
@@ -368,12 +368,17 @@ class InGame(object):
 
             while not dead:
                 context = (yield dead)
+
+                # 死んでから5秒は死ねない
+                msec = context['engine']['msec']
+                data = context['scenes']['in_game']
+
+                if msec < (data['msec_last_death'] + 5 * 1000):
+                    continue
+
                 dead = context['engine']['inGame'] and self.match_dead(context)
 
             # 死亡した場合
-
-            msec = context['engine']['msec']
-            data = context['scenes']['in_game']
 
             data['deadly_weapons'] = {}
             data['msec_last_death'] = msec
