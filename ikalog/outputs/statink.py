@@ -259,6 +259,30 @@ class StatInk(object):
     def serialize_payload(self, context):
         payload = {}
 
+        # Lobby
+
+        lobby_type = context['lobby'].get('type', None)
+        if lobby_type == 'public':
+            payload['lobby'] = 'standard'
+
+        elif lobby_type == 'private':
+            payload['lobby'] = 'private'
+
+        elif lobby_type == 'festa':
+            payload['lobby'] = 'fest'
+
+        elif lobby_type == 'tag':
+            num_members = context['lobby'].get('team_members')
+            if num_members in [2, 3, 4]:
+                payload['lobby'] = 'squad_%d' % num_members
+            else:
+                IkaUtils.dprint('%s: invalid lobby key squad_%d' % (self, num_members))
+
+        else:
+            IkaUtils.dprint('%s: No lobby information.' % self)
+
+        # GameStart
+
         stage = self.encode_stage_name(context)
         if stage:
             payload['map'] = stage
