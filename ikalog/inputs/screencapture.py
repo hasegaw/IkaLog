@@ -24,7 +24,6 @@ sys.path.append(os.getcwd())
 
 import time
 import numpy as np
-from PIL import ImageGrab
 
 import cv2
 
@@ -53,6 +52,7 @@ class IkaConfig:
     _launch = 0
 
     def read(self):
+        from PIL import ImageGrab
         img = ImageGrab.grab(self._bbox)
         img = np.asarray(img)
         img = cv2.resize(img, (self._out_width, self._out_height))
@@ -69,10 +69,21 @@ class IkaConfig:
     def _time(self):
         return int(time.time() * 1000)
 
+    def _check_import(self):
+        try:
+            from PIL import ImageGrab
+        except:
+            sys.exit(
+                "モジュール python-pillow がロードできませんでした。\n" +
+                "インストールするには以下のコマンドを利用してください。\n" +
+                "pip install Pillow"
+            )
+
     def __init__(self, bbox=None):
         '''
         bbox -- bbox Crop bounding box as (x, y, w, h)
         '''
+        self._check_import()
         self._bbox = bbox
         self._launch = self._time()
         IkaUtils.dprint('%s: initalizing screen capture' % (self))
