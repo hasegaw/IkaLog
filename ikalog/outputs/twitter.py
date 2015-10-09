@@ -70,7 +70,7 @@ class Twitter(object):
         self.consumer_secret = self.editConsumerSecret.GetValue()
         self.access_token = self.editAccessToken.GetValue()
         self.access_token_secret = self.editAccessTokenSecret.GetValue()
-        self.Footer = self.editFooter.GetValue()
+        self.footer = self.editFooter.GetValue()
 
     def on_consumer_key_mode_switch(self, event=None):
         if self._preset_ck is None:
@@ -124,8 +124,8 @@ class Twitter(object):
         else:
             self.editAccessTokenSecret.SetValue('')
 
-        if not self.Footer is None:
-            self.editFooter.SetValue(self.Footer)
+        if not self.footer is None:
+            self.editFooter.SetValue(self.footer)
         else:
             self.editFooter.SetValue('')
         self.on_consumer_key_mode_switch()
@@ -142,7 +142,7 @@ class Twitter(object):
         self.consumer_secret = ''
         self.access_token = ''
         self.access_token_secret = ''
-        self.Footer = ''
+        self.footer = ''
 
     def on_config_load_from_context(self, context):
         self.on_config_reset(context)
@@ -183,7 +183,7 @@ class Twitter(object):
             self.access_token_secret = conf['AccessTokenSecret']
 
         if 'Footer' in conf:
-            self.Footer = conf['Footer']
+            self.footer = conf['Footer']
 
         self.refresh_ui()
         return True
@@ -200,7 +200,7 @@ class Twitter(object):
             'ConsumerSecret': self.consumer_secret,
             'AccessToken': self.access_token,
             'AccessTokenSecret': self.access_token_secret,
-            'Footer': self.Footer,
+            'Footer': self.footer,
         }
 
     def on_config_apply(self, context):
@@ -240,8 +240,8 @@ class Twitter(object):
         else:
             self.editAccessTokenSecret.SetValue('')
 
-        if not self.Footer is None:
-            self.editFooter.SetValue(self.Footer)
+        if not self.footer is None:
+            self.editFooter.SetValue(self.footer)
         else:
             self.editFooter.SetValue('')
 
@@ -467,7 +467,7 @@ class Twitter(object):
         if fes_title:
             s = '%s %s' % (s, fes_title)
 
-        s = '%s (%s) %s #IkaLog' % (s, t, self.Footer)
+        s = '%s (%s) %s #IkaLog' % (s, t, self.footer)
         return s
 
     ##

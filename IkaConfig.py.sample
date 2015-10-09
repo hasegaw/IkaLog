@@ -83,10 +83,10 @@ class IkaConfig:
             #     'ConsumerSecret',
             #     'AccessToken',
             #     'AccessTokenSecret',
-            #     attachImage = False,
-            #     Footer = 'マンメンミ',
-            #     TweetKd = True,
-            #     TweetUdemae=True
+            #     attach_image = False,
+            #     footer = 'マンメンミ',
+            #     tweet_kd = True,
+            #     tweet_udemae = True
             # ),
 
             # 不具合調査向け。
