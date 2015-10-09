@@ -178,14 +178,14 @@ class Lobby(object):
         msec = context['engine']['msec']
         call_plugins = context['engine']['service']['callPlugins']
 
-        if context['lobby']['state'] == 'matching':
+        if context['lobby'].get('state', None) == 'matching':
             last_matching = context['lobby'].get('last_matching', -60 * 1000)
             context['lobby']['last_matching'] = msec
             if (msec - last_matching) > (60 * 1000):
                 # マッチングを開始した
                 call_plugins('on_lobby_matching')
 
-        if context['lobby']['state'] == 'matched':
+        if context['lobby'].get('state', None) == 'matched':
             last_matched = context['lobby'].get('last_matched', -60 * 1000)
             context['lobby']['last_matched'] = msec
             if (msec - last_matched) > (60 * 1000):
