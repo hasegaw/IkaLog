@@ -256,6 +256,7 @@ class ResultDetail(object):
 
         context['game']['won'] = self.is_win(context)
         context['game']['timestamp'] = datetime.now()
+        context['game']['is_fes'] = ('prefix' in context['game']['players'][0])
 
         return True
 
@@ -316,11 +317,11 @@ if __name__ == "__main__":
         analyzed = obj.analyze(context)
         won = IkaUtils.getWinLoseText(
             context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
-        print("matched %s analyzed %s result %s" % (matched, analyzed, won))
+        fes = context['game']['is_fes']
+        print("matched %s analyzed %s result %s fest %s" % (matched, analyzed, won, fes))
 
         print('')
         for e in context['game']['players']:
-
             if 'prefix' in e:
                 prefix = e['prefix']
                 prefix_ = re.sub('の', '', prefix)
