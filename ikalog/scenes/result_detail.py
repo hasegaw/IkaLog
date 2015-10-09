@@ -281,7 +281,6 @@ class ResultDetail(object):
             'rgb': cv2.cvtColor(counter_team_color_bgr, cv2.COLOR_BGR2RGB).tolist()[0][0],
             'hsv': cv2.cvtColor(counter_team_color_bgr, cv2.COLOR_BGR2HSV).tolist()[0][0],
         }
-        print(my_team_color_bgr, counter_team_color_bgr, context['game']['my_team_color'], context['game']['counter_team_color'])
 
         return True
 
