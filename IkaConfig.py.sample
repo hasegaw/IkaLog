@@ -35,7 +35,7 @@ class IkaConfig:
 
         # 一部のHDMIキャプチャはHDMIソースのピクセルがずれている。
         # 必要に応じてキャプチャのオフセットを(x, y) 指定
-        # inputPlugin.offset = (2, 0)            # サンコー HDMVC4UC(左に2ドットずれ)
+        # source.offset = (2, 0)            # サンコー HDMVC4UC(左に2ドットずれ)
 
         # 使いたいプラグインを適宜設定
         OutputPlugins = [
