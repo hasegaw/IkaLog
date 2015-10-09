@@ -182,7 +182,7 @@ class StatInk(object):
                 'カーボンローラーデコ': 'carbon_deco',
                 'ダイナモローラー': 'dynamo',
                 'ダイナモローラーテスラ': 'dynamo_tesla',
-                'ヒーローローラー': 'heroroller_repilca',
+                'ヒーローローラーレプリカ': 'heroroller_replica',
                 'ホクサイ': 'hokusai',
                 'パブロ': 'pablo',
                 'パブロ・ヒュー': 'pablo_hue',
