@@ -68,12 +68,19 @@ class DebugLog(object):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     def on_lobby_matching(self, context):
+        s = 'Lobby_type: %s' % context['lobby']['type']
+
         self.write_debug_log(sys._getframe().f_code.co_name, context,
-                             text='Lobby_type: %s' % context['game']['lobby']['type'])
+                             text=s)
 
     def on_lobby_matched(self, context):
+        s = 'Lobby_type: %s' % context['lobby']['type']
+
+        if context['lobby']['type'] == 'tag':
+            s = s + ', team_members: %d' % context['lobby']['team_members']
+
         self.write_debug_log(sys._getframe().f_code.co_name, context,
-                             text='Lobby_type: %s' % context['game']['lobby']['type'])
+                             text=s)
 
     def on_game_finish(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)

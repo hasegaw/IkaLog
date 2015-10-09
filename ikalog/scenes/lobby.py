@@ -20,6 +20,7 @@
 import sys
 
 import cv2
+import numpy as np
 
 from ikalog.utils import *
 
@@ -53,6 +54,31 @@ class Lobby(object):
             context['lobby']['state'] = 'matching'
         else:
             context['lobby']['state'] = 'matched'
+
+        if r_tag_matched:
+            # タッグ参加人数は?
+            top_list = [76, 149, 215, 290]
+
+            filter_yellow = matcher.MM_COLOR_BY_HUE(
+                hue=(32 - 5, 32 + 5), visibility=(230, 255))
+
+            for n in range(len(top_list)):
+                top = top_list[n]
+                img_ready = frame[top:top + 41, 1118:1118 + 51]
+                img_ready_yellow = filter_yellow.evaluate(img_ready)
+
+                # vチェックが付いていれば平均600ぐらい、
+                # vチェックが付いていなければ真っ黒(0)ぐらいのはず
+                # -> 500 で割った値が 1.0 超えているかで見る
+                ready_score = np.sum(img_ready_yellow / 255) / 500
+                print(n, ready_score)
+                if ready_score < 1.0:
+                    break
+
+            # この時点で n は 0 を起点として Ready になっていない
+            # (score < 1.0な) インクリングを指している。
+            # なので matched の場合 n はタッグ人数と等価。
+            context['lobby']['team_members'] = n
 
         return True
 
@@ -181,7 +207,6 @@ class Lobby(object):
         )
 
         self.mask_stage = IkaMatcher(
-            #0, 345, 737, 94,
             72, 386, 110, 35,
             img_file='masks/ui_lobby_public.png',
             threshold=0.90,
@@ -244,8 +269,9 @@ class Lobby(object):
             826, 24, 280, 34,
             img_file='masks/ui_lobby_tag_matched.png',
             threshold=0.90,
-            orig_threshold=0.15,
-            bg_method=matcher.MM_BLACK(),
+            orig_threshold=0.50,
+            bg_method=matcher.MM_COLOR_BY_HUE(
+                hue=(150, 180), visibility=(0, 255)),
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='TagMatched',
@@ -257,8 +283,9 @@ class Lobby(object):
             826, 24, 280, 34,
             img_file='masks/ui_lobby_tag_matching.png',
             threshold=0.90,
-            orig_threshold=0.15,
-            bg_method=matcher.MM_NOT_WHITE(),
+            orig_threshold=0.50,
+            bg_method=matcher.MM_COLOR_BY_HUE(
+                hue=(150, 180), visibility=(0, 255)),
             fg_method=matcher.MM_WHITE(),
             label='TagMatching',
             debug=debug
@@ -354,12 +381,15 @@ class Lobby(object):
         )
 
 
+def noop(context):
+    pass
+
 if __name__ == "__main__":
     target = cv2.imread(sys.argv[1])
     obj = Lobby(debug=True)
 
     context = {
-        'engine': {'frame': target},
+        'engine': {'frame': target, 'msec': 0, 'service': {'callPlugins': noop}, },
         'game': {},
         'lobby': {},
     }
