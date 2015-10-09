@@ -187,6 +187,12 @@ class ResultDetail(object):
             if fes_level and ('ja' in fes_level):
                 entry['prefix'] = fes_level['ja']
 
+            if fes_gender and ('en' in fes_gender):
+                entry['gender_en'] = fes_gender['en']
+
+            if fes_level and ('boy' in fes_level):
+                entry['prefix_en'] = fes_level['boy']
+
         if self.udemae_recoginizer and isRankedBattle:
             try:
                 entry['udemae_pre'] = self.udemae_recoginizer.match(
@@ -257,6 +263,25 @@ class ResultDetail(object):
         context['game']['won'] = self.is_win(context)
         context['game']['timestamp'] = datetime.now()
         context['game']['is_fes'] = ('prefix' in context['game']['players'][0])
+
+        # 暫定でチームカラーを簡単に取得する
+        if context['game']['won']:
+            my_team_color_bgr = img[115:116, 1228:1229]
+            counter_team_color_bgr = img[452:453, 1228:1229]
+        else:
+            counter_team_color_bgr = img[115:116, 1228:1229]
+            my_team_color_bgr = img[452:453, 1228:1229]
+
+        context['game']['my_team_color'] = {
+            'rgb': cv2.cvtColor(my_team_color_bgr, cv2.COLOR_BGR2RGB).tolist()[0][0],
+            'hsv': cv2.cvtColor(my_team_color_bgr, cv2.COLOR_BGR2HSV).tolist()[0][0],
+        }
+
+        context['game']['counter_team_color'] = {
+            'rgb': cv2.cvtColor(counter_team_color_bgr, cv2.COLOR_BGR2RGB).tolist()[0][0],
+            'hsv': cv2.cvtColor(counter_team_color_bgr, cv2.COLOR_BGR2HSV).tolist()[0][0],
+        }
+        print(my_team_color_bgr, counter_team_color_bgr, context['game']['my_team_color'], context['game']['counter_team_color'])
 
         return True
 
