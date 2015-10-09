@@ -19,3 +19,4 @@
 #
 
 from .cvcapture import CVCapture
+from .screencapture import ScreenCapture

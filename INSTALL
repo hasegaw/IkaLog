@@ -24,7 +24,7 @@
 mkdir c:\IkaLog
 mkdir c:\IkaLog\archives
 
-■ Python 3.4.3 のインストール    
+■ Python 3.4.3 のインストール
 
 下記サイトから Python 3.4.3 を入手する
 https://www.python.org/downloads/release/python-343/
@@ -56,6 +56,7 @@ pip install fluent-logger
 pip install requests-oauthlib
 pip install urllib3
 pip install u-msgpack-python
+pip install Pillow
 
 ■ イカログ
 
