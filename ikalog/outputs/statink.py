@@ -193,7 +193,7 @@ class StatInk(object):
                 'ヒーローチャージャーレプリカ': 'herocharger_replica',
                 'リッター3k': 'liter3k',
                 'リッター3kカスタム': 'liter3k_custom',
-                '3kスコープ': 'liter3k_scope',
+                '3Kスコープ': 'liter3k_scope',
                 'スプラチャージャー': 'splatcharger',
                 'スプラチャージャーワカメ': 'splatcharger_wakame',
                 'スプラスコープ': 'splatscope',
