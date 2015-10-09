@@ -1,12 +1,11 @@
-screenshots/*.png
-ika.csv
-*.pyc
 __pycache__
 .DS_Store
+*.pyc
 *.swp
 *.swo
 ika.csv
 ika.json
-ikalog/IkaConfig.py
+IkaConfig.py
 IkaConfig.yaml
 dist/
+screenshots/*.png
