@@ -268,15 +268,16 @@ class StatInk(object):
         elif lobby_type == 'private':
             payload['lobby'] = 'private'
 
-        elif lobby_type == 'festa':
-            payload['lobby'] = 'fest'
+        elif context['game']['is_fes'] or (lobby_type == 'festa'):
+                payload['lobby'] = 'fest'
 
         elif lobby_type == 'tag':
             num_members = context['lobby'].get('team_members')
             if num_members in [2, 3, 4]:
                 payload['lobby'] = 'squad_%d' % num_members
             else:
-                IkaUtils.dprint('%s: invalid lobby key squad_%d' % (self, num_members))
+                IkaUtils.dprint('%s: invalid lobby key squad_%d' %
+                                (self, num_members))
 
         else:
             IkaUtils.dprint('%s: No lobby information.' % self)
@@ -308,6 +309,10 @@ class StatInk(object):
             weapon = self.encode_weapon_name(me['weapon'])
             if weapon:
                 payload['weapon'] = weapon
+
+        if context['game']['is_fes']:
+            payload['fest_gender'] = me['gender_en']
+            payload['fest_rank'] = me['prefix_en']
 
         # In-game logs
 
@@ -347,6 +352,17 @@ class StatInk(object):
                 [  # 'type', 'stat.ink Field', 'IkaLog Field'
                     ['int', 'cash_after', 'cash'],
                 ], payload, context['scenes']['result_gears'])
+
+        # Team colors
+        if ('my_team_color' in context['game']):
+            payload['my_team_color'] = {
+                'hue': context['game']['my_team_color']['hsv'][0] * 2,
+                'rgb': context['game']['my_team_color']['rgb'],
+            }
+            payload['his_team_color'] = {
+                'hue': context['game']['counter_team_color']['hsv'][0] * 2,
+                'rgb': context['game']['counter_team_color']['rgb'],
+            }
 
         # Screenshots
 
