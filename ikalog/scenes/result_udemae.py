@@ -17,9 +17,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import sys
 
+import sys
 import cv2
+import numpy as np
 
 from ikalog.utils import *
 import ikalog.utils.matcher as matcher
@@ -43,6 +44,25 @@ class ResultUdemae(object):
         frame = context['engine']['frame']
         img_udemae = frame[357:357 + 108, 450:450 + 190]
         img_udemae_exp = frame[310:310 + 185, 770:770 + 110]
+
+        # ウデマエアップ／ダウンで黄色くなるのでチェックする
+        filter_white = matcher.MM_WHITE()
+        filter_yellow = matcher.MM_COLOR_BY_HUE(
+            hue=(31 - 5, 31 + 5), visibility=(230, 255))
+
+        img_udemae_white = filter_white.evaluate(img_udemae)
+        img_udemae_yellow = filter_yellow.evaluate(img_udemae)
+
+        # 文字色が白より黄色ならウデマエアップ(ダウン)
+        score_white = np.sum(img_udemae_white)
+        score_yellow = np.sum(img_udemae_yellow)
+        udemae_str_changed = score_white < score_yellow
+
+        # 文字認識が白専用なので、ウデマエ文字列が黄色であれば
+        # 文字が白色の画像に置き換えて文字認識させる
+        if udemae_str_changed:
+            img_udemae = cv2.cvtColor(np.maximum(img_udemae_white, img_udemae_yellow),
+                                      cv2.COLOR_GRAY2BGR)
 
         # ウデマエ(文字部分)
         if self.udemae_recoginizer:
