@@ -46,9 +46,7 @@ class Lobby(object):
         if not matched:
             return False
 
-        context['lobby'] = {
-            'type': 'tag',
-        }
+        context['lobby']['type'] = 'tag'
 
         if (r_tag_matching):
             context['lobby']['state'] = 'matching'
@@ -71,7 +69,6 @@ class Lobby(object):
                 # vチェックが付いていなければ真っ黒(0)ぐらいのはず
                 # -> 500 で割った値が 1.0 超えているかで見る
                 ready_score = np.sum(img_ready_yellow / 255) / 500
-                print(n, ready_score)
                 if ready_score < 1.0:
                     break
 
@@ -150,14 +147,14 @@ class Lobby(object):
         elif (r_pub_matched):
             context['lobby']['state'] = 'matched'
 
-        else:
-            # FIXME: マスクを使って評価したほうがいい
-            context['lobby']['type'] = 'festa'
-            context['lobby']['state'] = 'matching'
+        # FIXME: Festa, Matching の組み合わせ
 
         return True
 
     def match_any_lobby(self, context):
+        if (not 'lobby' in context):
+            context['lobby'] = {}
+
         if self.match_public_lobby(context):
             return True
 
@@ -180,17 +177,17 @@ class Lobby(object):
 
         if context['lobby'].get('state', None) == 'matching':
             last_matching = context['lobby'].get('last_matching', -60 * 1000)
-            context['lobby']['last_matching'] = msec
             if (msec - last_matching) > (60 * 1000):
                 # マッチングを開始した
                 call_plugins('on_lobby_matching')
+            context['lobby']['last_matching'] = msec
 
         if context['lobby'].get('state', None) == 'matched':
             last_matched = context['lobby'].get('last_matched', -60 * 1000)
-            context['lobby']['last_matched'] = msec
             if (msec - last_matched) > (60 * 1000):
                 # マッチングを開始した
                 call_plugins('on_lobby_matched')
+            context['lobby']['last_matched'] = msec
 
         return True
 
