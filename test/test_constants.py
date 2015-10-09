@@ -78,22 +78,29 @@ class TestConstants(unittest.TestCase):
         statink_weapons = self._get_statink_v1_weapons()
         weapons = self._load_constants_module().weapons
 
+        error_list = []
         for statink_weapon in statink_weapons:
             statink_key = statink_weapon['key']
 
             found = (statink_key in weapons)
-            assert found, 'IkaLog does not have key %s' % statink_key
+            if not found:
+                error_list.append('IkaLog does not have key %s' % statink_key)
+
+        assert len(error_list) == 0, '\n'.join(error_list)
 
     def test_statink_weapons_lookup_by_ikalog_key(self):
         statink_weapons = self._get_statink_v1_weapons()
         weapons = self._load_constants_module().weapons
 
+        error_list = []
         for ikalog_key in weapons.keys():
             found = False
             for statink_weapon in statink_weapons:
                 found = found or (statink_weapon['key'] == ikalog_key)
+            if not found:
+                error_list.append('stat.ink does not have key %s' % ikalog_key)
 
-            assert found, 'stat.ink does not have key %s' % ikalog_key
+        assert len(error_list) == 0, '\n'.join(error_list)
 
     def test_death_reason_lookup_by_weapon_key(self):
         from ikalog.utils.character_recoginizer.deadly_weapon import DeadlyWeaponRecoginizer
