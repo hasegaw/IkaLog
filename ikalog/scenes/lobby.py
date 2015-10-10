@@ -135,7 +135,7 @@ class Lobby(object):
 
         if (r_fes_matched):
             context['lobby']['type'] = 'festa'
-            context['lobby']['type'] = 'matched'
+            context['lobby']['state'] = 'matched'
             return True
 
         else:
@@ -292,7 +292,7 @@ class Lobby(object):
             851, 383, 225, 30,
             img_file='masks/ui_lobby_fes_matched.png',
             threshold=0.90,
-            orig_threshold=0.15,
+            orig_threshold=0.30,
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
