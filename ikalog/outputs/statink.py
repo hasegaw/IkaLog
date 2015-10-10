@@ -341,7 +341,7 @@ class StatInk(object):
                 ], payload, context['scenes']['result_udemae'])
 
         knockout = context['game'].get('knockout', None)
-        if (payload.get('rule', 'Nawabari') != 'nawabari') and (knockout is not None):
+        if (payload.get('rule', 'nawabari') != 'nawabari') and (knockout is not None):
             payload['knock_out'] = {True: 'yes', False: 'no'}[knockout]
 
         # ResultGears
