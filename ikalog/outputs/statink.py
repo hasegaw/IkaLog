@@ -412,6 +412,10 @@ class StatInk(object):
             IkaUtils.dprint(traceback.format_exc())
 
     def post_payload(self, payload, api_key=None):
+        if self.dry_run:
+            IkaUtils.dprint('%s: Dry-run mode, skipping POST to stat.ink.' % self)
+            return
+
         url_statink_v1_battle = 'https://stat.ink/api/v1/battle'
 
         if api_key is None:
@@ -492,7 +496,7 @@ class StatInk(object):
     def on_game_session_end(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
-        if not self.enabled:
+        if (not self.enabled) and (not self.dry_run):
             return False
 
         payload = self.composite_payload(context)
@@ -504,9 +508,10 @@ class StatInk(object):
 
         self.post_payload(payload)
 
-    def __init__(self, api_key=None, debug=False):
+    def __init__(self, api_key=None, debug=False, dry_run=False):
         self.enabled = not (api_key is None)
         self.api_key = api_key
+        self.dry_run = dry_run
 
         self.time_start_at = None
         self.time_end_at = None
@@ -530,7 +535,8 @@ if __name__ == "__main__":
 
     obj = StatInk(
         api_key=os.environ['IKALOG_STATINK_APIKEY'],
-        debug=True
+        dry_run=False,
+        debug=True,
     )
 
     # 最低限の context
