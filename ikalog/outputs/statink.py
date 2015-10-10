@@ -43,12 +43,10 @@ class StatInk(object):
 
     def apply_ui(self):
         self.enabled = self.checkEnable.GetValue()
-        self.weapon_enabled = self.checkWeaponEnable.GetValue()
         self.api_key = self.editApiKey.GetValue()
 
     def refresh_ui(self):
         self.checkEnable.SetValue(self.enabled)
-        self.checkWeaponEnable.SetValue(self.weapon_enabled)
 
         if not self.api_key is None:
             self.editApiKey.SetValue(self.api_key)
@@ -57,7 +55,6 @@ class StatInk(object):
 
     def on_config_reset(self, context=None):
         self.enabled = False
-        self.weapon_enabled = False
         self.api_key = None
 
     def on_config_load_from_context(self, context):
@@ -70,9 +67,6 @@ class StatInk(object):
         if 'Enable' in conf:
             self.enabled = conf['Enable']
 
-        if 'WeaponEnable' in conf:
-            self.weapon_enabled = conf['WeaponEnable']
-
         if 'APIKEY' in conf:
             self.api_key = conf['APIKEY']
 
@@ -82,7 +76,6 @@ class StatInk(object):
     def on_config_save_to_context(self, context):
         context['config']['stat.ink'] = {
             'Enable': self.enabled,
-            'WeaponEnable': self.weapon_enabled,
             'APIKEY': self.api_key,
         }
 
@@ -96,12 +89,9 @@ class StatInk(object):
         self.panel.SetSizer(self.layout)
         self.checkEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, u'stat.ink へのスコアを送信する')
-        self.checkWeaponEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'stat.ink へ使用ブキを送信する（誤認識が多いかもしれません）')
         self.editApiKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
         self.layout.Add(self.checkEnable)
-        self.layout.Add(self.checkWeaponEnable)
         self.layout.Add(wx.StaticText(
             self.panel, wx.ID_ANY, u'APIキー'))
         self.layout.Add(self.editApiKey, flag=wx.EXPAND)
@@ -304,7 +294,7 @@ class StatInk(object):
 
         me = IkaUtils.getMyEntryFromContext(context)
 
-        if self.weapon_enabled and 'weapon' in me:
+        if 'weapon' in me:
             weapon = self.encode_weapon_name(me['weapon'])
             if weapon:
                 payload['weapon'] = weapon
@@ -514,9 +504,8 @@ class StatInk(object):
 
         self.post_payload(payload)
 
-    def __init__(self, api_key=None, weapon_enabled=False, debug=False):
+    def __init__(self, api_key=None, debug=False):
         self.enabled = not (api_key is None)
-        self.weapon_enabled = weapon_enabled
         self.api_key = api_key
 
         self.time_start_at = None
@@ -541,7 +530,6 @@ if __name__ == "__main__":
 
     obj = StatInk(
         api_key=os.environ['IKALOG_STATINK_APIKEY'],
-        weapon_enabled=True,
         debug=True
     )
 
