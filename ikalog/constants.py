@@ -135,3 +135,7 @@ special_weapons = {
 }
 
 deadly_special_weapons = ['daioika', 'megaphone', 'supershot', 'tornado', ]
+
+udemae_strings = [
+        's+', 's', 'a+', 'a', 'a-', 'b+', 'b', 'b-', 'c+', 'c', 'c-'
+]
