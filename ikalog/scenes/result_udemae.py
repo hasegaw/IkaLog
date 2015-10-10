@@ -23,14 +23,11 @@ import cv2
 import numpy as np
 
 from ikalog.utils import *
+from ikalog.constants import udemae_strings
 import ikalog.utils.matcher as matcher
 
 
 class ResultUdemae(object):
-
-    valid_udemae_list = [
-        's+', 's', 'a+', 'a', 'a-', 'b+', 'b', 'b-', 'c+', 'c', 'c-'
-    ]
 
     def match1(self, context):
         frame = context['engine']['frame']
@@ -68,7 +65,7 @@ class ResultUdemae(object):
         if self.udemae_recoginizer:
             udemae_str = self.udemae_recoginizer.match(img_udemae)
 
-        if not (udemae_str in self.valid_udemae_list):
+        if not (udemae_str in udemae_strings):
             udemae_str = None
 
         # ウデマエ(数値部分)
