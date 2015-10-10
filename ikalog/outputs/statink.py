@@ -255,8 +255,7 @@ class StatInk(object):
                 elif f_type == 'str_lower':
                     dest[f_statink] = str(src[f_ikalog]).lower()
 
-    # serialize_payload
-    def serialize_payload(self, context):
+    def composite_payload(self, context):
         payload = {}
 
         # Lobby
@@ -506,7 +505,7 @@ class StatInk(object):
         if not self.enabled:
             return False
 
-        payload = self.serialize_payload(context)
+        payload = self.composite_payload(context)
 
         self.print_payload(payload)
 
