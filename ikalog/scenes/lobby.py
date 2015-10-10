@@ -60,6 +60,7 @@ class Lobby(object):
             filter_yellow = matcher.MM_COLOR_BY_HUE(
                 hue=(32 - 5, 32 + 5), visibility=(230, 255))
 
+            num_members = 0
             for n in range(len(top_list)):
                 top = top_list[n]
                 img_ready = frame[top:top + 41, 1118:1118 + 51]
@@ -69,13 +70,10 @@ class Lobby(object):
                 # vチェックが付いていなければ真っ黒(0)ぐらいのはず
                 # -> 500 で割った値が 1.0 超えているかで見る
                 ready_score = np.sum(img_ready_yellow / 255) / 500
-                if ready_score < 1.0:
-                    break
+                if ready_score > 1.0:
+                    num_members = num_members + 1
 
-            # この時点で n は 0 を起点として Ready になっていない
-            # (score < 1.0な) インクリングを指している。
-            # なので matched の場合 n はタッグ人数と等価。
-            context['lobby']['team_members'] = n
+            context['lobby']['team_members'] = num_members
 
         return True
 
