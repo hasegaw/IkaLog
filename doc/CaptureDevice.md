@@ -19,9 +19,18 @@ Windows 環境の IkaLog / IkaLog GUI 版との組み合わせ報告があった
 |----------|------|-----|----|----|
 | ★ | SKNET | [SK-MVXU3R](http://www.sknet-web.co.jp/product/mvxu3r/) | 1080p 60fps | デバイス名 "MonsterX U3.0R Capture" <br> USB 3.0 接続タイプ <br> IkaLog 開発に利用 |
 | ★ | AVerMedia | [AVT-C875](http://www.avermedia.co.jp/product_swap/avt-c875.html) | 1080p 60fps | Stream Engine のインストールが必要。ビットレート 60.0Mbps に指定 <br> デバイス名 "LGP Stream Engine" <br> ハードウェア MPEG エンコーダ搭載機 <br> 利用例  [AVT-C875でスプラトゥーンをキャプチャしてみたメモ(IkaLogとWebRTC)](http://mzsm.me/2015/09/23/hdmi-capture-avt-c875/)|
-|  |ドリキャプ | [HC-HD1](http://www.drecap.com/DC-HD1BJ.html) | 720p 30fps | PCIe 拡張カードタイプ <br> デバイス名 "7160 HD Capture (Path1)" <br> IkaLog 開発に利用|
+|  | マイコンソフト | [X-CAPTURE 1](http://www.micomsoft.co.jp/xcapture-1.htm) | 1080p 60fps | デバイス名 "???(TBD)" <br> USB 3.0 接続タイプ <br> Twitter 上でアマレコ経由？の動作報告あり |
+|  | ドリキャプ | [HC-HD1](http://www.drecap.com/DC-HD1BJ.html) | 720p 30fps | PCIe 拡張カードタイプ <br> デバイス名 "7160 HD Capture (Path1)" <br> IkaLog 開発に利用|
 |  | サンコー | [HDMVC4UC](http://www.thanko.jp/product/1526.html#introduction) | 1080p 30fps | PCIe 拡張カードタイプ <br> デバイス名 "???(TBD)" <br> 入力画像にズレあり(左に2px)。 offset パラメータ = (2,0) |
 |  | CELSUS | [REGIA ONE](http://www.celsus.co.jp/regia/regia1.html) | 1080i | PCIe 拡張カードタイプ <br> デバイス名 "???(TBD)" <br> 入力画像にズレあり(左に2px)。 offset パラメータ = (2,0) |
+<br>
+
+Mac環境の IkaLog との組み合わせ報告があったキャプチャ機器を紹介します。
+
+| 推奨 | メーカー | 型番 | 仕様 | 備考 |
+|----------|------|-----|----|----|
+| ★ | Black Magic<br>Design | [UltraStudio Mini Recorder](https://www.blackmagicdesign.com/jp/store/record-capture-playback/ultrastudiothunderbolt/W-DLUS-04) | 1080p30fps<br>1080i 60fps<br>720p 60fps | Thunderbolt 接続タイプ<br> AVFoundation Input を利用 |
+
 <br>
 ## IkaLog で使える HDMI キャプチャ機器の条件
 
