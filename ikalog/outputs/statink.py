@@ -43,10 +43,12 @@ class StatInk(object):
 
     def apply_ui(self):
         self.enabled = self.checkEnable.GetValue()
+        self.show_response_enabled = self.checkShowResponseEnable.GetValue()
         self.api_key = self.editApiKey.GetValue()
 
     def refresh_ui(self):
         self.checkEnable.SetValue(self.enabled)
+        self.checkShowResponseEnable.SetValue(self.show_response_enabled)
 
         if not self.api_key is None:
             self.editApiKey.SetValue(self.api_key)
@@ -55,6 +57,7 @@ class StatInk(object):
 
     def on_config_reset(self, context=None):
         self.enabled = False
+        self.show_response_enabled = False
         self.api_key = None
 
     def on_config_load_from_context(self, context):
@@ -67,6 +70,9 @@ class StatInk(object):
         if 'Enable' in conf:
             self.enabled = conf['Enable']
 
+        if 'ShowResponse' in conf:
+            self.show_response_enabled = conf['ShowResponse']
+
         if 'APIKEY' in conf:
             self.api_key = conf['APIKEY']
 
@@ -76,6 +82,7 @@ class StatInk(object):
     def on_config_save_to_context(self, context):
         context['config']['stat.ink'] = {
             'Enable': self.enabled,
+            'ShowResponse': self.show_response_enabled,
             'APIKEY': self.api_key,
         }
 
@@ -88,10 +95,13 @@ class StatInk(object):
         self.layout = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.layout)
         self.checkEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'stat.ink へのスコアを送信する')
+            self.panel, wx.ID_ANY, 'stat.ink へのスコアを送信する')
+        self.checkShowResponseEnable = wx.CheckBox(
+            self.panel, wx.ID_ANY, 'stat.ink からの応答をコンソールに出力する')
         self.editApiKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
         self.layout.Add(self.checkEnable)
+        self.layout.Add(self.checkShowResponseEnable)
         self.layout.Add(wx.StaticText(
             self.panel, wx.ID_ANY, u'APIキー'))
         self.layout.Add(self.editApiKey, flag=wx.EXPAND)
@@ -219,7 +229,8 @@ class StatInk(object):
             if os.path.exists(temp_file):
                 os.remove(temp_file)
         except:
-            IkaUtils.dprint('%s: Failed to remove existing temporary file %s' % (self, temp_file))
+            IkaUtils.dprint(
+                '%s: Failed to remove existing temporary file %s' % (self, temp_file))
             IkaUtils.dprint(traceback.format_exc())
 
         try:
@@ -237,7 +248,7 @@ class StatInk(object):
             return None
 
         IkaUtils.dprint('%s: Encoded screenshot (%dx%d %d bytes)' %
-            (self, img.shape[1], img.shape[0], len(s)))
+                        (self, img.shape[1], img.shape[0], len(s)))
 
         return s
 
@@ -274,7 +285,7 @@ class StatInk(object):
             payload['lobby'] = 'private'
 
         elif context['game']['is_fes'] or (lobby_type == 'festa'):
-                payload['lobby'] = 'fest'
+            payload['lobby'] = 'fest'
 
         elif lobby_type == 'tag':
             num_members = context['lobby'].get('team_members')
@@ -429,7 +440,8 @@ class StatInk(object):
 
     def post_payload(self, payload, api_key=None):
         if self.dry_run:
-            IkaUtils.dprint('%s: Dry-run mode, skipping POST to stat.ink.' % self)
+            IkaUtils.dprint(
+                '%s: Dry-run mode, skipping POST to stat.ink.' % self)
             return
 
         url_statink_v1_battle = 'https://stat.ink/api/v1/battle'
@@ -458,7 +470,7 @@ class StatInk(object):
                            body=mp_payload,
                            )
 
-        if self.enable_print_statink_response:
+        if self.show_response_enabled:
             print(req.data.decode('utf-8'))
 
     def print_payload(self, payload):
@@ -508,11 +520,13 @@ class StatInk(object):
     #
     def on_game_individual_result(self, context):
         self.img_result_detail = context['engine']['frame']
-        IkaUtils.dprint('%s: Gathered img_result (%s)' % (self, self.img_result_detail.shape))
+        IkaUtils.dprint('%s: Gathered img_result (%s)' %
+                        (self, self.img_result_detail.shape))
 
     def on_result_judge(self, context):
         self.img_judge = context['game'].get('image_judge', None)
-        IkaUtils.dprint('%s: Gathered img_judge(%s)' % (self, self.img_judge.shape))
+        IkaUtils.dprint('%s: Gathered img_judge(%s)' %
+                        (self, self.img_judge.shape))
 
     def on_game_session_end(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
@@ -542,7 +556,7 @@ class StatInk(object):
         self.img_judge = None
 
         self.debug_writePayloadToFile = debug
-        self.enable_print_statink_response = debug
+        self.show_response_enabled = debug
 
 if __name__ == "__main__":
     # main として呼ばれた場合
@@ -570,8 +584,11 @@ if __name__ == "__main__":
         'game': {
             'map': {'name': 'ハコフグ倉庫', },
             'rule': {'name': 'ガチエリア'},
+            'death_reasons': {},
         },
         'scenes': {
+        },
+        'lobby': {
         },
     }
 
