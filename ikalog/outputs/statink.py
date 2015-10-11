@@ -458,7 +458,8 @@ class StatInk(object):
                            body=mp_payload,
                            )
 
-        print(req.data.decode('utf-8'))
+        if self.enable_print_statink_response:
+            print(req.data.decode('utf-8'))
 
     def print_payload(self, payload):
         payload = payload.copy()
@@ -541,6 +542,7 @@ class StatInk(object):
         self.img_judge = None
 
         self.debug_writePayloadToFile = debug
+        self.enable_print_statink_response = debug
 
 if __name__ == "__main__":
     # main として呼ばれた場合

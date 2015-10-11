@@ -18,10 +18,12 @@
 #  limitations under the License.
 #
 
+import os
 import threading
 
 import wx
 import yaml
+
 from ikalog.inputs.cvcapture import CVCapture
 from ikalog.engine import *
 from ikalog import outputs
@@ -175,7 +177,8 @@ class IkaLogGUI(object):
         # Set event handlers for options tab
         self.options.Bind('optionsApply', self.on_options_apply_click)
         self.options.Bind('optionsReset', self.on_options_reset_click)
-        self.options.Bind('optionsLoadDefault', self.on_options_load_default_click)
+        self.options.Bind('optionsLoadDefault',
+                          self.on_options_load_default_click)
 
         self.switch_to_panel(self.button_preview)
 
@@ -230,6 +233,10 @@ if __name__ == "__main__":
         print('Initializing %s' % plugin)
         plugin.on_option_tab_create(gui.options.notebookOptions)
         plugins.append(plugin)
+
+    # 本当に困ったときのデバッグログ増加モード
+    if 'IKALOG_DEBUG' in os.environ:
+        plugins.append(outputs.DebugLog())
 
     # プラグインリストを登録
     engine.set_plugins(plugins)
