@@ -19,13 +19,10 @@
 #
 import os
 import sys
-print(os.getcwd())
-sys.path.append(os.getcwd())
-
 import time
-import numpy as np
 
 import cv2
+import numpy as np
 
 from ikalog.utils import IkaUtils
 
@@ -56,7 +53,7 @@ class IkaConfig:
         img = ImageGrab.grab(self._bbox)
         img = np.asarray(img)
         img = cv2.resize(img, (self._out_width, self._out_height))
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         t = self._time() - self._launch
         return (img, t)
 
