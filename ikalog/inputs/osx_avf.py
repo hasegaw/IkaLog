@@ -17,14 +17,16 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import os
+
+import copy
 import ctypes
-import time
+import os
 import threading
-import numpy as np
-from numpy.ctypeslib import ndpointer
+import time
 
 import cv2
+import numpy as np
+from numpy.ctypeslib import ndpointer
 
 from ikalog.utils import *
 
@@ -38,7 +40,7 @@ class AVFoundationCaptureDevice(object):
         frame = self.dest_buffer[:, :, 0:3]
         assert(frame.shape[2] == 3)
 
-        return True, frame
+        return True, copy.deepcopy(frame)
 
     def select_device(self, device_num):
         try:
