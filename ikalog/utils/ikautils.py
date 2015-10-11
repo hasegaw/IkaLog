@@ -19,10 +19,11 @@
 #
 from __future__ import print_function
 
-import sys
-import os
-import re
 import cv2
+import os
+import platform
+import re
+import sys
 
 import numpy as np
 
@@ -36,6 +37,10 @@ class IkaUtils(object):
         except AttributeError:
             return True
         return False
+
+    @staticmethod
+    def isOSX():
+        return platform.system() == 'Darwin'
 
     @staticmethod
     def dprint(text):

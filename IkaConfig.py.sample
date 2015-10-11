@@ -18,14 +18,17 @@
 #  limitations under the License.
 #
 
-from ikalog.inputs.cvcapture import CVCapture
+from ikalog import inputs
 from ikalog import outputs
-
+from ikalog.utils import IkaUtils
 
 class IkaConfig:
 
     def config(self):
-        source = CVCapture()
+        if IkaUtils.isOSX():
+            source = inputs.AVFoundationCapture()
+        else:
+            source = inputs.CVCapture()
 
         # 使いたい入力を選択
         source.start_camera(0)                        # キャプチャデバイスから
