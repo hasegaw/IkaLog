@@ -100,6 +100,7 @@ class StatInk(object):
 
     def encode_stage_name(self, context):
         try:
+            stage = IkaUtils.map2text(context['game']['map'])
             return {
                 'アロワナモール': 'arowana',
                 'Bバスパーク': 'bbass',
@@ -113,23 +114,24 @@ class StatInk(object):
                 'ネギトロ炭鉱': 'negitoro',
                 'シオノメ油田': 'shionome',
                 'タチウオパーキング': 'tachiuo'
-            }[IkaUtils.map2text(context['game']['map'])]
+            }[stage]
         except:
             IkaUtils.dprint(
-                '%s: Failed convert staage name to stas.ink value' % self)
+                '%s: Failed convert staage name %s to stat.ink value' % (self, stage))
             return None
 
     def encode_rule_name(self, context):
         try:
+            rule = IkaUtils.rule2text(context['game']['rule'])
             return {
                 'ナワバリバトル': 'nawabari',
                 'ガチエリア': 'area',
                 'ガチヤグラ': 'yagura',
                 'ガチホコバトル': 'hoko',
-            }[IkaUtils.rule2text(context['game']['rule'])]
+            }[rule]
         except:
             IkaUtils.dprint(
-                '%s: Failed convert rule name to stas.ink value' % self)
+                '%s: Failed convert rule name %s to stat.ink value' % (self, rule))
             return None
 
     def encode_weapon_name(self, weapon):
@@ -201,7 +203,7 @@ class StatInk(object):
             }[weapon]
         except:
             IkaUtils.dprint(
-                '%s: Failed convert weapon name %s to stas.ink value' % (self % weapon))
+                '%s: Failed convert weapon name %s to stas.ink value' % (self, weapon))
             return None
 
     def encode_image(self, img):
