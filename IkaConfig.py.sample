@@ -19,13 +19,18 @@
 #
 
 from ikalog.inputs.cvcapture import CVCapture
+from ikalog.inputs.osx_avf import AVFoundationCapture
 from ikalog import outputs
+from ikalog.utils import IkaUtils
 
 
 class IkaConfig:
 
     def config(self):
-        source = CVCapture()
+        if IkaUtils.isOSX():
+            source = AVFoundationCapture()
+        else:
+            source = CVCapture()
 
         # 使いたい入力を選択
         source.start_camera(0)                        # キャプチャデバイスから

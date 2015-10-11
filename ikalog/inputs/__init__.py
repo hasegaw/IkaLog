@@ -19,3 +19,4 @@
 #
 
 from .cvcapture import CVCapture
+from .osx_avf import AVFoundationCapture
