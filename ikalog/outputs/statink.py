@@ -213,6 +213,15 @@ class StatInk(object):
         else:
             temp_file = '_image_for_statink.png'
 
+        IkaUtils.dprint('%s: Using temporary file %s' % (self, temp_file))
+
+        try:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+        except:
+            IkaUtils.dprint('%s: Failed to remove existing temporary file %s' % (self, temp_file))
+            IkaUtils.dprint(traceback.format_exc())
+
         try:
             # ToDo: statink accepts only 16x9
             IkaUtils.writeScreenshot(temp_file, img)
@@ -226,6 +235,9 @@ class StatInk(object):
         except:
             IkaUtils.dprint('%s: Failed to attach image_result' % self)
             return None
+
+        IkaUtils.dprint('%s: Encoded screenshot (%dx%d %d bytes)' %
+            (self, img.shape[1], img.shape[0], len(s)))
 
         return s
 
@@ -486,6 +498,8 @@ class StatInk(object):
         self.img_result_detail = None
         self.img_judge = None
 
+        IkaUtils.dprint('%s: Discarded screenshots' % self)
+
     ##
     # on_game_individual_result Hook
     # @param self      The Object Pointer
@@ -493,9 +507,11 @@ class StatInk(object):
     #
     def on_game_individual_result(self, context):
         self.img_result_detail = context['engine']['frame']
+        IkaUtils.dprint('%s: Gathered img_result (%s)' % (self, self.img_result_detail.shape))
 
     def on_result_judge(self, context):
         self.img_judge = context['game'].get('image_judge', None)
+        IkaUtils.dprint('%s: Gathered img_judge(%s)' % (self, self.img_judge.shape))
 
     def on_game_session_end(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
