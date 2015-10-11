@@ -40,6 +40,13 @@ class AVFoundationCaptureDevice(object):
 
         return True, frame
 
+    def select_device(self, device_num):
+        try:
+            n = int(device_num)
+            self.dll.selectCaptureDevice(n)
+        except:
+            pass
+
     def __del__hoge__(self):
         if hasattr(self, 'dll'):
             self.dll.stopAVCapture()
@@ -47,7 +54,7 @@ class AVFoundationCaptureDevice(object):
     def _init_library(self):
         self.dest_buffer = np.zeros((720, 1280, 4), np.uint8)
 
-        libavf_dll = 'libavf_ctypes.so'
+        libavf_dll = os.path.join('lib', 'libavf_ctypes.so')
         ctypes.cdll.LoadLibrary(libavf_dll)
 
         self.dll = ctypes.CDLL(libavf_dll)
@@ -57,10 +64,12 @@ class AVFoundationCaptureDevice(object):
         self.dll.stopAVCapture.restype = None
         self.dll.readFrame.argtypes = [ ndpointer(ctypes.c_uint8, flags="C_CONTIGUOUS")]
         self.dll.readFrame.restype = None
+        self.dll.selectCaptureDevice.argtypes = [ctypes.c_int]
+        self.dll.selectCaptureDevice.restype = None
 
     def __init__(self):
         self.dll = None
-        self._init_library()        
+        self._init_library()
         self.dll.setupAVCapture()
 
 class AVFoundationCapture(object):
@@ -75,9 +84,6 @@ class AVFoundationCapture(object):
     _systime_launch = int(time.time() * 1000)
 
     lock = threading.Lock()
-
-    def enumerate_input_sources(self):
-        return InputSourceEnumerator().enumerate()
 
     def read(self):
         if self.cap is None:
@@ -117,7 +123,7 @@ class AVFoundationCapture(object):
         else:
             return frame, t
 
-    def init_capture(self, source, width=1280, height=720):
+    def init_capture(self):
         self.lock.acquire()
         if not self.cap is None:
             self.cap = None
@@ -126,12 +132,30 @@ class AVFoundationCapture(object):
         self.cap = AVFoundationCaptureDevice()
         self.lock.release()
 
-    def start_camera(self, source_name):
+    def select_device(self, source_name):
         source = source_name # FIXME
-        IkaUtils.dprint('%s: initalizing capture device %s' % (self, source))
-        self.init_capture(source)
+        IkaUtils.dprint('%s: initializing capture device %s' % (self, source))
+
+        # initialize target capture device
+        frame, t = self.read()
+        cv2.imshow(self.__class__.__name__, frame)
+        cv2.waitKey(3000)
+
+        self.cap.select_device(source_name)
+
+    def start_camera_impl(self):
+        self.init_capture()
         self.realtime = True
         self.from_file = False
+
+        # initialize target capture device
+        frame, t = self.read()
+        cv2.imshow(self.__class__.__name__, frame)
+        cv2.waitKey(3000)
+
+    def start_camera(self, source_name):
+        self.start_camera_impl()
+        self.select_device(source_name)
 
     def restart_input(self):
         self.start_camera()
@@ -139,10 +163,13 @@ class AVFoundationCapture(object):
 if __name__ == "__main__":
     obj = AVFoundationCapture()
 
-    obj.start_camera(0)
+    obj.start_camera_impl()
+    dev = input("Please input number of capture device: ")
+    obj.select_device(dev)
 
     k = 0
     while k != 27:
         frame, t = obj.read()
-        cv2.imshow(obj.__class__.__name__, frame)
+        image = cv2.resize(frame, (1280, 720))
+        cv2.imshow(obj.__class__.__name__, image)
         k = cv2.waitKey(1)
