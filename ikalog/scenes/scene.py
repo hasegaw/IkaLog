@@ -77,14 +77,14 @@ class Scene(object):
         return (msec - duration_msec) < last_matched_msec
 
     def _analyze(self, context):
-        raise Exception('Must be overrided')
+        raise Exception('%s: _analyze() must be overrided' % self)
 
     def analyze(self, context):
         analyzed = self._analyze(context)
         return analyzed
 
     def match_no_cache(self, context):
-        raise Exception('Must be overrided')
+        raise Exception('%s: _match_no_cache must be overrided' % self)
 
     def match(self, context):
         if (self._matched is None):
@@ -102,6 +102,20 @@ class Scene(object):
         IkaUtils.dprint('%s: Tried to call plugin hook %s'
                         % (self, event_name))
 
+    def is_another_scene_matched(self, context, scene_name):
+        scene = self.find_scene_object(scene_name)
+
+        return (scene is not None) and (scene.match(context) != False)
+
+    def find_scene_object(self, scene_name):
+        if (self.engine is None):
+            return None
+
+        if not (hasattr(self.engine, 'find_scene_object')):
+            return None
+
+        return self.engine.find_scene_object(scene_name)
+
     def dump(self, context):
         print(context['file'])
         print('matched %s' % self._matched)
@@ -109,6 +123,7 @@ class Scene(object):
 
     def __init__(self, engine, debug=False):
         self.engine = engine
+        self.exclusive_scene = False
 
         if (engine is not None) and hasattr(engine, 'call_plugins'):
             self._call_plugins = engine.call_plugins
