@@ -21,11 +21,11 @@
 from subprocess import Popen, PIPE
 import re
 
-def __get_ika_log_version():
+def __get_ikalog_version():
     try:
         commit_id = Popen(["git", "rev-parse", "--short", "HEAD"], stdout=PIPE).communicate()[0].decode('utf-8')
         return re.sub(r'\s+', r'', commit_id)
     except:
         return 'unknown'
 
-IKALOG_VERSION =  __get_ika_log_version()
+IKALOG_VERSION =  __get_ikalog_version()
