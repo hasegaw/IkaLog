@@ -186,11 +186,13 @@ class IkaEngine:
 
         # GameFinish (ゲームが終了した) ?
         r = False
-        if (not context['engine']['inGame']):
+        if (not context['engine']['inGame']) and \
+            (time.time() - self.last_game_finish) > 60:
             r = self.scn_gamefinish.match(context)
 
         if r:
             self.call_plugins('on_game_finish')
+            self.last_game_finish = time.time()
 
         # ResultJudge
         r = (not context['engine']['inGame'])
@@ -305,6 +307,7 @@ class IkaEngine:
 
         self.last_capture = time.time() - 100
         self.last_gamestart = time.time() - 100
+        self.last_game_finish = time.time() - 100
 
         self._stop = False
         self._pause = True
