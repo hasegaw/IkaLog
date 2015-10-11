@@ -18,5 +18,4 @@
 #  limitations under the License.
 #
 
-from .cvcapture import CVCapture
-from .osx import *
+from .avfoundation_capture import AVFoundationCapture
