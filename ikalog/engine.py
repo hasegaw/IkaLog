@@ -34,18 +34,6 @@ from . import scenes
 
 
 class IkaEngine:
-    scn_gamestart = scenes.GameStart()
-    scn_gamefinish = scenes.GameFinish()
-    scn_gameresult = scenes.ResultDetail()
-    scn_result_judge = scenes.ResultJudge()
-    scn_result_udemae = scenes.ResultUdemae()
-    scn_result_gears = scenes.ResultGears()
-    scn_ingame = scenes.InGame()
-    scn_tower_tracker = scenes.TowerTracker()
-    scn_lobby = scenes.Lobby()
-
-    last_capture = time.time() - 100
-    last_gamestart = time.time() - 100
 
     def dprint(self, text):
         print(text, file=sys.stderr)
@@ -305,6 +293,19 @@ class IkaEngine:
         self._pause = pause
 
     def __init__(self):
+        self.scn_gamestart = scenes.GameStart()
+        self.scn_gamefinish = scenes.GameFinish()
+        self.scn_gameresult = scenes.ResultDetail()
+        self.scn_result_judge = scenes.ResultJudge()
+        self.scn_result_udemae = scenes.ResultUdemae()
+        self.scn_result_gears = scenes.ResultGears()
+        self.scn_ingame = scenes.InGame()
+        self.scn_tower_tracker = scenes.TowerTracker()
+        self.scn_lobby = scenes.Lobby()
+
+        self.last_capture = time.time() - 100
+        self.last_gamestart = time.time() - 100
+
         self._stop = False
         self._pause = True
         self.create_context()
