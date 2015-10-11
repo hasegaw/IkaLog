@@ -149,7 +149,7 @@ class IkaLogGUI(object):
         self.button_options.Bind(wx.EVT_BUTTON, self.on_switch_panel)
 
     def __init__(self):
-        self.frame = wx.Frame(None, wx.ID_ANY, "TakoLog GUI", size=(700, 500))
+        self.frame = wx.Frame(None, wx.ID_ANY, "IkaLog GUI", size=(700, 500))
 
         self.layout = wx.BoxSizer(wx.VERTICAL)
 

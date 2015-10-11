@@ -367,7 +367,7 @@ class StatInk(object):
 
         # Agent Information
 
-        payload['agent'] = 'TakoLog'
+        payload['agent'] = 'IkaLog'
         payload['agent_version'] = IKALOG_VERSION
 
         for field in payload.keys():
