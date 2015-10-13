@@ -216,6 +216,8 @@ class CharacterRecoginizer(object):
         if (len(img.shape) > 2):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
+        ret, img = cv2.threshold(img, 200, 255, cv2.THRESH_BINARY)
+
         raito = np.sum(
             img) / (img.shape[0] * img.shape[1]) if np.sum(img) != 0 else 0.0
 
