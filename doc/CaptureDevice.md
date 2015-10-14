@@ -20,8 +20,8 @@ USB3.0 のキャプチャデバイスを新規購入する場合は、コンピ�
 
 | 推奨 | メーカー | 型番 | 仕様 | 備考 |
 |----------|------|-----|----|----|
-| ★ | SKNET | [SK-MVXU3R](http://www.sknet-web.co.jp/product/mvxu3r/) | 1080p 60fps | デバイス名 "MonsterX U3.0R Capture" <br> USB 3.0 接続タイプ <br> IkaLog 開発に利用 |
 | ★ | AVerMedia | [AVT-C875](http://www.avermedia.co.jp/product_swap/avt-c875.html) | 1080p 60fps | USB 3.0 接続タイプ <br> Stream Engine のインストールが必要。ビットレート 60.0Mbps に指定 <br> デバイス名 "LGP Stream Engine" <br> ハードウェア MPEG エンコーダ搭載機 <br> 利用例  [AVT-C875でスプラトゥーンをキャプチャしてみたメモ(IkaLogとWebRTC)](http://mzsm.me/2015/09/23/hdmi-capture-avt-c875/)|
+| ★ | SKNET | [SK-MVXU3R](http://www.sknet-web.co.jp/product/mvxu3r/) | 1080p 60fps | デバイス名 "MonsterX U3.0R Capture" <br> USB 3.0 接続タイプ <br> IkaLog 開発に利用 <br> アマレコを介して接続確認 |
 |  | マイコンソフト | [X-CAPTURE 1](http://www.micomsoft.co.jp/xcapture-1.htm) | 1080p 60fps | デバイス名 "???(TBD)" <br> USB 3.0 接続タイプ <br> Twitter 上でアマレコ経由？の動作報告あり |
 |  | SKNET | [SK-MVX3](http://www.sknet-web.co.jp/product/mvx3/) | 1080p 24fps | PCIe 拡張カードタイプ <br> デバイス名 "SKNET MonsterX3 HD Capture (Path0)" <br> Twitter上で動作報告あり |
 |  | ドリキャプ | [HC-HD1](http://www.drecap.com/DC-HD1BJ.html) | 720p 30fps | PCIe 拡張カードタイプ <br> デバイス名 "7160 HD Capture (Path1)" <br> IkaLog 開発に利用|
