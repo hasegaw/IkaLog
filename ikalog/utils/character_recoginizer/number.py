@@ -114,6 +114,14 @@ class NumberRecoginizer(CharacterRecoginizer):
             {'file': 'numbers2/num9_4.png', 'response': 9, },
             {'file': 'numbers2/num9_5.png', 'response': 9, },
             {'file': 'numbers2/num9_6.png', 'response': 9, },
+
+            {'file': 'numbers2/slash_1.png', 'response': '/', },
+            {'file': 'numbers2/slash_2.png', 'response': '/', },
+            {'file': 'numbers2/slash_3.png', 'response': '/', },
+            {'file': 'numbers2/dot_1.png', 'response': '.', },
+            {'file': 'numbers2/dot_2.png', 'response': '.', },
+            {'file': 'numbers2/dot_3.png', 'response': '.', },
+
         ]
 
         for d in data:

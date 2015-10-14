@@ -129,7 +129,6 @@ class CharacterRecoginizer(object):
 
         self.samples = np.append(self.samples, sample, 0)
 
-        r = response
         try:
             response = ord('0') + int(response)
         except:
@@ -232,6 +231,12 @@ class CharacterRecoginizer(object):
 
         retval, results, neigh_resp, dists = self.model.findNearest(sample, k)
 
+        # 学習データを集めたいときなど
+        if 0:
+            import time
+            cv2.imwrite('training/numbers/%s.%s.png' %
+                        (retval, time.time()), img)
+
         d = int(results.ravel())
         return d
 
@@ -256,7 +261,14 @@ class CharacterRecoginizer(object):
     def match_digits(self, img, num_digits=None, char_width=None, char_height=None):
         try:
             return int(self.match(img, num_digits=num_digits,
-                char_width=char_width, char_height=char_height))
+                                  char_width=char_width, char_height=char_height))
+        except ValueError:
+            return None
+
+    def match_float(self, img, num_digits=None, char_width=None, char_height=None):
+        try:
+            return float(self.match(img, num_digits=num_digits,
+                                    char_width=char_width, char_height=char_height))
         except ValueError:
             return None
 
