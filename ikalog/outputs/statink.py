@@ -308,18 +308,46 @@ class StatInk(object):
         if rule:
             payload['rule'] = rule
 
+        if self.time_start_at and self.time_end_at:
+            payload['start_at'] = int(self.time_start_at)
+            payload['end_at'] = int(self.time_end_at)
+
+        # In-game logs
+
+        if len(context['game']['death_reasons'].keys()) > 0:
+            payload['death_reasons'] = context['game']['death_reasons'].copy()
+
+        # ResultJudge
+
+        if payload.get('rule', None) in ['nawabari']:
+            scores = context['game'].get('nawabari_scores_pct', None)
+            print('nawabari scores = %s' % scores)
+            if scores is not None:
+                payload['my_team_final_percent'] = scores[0]
+                payload['his_team_final_percent'] = scores[1]
+
+        if payload.get('rule', None) in ['area', 'yagura', 'hoko']:
+            scores = context['game'].get('ranked_scores', None)
+            print('ranked scores = %s' % scores)
+            if scores is not None:
+                payload['my_team_final_point'] = scores[0]
+                payload['his_team_final_point'] = scores[1]
+
+        scores = context['game'].get('earned_scores', None)
+        if 0: # scores is not None:
+            payload['my_team_final_point'] = scores[0]
+            payload['his_team_final_point'] = scores[1]
+
+        # ResultDetail
+
+        me = IkaUtils.getMyEntryFromContext(context)
+
         payload['result'] = IkaUtils.getWinLoseText(
             context['game']['won'],
             win_text='win',
             lose_text='lose',
             unknown_text=None
         )
-
-        if self.time_start_at and self.time_end_at:
-            payload['start_at'] = int(self.time_start_at)
-            payload['end_at'] = int(self.time_end_at)
-
-        me = IkaUtils.getMyEntryFromContext(context)
 
         if 'weapon' in me:
             weapon = self.encode_weapon_name(me['weapon'])
@@ -329,13 +357,6 @@ class StatInk(object):
         if context['game']['is_fes']:
             payload['fest_gender'] = me['gender_en']
             payload['fest_rank'] = me['prefix_en']
-
-        # In-game logs
-
-        if len(context['game']['death_reasons'].keys()) > 0:
-            payload['death_reasons'] = context['game']['death_reasons'].copy()
-
-        # ResultDetail
 
         self._set_values(
             [  # 'type', 'stat.ink Field', 'IkaLog Field'
