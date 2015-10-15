@@ -334,7 +334,7 @@ class StatInk(object):
                 payload['his_team_final_point'] = scores[1]
 
         scores = context['game'].get('earned_scores', None)
-        if 0: # scores is not None:
+        if 0:  # scores is not None:
             payload['my_team_final_point'] = scores[0]
             payload['his_team_final_point'] = scores[1]
 
@@ -373,7 +373,7 @@ class StatInk(object):
         if 'result_udemae' in context['scenes']:
             self._set_values(
                 [  # 'type', 'stat.ink Field', 'IkaLog Field'
-                    ['int', 'rank_exp', 'udemae_exp_pre'],
+                    # ['int', 'rank_exp', 'udemae_exp_pre'],
                     ['int', 'rank_exp_after', 'udemae_exp_after'],
                     ['str_lower', 'rank_after', 'udemae_str_after'],
                 ], payload, context['scenes']['result_udemae'])
