@@ -86,7 +86,7 @@ class ResultJudge(object):
             s = self.number_recoginizer.match_digits(
                 cv2.cvtColor(img_num2_b, cv2.COLOR_GRAY2BGR),
                 num_digits=(2, 5),
-                # char_width=(18, 30),
+                char_width=(10, 30),
             )
 
             if s is not None:
@@ -217,6 +217,7 @@ class ResultJudge(object):
         return self.match_loop.send(context)
 
     def __init__(self, debug=False):
+        self.last_earned_scores = None
         self.last_nawabari_scores_pct = None
         self.last_ranked_scores = None
 
