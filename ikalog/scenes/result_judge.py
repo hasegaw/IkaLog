@@ -54,7 +54,6 @@ class ResultJudge(object):
         return True
 
     def analyze(self, context):
-
         win_ko = bool(self.mask_win_ko.match(context['engine']['frame']))
         lose_ko = bool(self.mask_lose_ko.match(context['engine']['frame']))
 
@@ -65,26 +64,99 @@ class ResultJudge(object):
 
         context['game']['knockout'] = knockout
 
-        if knockout:
-            return True
-
-        # パーセンテージの読み取りは未実装
-        return True
-
         # 数字がある部分を絞り込む
         x_list = [116, 758]
+
+        white_filter = matcher.MM_WHITE()
+        black_filter = matcher.MM_BLACK()
+        array0to1280 = np.array(range(1280), dtype=np.int32)
+        nawabari_scores_pct = []
+        ranked_scores = []
+        earned_scores = []
 
         for team in range(len(x_list)):
             x1 = x_list[team]
             x2 = x1 + 400
 
-            img_num = context['engine']['frame'][567:567 + 70, x1:x2, 0]
-            ret, img_num_b = cv2.threshold(
-                img_num, 230, 255, cv2.THRESH_BINARY)
-            img_num_b_top = img_num_b[0:17, :]
+            # 2段目(黒色)
+            img_num2 = context['engine']['frame'][638:638+32, x1:x2]
+            img_num2_b = black_filter.evaluate(img_bgr=img_num2)
 
-            cv2.imshow('%d: num' % team, img_num_b)
-            cv2.imshow('%d: top' % team, img_num_b_top)
+            # 2段目が認識できれば
+            s = self.number_recoginizer.match_digits(
+                cv2.cvtColor(img_num2_b, cv2.COLOR_GRAY2BGR),
+                num_digits=(2, 5),
+                # char_width=(18, 30),
+            )
+
+            if s is not None:
+                # 最後に p に相当する文字がついているのでそれを落とす
+                earned_score = int(int(s) / 10)
+                earned_scores.append(earned_score)
+
+            if knockout:
+                continue
+
+            # 1段目(白色)
+            img_num1 = context['engine']['frame'][567:567 + 70, x1:x2]
+            img_num1_b = white_filter.evaluate(img_bgr=img_num1)
+            img_num1_b_top = img_num1_b[0:17, :]
+
+            # さらに認識する部分のみに絞り込む
+            img_num1_b_top1 = np.sum(img_num1_b_top / 255, axis=0)  # 列毎の検出dot数
+            img_num1_extract_x = np.extract(
+                img_num1_b_top1 > 0, array0to1280[0:len(img_num1_b_top1)])
+
+            # 1段目が認識できれば
+            if len(img_num1_extract_x) > 1:
+                x1 = np.amin(img_num1_extract_x)
+                x2 = np.amax(img_num1_extract_x) + 1
+
+                # ガチマッチ: xxカウント
+                try:
+                    s = self.number_recoginizer.match_digits(
+                        cv2.cvtColor(
+                            img_num1_b[:, x1 - 10:x2 + 20], cv2.COLOR_GRAY2BGR),
+                        num_digits=(1, 2),
+                    )
+                except:
+                    IkaUtils.dprint('Exception at recoginizing ranked scores')
+                    return
+
+                if s != None:
+                    ranked_scores.append(s)
+                    continue
+
+                # ナワバリバトル: xx.x%
+
+                try:
+                    s = self.number_recoginizer.match_float(
+                        cv2.cvtColor(
+                            img_num1_b[:, x1 - 10:x2 + 20], cv2.COLOR_GRAY2BGR),
+                        num_digits=(1, 4),
+                    )
+                except:
+                    IkaUtils.dprint(
+                        'Exception at recoginizing nawabari scores')
+                    return
+
+                if s != None:
+                    nawabari_scores_pct.append(s)
+                    continue
+
+                # cv2.imshow('%d: num' % team, img_num1_b[:, x1:x2])
+                # cv2.imshow('%d: top' % team, img_num1_b_top)
+
+        if len(earned_scores) == 2:
+            self.last_earned_scores = earned_scores
+
+        if len(nawabari_scores_pct) == 2:
+            self.last_nawabari_scores_pct = nawabari_scores_pct
+            self.last_ranked_scores = None
+
+        if len(ranked_scores) == 2:
+            self.last_nawabari_scores_pct = None
+            self.last_ranked_scores = ranked_scores
 
     def match_loop_func(self):
 
@@ -125,10 +197,19 @@ class ResultJudge(object):
             # シーンから抜けた
 
             duration = (msec_last - msec_start)
-            print('%s: duration = %d ms' % (self, duration))
+            IkaUtils.dprint('%s: duration = %d ms' % (self, duration))
 
             if 1:  # if duration > 2 * 1000:
-                print('raise event')
+                if self.last_earned_scores is not None:
+                    context['game'][
+                        'earned_scores'] = self.last_earned_scores
+
+                if self.last_nawabari_scores_pct is not None:
+                    context['game'][
+                        'nawabari_scores_pct'] = self.last_nawabari_scores_pct
+                if self.last_ranked_scores is not None:
+                    context['game']['ranked_scores'] = self.last_ranked_scores
+
                 callPlugins = context['engine']['service']['callPlugins']
                 callPlugins('on_result_judge')
 
@@ -136,10 +217,12 @@ class ResultJudge(object):
         return self.match_loop.send(context)
 
     def __init__(self, debug=False):
+        self.last_nawabari_scores_pct = None
+        self.last_ranked_scores = None
+
         self.match_loop = self.match_loop_func()
         self.match_loop.send(None)
 
-        self.udemae_recoginizer = UdemaeRecoginizer()
         self.number_recoginizer = NumberRecoginizer()
 
         self.mask_win = IkaMatcher(
