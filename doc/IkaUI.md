@@ -15,6 +15,8 @@
 - Twitter, Slack, stat.ink にプレイ状況をリアルタイム投稿
 - アマレコTV, OBS などの録画ソフトの録画開始・停止を自動制御、ファイルをリネーム
 
+動作原理を知りたい方は [「スプラトゥーン」リアルタイム画像解析ツール 「IkaLog」の裏側 ](http://www.slideshare.net/TakeshiHasegawa1/20151016ssmjpikalog) まで。
+
 ## (参考) IkaLog GUI 版とコマンドライン版の違い
 
 IkaLog は <https://github.com/hasegaw/IkaLog> にてホストされている
