@@ -87,7 +87,7 @@ class DebugLog(object):
 
     def on_result_judge(self, context):
         s = "judge: %s, knockout: %s" % (
-            context['game']['judge'], context['game'].get('knockout', None))
+            context['game'].get('judge', None), context['game'].get('knockout', None))
 
         self.write_debug_log(sys._getframe().f_code.co_name, context,
                              text=s)
