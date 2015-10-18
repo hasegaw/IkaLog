@@ -32,7 +32,7 @@ try:
 except:
     pass
 
-class BoyomiClinet(object):
+class BoyomiClient(object):
     ''' 棒読みちゃんにコマンドを送信するクラスです
     http://chi.usamimi.info/Program/Application/BouyomiChan/
     '''
@@ -156,7 +156,7 @@ class Boyomi(object):
 
     def __init__(self, host='127.0.0.1', port=50001, dictionary={}):
         self._dict = BoyomiDictionary(dictionary)
-        self._client = BoyomiClinet(host, port)
+        self._client = BoyomiClient(host, port)
         self._read(self.custom_read['initialize'])
 
     def config_key(self):
@@ -252,7 +252,7 @@ class Boyomi(object):
 
     def initialize_client(self):
         try:
-            self._client = BoyomiClinet(self.host, int(self.port))
+            self._client = BoyomiClient(self.host, int(self.port))
         except:
             IkaUtils.dprint('棒読みちゃんの設定が反映できませんでした。設定値を見直してください。')
             self.dprint(traceback.format_exc())
