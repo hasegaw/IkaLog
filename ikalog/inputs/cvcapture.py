@@ -121,8 +121,10 @@ class CVCapture(object):
             return None, None
 
         self.lock.acquire()
-        ret, frame = self.cap.read()
-        self.lock.release()
+        try:
+            ret, frame = self.cap.read()
+        finally:
+            self.lock.release()
 
         if not ret:
             return None, None
@@ -172,12 +174,14 @@ class CVCapture(object):
 
     def init_capture(self, source, width=1280, height=720):
         self.lock.acquire()
-        if not self.cap is None:
-            self.cap.release()
+        try:
+            if not self.cap is None:
+                self.cap.release()
 
-        self.cap = cv2.VideoCapture(source)
-        self.set_resolution(width, height)
-        self.lock.release()
+            self.cap = cv2.VideoCapture(source)
+            self.set_resolution(width, height)
+        finally:
+            self.lock.release()
 
     def is_windows(self):
         try:
