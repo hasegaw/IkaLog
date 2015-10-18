@@ -175,6 +175,7 @@ class StatInk(object):
                 'プロモデラーRG': 'promodeler_rg',
                 'ラピッドブラスター': 'rapid',
                 'ラピッドブラスターデコ': 'rapid_deco',
+                'Rブラスターエリート': 'rapid_elite',
                 'シャープマーカー': 'sharp',
                 'シャープマーカーネオ': 'sharp_neo',
                 'スプラシューター': 'sshooter',

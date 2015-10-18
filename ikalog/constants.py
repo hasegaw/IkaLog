@@ -71,6 +71,7 @@ weapons = {
     'promodeler_rg': {'ja': 'プロモデラーRG'},
     'rapid': {'ja': 'ラピッドブラスター'},
     'rapid_deco': {'ja': 'ラピッドブラスターデコ'},
+    'rapid_elite': {'ja': 'Rブラスターエリート'},
     'sharp': {'ja': 'シャープマーカー'},
     'sharp_neo': {'ja': 'シャープマーカーネオ'},
     'sshooter': {'ja': 'スプラシューター'},
