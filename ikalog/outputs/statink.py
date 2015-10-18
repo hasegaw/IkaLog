@@ -331,8 +331,8 @@ class StatInk(object):
             scores = context['game'].get('ranked_scores', None)
             print('ranked scores = %s' % scores)
             if scores is not None:
-                payload['my_team_final_point'] = scores[0]
-                payload['his_team_final_point'] = scores[1]
+                payload['my_team_count'] = scores[0]
+                payload['his_team_count'] = scores[1]
 
         scores = context['game'].get('earned_scores', None)
         if 0:  # scores is not None:
