@@ -60,74 +60,82 @@ class TestLobby(SceneTestCase):
             'lobby_fes_matched.png',
             lobby_type='festa',
             state='matched',
-        ) 
+        )
 
     def test_lobby_fes_matching(self):
         self._test_scene(
             'lobby_fes_matching.png',
             lobby_type='festa',
             state='matching',
-        ) 
+        )
 
     def test_lobby_public_ranked_matched(self):
         self._test_scene(
             'lobby_public_ranked_matched.png',
             lobby_type='public',
             state='matched',
-        ) 
+        )
 
     def test_lobby_public_ranked_matching(self):
         self._test_scene(
             'lobby_public_ranked_matching.png',
             lobby_type='public',
             state='matching',
-        ) 
+        )
 
     def test_lobby_public_turf_matched(self):
         self._test_scene(
             'lobby_public_turf_matched.png',
             lobby_type='public',
             state='matched',
-        ) 
+        )
+
+    def test_lobby_public_turf_matched_cv710(self):
+        # AVerMedia CV710 capture
+        self._test_scene(
+            'lobby_nawabari_matched_cv710.png',
+            lobby_type='public',
+            state='matched',
+        )
 
     def test_lobby_public_turf_matching(self):
         self._test_scene(
             'lobby_public_turf_matching.png',
             lobby_type='public',
             state='matching',
-        ) 
+        )
 
     def test_lobby_tag_2_matched(self):
         self._test_scene(
             'lobby_tag_2_matched.png',
             lobby_type='tag',
             state='matched',
-        ) 
+        )
 
     def test_lobby_tag_2_matching(self):
         self._test_scene(
             'lobby_tag_2_matching.png',
             lobby_type='tag',
             state='matching',
-        ) 
+        )
 
     def test_lobby_tag_4_matched(self):
         self._test_scene(
             'lobby_tag_4_matched.png',
             lobby_type='tag',
             state='matched',
-        ) 
+        )
 
     def test_looby_private_matching(self):
         self._test_scene(
             'lobby_private_matching.1.png',
             lobby_type='private',
             state='matching',
-        ) 
+        )
 
     def test_looby_private_matched(self):
         self._test_scene(
             'lobby_private_matched.1.png',
             lobby_type='private',
             state='matched',
-        ) 
+        )
