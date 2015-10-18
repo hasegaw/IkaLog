@@ -248,11 +248,12 @@ class Lobby(object):
         )
 
         # 背景：緑、赤、黒　文字：黄色
+        # bg が高め(0.150ぐらい)
         self.mask_matched = IkaMatcher(
             826, 37, 280, 34,
             img_file='masks/ui_lobby_public_matched.png',
             threshold=0.90,
-            orig_threshold=0.15,
+            orig_threshold=0.20,
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
