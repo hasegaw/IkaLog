@@ -226,6 +226,7 @@ if __name__ == "__main__":
             outputs.OBS(),
             outputs.Twitter(),
             outputs.Screenshot(),
+            outputs.Boyomi(),
             outputs.Slack(),
             outputs.StatInk(),
             outputs.DebugVideoWriter(),

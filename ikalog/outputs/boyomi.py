@@ -21,10 +21,16 @@
 import random
 import socket
 import sys
+import traceback
 
 from ikalog.constants import *
 from ikalog.utils import *
 
+# Needed in GUI mode
+try:
+    import wx
+except:
+    pass
 
 class BoyomiClinet(object):
     ''' 棒読みちゃんにコマンドを送信するクラスです
@@ -166,11 +172,14 @@ class Boyomi(object):
         return config
 
     def _read(self, message):
+        if self._client is None:
+            return
+
         try:
             self._client.read(message)
         except ConnectionRefusedError:
             error = '「{message}」を読み上げることができませんでした'.format(message=message)
-            print(error, file=sys.stderr)
+            IkaUtils.dprint(error)
 
     def _text(self, key):
         return self._dict.text(key)
@@ -185,8 +194,8 @@ class Boyomi(object):
         self._read_text('lobby_matched')
 
     def on_game_start(self, context):
-        map_text = IkaUtils.map2text(context['game']['map'])
-        rule_text = IkaUtils.rule2text(context['game']['rule'])
+        map_text = IkaUtils.map2text(context['game']['map'], unknown_text='スプラトゥーン')
+        rule_text = IkaUtils.rule2text(context['game']['rule'], unknown_text='ゲーム')
         self._read(
             self._text('start').format(map=map_text, rule=rule_text)
         )
@@ -240,3 +249,106 @@ class Boyomi(object):
 
     def on_game_session_end(self, context):
         self._read_text('session_end')
+
+    def initialize_client(self):
+        try:
+            self._client = BoyomiClinet(self.host, int(self.port))
+        except:
+            IkaUtils.dprint('棒読みちゃんの設定が反映できませんでした。設定値を見直してください。')
+            self.dprint(traceback.format_exc())
+            self._client = None
+            return False
+        return True
+
+    def apply_ui(self):
+        self.enabled = self.check_enable.GetValue()
+        self.host = self.edit_host.GetValue()
+        self.port = self.edit_port.GetValue()
+        self.initialize_client()
+
+    def refresh_ui(self):
+        self.check_enable.SetValue(self.enabled)
+
+        if not self.host is None:
+            self.edit_host.SetValue(self.host)
+        else:
+            self.edit_host.SetValue('')
+
+        if not self.port is None:
+            self.edit_port.SetValue(str(self.port))
+        else:
+            self.edit_port.SetValue('50001')
+
+        self._internal_update = False
+
+    def on_config_reset(self, context=None):
+        self.enabled = False
+        self.host = '127.0.0.1'
+        self.port = '50001'
+
+    def on_config_load_from_context(self, context):
+        self.on_config_reset(context)
+
+        try:
+            conf = context['config']['boyomi']
+        except:
+            conf = {}
+
+        if 'Enable' in conf:
+            self.enabled = conf['Enable']
+
+        if 'host' in conf:
+            self.host = conf['host']
+
+        if 'port' in conf:
+            try:
+                self.port = int(conf['port'])
+            except ValueError:
+                IkaUtils.dprint('%s: port must be an integer' % self)
+                self.port = 50001
+
+        self.refresh_ui()
+        self.initialize_client()
+        return True
+
+    def on_config_save_to_context(self, context):
+        context['config']['boyomi'] = {
+            'Enable': self.enabled,
+            'host': self.host,
+            'port': self.port,
+        }
+
+    def on_config_apply(self, context):
+        self.apply_ui()
+
+    def on_test_button_click(self, event):
+        self._read(self.custom_read['initialize'])
+
+    def on_option_tab_create(self, notebook):
+        self.panel = wx.Panel(notebook, wx.ID_ANY)
+        self.page = notebook.InsertPage(0, self.panel, '棒読みちゃん')
+        self.layout = wx.BoxSizer(wx.VERTICAL)
+
+        self.check_enable = wx.CheckBox(
+            self.panel, wx.ID_ANY, '棒読みちゃんで実況する')
+        self.edit_host = wx.TextCtrl(self.panel, wx.ID_ANY, 'host')
+        self.edit_port = wx.TextCtrl(self.panel, wx.ID_ANY, 'port')
+        self.button_test = wx.Button( self.panel, wx.ID_ANY, 'テスト')
+
+        try:
+            layout = wx.GridSizer(2, 4)
+        except:
+            layout = wx.GridSizer(2)
+
+        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ホスト'))
+        layout.Add(self.edit_host)
+        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ポート'))
+        layout.Add(self.edit_port)
+
+        self.layout.Add(self.check_enable)
+        self.layout.Add(layout, flag=wx.EXPAND)
+        self.layout.Add(self.button_test)
+
+        self.panel.SetSizer(self.layout)
+
+        self.button_test.Bind(wx.EVT_BUTTON, self.on_test_button_click)
