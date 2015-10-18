@@ -155,11 +155,16 @@ class CVCapture(object):
             except:
                 pass
             if t is None:
-                print('Cannot get video position...')
+                IkaUtils.dprint('Cannot get video position...')
                 self.realtime = True
 
         if self.realtime:
             t = int(time.time() * 1000) - self._systime_launch
+
+        if t < self.last_t:
+            IkaUtils.dprint(
+                'FIXME: time position data rewinded. t=%x last_t=%x' % (t, last_t))
+        self.last_t = t
 
         if self.need_resize:
             return cv2.resize(frame, (self.out_width, self.out_height)), t
@@ -180,6 +185,7 @@ class CVCapture(object):
 
             self.cap = cv2.VideoCapture(source)
             self.set_resolution(width, height)
+            self.last_t = 0
         finally:
             self.lock.release()
 
