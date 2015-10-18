@@ -288,11 +288,11 @@ class StatInk(object):
             payload['lobby'] = 'fest'
 
         elif lobby_type == 'tag':
-            num_members = context['lobby'].get('team_members')
+            num_members = context['lobby'].get('team_members', None)
             if num_members in [2, 3, 4]:
                 payload['lobby'] = 'squad_%d' % num_members
             else:
-                IkaUtils.dprint('%s: invalid lobby key squad_%d' %
+                IkaUtils.dprint('%s: invalid lobby key squad_%s' %
                                 (self, num_members))
 
         else:
