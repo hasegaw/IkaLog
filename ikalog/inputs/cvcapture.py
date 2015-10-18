@@ -89,7 +89,7 @@ class InputSourceEnumerator(object):
                 self.dll.VI_GetDeviceName.argtypes = []
             except:
                 IkaUtils.dprint(
-                    "%s: Failed to initalize %s" % self, videoinput_dll)
+                    "%s: Failed to initalize %s" % (self, videoinput_dll))
 
 
 class CVCapture(object):
