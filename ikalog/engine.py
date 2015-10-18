@@ -219,13 +219,14 @@ class IkaEngine:
                     frame, t = self.read_next_frame()
 
                 # 安定した画像で再度解析
-                self.scn_gameresult.analyze(context)
+                if self.scn_gameresult.match(context):
+                    self.scn_gameresult.analyze(context)
 
-                self.call_plugins('on_game_individual_result_analyze')
-                self.call_plugins('on_game_individual_result')
+                    self.call_plugins('on_game_individual_result_analyze')
+                    self.call_plugins('on_game_individual_result')
 
-                self.session_close_wdt = context[
-                    'engine']['msec'] + (20 * 1000)
+                    self.session_close_wdt = context[
+                        'engine']['msec'] + (20 * 1000)
 
         # ResultUdemae
         r = (not context['engine']['inGame'])
