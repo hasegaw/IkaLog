@@ -177,6 +177,7 @@ class Lobby(object):
             last_matching = context['lobby'].get('last_matching', -60 * 1000)
             if (msec - last_matching) > (60 * 1000):
                 # マッチングを開始した
+                context['lobby']['last_matched'] =  -60 * 1000
                 call_plugins('on_lobby_matching')
             context['lobby']['last_matching'] = msec
 
