@@ -156,6 +156,8 @@ class Boyomi(object):
     }
 
     def __init__(self, host='127.0.0.1', port=50001, dictionary={}):
+        self._enabled = True
+
         self._dict = BoyomiDictionary(dictionary)
         self._client = BoyomiClient(host, port)
         self._read(self.custom_read['initialize'])
@@ -173,7 +175,7 @@ class Boyomi(object):
         return config
 
     def _read(self, message):
-        if self._client is None:
+        if (self._client is None) or (not self._enabled):
             return
 
         try:
@@ -253,7 +255,7 @@ class Boyomi(object):
 
     def initialize_client(self):
         try:
-            self._client = BoyomiClient(self.host, int(self.port))
+            self._client = BoyomiClient(self._host, int(self._port))
         except:
             IkaUtils.dprint('棒読みちゃんの設定が反映できませんでした。設定値を見直してください。')
             self.dprint(traceback.format_exc())
@@ -262,30 +264,30 @@ class Boyomi(object):
         return True
 
     def apply_ui(self):
-        self.enabled = self.check_enable.GetValue()
-        self.host = self.edit_host.GetValue()
-        self.port = self.edit_port.GetValue()
+        self._enabled = self.check_enable.GetValue()
+        self._host = self.edit_host.GetValue()
+        self._port = self.edit_port.GetValue()
         self.initialize_client()
 
     def refresh_ui(self):
-        self.check_enable.SetValue(self.enabled)
+        self.check_enable.SetValue(self._enabled)
 
-        if not self.host is None:
-            self.edit_host.SetValue(self.host)
+        if not self._host is None:
+            self.edit_host.SetValue(self._host)
         else:
             self.edit_host.SetValue('')
 
-        if not self.port is None:
-            self.edit_port.SetValue(str(self.port))
+        if not self._port is None:
+            self.edit_port.SetValue(str(self._port))
         else:
             self.edit_port.SetValue('50001')
 
         self._internal_update = False
 
     def on_config_reset(self, context=None):
-        self.enabled = False
-        self.host = '127.0.0.1'
-        self.port = '50001'
+        self._enabled = False
+        self._host = '127.0.0.1'
+        self._port = '50001'
 
     def on_config_load_from_context(self, context):
         self.on_config_reset(context)
@@ -296,17 +298,17 @@ class Boyomi(object):
             conf = {}
 
         if 'Enable' in conf:
-            self.enabled = conf['Enable']
+            self._enabled = conf['Enable']
 
         if 'host' in conf:
-            self.host = conf['host']
+            self._host = conf['host']
 
         if 'port' in conf:
             try:
-                self.port = int(conf['port'])
+                self._port = int(conf['port'])
             except ValueError:
                 IkaUtils.dprint('%s: port must be an integer' % self)
-                self.port = 50001
+                self._port = 50001
 
         self.refresh_ui()
         self.initialize_client()
@@ -314,9 +316,9 @@ class Boyomi(object):
 
     def on_config_save_to_context(self, context):
         context['config']['boyomi'] = {
-            'Enable': self.enabled,
-            'host': self.host,
-            'port': self.port,
+            'Enable': self._enabled,
+            'host': self._host,
+            'port': self._port,
         }
 
     def on_config_apply(self, context):
