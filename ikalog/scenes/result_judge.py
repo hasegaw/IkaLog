@@ -112,6 +112,9 @@ class ResultJudge(object):
                 x1 = np.amin(img_num1_extract_x)
                 x2 = np.amax(img_num1_extract_x) + 1
 
+                if (x2 - x1) < 4:
+                    return False
+
                 # ガチマッチ: xxカウント
                 try:
                     s = self.number_recoginizer.match_digits(
@@ -121,7 +124,7 @@ class ResultJudge(object):
                     )
                 except:
                     IkaUtils.dprint('Exception at recoginizing ranked scores')
-                    return
+                    return False
 
                 if s != None:
                     ranked_scores.append(s)
