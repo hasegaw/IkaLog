@@ -64,6 +64,11 @@ class ResultJudge(object):
 
         context['game']['knockout'] = knockout
 
+        # 以下のコード入れた頃から落ちるという報告があるのでとりあえず無効化して
+        # Twitter 上で様子を見る
+
+        return True
+
         # 数字がある部分を絞り込む
         x_list = [116, 758]
 
