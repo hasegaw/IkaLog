@@ -197,8 +197,8 @@ class Boyomi(object):
         self._read_text('lobby_matched')
 
     def on_game_start(self, context):
-        map_text = IkaUtils.map2text(context['game']['map'], unknown_text='スプラトゥーン')
-        rule_text = IkaUtils.rule2text(context['game']['rule'], unknown_text='ゲーム')
+        map_text = IkaUtils.map2text(context['game']['map'], unknown='スプラトゥーン')
+        rule_text = IkaUtils.rule2text(context['game']['rule'], unknown='ゲーム')
         self._read(
             self._text('start').format(map=map_text, rule=rule_text)
         )
