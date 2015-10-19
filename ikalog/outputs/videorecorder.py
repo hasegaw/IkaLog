@@ -175,9 +175,14 @@ class OBS(object):
         #os.environ['IKALOG_TIMESTAMP'] = time.strftime("%Y%m%d_%H%M", context['game']['timestamp'])
 
         if self.auto_rename_enabled:
-            os.environ['IKALOG_MP4_DESTNAME'] = '%s%s' % (
-                self.dir, self.create_mp4_filename(context))
-            os.environ['IKALOG_MP4_DESTDIR'] = self.dir
+            os.environ['IKALOG_MP4_DESTNAME'] = os.path.join(
+                self.dir,
+                self.create_mp4_filename(context)
+            )
+            os.environ['IKALOG_MP4_DESTDIR'] = os.path.join(
+                self.dir,
+                '', # terminate with delimiter (slash or backslash.)
+            )
 
         # Since we want to stop recording asyncnously,
         # This function is called by independent thread.
