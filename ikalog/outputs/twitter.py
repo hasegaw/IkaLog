@@ -467,7 +467,7 @@ class Twitter(object):
         if fes_title:
             s = '%s %s' % (s, fes_title)
 
-        s = '%s (%s) %s #IkaLog' % (s, t, self.footer)
+        s = '%s (%s) %s #IkaLogResult' % (s, t, self.footer)
         return s
 
     ##
