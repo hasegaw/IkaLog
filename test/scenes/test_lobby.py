@@ -90,6 +90,13 @@ class TestLobby(SceneTestCase):
             state='matched',
         )
 
+    def test_lobby_public_turf_matched_apricot385(self):
+        self._test_scene(
+            'lobby_public_turf_matched_apricot385.png',
+            lobby_type='public',
+            state='matched',
+        )
+
     def test_lobby_public_turf_matched_cv710(self):
         # AVerMedia CV710 capture
         self._test_scene(
@@ -101,6 +108,13 @@ class TestLobby(SceneTestCase):
     def test_lobby_public_turf_matching(self):
         self._test_scene(
             'lobby_public_turf_matching.png',
+            lobby_type='public',
+            state='matching',
+        )
+
+    def test_lobby_public_turf_matching_apricot385(self):
+        self._test_scene(
+            'lobby_public_turf_matching_apricot385.png',
             lobby_type='public',
             state='matching',
         )
