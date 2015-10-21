@@ -19,13 +19,14 @@
 #
 from __future__ import print_function
 
-import cv2
 import os
 import platform
 import re
 import sys
 
+import cv2
 import numpy as np
+from PIL import Image
 
 
 class IkaUtils(object):
@@ -161,11 +162,13 @@ class IkaUtils(object):
         return win_text if won else lose_text
 
     @staticmethod
-    def writeScreenshot(destfile, frame):
-        try:
-            cv2.imwrite(destfile, frame)
-            return os.path.isfile(destfile)
+    def writeScreenshot(destfile, img):
+        img_pil = Image.fromarray(img[:, :, ::-1])
 
+        try:
+            img_pil.save(destfile)
+            assert os.path.isfile(destfile)
         except:
-            print("Screenshot: failed")
+            self.dprint("Screenshot: failed")
             return False
+        return True
