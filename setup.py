@@ -51,6 +51,7 @@ setup(
     options={
         'py2exe': {
             'packages': ['ikalog'],
+            'excludes': ['tkinter'],
             'bundle_files': 1,
             'unbuffered': True,
             'optimize': 2,
