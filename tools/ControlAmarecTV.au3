@@ -105,10 +105,10 @@ Func ControlAmarecTV($stop)
 
 	Local $click = False
 	If $inRecording and $stop Then
-		# Stop Recording.
+		; Stop Recording.
 		$click = True
 	ElseIf (Not $inRecording) and (Not $stop) Then
-		# Start Recording.
+		; Start Recording.
 		$click = True
 	EndIf
 
@@ -117,7 +117,7 @@ Func ControlAmarecTV($stop)
 			Sleep(1000 * 20)
 		EndIf
 
-		# Send Ctrl-Z
+		; Send Ctrl-Z
 
 		WinActivate($hWnd)
 		WinWaitActive($hWnd, "", 1)
