@@ -215,7 +215,7 @@ class Boyomi(object):
     def on_game_death_reason_identified(self, context):
         reason = context['game']['last_death_reason']
         label = self._death_reason_label(reason)
-        self._client.read(
+        self._read(
             self._text('death_reason_identified').format(reason=label)
         )
 
