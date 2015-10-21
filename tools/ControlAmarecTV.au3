@@ -93,24 +93,24 @@ Func FindRecentRecording()
 EndFunc
 
 Func ControlAmarecTV($stop)
-	Local $hWnd = WinWait('[CLASS:AmaRecTV]', '', 1)
+	Local $hWnd = WinWait('[CLASS:AmaRecTV; INSTANCE:2]', '', 1)
 	
 	If $hWnd = 0 Then
 		MsgBox(0, "Error", "Could not find AmarecTV")
 		Return False
 	EndIf
-		WinActivate("[CLASS:AmaRecTV]")
-		WinWaitActive("[CLASS:AmaRecTV]", "", 1)
 
-	;残念ながら AutoIT からアマレコTVの録画ステータスが取得できない
-	;Local $text = StatusbarGetText($hWnd)
-	;Local $text = ControlGetText($hWnd, "", "msctls_statusbar321")
-	;Local $inRecording = StringCompare($text, '録画中...')
-	;MsgBox(0, $hWnd, $text, 10)
-	;MsgBox(0, $text, $inRecording, 10)
-	;Return
+	Local $text = ControlGetText($hWnd, "", "[CLASS:msctls_statusbar32]")
+	Local $inRecording = StringInStr($text, '録画中...') > 0
 
-	Local $click = True
+	Local $click = False
+	If $inRecording and $stop Then
+		# Stop Recording.
+		$click = True
+	ElseIf (Not $inRecording) and (Not $stop) Then
+		# Start Recording.
+		$click = True
+	EndIf
 
 	If $click Then
 		If $stop Then
@@ -119,9 +119,8 @@ Func ControlAmarecTV($stop)
 
 		# Send Ctrl-Z
 
-
-		WinActivate("[CLASS:AmaRecTV]")
-		WinWaitActive("[CLASS:AmaRecTV]", "", 1)
+		WinActivate($hWnd)
+		WinWaitActive($hWnd, "", 1)
 
 		send("^z")
 
