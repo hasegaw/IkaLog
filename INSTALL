@@ -41,15 +41,15 @@ URL:
   http://www.lfd.uci.edu/~gohlke/pythonlibs/
 
 ダウンロードするファイル:
-  numpy‑1.9.2+mkl‑cp34‑none‑win32.whl
+  numpy‑1.9.3+mkl‑cp34‑none‑win32.whl
   opencv_python‑3.0.0‑cp34‑none‑win32.whl
 
 ※ cp34 は CPython 3.4, win32 は 32bit 版を示している
 
 ■ インストール作業
 
-cd c:\IkaLog\Python34\Script
-pip install "C:\IkaLog\Archives\numpy-1.9.2+mkl-cp34-none-win32.whl"
+cd c:\IkaLog\Python34\Scripts
+pip install "C:\IkaLog\Archives\numpy-1.9.3+mkl-cp34-none-win32.whl"
 pip install "C:\IkaLog\Archives\opencv_python-3.0.0-cp34-none-win32.whl"
 pip install slackweb
 pip install fluent-logger
