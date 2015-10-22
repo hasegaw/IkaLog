@@ -112,12 +112,12 @@ class IkaConfig:
         IkaUtils.dprint('%s: initalizing screen capture' % (self))
 
 if __name__ == "__main__":
-    obj = ScreenCapture((185, 53, 1252 - 185, 654 - 53))
+    obj = ScreenCapture()
 
     k = 0
     while k != 27:
         frame, t = obj.read()
         cv2.imshow(obj.__class__.__name__, frame)
-#        print(t)
+        print(t)
         k = cv2.waitKey(1)
         obj.onKeyPress(None, k)
