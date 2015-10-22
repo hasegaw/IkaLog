@@ -66,7 +66,11 @@
 # the use of this software, even if advised of the possibility of such damage.
 #
 
+import os
 import pickle
+
+import cv2
+import numpy as np
 
 from ikalog.inputs.filters import Filter
 from ikalog.utils import *
@@ -85,6 +89,19 @@ class WarpFilter(Filter):
         p2 = np.float32([kp.pt for kp in mkp2])
         kp_pairs = zip(mkp1, mkp2)
         return p1, p2, kp_pairs
+
+    def set_bbox(self, x, y, w, h):
+        corners = np.float32(
+            [[x, y], [x + w, y], [w + x, y + h], [x, y + h]]
+        )
+
+        self.pts1 = np.float32(corners)
+
+        IkaUtils.dprint('pts1: %s' % [self.pts1])
+        IkaUtils.dprint('pts2: %s' % [self.pts2])
+
+        self.M = cv2.getPerspectiveTransform(self.pts1, self.pts2)
+        return True
 
     def calibrateWarp(self, capture_image):
         capture_image_gray = cv2.cvtColor(capture_image, cv2.COLOR_BGR2GRAY)
