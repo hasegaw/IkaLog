@@ -70,12 +70,13 @@ class IkaConfig:
             self.auto_calibrate(img_bgr)
 
         img = self._offset_filter.execute(img)
+        img = cv2.resize(img, (self._out_width, self._out_height))
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         t = self._time() - self._launch
         return (img, t)
 
-    def onKeyPress(self, context, key):
+    def on_key_press(self, context, key):
         if (key == ord('c') or key == ord('C')):
             # 次回キャリブレーションを行う
             self._calibration_requested = True
@@ -120,4 +121,4 @@ if __name__ == "__main__":
         cv2.imshow(obj.__class__.__name__, frame)
         print(t)
         k = cv2.waitKey(1)
-        obj.onKeyPress(None, k)
+        obj.on_key_press(None, k)
