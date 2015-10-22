@@ -18,6 +18,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+
 import os
 import sys
 import time
@@ -25,6 +26,7 @@ import time
 import cv2
 import numpy as np
 
+from ikalog.inputs.filters import WarpFilter
 from ikalog.utils import IkaUtils
 
 
@@ -43,26 +45,40 @@ class IkaConfig:
     '''
     from_file = False
 
-    _bbox = None
     _out_width = 1280
     _out_height = 720
 
+    # FIXME: Filter classes refer these variables.
+    out_width = 1280
+    out_height = 720
+
     _launch = 0
+
+    def auto_calibrate(self, img):
+        self._offset_filter.calibrateWarp(img)
+        self._offset_filter.enable()
 
     def read(self):
         from PIL import ImageGrab
-        img = ImageGrab.grab(self._bbox)
+
+        img = ImageGrab.grab(None)
         img = np.asarray(img)
-        img = cv2.resize(img, (self._out_width, self._out_height))
+
+        if self._calibration_requested:
+            self._calibration_requested = False
+            img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            self.auto_calibrate(img_bgr)
+
+        img = self._offset_filter.execute(img)
+
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         t = self._time() - self._launch
         return (img, t)
 
-    def set_bounding_box(bbox):
-        '''
-        bbox -- bbox Crop bounding box as (x, y, w, h)
-        '''
-        self._bbox = bbox
+    def onKeyPress(self, context, key):
+        if (key == ord('c') or key == ord('C')):
+            # 次回キャリブレーションを行う
+            self._calibration_requested = True
 
     def _time(self):
         return int(time.time() * 1000)
@@ -82,17 +98,26 @@ class IkaConfig:
         bbox -- bbox Crop bounding box as (x, y, w, h)
         '''
         self._check_import()
-        self._bbox = bbox
+
         self._launch = self._time()
+
+        self._offset_filter = WarpFilter(self)
+        self._calibration_requested = False
+        if bbox is not None:
+            self._offset_filter.set_bbox(
+                bbox[0], bbox[1], bbox[2], bbox[3],
+            )
+            self._offset_filter.enable()
+
         IkaUtils.dprint('%s: initalizing screen capture' % (self))
 
-
 if __name__ == "__main__":
-    obj = ScreenCapture()
+    obj = ScreenCapture((185, 53, 1252 - 185, 654 - 53))
 
     k = 0
     while k != 27:
         frame, t = obj.read()
         cv2.imshow(obj.__class__.__name__, frame)
-        print(t)
+#        print(t)
         k = cv2.waitKey(1)
+        obj.onKeyPress(None, k)
