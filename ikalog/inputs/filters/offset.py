@@ -66,7 +66,11 @@
 # the use of this software, even if advised of the possibility of such damage.
 #
 
+import os
 import pickle
+
+import cv2
+import numpy as np
 
 from ikalog.inputs.filters import Filter
 from ikalog.utils import *
