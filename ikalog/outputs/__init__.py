@@ -8,7 +8,7 @@ from .debug_video_writer import DebugVideoWriter
 from .fluentd import Fluentd
 from .hue import Hue
 from .ikadenwa import Ikadenwa
-from .json import JSON
+from .printjson import JSON
 from .preview import Screen
 from .screenshot import Screenshot
 from .slack import Slack
@@ -18,3 +18,4 @@ from .videorecorder import OBS
 from .weapon_training import WeaponTraining
 from .websocket_server import WebSocketServer
 from .boyomi import Boyomi
+from .mikumikumouth import MikuMikuMouth

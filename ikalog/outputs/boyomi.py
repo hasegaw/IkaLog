@@ -33,6 +33,7 @@ try:
 except:
     pass
 
+
 class BoyomiClient(object):
     ''' 棒読みちゃんにコマンドを送信するクラスです
     http://chi.usamimi.info/Program/Application/BouyomiChan/
@@ -336,7 +337,7 @@ class Boyomi(object):
             self.panel, wx.ID_ANY, '棒読みちゃんで実況する')
         self.edit_host = wx.TextCtrl(self.panel, wx.ID_ANY, 'host')
         self.edit_port = wx.TextCtrl(self.panel, wx.ID_ANY, 'port')
-        self.button_test = wx.Button( self.panel, wx.ID_ANY, 'テスト')
+        self.button_test = wx.Button(self.panel, wx.ID_ANY, 'テスト')
 
         try:
             layout = wx.GridSizer(2, 4)
