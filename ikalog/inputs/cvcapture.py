@@ -163,7 +163,7 @@ class CVCapture(object):
 
         if t < self.last_t:
             IkaUtils.dprint(
-                'FIXME: time position data rewinded. t=%x last_t=%x' % (t, last_t))
+                'FIXME: time position data rewinded. t=%x last_t=%x' % (t, self.last_t))
         self.last_t = t
 
         if self.need_resize:
