@@ -356,8 +356,8 @@ class StatInk(object):
                 payload['weapon'] = weapon
 
         if context['game']['is_fes']:
-            payload['fest_gender'] = me['gender_en']
-            payload['fest_rank'] = me['prefix_en']
+            payload['gender'] = me['gender_en']
+            payload['fest_title'] = str(me['prefix_en']).lower()
 
         self._set_values(
             [  # 'type', 'stat.ink Field', 'IkaLog Field'
