@@ -24,10 +24,14 @@ import sys
 import threading
 import time
 
-import tornado.ioloop
-import tornado.web
-import tornado.websocket
-import tornado.template
+try:
+    import tornado.ioloop
+    import tornado.web
+    import tornado.websocket
+    import tornado.template
+    _tornado_imported = True
+except:
+    _tornado_imported = False
 
 from ikalog.utils import *
 
@@ -184,6 +188,11 @@ class WebSocketServer(object):
         tornado.ioloop.IOLoop.instance().start()
 
     def __init__(self, bind_addr='127.0.0.1', port=9090):
+        if not _tornado_imported:
+            print("モジュール tornado がロードできませんでした。 WebSocet サーバが起動できません。")
+            print("インストールするには以下のコマンドを利用してください。\n    pip install tornado\n")
+            return
+
         # FIXME: bind_addr
         self.application = tornado.web.Application([
             (r'/', IndexHandler),
