@@ -174,7 +174,7 @@ class InGame(object):
     def matchTimerIcon(self, context):
         return self.mask_timer.match(context['engine']['frame'])
 
-    def matchPaintScore(self, context):
+    def match_paint_score(self, context):
         x_list = [938, 988, 1032, 1079]
 
         paint_score = 0
@@ -210,8 +210,12 @@ class InGame(object):
             paint_score = (paint_score * 10) + digit
 
         # Set latest paint_score to the context.
-        context['game']['paint_score'] = \
-            max(context['game'].get('paint_score', 0), paint_score)
+        last_paint_score = context['game'].get('paint_score', 0)
+        if last_paint_score != paint_score:
+            context['game']['paint_score'] = \
+                max(last_paint_score, paint_score)
+            callPlugins = context['engine']['service']['callPlugins']
+            callPlugins('on_game_paint_score_update')
 
     # FixMe
     _last_killed = 0
@@ -447,6 +451,7 @@ class InGame(object):
                 _match_kills_loop.send(context)
             # XXX: 遅延してイベントが発生するのでループがとまるのは困る
             _match_death_loop.send(context)
+            self.match_paint_score(context)
 
     def match(self, context):
         if not 'in_game' in context['scenes']:
@@ -519,6 +524,11 @@ class InGame(object):
             self.deadly_weapon_recoginizer = DeadlyWeaponRecoginizer()
         except:
             self.deadly_weapon_recoginizer = None
+
+        try:
+            self.number_recoginizer = NumberRecoginizer()
+        except:
+            self.number_recoginizer = None
 
 
 if __name__ == "__main__":

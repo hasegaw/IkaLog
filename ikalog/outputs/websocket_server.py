@@ -112,6 +112,12 @@ class WebSocketServer(object):
             'counter_team_color_hsv': context['game']['team_color_hsv'][1].tolist()[0],
         })
 
+    def on_game_paint_score_update(self, context):
+        self._send_message({
+            'event': 'on_game_paint_score_update',
+            'paint_score': context['game'].get('paint_score', 0)
+        })
+
     def on_lobby_matching(self, context):
         self._send_message({
             'event': 'on_lobby_matching',
