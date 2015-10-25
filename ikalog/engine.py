@@ -236,6 +236,7 @@ class IkaEngine:
 
         if r:
             self.dprint('Entering result_udemae loop')
+            context['scenes'].pop('result_udemae', None)
             while r:
                 frame, t = self.read_next_frame()
                 r = self.scn_result_udemae.match(context)

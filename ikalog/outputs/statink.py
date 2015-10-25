@@ -374,7 +374,7 @@ class StatInk(object):
         if 'result_udemae' in context['scenes']:
             self._set_values(
                 [  # 'type', 'stat.ink Field', 'IkaLog Field'
-                    # ['int', 'rank_exp', 'udemae_exp_pre'],
+                    ['int', 'rank_exp', 'udemae_exp_pre'],
                     ['int', 'rank_exp_after', 'udemae_exp_after'],
                     ['str_lower', 'rank_after', 'udemae_str_after'],
                 ], payload, context['scenes']['result_udemae'])
