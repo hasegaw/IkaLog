@@ -25,7 +25,7 @@ import cv2
 
 import numpy as np
 from ikalog.utils import *
-
+from ikalog.inputs.filters import OffsetFilter
 
 class ResultDetail(object):
 
@@ -230,6 +230,37 @@ class ResultDetail(object):
     def is_win(self, context):
         return context['game']['won']
 
+    def auto_offset(self, context):
+        # 画面のオフセットを自動検出して image を返す
+
+        filter = OffsetFilter(self)
+        filter.enable()
+
+        # filter が必要とするので...
+        self.out_width = 1280
+        self.out_height = 720
+
+        best_match = (context['engine']['frame'], 0.0, 0, 0)
+
+        for ox in range(-5, 6, 1):
+            for oy in range(-5, 6, 1):
+                filter.offset = (ox, oy)
+                img = filter.execute(context['engine']['frame'])
+                IkaUtils.matchWithMask(context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
+                score = self.mask_win.match_score(img)
+
+                if not score[0]:
+                    continue
+
+                if best_match[1] < score[1]:
+                    best_match = (img, score[1], ox, oy)
+
+        if best_match[2] != 0 or best_match[3] != 0:
+            IkaUtils.dprint('%s: Offset detected. (%d, %d)' %
+                (self, best_match[2], best_match[3]))
+
+        return best_match[0]
+
     def analyze(self, context):
         # 各プレイヤー情報のスタート左位置
         entry_left = 610
@@ -243,7 +274,7 @@ class ResultDetail(object):
 
         context['game']['players'] = []
 
-        img = context['engine']['frame']
+        img = self.auto_offset(context)
 
         for top in entry_top:
             entry_id = entry_id + 1
@@ -287,7 +318,18 @@ class ResultDetail(object):
     def match(self, context):
         return IkaUtils.matchWithMask(context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
 
-    def __init__(self):
+    def __init__(self, debug=False):
+        self.mask_win = IkaMatcher(
+            651, 47, 99, 33,
+            img_file='masks/result_detail.png',
+            threshold=0.950,
+            orig_threshold=0.05,
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
+            label='result_detail:WIN',
+            debug=debug,
+        )
+
         winlose = cv2.imread('masks/result_detail.png')
 
         try:
