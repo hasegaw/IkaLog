@@ -85,6 +85,7 @@ class IkaEngine:
         return frame, t
 
     def stop(self):
+        self.call_plugins('on_stop')
         self._stop = True
 
     def reset(self):
