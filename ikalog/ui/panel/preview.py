@@ -18,6 +18,8 @@
 #  limitations under the License.
 #
 
+import threading
+
 import wx
 import cv2
 
@@ -30,8 +32,10 @@ class PreviewPanel(wx.Panel):
         return orig_state
 
     def on_frame_read(self, context):
+        self.lock.acquire()
         self.latest_frame = cv2.resize(context['engine']['frame'], (640, 360))
         self.refresh_at_next = True
+        self.lock.release()
 
     def OnResize(self, event):
         w, h = self.GetClientSizeTuple()
@@ -42,12 +46,16 @@ class PreviewPanel(wx.Panel):
         self.SetEventHandlerEnable(self, orig_state)
 
     def OnPaint(self, event):
+        self.lock.acquire()
         if self.latest_frame is None:
+            self.lock.release()
             return
+
         width = 640
         height = 360
 
         frame_rgb = cv2.cvtColor(self.latest_frame, cv2.COLOR_BGR2RGB)
+        self.lock.release()
 
         try:
             self.bmp = wx.Bitmap.FromBuffer(width, height, frame_rgb)
@@ -66,8 +74,14 @@ class PreviewPanel(wx.Panel):
         w, h = self.GetClientSizeTuple()
 
     def OnTimer(self, evnet):
+        self.lock.acquire()
+
         if self.latest_frame is None:
+            self.lock.release()
             return
+
+        self.lock.release()
+
         if not self.refresh_at_next:
             return
 
@@ -77,6 +91,7 @@ class PreviewPanel(wx.Panel):
     def __init__(self, *args, **kwargs):
         self.refresh_at_next = False
         self.latest_frame = None
+        self.lock = threading.Lock()
 
         wx.Panel.__init__(self, *args, **kwargs)
         self.timer = wx.Timer(self)
