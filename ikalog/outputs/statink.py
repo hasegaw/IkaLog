@@ -371,7 +371,7 @@ class StatInk(object):
 
         # ResultUdemae
 
-        if 'result_udemae' in context['scenes']:
+        if (payload.get('rule', 'nawabari') != 'nawabari') and ('result_udemae' in context['scenes']):
             self._set_values(
                 [  # 'type', 'stat.ink Field', 'IkaLog Field'
                     ['int', 'rank_exp', 'udemae_exp_pre'],
