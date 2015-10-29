@@ -59,7 +59,7 @@ IkaLog をはじめて使う場合は、 IkaUI.exe を起動して設定を行�
 IkaLog を利用する前に、WiiU の画面を HDMI キャプチャできる環境を
 構成してください。
 
-[HDMI キャプチャ機器の選び方について](CaptureDevice.md)
+[HDMI キャプチャ機器の選び方について](https://github.com/hasegaw/IkaLog/wiki/CaptureDevices)
 
 #### アマレコTV を使っている場合
 
