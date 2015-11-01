@@ -75,7 +75,7 @@ class ResultUdemae(object):
 
         if (udemae_exp is not None):
             # ウデマエの数字は 0~100 (99?) しかありえない
-            if (udemae_exp < 0) or (udemae_exp > 100):
+            if (udemae_exp <= 0) or (udemae_exp > 100):
                 udemae_exp = None
 
         # ウデマエが正しく取得できない場合は別の画面を誤認識している
