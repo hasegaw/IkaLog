@@ -251,5 +251,6 @@ if __name__ == "__main__":
     engine.call_plugins('on_config_load_from_context', debug=True)
 
     engine_thread = threading.Thread(target=engine_thread_func)
+    engine_thread.daemon = True
     engine_thread.start()
     application.MainLoop()
