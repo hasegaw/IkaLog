@@ -166,6 +166,7 @@ class StatInk(object):
                 'ロングブラスターカスタム': 'longblaster_custom',
                 'もみじシューター': 'momiji',
                 'ノヴァブラスター': 'nova',
+                'ノヴァブラスターネオ': 'nova_neo',
                 'N-ZAP85': 'nzap85',
                 'N-ZAP89': 'nzap89',
                 'オクタシューターレプリカ': 'octoshooter_replica',
