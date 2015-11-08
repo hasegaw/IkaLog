@@ -241,9 +241,10 @@ class ResultDetail(object):
         self.out_height = 720
 
         best_match = (context['engine']['frame'], 0.0, 0, 0)
+        offset_list = [0, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
 
-        for ox in range(-5, 6, 1):
-            for oy in range(-5, 6, 1):
+        for ox in offset_list:
+            for oy in offset_list:
                 filter.offset = (ox, oy)
                 img = filter.execute(context['engine']['frame'])
                 IkaUtils.matchWithMask(context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
