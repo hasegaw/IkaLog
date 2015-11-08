@@ -367,18 +367,18 @@ class StatInk(object):
                 ['int', 'death', 'deaths'],
                 ['int', 'level', 'rank'],
                 ['int', 'my_point', 'score'],
-                ['str_lower', 'rank', 'udemae_pre'],
             ], payload, me)
 
         # ResultUdemae
 
-        if (payload.get('rule', 'nawabari') != 'nawabari') and ('result_udemae' in context['scenes']):
+        if payload.get('rule', 'nawabari') != 'nawabari':
             self._set_values(
                 [  # 'type', 'stat.ink Field', 'IkaLog Field'
-                    ['int', 'rank_exp', 'udemae_exp_pre'],
-                    ['int', 'rank_exp_after', 'udemae_exp_after'],
-                    ['str_lower', 'rank_after', 'udemae_str_after'],
-                ], payload, context['scenes']['result_udemae'])
+                    ['str_lower', 'rank', 'result_udemae_str_pre'],
+                    ['int', 'rank_exp', 'result_udemae_exp_pre'],
+                    ['str_lower', 'rank_after', 'result_udemae_str'],
+                    ['int', 'rank_exp_after', 'result_udemae_exp'],
+                ], payload, context['game'])
 
         knockout = context['game'].get('knockout', None)
         if (payload.get('rule', 'nawabari') != 'nawabari') and (knockout is not None):
