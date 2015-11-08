@@ -28,12 +28,20 @@ import traceback
 from ikalog.utils import *
 from . import scenes
 
-
 # The IkaLog core engine.
 #
 
 
 class IkaEngine:
+
+    #    def on_game_start(self, context):
+    #        self.scn_tower_tracker.reset(context)
+
+    def on_game_individual_result(self, context):
+        self.session_close_wdt = context['engine']['msec'] + (20 * 1000)
+
+    def on_result_gears(self, context):
+        pass # self.session_close_wdt = context['engine']['msec'] + (1 * 1000)
 
     def dprint(self, text):
         print(text, file=sys.stderr)
@@ -103,6 +111,7 @@ class IkaEngine:
             'livesTrack': [],
             'towerTrack': [],
         }
+        self.call_plugins('on_game_reset')
 
     def create_context(self):
         self.context = {
@@ -126,9 +135,29 @@ class IkaEngine:
         self.session_close_wdt = None
 
         self.call_plugins('on_game_session_end')
-        self.call_plugins('on_game_reset')
-
         self.reset()
+
+    def process_scene(self, scene):
+        context = self.context
+
+        scene.new_frame(context)
+        r = scene.match(context)
+        if r and scene.exclusive_scene:
+            print('%s: entering %s' % (self, scene.__class__.__name__))
+            while r and (not self._stop):
+                frame, t = self.read_next_frame()
+                context['engine']['frame'] = frame
+                scene.new_frame(context)
+                r = scene.match(context)
+                if r:
+                    scene.analyze(context)
+            print('%s: escaping %s' % (self, scene.__class__.__name__))
+
+    def find_scene_object(self, scene_class_name):
+        for scene in self.scenes:
+            if scene.__class__.__name__ == scene_class_name:
+                return scene
+        return None
 
     def process_frame(self):
         context = self.context
@@ -142,117 +171,13 @@ class IkaEngine:
         if frame is None:
             return False
 
-        context['engine']['inGame'] = self.scn_ingame.matchTimerIcon(context)
+        context['engine']['inGame'] = self.find_scene_object(
+            'GameTimerIcon').match(context)
 
         self.call_plugins('on_frame_read')
 
-        self.scn_ingame.match(context)
-
-        tower_data = self.scn_tower_tracker.match(context)
-
-        try:
-            # ライフをチェック
-            (team1, team2) = self.scn_ingame.lives(context)
-            # print("味方 %s 敵 %s" % (team1, team2))
-
-            context['game']['livesTrack'].append(
-                [context['engine']['msec'], team1, team2])
-            if tower_data:
-                context['game']['towerTrack'].append(
-                    [context['engine']['msec'], tower_data.copy()])
-        except:
-            pass
-
-        # Lobby
-        r = False
-        if not context['engine']['inGame']:
-            r = self.scn_lobby.match(context)
-
-        # GameStart (マップ名、ルール名が表示されている) ?
-
-        r = None
-        if (not context['engine']['inGame']) and (time.time() - self.last_gamestart) > 10:
-            r = self.scn_gamestart.match(context)
-
-        if r:
-            self.scn_tower_tracker.reset(context)
-
-            while (r):
-                frame, t = self.read_next_frame(skip_frames=3)
-                r = self.scn_gamestart.match(context)
-
-            self.last_gamestart = time.time()
-
-            self.call_plugins('on_game_start')
-
-        # GameFinish (ゲームが終了した) ?
-        r = False
-        if (not context['engine']['inGame']) and \
-            (time.time() - self.last_game_finish) > 60:
-            r = self.scn_gamefinish.match(context)
-
-        if r:
-            self.call_plugins('on_game_finish')
-            self.last_game_finish = time.time()
-
-        # ResultJudge
-        r = (not context['engine']['inGame'])
-        if r:
-            r = self.scn_result_judge.match(context)
-
-        while r:
-            frame, t = self.read_next_frame()
-            context['engine']['frame'] = frame
-            r = self.scn_result_judge.match(context)
-
-        # GameResult (勝敗の詳細が表示されている）?
-        r = (not context['engine']['inGame']) and (
-            time.time() - self.last_capture) > 60
-        if r:
-            r = self.scn_gameresult.match(context)
-
-        if r:
-            if ((time.time() - self.last_capture) > 60):
-                self.last_capture = time.time()
-
-                # 安定するまで待つ
-                for x in range(10):
-                    frame, t = self.read_next_frame()
-
-                # 安定した画像で再度解析
-                if self.scn_gameresult.match(context):
-                    self.scn_gameresult.analyze(context)
-
-                    self.call_plugins('on_game_individual_result_analyze')
-                    self.call_plugins('on_game_individual_result')
-
-                    self.session_close_wdt = context[
-                        'engine']['msec'] + (20 * 1000)
-
-        # ResultUdemae
-        r = (not context['engine']['inGame'])
-        if r:
-            r = self.scn_result_udemae.match(context)
-
-        if r:
-            self.dprint('Entering result_udemae loop')
-            context['scenes'].pop('result_udemae', None)
-            while r:
-                frame, t = self.read_next_frame()
-                r = self.scn_result_udemae.match(context)
-            self.dprint('Escaped result_udemae loop')
-
-        # result_gears
-        r = (not context['engine']['inGame'])
-        if r:
-            r = self.scn_result_gears.match(context)
-
-        if r:
-            self.dprint('Entering result_gears loop')
-            while r:
-                frame, t = self.read_next_frame()
-                r = self.scn_result_gears.match(context)
-            self.dprint('Escaped result_gears loop')
+        for scene in self.scenes:
+            self.process_scene(scene)
 
         if self.session_close_wdt is not None:
             if self.session_close_wdt < context['engine']['msec']:
@@ -292,25 +217,35 @@ class IkaEngine:
         self.capture = capture
 
     def set_plugins(self, plugins):
-        self.output_plugins = plugins
+        self.output_plugins = [self]
+        self.output_plugins.extend(plugins)
 
     def pause(self, pause):
         self._pause = pause
 
-    def __init__(self):
-        self.scn_gamestart = scenes.GameStart()
-        self.scn_gamefinish = scenes.GameFinish()
-        self.scn_gameresult = scenes.ResultDetail()
-        self.scn_result_judge = scenes.ResultJudge()
-        self.scn_result_udemae = scenes.ResultUdemae()
-        self.scn_result_gears = scenes.ResultGears()
-        self.scn_ingame = scenes.InGame()
-        self.scn_tower_tracker = scenes.TowerTracker()
-        self.scn_lobby = scenes.Lobby()
+    def _initialize_scenes(self):
+        self.scenes = [
+            scenes.GameTimerIcon(self),
+            scenes.GameStart(self),
+            scenes.GameGoSign(self),
+            scenes.GameKill(self),
+            scenes.GameDead(self),
+            scenes.GameOutOfBound(self),
+            scenes.GameFinish(self),
+            scenes.ResultJudge(self),
+            scenes.PaintScoreTracker(self),
+            scenes.ObjectiveTracker(self),
+            scenes.ResultDetail(self),
+            scenes.ResultUdemae(self),
+            scenes.ResultGears(self),
+            scenes.Lobby(self),
+        ]
 
+    def __init__(self):
+        self._initialize_scenes()
+
+        self.output_plugins = [self]
         self.last_capture = time.time() - 100
-        self.last_gamestart = time.time() - 100
-        self.last_game_finish = time.time() - 100
 
         self._stop = False
         self._pause = True

@@ -22,19 +22,20 @@ import sys
 import cv2
 import numpy as np
 
+from ikalog.scenes.scene import Scene
 from ikalog.utils import *
 
 
-class Lobby(object):
+class Lobby(Scene):
 
     def match_tag_lobby(self, context):
         frame = context['engine']['frame']
 
         # 「ルール」「ステージ」
-        if not self.mask_tag_rule.match(frame):
-            return False
+        r_mandatory = self.mask_tag_rule.match(frame) and \
+            self.mask_tag_stage.match(frame)
 
-        if not self.mask_tag_stage.match(frame):
+        if not r_mandatory:
             return False
 
         r_tag_matching = self.mask_tag_matching.match(frame)
@@ -53,7 +54,7 @@ class Lobby(object):
         else:
             context['lobby']['state'] = 'matched'
 
-        if r_tag_matched:
+        if 1:  # if r_tag_matched:
             # タッグ参加人数は?
             top_list = [76, 149, 215, 290]
 
@@ -80,11 +81,10 @@ class Lobby(object):
     def match_private_lobby(self, context):
         frame = context['engine']['frame']
 
-        r = self.mask_private_rule.match(frame) and \
+        mandatory = self.mask_private_rule.match(frame) and \
             self.mask_private_stage.match(frame)
 
-        # r == False ならプライベートロビーではない
-        if not r:
+        if not mandatory:
             return False
 
         # Matching? or Matched?
@@ -112,10 +112,10 @@ class Lobby(object):
         frame = context['engine']['frame']
 
         # 「ルール」「ステージ」
-        if not self.mask_rule.match(frame):
-            return False
+        mandatory = self.mask_rule.match(frame) and \
+            self.mask_stage.match(frame)
 
-        if not self.mask_stage.match(frame):
+        if not mandatory:
             return False
 
         # マッチング中は下記文字列のうちひとつがあるはず
@@ -131,21 +131,20 @@ class Lobby(object):
         if match_count > 1:
             return False
 
+        # フェスの場合
+        # FIXME: Festa, Matching の組み合わせ
         if (r_fes_matched):
             context['lobby']['type'] = 'festa'
             context['lobby']['state'] = 'matched'
             return True
 
-        else:
-            context['lobby']['type'] = 'public'
-
-        if (r_pub_matching):
+        # パブリックロビー
+        context['lobby']['type'] = 'public'
+        if r_pub_matching:
             context['lobby']['state'] = 'matching'
 
-        elif (r_pub_matched):
+        elif r_pub_matched:
             context['lobby']['state'] = 'matched'
-
-        # FIXME: Festa, Matching の組み合わせ
 
         return True
 
@@ -164,33 +163,51 @@ class Lobby(object):
 
         return False
 
-    def match(self, context):
-        r = self.match_any_lobby(context)
+    def reset(self):
+        super(Lobby, self).reset()
 
-        if not r:
+        self._last_matching_event_msec = - 100 * 1000
+        self._last_matched_event_msec = - 100 * 1000
+
+    def match_no_cache(self, context):
+        if self.is_another_scene_matched(context, 'GameTimerIcon'):
             return False
 
-        msec = context['engine']['msec']
-        call_plugins = context['engine']['service']['callPlugins']
+        frame = context['engine']['frame']
 
-        if context['lobby'].get('state', None) == 'matching':
-            last_matching = context['lobby'].get('last_matching', -60 * 1000)
-            if (msec - last_matching) > (60 * 1000):
-                # マッチングを開始した
-                context['lobby']['last_matched'] =  -60 * 1000
-                call_plugins('on_lobby_matching')
-            context['lobby']['last_matching'] = msec
+        if frame is None:
+            return False
 
-        if context['lobby'].get('state', None) == 'matched':
-            last_matched = context['lobby'].get('last_matched', -60 * 1000)
-            if (msec - last_matched) > (60 * 1000):
-                # マッチングを開始した
-                call_plugins('on_lobby_matched')
-            context['lobby']['last_matched'] = msec
+        matched = self.match_any_lobby(context)
 
-        return True
+        if matched:
+            if context['lobby'].get('state', None) == 'matching':
+                if not self.matched_in(context, 60 * 1000, attr='_last_matching_event_msec'):
+                    self._call_plugins('on_lobby_matching')
+                self._last_matching_event_msec = context['engine']['msec']
 
-    def __init__(self, debug=False):
+            elif context['lobby'].get('state', None) == 'matched':
+                if not self.matched_in(context, 60 * 1000, attr='_last_matched_event_msec'):
+                    self._call_plugins('on_lobby_matched')
+                self._last_matched_event_msec = context['engine']['msec']
+            return True
+
+        return False
+
+    def _analyze(self, context):
+        pass
+
+    def dump(self, context):
+        lobby = context['lobby']
+        print('%s: matched %s type %s state %s team_members %s' % (
+            self,
+            self._matched,
+            lobby.get('type', None),
+            lobby.get('state', None),
+            lobby.get('team_members', None),
+        ))
+
+    def _init_scene(self, debug=False):
         self.mask_rule = IkaMatcher(
             72, 269, 90, 25,
             img_file='masks/ui_lobby_public.png',
@@ -241,20 +258,19 @@ class Lobby(object):
             img_file='masks/ui_lobby_public.png',
             threshold=0.90,
             orig_threshold=0.15,
-            bg_method=matcher.MM_BLACK(visibility=(0, 48)),
+            bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Matching',
             debug=debug
         )
 
         # 背景：緑、赤、黒　文字：黄色
-        # bg が高め(0.150ぐらい)
         self.mask_matched = IkaMatcher(
             826, 37, 280, 34,
             img_file='masks/ui_lobby_public_matched.png',
             threshold=0.90,
-            orig_threshold=0.20,
-            bg_method=matcher.MM_BLACK(visibility=(0, 48)),
+            orig_threshold=0.15,
+            bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='Matched',
@@ -377,22 +393,5 @@ class Lobby(object):
             debug=debug
         )
 
-
-def noop(context):
-    pass
-
 if __name__ == "__main__":
-    target = cv2.imread(sys.argv[1])
-    obj = Lobby(debug=True)
-
-    context = {
-        'engine': {'frame': target, 'msec': 0, 'service': {'callPlugins': noop}, },
-        'game': {},
-        'lobby': {},
-    }
-
-    matched = obj.match(context)
-    print("matched %s" % (matched))
-    print(context['lobby'])
-    #cv2.imshow('target', target)
-    cv2.waitKey()
+    Lobby.main_func()

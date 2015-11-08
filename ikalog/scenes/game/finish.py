@@ -17,27 +17,42 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import sys
 
+import sys
 import cv2
 
 from ikalog.utils import *
+from ikalog.scenes.scene import Scene
 
 
-class GameFinish(object):
+class GameFinish(Scene):
 
-    last_matched = False
+    def reset(self):
+        super(GameFinish, self).reset()
 
-    def match(self, context):
+        self._last_event_msec = - 100 * 1000
+
+    def match_no_cache(self, context):
+        if self.is_another_scene_matched(context, 'GameTimerIcon'):
+            return False
+
         frame = context['engine']['frame']
 
         matched = self.mask_finish.match(frame)
-        ret = matched and (not self.last_matched)
-        self.last_matched = matched
 
-        return ret
+        if not matched:
+            return False
 
-    def __init__(self, debug=False):
+        if not self.matched_in(context, 60 * 1000, attr='_last_event_msec'):
+            self._call_plugins('on_game_finish')
+            self._last_event_msec = context['engine']['msec']
+
+        return matched
+
+    def _analyze(self, context):
+        pass
+
+    def _init_scene(self, debug=False):
         self.mask_finish = IkaMatcher(
             0, 0, 1280, 720,
             img_file='masks/ui_finish.png',
@@ -50,15 +65,4 @@ class GameFinish(object):
         )
 
 if __name__ == "__main__":
-    target = cv2.imread(sys.argv[1])
-    obj = GameFinish(debug=True)
-
-    context = {
-        'engine': {'frame': target},
-        'game': {},
-    }
-
-    matched = obj.match(context)
-    print("matched %s" % (matched))
-
-    cv2.waitKey()
+    GameFinish.main_func()
