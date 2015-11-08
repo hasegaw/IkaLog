@@ -211,6 +211,7 @@ class StatInk(object):
                 'ヒッセン': 'hissen',
 
                 'バレルスピナー': 'barrelspinner',
+                'バレルスピナーデコ': 'barrelspinner_deco',
                 'スプラスピナー': 'splatspinner',
             }[weapon]
         except:

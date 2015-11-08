@@ -130,6 +130,7 @@ learnImageGroup(weapons, "バケットスローシャー", dir="バケットス�
 learnImageGroup(weapons, "パブロ", dir="パブロ")
 learnImageGroup(weapons, "パブロ・ヒュー", dir="パブロ・ヒュー")
 learnImageGroup(weapons, "バレルスピナー", dir="バレルスピナー")
+learnImageGroup(weapons, "バレルスピナーデコ", dir="バレルスピナーデコ")
 learnImageGroup(weapons, "ヒーローシューターレプリカ", dir="ヒーローシューターレプリカ")
 learnImageGroup(weapons, "ヒーローチャージャーレプリカ", dir="ヒーローチャージャーレプリカ")
 learnImageGroup(weapons, "ヒーローローラーレプリカ", dir="ヒーローローラーレプリカ")
