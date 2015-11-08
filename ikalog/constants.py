@@ -108,6 +108,7 @@ weapons = {
     'hissen': {'ja': 'ヒッセン'},
 
     'barrelspinner': {'ja': 'バレルスピナー'},
+    'barrelspinner_deco': {'ja': 'バレルスピナーデコ'},
     'splatspinner': {'ja': 'スプラスピナー'},
 }
 
