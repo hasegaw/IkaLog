@@ -25,14 +25,25 @@ from ikalog.utils import IkaUtils
 class IkaConfig:
 
     def config(self):
-        if IkaUtils.isOSX():
-            source = inputs.AVFoundationCapture()
-        else:
-            source = inputs.CVCapture()
+        # 使いたい入力を設定
 
-        # 使いたい入力を選択
-        source.start_camera(0)                        # キャプチャデバイスから
-        # source.start_recorded_file('video.avi')      # ファイルからの読み込み
+        # パターン1: Windows 上でキャプチャデバイスを利用
+        # source = inputs.CVCapture()
+        # source.start_camera(0)
+
+        # パターン2: Windows 上でスクリーンキャプチャを利用
+        # 起動時は全画面を取り込み。 C キー押下で画面内にある WiiU 画面を検出
+        # source = inputs.ScreenCapture()
+
+        # パターン3: Mac 上で AVFoundation を介してキャプチャデバイスを利用
+        # 現在 UltraStudio Mini Recorder のみ動作確認
+        # source = inputs.AVFoundationCapture()
+        # source.start_camera(0)    # デバイス名は環境による
+
+        # パターン4: OpenCV のビデオファイル読み込み機能を利用する
+        # OpenCV が FFMPEG に対応していること
+        source = inputs.CVFile()
+        source.start_video_file('video.avi')
 
         source.need_resize = True                    # 720p でない場合はリサイズさせる
 
