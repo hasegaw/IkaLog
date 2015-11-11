@@ -69,8 +69,10 @@ class ResultJudge(Scene):
             print('trigger event')
             context['game']['image_judge'] = copy.deepcopy(
                 context['engine']['frame'])
+            self._analyze(context)
             self._call_plugins('on_result_judge')
             self._last_event_msec = context['engine']['msec']
+
         return True
 
     def _analyze(self, context):
