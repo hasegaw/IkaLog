@@ -48,6 +48,7 @@ weapons = {
     '96gal': {'ja': 'ガロン96'},
     '96gal_deco': {'ja': 'ガロンデコ96'},
     'bold': {'ja': 'ボールドマーカー'},
+    'bold_neo': {'ja': 'ボールドマーカーネオ'},
     'dualsweeper': {'ja': 'デュアルスイーパー'},
     'dualsweeper_custom': {'ja': 'デュアルスイーパーカスタム'},
     'h3reelgun': {'ja': 'H3リールガン'},

@@ -152,6 +152,7 @@ class StatInk(object):
                 'ガロン96': '96gal',
                 'ガロンデコ96': '96gal_deco',
                 'ボールドマーカー': 'bold',
+                'ボールドマーカーネオ': 'bold_neo',
                 'デュアルスイーパー': 'dualsweeper',
                 'デュアルスイーパーカスタム': 'dualsweeper_custom',
                 'H3リールガン': 'h3reelgun',
