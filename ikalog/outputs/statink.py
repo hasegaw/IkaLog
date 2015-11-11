@@ -23,6 +23,7 @@ import os
 import pprint
 
 import urllib3
+import certifi
 import umsgpack
 from ikalog.version import IKALOG_VERSION
 from ikalog.utils import *
@@ -488,11 +489,19 @@ class StatInk(object):
         mp_payload_bytes = umsgpack.packb(payload)
         mp_payload = ''.join(map(chr, mp_payload_bytes))
 
-        pool = urllib3.PoolManager()
-        req = pool.urlopen('POST', url_statink_v1_battle,
-                           headers=http_headers,
-                           body=mp_payload,
-                           )
+        pool = urllib3.PoolManager(
+            cert_reqs = 'CERT_REQUIRED', # Force certificate check
+            ca_certs = certifi.where(),  # Path to the Certifi bundle.
+        )
+
+        try:
+            req = pool.urlopen('POST', url_statink_v1_battle,
+                               headers=http_headers,
+                               body=mp_payload,
+                               )
+        except urllib3.exceptions.SSLError as e:
+            # Handle incorrect certificate error.
+            print('SSLError, value:' + e.value)
 
         if self.show_response_enabled:
             print(req.data.decode('utf-8'))
