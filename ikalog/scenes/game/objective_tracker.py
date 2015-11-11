@@ -20,15 +20,14 @@
 import sys
 
 import cv2
-
 import numpy as np
 
+from ikalog.scenes.scene import Scene
+from ikalog.utils import *
 
-# Tracker the control tower, (or rainmaker)
-#
+# Tracker the control tower (or rainmaker)
 
-
-class TowerTracker(object):
+class ObjectiveTracker(Scene):
     # 720p サイズでの値
     tower_width = 580
     tower_left = 1280 / 2 - tower_width / 2
@@ -37,13 +36,6 @@ class TowerTracker(object):
 
     tower_line_top = 93
     tower_line_height = 5
-
-    def reset(self, context):
-        context['game']['tower'] = {
-            'pos': 0,
-            'max': 0,
-            'min': 0,
-        }
 
     def tower_pos(self, context):
         img = context['engine']['frame'][self.tower_line_top:self.tower_line_top +
@@ -81,43 +73,48 @@ class TowerTracker(object):
 
         return xPos_pct
 
-    def match(self, context):
+    def match_no_cache(self, context):
+        if self.is_another_scene_matched(context, 'GameTimerIcon') == False:
+            return False
+
         if context['game']['rule'] is None:
             return None
 
         applicable_modes = [u'ガチヤグラ', u'ガチホコバトル', 'ガチヤグラ', 'ガチホコバトル']
-        if not (context['game']['rule']['name'] in applicable_modes):
+        if not (IkaUtils.rule2text(context['game']['rule']) in applicable_modes):
             return None
 
         xPos_pct = self.tower_pos(context)
+
+        if not 'tower' in context['game']:
+            context['game']['tower'] = {
+                'pos': 0,
+                'max': 0,
+                'min': 0,
+            }
 
         if xPos_pct != xPos_pct:
             # 値がとれていない
             xPos_pct = context['game']['tower']['pos']
 
-        xPos_pct = int(xPos_pct)
 
-        context['game']['tower']['pos'] = xPos_pct
-        context['game']['tower']['min'] = min(
-            xPos_pct, context['game']['tower']['min'])
-        context['game']['tower']['max'] = max(
-            xPos_pct, context['game']['tower']['max'])
-        return context['game']['tower']
+        new_pos = int(xPos_pct)
+        new_min = min(new_pos, context['game']['tower']['min'])
+        new_max = max(new_pos, context['game']['tower']['max'])
 
-    def __init__(self):
+        updated = (new_pos != context['game']['tower']['pos'])
+
+        context['game']['tower']['pos'] = new_pos
+        context['game']['tower']['min'] = new_min
+        context['game']['tower']['max'] = new_max
+        if updated:
+            self._call_plugins('on_game_objective_position_update')
+        return True
+
+    def _init_scene(self):
         self.ui_tower_mask = cv2.imread('masks/ui_tower.png')
         self.ui_tower_mask = self.ui_tower_mask[
             self.tower_line_top:self.tower_line_top + self.tower_line_height, self.tower_left:self.tower_left + self.tower_width]
 
 if __name__ == "__main__":
     target = cv2.imread(sys.argv[1])
-    # target = cv2.resize(target, (1280, 720))
-    obj = IkaScene_RankedBattle()
-
-    context = {
-        'engine': {'frame': target},
-        'game': {},
-    }
-
-    r = obj.match(context)
-    cv2.waitKey()

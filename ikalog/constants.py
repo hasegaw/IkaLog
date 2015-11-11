@@ -51,6 +51,7 @@ weapons = {
     'dualsweeper': {'ja': 'デュアルスイーパー'},
     'dualsweeper_custom': {'ja': 'デュアルスイーパーカスタム'},
     'h3reelgun': {'ja': 'H3リールガン'},
+    'h3reelgun_d': {'ja': 'H3リールガンD'},
     'heroshooter_replica': {'ja': 'ヒーローシューターレプリカ'},
     'hotblaster': {'ja': 'ホットブラスター'},
     'hotblaster_custom': {'ja': 'ホットブラスターカスタム'},
@@ -62,6 +63,7 @@ weapons = {
     'longblaster_custom': {'ja': 'ロングブラスターカスタム'},
     'momiji': {'ja': 'もみじシューター'},
     'nova': {'ja': 'ノヴァブラスター'},
+    'nova_neo': {'ja': 'ノヴァブラスターネオ'},
     'nzap85': {'ja': 'N-ZAP85'},
     'nzap89': {'ja': 'N-ZAP89'},
     'octoshooter_replica': {'ja': 'オクタシューターレプリカ'},
@@ -106,6 +108,7 @@ weapons = {
     'hissen': {'ja': 'ヒッセン'},
 
     'barrelspinner': {'ja': 'バレルスピナー'},
+    'barrelspinner_deco': {'ja': 'バレルスピナーデコ'},
     'splatspinner': {'ja': 'スプラスピナー'},
 }
 

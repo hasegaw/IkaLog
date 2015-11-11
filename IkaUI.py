@@ -24,10 +24,10 @@ import threading
 import wx
 import yaml
 
-from ikalog.inputs.cvcapture import CVCapture
 from ikalog.engine import *
 from ikalog import outputs
 from ikalog.ui.panel import *
+from ikalog.ui import VideoCapture
 from ikalog.utils import *
 
 
@@ -193,7 +193,7 @@ def engine_thread_func():
 
 if __name__ == "__main__":
     application = wx.App()
-    input_plugin = CVCapture()
+    input_plugin = VideoCapture()
     gui = IkaLogGUI()
     input_plugin.on_option_tab_create(gui.options.notebookOptions)
     gui.frame.Show()

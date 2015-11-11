@@ -18,6 +18,8 @@
 #  limitations under the License.
 #
 
+import threading
+
 import wx
 
 
@@ -30,7 +32,7 @@ class TimelinePanel(wx.Panel):
     def on_frame_next(self, context):
         if self.context is None:
             self.context = context
-        self.Refresh()
+        self.refresh_at_next = True
 
     def rescale_x(self, context):
         self.game_period = self.max_game_period
@@ -172,6 +174,9 @@ class TimelinePanel(wx.Panel):
                          self.margin_dots + self.gw, self.margin_dots + self.gh)
 
     def OnPaint(self, event):
+        print('OnPaint')
+        self.lock.acquire()
+
         self.dc = wx.PaintDC(self)
         try:
             w, h = self.GetClientSizeTuple()
@@ -192,25 +197,48 @@ class TimelinePanel(wx.Panel):
 
         if self.context is None:
             # !!
+            self.lock.release()
             return
 
-        self.rescale_x(self.context)
-        self.draw_lives(self.context)
-        self.draw_graph_x_axis()
-        self.draw_tower(self.context)
+        try:
+            self.rescale_x(self.context)
+            self.draw_lives(self.context)
+            self.draw_graph_x_axis()
+            self.draw_tower(self.context)
 
-        self.draw_graph_finalize()
+            self.draw_graph_finalize()
 
-        self.dc.SetPen(self.default_pen)
-        self.dc.SetFont(self.default_font)
-
+            self.dc.SetPen(self.default_pen)
+            self.dc.SetFont(self.default_font)
+        finally:
+            self.lock.release()
         return
+
+    def OnTimer(self, event):
+        self.lock.acquire()
+
+        if self.latest_frame is None:
+            self.lock.release()
+            return
+
+        self.lock.release()
+
+        if not self.refresh_at_next:
+            return
+
+        self.Refresh()
+        self.refresh_at_next = False
 
     def __init__(self, *args, **kwargs):
         self.latest_frame = None
+        self.lock = threading.Lock()
         wx.Panel.__init__(self, *args, **kwargs)
         self.Bind(wx.EVT_PAINT, self.OnPaint)
         # self.Bind(wx.EVT_SIZE, self.OnResize)
+
+        self.timer = wx.Timer(self)
+        self.timer.Start(1000)
+        self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
 
 
 if __name__ == "__main__":

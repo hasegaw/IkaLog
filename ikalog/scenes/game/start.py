@@ -21,10 +21,11 @@ import sys
 
 import cv2
 
+from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 
 
-class GameStart(object):
+class GameStart(StatefulScene):
 
     # 720p サイズでの値
     mapname_width = 430
@@ -39,102 +40,123 @@ class GameStart(object):
     rulename_bottom = 310
     rulename_height = rulename_bottom - rulename_top
 
-    def guess_stage(self, frame):
-        most_possible_stage = (0, None)
+    def reset(self):
+        super(GameStart, self).reset()
 
-        for stage in self.map_list:
-            matched, fg_score, bg_score = stage['mask'].match_score(frame)
-            if matched and (most_possible_stage[0] < fg_score):
-                most_possible_stage = (fg_score, stage)
+        self._last_event_msec = - 100 * 1000
 
-        return most_possible_stage[1]
+    def find_best_match(self, frame, matchers_list):
+        most_possible = (0, None)
 
-    def guess_rule(self, frame):
-        most_possible_rule = (0, None)
+        for matcher in matchers_list:
+            matched, fg_score, bg_score = matcher.match_score(frame)
+            if matched and (most_possible[0] < fg_score):
+                most_possible = (fg_score, matcher)
 
-        for rule in self.rule_list:
-            matched, fg_score, bg_score = rule['mask'].match_score(frame)
-            if matched and (most_possible_rule[0] < fg_score):
-                most_possible_rule = (fg_score, rule)
+        return most_possible[1]
 
-        return most_possible_rule[1]
-
-    def elect(self, context):
+    def elect(self, context, votes):
         # 古すぎる投票は捨てる
         election_start = context['engine']['msec'] - self.election_period
-        while (len(self.votes) and self.votes[0][0] < election_start):
-            del self.votes[0]
+
+        while (len(votes) and votes[0][0] < election_start):
+            del votes[0]
 
         # 考えづらいがゼロ票なら開票しない
-        if len(self.votes) == 0:
-            return None, None
-
-        # 3秒以上たっていたら開票開始
-        #election_start2 = context['engine']['msec'] - (3 * 1000)
-        # if election_start2 < self.votes[0][0]:
-        #    return None, None
+        if len(votes) == 0:
+            return None
 
         # 開票作業
-        stages = {}
-        rules = {}
+        items = {}
 
         count = 0
-        stage_top = (0, None)  # 最高票数の tuple   (17[票], <IkaMatcher>)
-        rule_top = (0, None)
+        item_top = (0, None)  # 最高票数の tuple   (17[票], <IkaMatcher>)
 
-        for vote in self.votes:
-            if vote[1] is not None:
-                stage = vote[1]['name']
-                stages[stage] = stages[stage] + 1 if map in stages else 1
-                if stage_top[0] < stages[stage]:
-                    stage_top = (stages[stage], vote[1])
+        for vote in votes:
+            if vote[1] is None:
+                continue
 
-            if vote[2] is not None:
-                rule = vote[2]['name']
-                rules[rule] = rules[rule] + 1 if rule in rules else 1
-                if rule_top[0] < rules[rule]:
-                    rule_top = (rules[rule], vote[2])
+            item = vote[1]
+            items[item] = items[item] + 1 if item in items else 1
+            if item_top[0] < items[item]:
+                item_top = (items[item], item)
 
-        # 必要票数
-        quorum = 1  # max(3, len(self.votes) / 2)
-        # print(maps)
-        # print(rules)
-        #print('quorum = %s' % quorum)
+        # TODO: 必要票数
 
-        # 必要票数が達しなかった場合
-        if stage_top[0] < quorum:
-            stage_top = (0, None)
+        if item_top[1] is None:
+            return None
 
-        if rule_top[0] < quorum:
-            rule_top = (0, None)
+        return item_top[1]
 
-        # 必要票数に達したものだけ更新
-        if stage_top[1] is not None:
-            context['game']['map'] = stage_top[1]
-        if rule_top[1] is not None:
-            context['game']['rule'] = rule_top[1]
+    def _state_default(self, context):
+        if self.is_another_scene_matched(context, 'GameTimerIcon'):
+            return False
 
-        return stage_top[1], rule_top[1]
+        frame = context['engine']['frame']
 
-    def match(self, context):
-        map = self.guess_stage(context['engine']['frame'])
-        rule = self.guess_rule(context['engine']['frame'])
+        if frame is None:
+            return False
 
-        if not map is None:
-            context['game']['map'] = map
+        stage = self.find_best_match(frame, self.stage_matchers)
+        rule = self.find_best_match(frame, self.rule_matchers)
+
+        if not stage is None:
+            context['game']['map'] = stage
+
         if not rule is None:
             context['game']['rule'] = rule
 
-        if len(self.votes) or map or rule:
-            self.votes.append((context['engine']['msec'], map, rule))
+        if stage or rule:
+            self.stage_votes = []
+            self.rule_votes = []
+            self.stage_votes.append((context['engine']['msec'], stage))
+            self.rule_votes.append((context['engine']['msec'], rule))
+            self._switch_state(self._state_tracking)
 
-        self.elect(context)
+        return (stage or rule)
 
-        return (map or rule)
+    def _state_tracking(self, context):
+        frame = context['engine']['frame']
 
-    def __init__(self, debug=False):
+        if frame is None:
+            return False
+
+        stage = self.find_best_match(frame, self.stage_matchers)
+        rule = self.find_best_match(frame, self.rule_matchers)
+
+        matched = (stage or rule)
+
+        # 画面が続いているならそのまま
+        if matched:
+            self.stage_votes.append((context['engine']['msec'], stage))
+            self.rule_votes.append((context['engine']['msec'], rule))
+            return True
+
+        # 1000ms 以内の非マッチはチャタリングとみなす
+        if not matched and self.matched_in(context, 1000):
+            return False
+
+        # それ以上マッチングしなかった場合 -> シーンを抜けている
+        if not self.matched_in(context, 1000, attr='_last_event_msec'):
+            context['game']['map'] = self.elect(context, self.stage_votes)
+            context['game']['rule'] = self.elect(context, self.rule_votes)
+
+            self.dump(context)
+            self._call_plugins('on_game_start')
+            self._last_event_msec = context['engine']['msec']
+
+        self._switch_state(self._state_default)
+        return False
+
+    def _analyze(self, context):
+        pass
+
+    def dump(self, context):
+        print(self.stage_votes)
+        print(self.rule_votes)
+
+    def _init_scene(self, debug=False):
         self.election_period = 5 * 1000  # msec
-        self.votes = []
 
         self.map_list = [
             {'name': 'タチウオパーキング', 'file': 'masks/gachi_tachiuo.png'},
@@ -158,6 +180,9 @@ class GameStart(object):
             {'name': 'ナワバリバトル', 'file': 'masks/nawabari_mozuku.png'},
         ]
 
+        self.stage_matchers = []
+        self.rule_matchers = []
+
         for map in self.map_list:
             map['mask'] = IkaMatcher(
                 self.mapname_left, self.mapname_top, self.mapname_width, self.mapname_height,
@@ -169,6 +194,8 @@ class GameStart(object):
                 label='map:%s' % map['name'],
                 debug=debug,
             )
+            self.stage_matchers.append(map['mask'])
+            setattr(map['mask'], 'id_', map['name'])
 
         for rule in self.rule_list:
             rule['mask'] = IkaMatcher(
@@ -181,20 +208,8 @@ class GameStart(object):
                 label='rule:%s' % rule['name'],
                 debug=debug,
             )
+            setattr(rule['mask'], 'id_', rule['name'])
+            self.rule_matchers.append(rule['mask'])
 
 if __name__ == "__main__":
-    target = cv2.imread(sys.argv[1])
-
-    context = {
-        'engine': {'frame': target, 'msec': 0, },
-        'game': {},
-    }
-
-    obj = GameStart(debug=True)
-
-    r = obj.match(context)
-
-    print(r, context['game'])
-
-    cv2.imshow('Scene', target)
-    cv2.waitKey()
+    GameStart.main_func()

@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 
+import copy
 import threading
 
 import wx
@@ -58,22 +59,16 @@ class PreviewPanel(wx.Panel):
         self.lock.release()
 
         try:
-            self.bmp = wx.Bitmap.FromBuffer(width, height, frame_rgb)
+            bmp = wx.Bitmap.FromBuffer(width, height, frame_rgb)
         except:
-            self.bmp = wx.BitmapFromBuffer(width, height, frame_rgb)
+            bmp = wx.BitmapFromBuffer(width, height, frame_rgb)
 
         dc = wx.BufferedPaintDC(self)
-        dc.SetBackground(wx.Brush(wx.RED))
-        dc.Clear()
-        dc.DrawBitmap(self.bmp, 0, 0)
+        # dc.SetBackground(wx.Brush(wx.RED))
 
-        return
+        dc.DrawBitmap(bmp, 0, 0)
 
-        dc = wx.PaintDC(self)
-
-        w, h = self.GetClientSizeTuple()
-
-    def OnTimer(self, evnet):
+    def OnTimer(self, event):
         self.lock.acquire()
 
         if self.latest_frame is None:

@@ -17,28 +17,64 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import datetime
 import sys
 import traceback
 from datetime import datetime
 
 import cv2
-
 import numpy as np
+
+from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 from ikalog.inputs.filters import OffsetFilter
 
-class ResultDetail(object):
 
-    def is_entry_me(self, entry_img):
+class ResultDetail(StatefulScene):
+
+    def auto_offset(self, context):
+        # 画面のオフセットを自動検出して image を返す
+
+        filter = OffsetFilter(self)
+        filter.enable()
+
+        # filter が必要とするので...
+        self.out_width = 1280
+        self.out_height = 720
+
+        best_match = (context['engine']['frame'], 0.0, 0, 0)
+        offset_list = [0, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+
+        for ox in offset_list:
+            for oy in offset_list:
+                filter.offset = (ox, oy)
+                img = filter.execute(context['engine']['frame'])
+                IkaUtils.matchWithMask(
+                    context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
+                score = self.mask_win.match_score(img)
+
+                if not score[0]:
+                    continue
+
+                if best_match[1] < score[1]:
+                    best_match = (img, score[1], ox, oy)
+
+        if best_match[2] != 0 or best_match[3] != 0:
+            IkaUtils.dprint('%s: Offset detected. (%d, %d)' %
+                            (self, best_match[2], best_match[3]))
+
+        return best_match[0]
+
+    def is_entry_me(self, img_entry):
         # ヒストグラムから、入力エントリが自分かを判断
-        if len(entry_img.shape) > 2 and entry_img.shape[2] != 1:
-            me_img = cv2.cvtColor(entry_img[:, 0:43], cv2.COLOR_BGR2GRAY)
+        if len(img_entry.shape) > 2 and img_entry.shape[2] != 1:
+            img_me = cv2.cvtColor(img_entry[:, 0:43], cv2.COLOR_BGR2GRAY)
         else:
-            me_img = entry_img[:, 0:43]
+            img_me = img_entry[:, 0:43]
 
-        ret, me_img = cv2.threshold(me_img, 230, 255, cv2.THRESH_BINARY)
+        img_me = cv2.threshold(img_me, 230, 255, cv2.THRESH_BINARY)[1]
 
-        me_score = np.sum(me_img)
+        me_score = np.sum(img_me)
         me_score_normalized = 0
         try:
             me_score_normalized = me_score / (43 * 45 * 255 / 10)
@@ -49,7 +85,6 @@ class ResultDetail(object):
 
         return (me_score_normalized > 1)
 
-    # FixMe: character_recoginizer を使って再実装
     def guess_fes_title(self, img_fes_title):
         img_fes_title_hsv = cv2.cvtColor(img_fes_title, cv2.COLOR_BGR2HSV)
         yellow = cv2.inRange(img_fes_title_hsv[:, :, 0], 32 - 2, 32 + 2)
@@ -99,6 +134,31 @@ class ResultDetail(object):
         team = None
 
         return gender, level, team
+
+    def analyze_team_colors(self, context):
+        # スクリーンショットからチームカラーを推測
+        assert 'won' in context['game']
+
+        img = self.auto_offset(context)
+
+        if context['game']['won']:
+            my_team_color_bgr = img[115:116, 1228:1229]
+            counter_team_color_bgr = img[452:453, 1228:1229]
+        else:
+            counter_team_color_bgr = img[115:116, 1228:1229]
+            my_team_color_bgr = img[452:453, 1228:1229]
+
+        my_team_color = {
+            'rgb': cv2.cvtColor(my_team_color_bgr, cv2.COLOR_BGR2RGB).tolist()[0][0],
+            'hsv': cv2.cvtColor(my_team_color_bgr, cv2.COLOR_BGR2HSV).tolist()[0][0],
+        }
+
+        counter_team_color = {
+            'rgb': cv2.cvtColor(counter_team_color_bgr, cv2.COLOR_BGR2RGB).tolist()[0][0],
+            'hsv': cv2.cvtColor(counter_team_color_bgr, cv2.COLOR_BGR2HSV).tolist()[0][0],
+        }
+
+        return (my_team_color, counter_team_color)
 
     def analyze_entry(self, img_entry):
         # 各プレイヤー情報のスタート左位置
@@ -227,40 +287,6 @@ class ResultDetail(object):
 
         return entry
 
-    def is_win(self, context):
-        return context['game']['won']
-
-    def auto_offset(self, context):
-        # 画面のオフセットを自動検出して image を返す
-
-        filter = OffsetFilter(self)
-        filter.enable()
-
-        # filter が必要とするので...
-        self.out_width = 1280
-        self.out_height = 720
-
-        best_match = (context['engine']['frame'], 0.0, 0, 0)
-
-        for ox in range(-5, 6, 1):
-            for oy in range(-5, 6, 1):
-                filter.offset = (ox, oy)
-                img = filter.execute(context['engine']['frame'])
-                IkaUtils.matchWithMask(context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
-                score = self.mask_win.match_score(img)
-
-                if not score[0]:
-                    continue
-
-                if best_match[1] < score[1]:
-                    best_match = (img, score[1], ox, oy)
-
-        if best_match[2] != 0 or best_match[3] != 0:
-            IkaUtils.dprint('%s: Offset detected. (%d, %d)' %
-                (self, best_match[2], best_match[3]))
-
-        return best_match[0]
-
     def analyze(self, context):
         # 各プレイヤー情報のスタート左位置
         entry_left = 610
@@ -270,55 +296,152 @@ class ResultDetail(object):
         entry_height = 45
         entry_top = [101, 166, 231, 296, 431, 496, 561, 626]
 
-        entry_id = 0
-
-        context['game']['players'] = []
-
         img = self.auto_offset(context)
 
-        for top in entry_top:
-            entry_id = entry_id + 1
+        # インクリング一覧
+        context['game']['players'] = []
+        entry_id = 0
+
+        for entry_id in range(len(entry_top)):  # 0..7
+            top = entry_top[entry_id]
+
             img_entry = img[top:top + entry_height,
                             entry_left:entry_left + entry_width]
 
             e = self.analyze_entry(img_entry)
 
-            e['team'] = 1 if entry_id < 5 else 2
-            e['rank_in_team'] = entry_id if e['team'] == 1 else entry_id - 4
+            # team, rank_in_team
+            e['team'] = 1 if entry_id < 4 else 2
+            e['rank_in_team'] = entry_id + \
+                1 if e['team'] == 1 else entry_id - 3
+
+            # won
+            if e['me']:
+                context['game']['won'] = (entry_id < 4)
 
             context['game']['players'].append(e)
 
-            if e['me']:
-                context['game']['won'] = True if entry_id < 5 else False
+            e_ = e.copy()
+            for f in list(e.keys()):
+                if f.startswith('img_'):
+                    del e_[f]
+            print(e_)
 
-        context['game']['won'] = self.is_win(context)
-        context['game']['timestamp'] = datetime.now()
+        print(context['game']['won'])
+
+        # チームカラー
+        team_colors = self.analyze_team_colors(context)
+        context['game']['my_team_color'] = team_colors[0]
+        context['game']['counter_team_color'] = team_colors[1]
+
+        # フェス関係
         context['game']['is_fes'] = ('prefix' in context['game']['players'][0])
 
-        # 暫定でチームカラーを簡単に取得する
-        if context['game']['won']:
-            my_team_color_bgr = img[115:116, 1228:1229]
-            counter_team_color_bgr = img[452:453, 1228:1229]
-        else:
-            counter_team_color_bgr = img[115:116, 1228:1229]
-            my_team_color_bgr = img[452:453, 1228:1229]
-
-        context['game']['my_team_color'] = {
-            'rgb': cv2.cvtColor(my_team_color_bgr, cv2.COLOR_BGR2RGB).tolist()[0][0],
-            'hsv': cv2.cvtColor(my_team_color_bgr, cv2.COLOR_BGR2HSV).tolist()[0][0],
-        }
-
-        context['game']['counter_team_color'] = {
-            'rgb': cv2.cvtColor(counter_team_color_bgr, cv2.COLOR_BGR2RGB).tolist()[0][0],
-            'hsv': cv2.cvtColor(counter_team_color_bgr, cv2.COLOR_BGR2HSV).tolist()[0][0],
-        }
+        # そのほか
+        # context['game']['timestamp'] = datetime.now()
 
         return True
 
-    def match(self, context):
-        return IkaUtils.matchWithMask(context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
+    def reset(self):
+        super(ResultDetail, self).reset()
 
-    def __init__(self, debug=False):
+        self._last_event_msec = - 100 * 1000
+        self._match_start_msec = - 100 * 1000
+
+    def _state_default(self, context):
+        if self.matched_in(context, 30 * 1000):
+            return False
+
+        if self.is_another_scene_matched(context, 'GameTimerIcon'):
+            return False
+
+        frame = context['engine']['frame']
+
+        if frame is None:
+            return False
+
+        matched = IkaUtils.matchWithMask(
+            context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
+
+        if matched:
+            self._match_start_msec = context['engine']['msec']
+            self.analyze(context)
+            self._switch_state(self._state_tracking)
+        return matched
+
+    def _state_tracking(self, context):
+        frame = context['engine']['frame']
+
+        if frame is None:
+            return False
+
+        matched = IkaUtils.matchWithMask(
+            context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
+
+        # 画面が続いているならそのまま
+        if matched:
+            if not self.matched_in(context, 30 * 1000, attr='_last_event_msec'):
+                self.analyze(context)
+#                self.dump(context)
+                self._call_plugins('on_result_detail')
+                self._call_plugins('on_game_individual_result')
+                self._last_event_msec = context['engine']['msec']
+            return True
+
+        # 1000ms 以内の非マッチはチャタリングとみなす
+        if not matched and self.matched_in(context, 1000):
+            return False
+
+        # それ以上マッチングしなかった場合 -> シーンを抜けている
+        self._last_event_msec = context['engine']['msec']
+        self._match_start_msec = - 100 * 1000
+        self._switch_state(self._state_default)
+        return False
+
+    def dump(self, context):
+        matched = True
+        analyzed = True
+        won = IkaUtils.getWinLoseText(
+            context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
+        fes = context['game']['is_fes']
+        print("matched %s analyzed %s result %s fest %s" %
+              (matched, analyzed, won, fes))
+        print('--------')
+        for e in context['game']['players']:
+            udemae = e['udemae_pre'] if ('udemae_pre' in e) else None
+            rank = e['rank'] if ('rank' in e) else None
+            kills = e['kills'] if ('kills' in e) else None
+            deaths = e['deaths'] if ('deaths' in e) else None
+            weapon = e['weapon'] if ('weapon' in e) else None
+            score = e['score'] if ('score' in e) else None
+            me = '*' if e['me'] else ''
+
+            if 'prefix' in e:
+                prefix = e['prefix']
+                prefix_ = re.sub('の', '', prefix)
+                gender = e['gender']
+            else:
+                prefix_ = ''
+                gender = ''
+
+            print("team %s rank_in_team %s rank %s udemae %s %s/%s weapon %s score %s %s%s %s" % (
+                e.get('team', None),
+                e.get('rank_in_team', None),
+                e.get('rank', None),
+                e.get('udemae_pre', None),
+                e.get('kills', None),
+                e.get('deaths', None),
+                e.get('weapon', None),
+                e.get('score', None),
+                prefix_, gender,
+                me,))
+        print('--------')
+
+    def _analyze(self, context):
+        frame = context['engine']['frame']
+        return True
+
+    def _init_scene(self, debug=False):
         self.mask_win = IkaMatcher(
             651, 47, 99, 33,
             img_file='masks/result_detail.png',
@@ -331,81 +454,17 @@ class ResultDetail(object):
         )
 
         winlose = cv2.imread('masks/result_detail.png')
-
-        try:
-            self.weapons = IkaGlyphRecoginizer()
-            self.weapons.load_model_from_file("data/weapons.knn.data")
-            self.weapons.knn_train()
-            IkaUtils.dprint('Loaded weapons recoginization model.')
-        except:
-            IkaUtils.dprint("Could not initalize weapons recoginiton model")
-
-        try:
-            self.number_recoginizer = character_recoginizer.NumberRecoginizer()
-        except:
-            self.number_recoginizer = None
-
-        try:
-            self.udemae_recoginizer = character_recoginizer.UdemaeRecoginizer()
-        except:
-            self.udemae_recoginizer = None
-
-        try:
-            self.fes_gender_recoginizer = character_recoginizer.FesGenderRecoginizer()
-        except:
-            self.fes_gender_recoginizer = None
-
-        try:
-            self.fes_level_recoginizer = character_recoginizer.FesLevelRecoginizer()
-        except:
-            self.fes_gender_recoginizer = None
-
-        if winlose is None:
-            print("勝敗画面のマスクデータが読み込めませんでした。")
-
         self.winlose_gray = cv2.cvtColor(winlose, cv2.COLOR_BGR2GRAY)
 
+        self.udemae_recoginizer = UdemaeRecoginizer()
+        self.number_recoginizer = NumberRecoginizer()
+        self.fes_gender_recoginizer = character_recoginizer.FesGenderRecoginizer()
+        self.fes_level_recoginizer = character_recoginizer.FesLevelRecoginizer()
+
+        self.weapons = IkaGlyphRecoginizer()
+        self.weapons.load_model_from_file("data/weapons.knn.data")
+        self.weapons.knn_train()
+
+
 if __name__ == "__main__":
-    import re
-    files = sys.argv[1:]
-
-    obj = ResultDetail()
-    for file in files:
-        target = cv2.imread(file)
-        cv2.imshow('input', target)
-
-        context = {
-            'engine': {'frame': target},
-            'game': {},
-        }
-
-        matched = obj.match(context)
-        analyzed = obj.analyze(context)
-        won = IkaUtils.getWinLoseText(
-            context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
-        fes = context['game']['is_fes']
-        print("matched %s analyzed %s result %s fest %s" % (matched, analyzed, won, fes))
-
-        print('')
-        for e in context['game']['players']:
-            if 'prefix' in e:
-                prefix = e['prefix']
-                prefix_ = re.sub('の', '', prefix)
-                gender = e['gender']
-            else:
-                prefix_ = ''
-                gender = ''
-
-            udemae = e['udemae_pre'] if ('udemae_pre' in e) else None
-            rank = e['rank'] if ('rank' in e) else None
-            kills = e['kills'] if ('kills' in e) else None
-            deaths = e['deaths'] if ('deaths' in e) else None
-            weapon = e['weapon'] if ('weapon' in e) else None
-            score = e['score'] if ('score' in e) else None
-            me = '*' if e['me'] else ''
-
-            print("rank %s udemae %s %s/%s weapon %s score %s %s%s %s, team %s rank_in_team %s" %
-                  (rank, udemae, kills, deaths, weapon, score, prefix_, gender, me, e['team'], e['rank_in_team']))
-
-    if len(files) > 0:
-        cv2.waitKey()
+    ResultDetail.main_func()

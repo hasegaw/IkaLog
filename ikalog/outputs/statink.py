@@ -166,6 +166,7 @@ class StatInk(object):
                 'ロングブラスターカスタム': 'longblaster_custom',
                 'もみじシューター': 'momiji',
                 'ノヴァブラスター': 'nova',
+                'ノヴァブラスターネオ': 'nova_neo',
                 'N-ZAP85': 'nzap85',
                 'N-ZAP89': 'nzap89',
                 'オクタシューターレプリカ': 'octoshooter_replica',
@@ -210,6 +211,7 @@ class StatInk(object):
                 'ヒッセン': 'hissen',
 
                 'バレルスピナー': 'barrelspinner',
+                'バレルスピナーデコ': 'barrelspinner_deco',
                 'スプラスピナー': 'splatspinner',
             }[weapon]
         except:
@@ -366,18 +368,45 @@ class StatInk(object):
                 ['int', 'death', 'deaths'],
                 ['int', 'level', 'rank'],
                 ['int', 'my_point', 'score'],
-                ['str_lower', 'rank', 'udemae_pre'],
             ], payload, me)
+
+        players = []
+        for e in context['game']['players']:
+            player = {}
+            player['team'] = 'my' if (e['team'] == me['team']) else 'his'
+            player['is_me'] = 'yes' if e['me'] else 'no'
+            self._set_values(
+                [  # 'type', 'stat.ink Field', 'IkaLog Field'
+                    ['int', 'rank_in_team', 'rank_in_team'],
+                    ['int', 'kill', 'kills'],
+                    ['int', 'death', 'deaths'],
+                    ['int', 'level', 'rank'],
+                    ['int', 'point', 'score'],
+                ], player, e)
+
+            if 'weapon' in e:
+                weapon = self.encode_weapon_name(e['weapon'])
+                if weapon:
+                    player['weapon'] = weapon
+
+            if payload.get('rule', 'nawabari') != 'nawabari':
+                if 'udemae_pre' in e:
+                    player['rank'] = str(e['udemae_pre']).lower()
+
+            players.append(player)
+
+        payload['players'] = players
 
         # ResultUdemae
 
-        if 'result_udemae' in context['scenes']:
+        if payload.get('rule', 'nawabari') != 'nawabari':
             self._set_values(
                 [  # 'type', 'stat.ink Field', 'IkaLog Field'
-                    # ['int', 'rank_exp', 'udemae_exp_pre'],
-                    ['int', 'rank_exp_after', 'udemae_exp_after'],
-                    ['str_lower', 'rank_after', 'udemae_str_after'],
-                ], payload, context['scenes']['result_udemae'])
+                    ['str_lower', 'rank', 'result_udemae_str_pre'],
+                    ['int', 'rank_exp', 'result_udemae_exp_pre'],
+                    ['str_lower', 'rank_after', 'result_udemae_str'],
+                    ['int', 'rank_exp_after', 'result_udemae_exp'],
+                ], payload, context['game'])
 
         knockout = context['game'].get('knockout', None)
         if (payload.get('rule', 'nawabari') != 'nawabari') and (knockout is not None):

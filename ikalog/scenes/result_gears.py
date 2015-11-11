@@ -20,24 +20,66 @@
 import sys
 import cv2
 
+from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 
 
-class ResultGears(object):
+class ResultGears(StatefulScene):
 
-    def match1(self, context):
+    def reset(self):
+        super(ResultGears, self).reset()
+
+        self._last_event_msec = - 100 * 1000
+
+    def _state_default(self, context):
+        if self.is_another_scene_matched(context, 'GameTimerIcon'):
+            return False
+
         frame = context['engine']['frame']
 
-        if not self.mask_okane_msg.match(frame):
+        if frame is None:
             return False
 
-        if not self.mask_level_msg.match(frame):
+        matched = self.mask_okane_msg.match(frame) and \
+            self.mask_level_msg.match(frame) and \
+            self.mask_gears_msg.match(frame) and \
+            self._analyze(context)
+
+        if matched:
+            game = context['game']
+            # game['result_cash_pre'] = game['result_cash']
+            self._switch_state(self._state_tracking)
+
+        return matched
+
+    def _state_tracking(self, context):
+        frame = context['engine']['frame']
+
+        if frame is None:
             return False
 
-        if not self.mask_gears_msg.match(frame):
+        matched = self.mask_okane_msg.match(frame) and \
+            self.mask_level_msg.match(frame) and \
+            self.mask_gears_msg.match(frame) and \
+            self._analyze(context)
+
+        # 画面が続いているならそのまま
+        if matched:
+            return True
+
+        # 1000ms 以内の非マッチはチャタリングとみなす
+        if not matched and self.matched_in(context, 1000):
             return False
 
-        return True
+        # それ以上マッチングしなかった場合 -> シーンを抜けている
+        if not self.matched_in(context, 30 * 1000, attr='_last_event_msec'):
+            self.dump(context)
+            self._call_plugins('on_result_gears')
+
+        self._last_event_msec = context['engine']['msec']
+        self._switch_state(self._state_default)
+
+        return False
 
     def analyzeGears(self, context):
         gears = []
@@ -73,13 +115,16 @@ class ResultGears(object):
             for field in gear:
                 print('  gear %d : %s' % (n, field))
 
-    def analyze(self, context):
+    def _analyze(self, context):
+        frame = context['engine']['frame']
+
         cash = None
         level = None
         exp = None
-        img_cash = context['engine']['frame'][110:110 + 55, 798:798 + 294]
-        img_level = context['engine']['frame'][284:284 + 63, 643:643 + 103]
-        img_exp = context['engine']['frame'][335:335 + 43, 1007:1007 + 180]
+
+        img_cash = frame[110:110 + 55, 798:798 + 294]
+        img_level = frame[284:284 + 63, 643:643 + 103]
+        img_exp = frame[335:335 + 43, 1007:1007 + 180]
 
         try:
             cash = self.number_recoginizer.match_digits(
@@ -101,65 +146,19 @@ class ResultGears(object):
         if not ('result_gears' in context['scenes']):
             context['scenes']['result_gears'] = {}
 
-        context['scenes']['result_gears']['img_cash'] = img_cash
-        context['scenes']['result_gears']['img_level'] = img_level
-        context['scenes']['result_gears']['img_exp'] = img_exp
-        context['scenes']['result_gears']['cash'] = cash
-        context['scenes']['result_gears']['level'] = level
-        context['scenes']['result_gears']['gears'] = gears
-        context['scenes']['result_gears']['exp'] = exp
+        data = context['scenes']['result_gears']
+
+        data['img_cash'] = img_cash
+        data['img_level'] = img_level
+        data['img_exp'] = img_exp
+        data['cash'] = cash
+        data['level'] = level
+        data['gears'] = gears
+        data['exp'] = exp
         # TODO: Slash が処理できるようになったら exp を数値化
         return True
 
-    def match_loop(self):
-
-        while True:
-            msec_last = 0
-            in_trigger = False
-
-            while not in_trigger:
-                context = (yield in_trigger)
-
-                if context['engine']['msec'] < (msec_last + 3 * 1000):
-                    continue
-                in_trigger = self.match1(context)
-
-            # in_trigger = True
-            msec_start = context['engine']['msec']
-            missed_frames = 0
-
-            # Now entered to the scene.
-
-            # TODO: 左上の数字が白くなくなったら?
-
-            while in_trigger:
-                context = (yield in_trigger)
-                if self.match1(context):
-                    msec_last = context['engine']['msec']
-                    missed_frames = 0
-                    self.analyze(context)
-                else:
-
-                    missed_frames = missed_frames + 1
-                    if missed_frames > 5:
-                        break
-
-            # Now escaped from the scene.
-
-            duration = (msec_last - msec_start)
-            IkaUtils.dprint('%s: duration = %d ms' % (self, duration))
-
-            if 1:  # if duration > 3 * 1000:
-                callPlugins = context['engine']['service']['callPlugins']
-                callPlugins('on_result_gears')
-
-    def match(self, context):
-        return self.cor.send(context)
-
-    def __init__(self, debug=False):
-        self.cor = self.match_loop()
-        self.cor.send(None)
-
+    def _init_scene(self, debug=False):
         self.udemae_recoginizer = UdemaeRecoginizer()
         self.number_recoginizer = NumberRecoginizer()
 
@@ -203,21 +202,4 @@ class ResultGears(object):
             self.number_recoginizer = None
 
 if __name__ == "__main__":
-    target = cv2.imread(sys.argv[1])
-    obj = ResultGears(debug=True)
-
-    context = {
-        'engine': {'frame': target},
-        'game': {},
-        'scenes': {},
-    }
-
-    matched = obj.match1(context)
-    analyzed = obj.analyze(context)
-    print("matched %s analyzed %s" % (matched, analyzed))
-    try:
-        obj.dump(context)
-    except:
-        pass
-
-    cv2.waitKey()
+    ResultGears.main_func()

@@ -91,7 +91,7 @@ class IkaUtils(object):
             if unknown is None:
                 unknown = "?"
             return unknown
-        return map['name']
+        return map.id_
 
     @staticmethod
     def rule2text(rule, unknown=None, lang="ja"):
@@ -99,7 +99,7 @@ class IkaUtils(object):
             if unknown is None:
                 unknown = "?"
             return unknown
-        return rule['name']
+        return rule.id_
 
     @staticmethod
     def cropImageGray(img, left, top, width, height):

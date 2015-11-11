@@ -103,23 +103,12 @@ class CVCapture(object):
 
     _systime_launch = int(time.time() * 1000)
 
-    # アマレコTV のキャプチャデバイス名
-    DEV_AMAREC = "AmaRec Video Capture"
-
-    source = 'amarec'
-    source_device = None
-    deinterlace = False
-    File = ''
-
     lock = threading.Lock()
 
     def enumerate_input_sources(self):
         return InputSourceEnumerator().enumerate()
 
-    def read(self):
-        if self.cap is None:
-            return None, None
-
+    def read_raw(self):
         self.lock.acquire()
         try:
             ret, frame = self.cap.read()
@@ -127,6 +116,26 @@ class CVCapture(object):
             self.lock.release()
 
         if not ret:
+            return None
+
+        # self.last_raw_size = frame.shape[0:1]
+        return frame
+
+    def read(self):
+        frame = self.read_raw()
+
+        if frame is None:
+            return None, None
+
+        res720p = (frame.shape[0] == 720) and (frame.shape[1] == 1280)
+        res1080p = (frame.shape[0] == 1080) and (frame.shape[1] == 1920)
+
+        if not (res720p or res1080p):
+            if not self._warned_resolution:
+                params = (frame.shape[1], frame.shape[0])
+                IkaUtils.dprint(
+                    '解像度が不正です(%d, %d)。使用可能解像度: 1280x720 もしくは 1920x1080' % params)
+                self._warned_resolution = True
             return None, None
 
         if self.need_deinterlace:
@@ -163,7 +172,7 @@ class CVCapture(object):
 
         if t < self.last_t:
             IkaUtils.dprint(
-                'FIXME: time position data rewinded. t=%x last_t=%x' % (t, self.last_t))
+                'FIXME: time position data rewinded. t=%s last_t=%s' % (t, self.last_t))
         self.last_t = t
 
         if self.need_resize:
@@ -224,180 +233,9 @@ class CVCapture(object):
         else:
             self.init_capture(0 + source)
 
-    def start_recorded_file(self, file):
-        IkaUtils.dprint(
-            '%s: initalizing pre-recorded video file %s' % (self, file))
-        self.realtime = False
-        self.from_file = True
-        self.init_capture(file)
-        self.fps = self.cap.get(5)
-
-    def restart_input(self):
-        IkaUtils.dprint('RestartInput: source %s file %s device %s' %
-                        (self.source, self.File, self.source_device))
-
-        if self.source == 'camera':
-            self.start_camera(self.source_device)
-
-        elif self.source == 'file':
-            self.start_recorded_file(self.File)
-        else:
-            # Use amarec if available
-            self.source = 'amarec'
-
-        if self.source == 'amarec':
-            self.start_camera(self.DEV_AMAREC)
-
-        success = True
-        if self.cap is None:
-            success = False
-
-        if success:
-            if not self.cap.isOpened():
-                success = False
-
-        return success
-
-    def apply_ui(self):
-        self.source = ''
-        for control in [self.radioAmarecTV, self.radioCamera, self.radioFile]:
-            if control.GetValue():
-                self.source = {
-                    self.radioAmarecTV: 'amarec',
-                    self.radioCamera: 'camera',
-                    self.radioFile: 'file',
-                }[control]
-
-        self.source_device = self.listCameras.GetItems(
-        )[self.listCameras.GetSelection()]
-        self.File = self.editFile.GetValue()
-        self.deinterlace = self.checkDeinterlace.GetValue()
-
-        # この関数は GUI 動作時にしか呼ばれない。カメラが開けなかった
-        # 場合にメッセージを出す
-        if not self.restart_input():
-            r = wx.MessageDialog(None, u'キャプチャデバイスの初期化に失敗しました。設定を見直してください', 'Error',
-                                 wx.OK | wx.ICON_ERROR).ShowModal()
-            IkaUtils.dprint(
-                "%s: failed to activate input source >>>>" % (self))
-        else:
-            IkaUtils.dprint("%s: activated new input source" % self)
-
-    def refresh_ui(self):
-        if self.source == 'amarec':
-            self.radioAmarecTV.SetValue(True)
-
-        if self.source == 'camera':
-            self.radioCamera.SetValue(True)
-
-        if self.source == 'file':
-            self.radioFile.SetValue(True)
-
-        try:
-            dev = self.source_device
-            index = self.listCameras.GetItems().index(dev)
-            self.listCameras.SetSelection(index)
-        except:
-            IkaUtils.dprint('Current configured device is not in list')
-
-        if not self.File is None:
-            self.editFile.SetValue('')
-        else:
-            self.editFile.SetValue(self.File)
-
-        self.checkDeinterlace.SetValue(self.deinterlace)
-
-    def on_config_reset(self, context=None):
-        # さすがにカメラはリセットしたくないな
-        pass
-
-    def on_config_load_from_context(self, context):
-        self.on_config_reset(context)
-        try:
-            conf = context['config']['cvcapture']
-        except:
-            conf = {}
-
-        self.source = ''
-        try:
-            if conf['Source'] in ['camera', 'file', u'camera', u'file']:
-                self.source = conf['Source']
-        except:
-            pass
-
-        if 'SourceDevice' in conf:
-            try:
-                self.source_device = conf['SourceDevice']
-            except:
-                # FIXME
-                self.source_device = 0
-
-        if 'File' in conf:
-            self.File = conf['File']
-
-        if 'Deinterlace' in conf:
-            self.deinterlace = conf['Deinterlace']
-
-        self.refresh_ui()
-        return self.restart_input()
-
-    def on_config_save_to_context(self, context):
-        context['config']['cvcapture'] = {
-            'Source': self.source,
-            'File': self.File,
-            'SourceDevice': self.source_device,
-            'Deinterlace': self.deinterlace,
-        }
-
-    def on_config_apply(self, context):
-        self.apply_ui()
-
-    def on_reload_devices_button_click(self, event=None):
-        cameras = self.enumerate_input_sources()
-        self.listCameras.SetItems(cameras)
-        try:
-            index = self.enumerate_input_sources().index(self.source_device)
-            self.listCameras.SetSelection(index)
-        except:
-            IkaUtils.dprint('Error: Device not found')
-
-    def on_option_tab_create(self, notebook):
-        self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, 'Input')
-
-        cameras = self.enumerate_input_sources()
-
-        self.layout = wx.BoxSizer(wx.VERTICAL)
-        self.panel.SetSizer(self.layout)
-        self.radioAmarecTV = wx.RadioButton(
-            self.panel, wx.ID_ANY, u'Capture through AmarecTV')
-        self.radioAmarecTV.SetValue(True)
-
-        self.radioCamera = wx.RadioButton(
-            self.panel, wx.ID_ANY, u'Realtime Capture from HDMI grabber')
-        self.radioFile = wx.RadioButton(
-            self.panel, wx.ID_ANY, u'Read from pre-recorded video file (for testing)')
-        self.editFile = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
-        self.listCameras = wx.ListBox(self.panel, wx.ID_ANY, choices=cameras)
-        self.listCameras.SetSelection(0)
-        self.buttonReloadDevices = wx.Button(
-            self.panel, wx.ID_ANY, u'Reload Devices')
-        self.checkDeinterlace = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'Enable Deinterlacing (experimental)')
-
-        self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, u'Select Input source:'))
-        self.layout.Add(self.radioAmarecTV)
-        self.layout.Add(self.radioCamera)
-        self.layout.Add(self.listCameras, flag=wx.EXPAND)
-        self.layout.Add(self.buttonReloadDevices)
-        self.layout.Add(self.radioFile)
-        self.layout.Add(self.editFile, flag=wx.EXPAND)
-        self.layout.Add(self.checkDeinterlace)
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'Video Offset'))
-
-        self.buttonReloadDevices.Bind(
-            wx.EVT_BUTTON, self.on_reload_devices_button_click)
+    def __init__(self):
+        self.last_t = 0
+        self._warned_resolution = False
 
 if __name__ == "__main__":
     obj = CVCapture()

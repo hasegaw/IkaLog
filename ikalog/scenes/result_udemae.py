@@ -18,23 +18,85 @@
 #  limitations under the License.
 #
 
-import sys
 import cv2
 import numpy as np
 
-from ikalog.utils import *
+from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.constants import udemae_strings
-import ikalog.utils.matcher as matcher
+from ikalog.utils import *
 
 
-class ResultUdemae(object):
+class ResultUdemae(StatefulScene):
 
-    def match1(self, context):
+    def reset(self):
+        super(ResultUdemae, self).reset()
+
+        self._last_event_msec = - 100 * 1000
+        self._last_analyze_msec = - 100 * 1000
+
+    def _state_default(self, context):
+        if self.is_another_scene_matched(context, 'GameTimerIcon'):
+            return False
+
         frame = context['engine']['frame']
-        matched = self.mask_udemae_msg.match(frame)
+
+        if frame is None:
+            return False
+
+        frame = context['engine']['frame']
+        matched = self.mask_udemae_msg.match(frame) and self._analyze(context)
+
+        if matched and self._analyze(context):
+            # いちばん最初に取り込んだ値は初期値として採用する
+            game = context['game']
+            game['result_udemae_str_pre'] = game['result_udemae_str']
+            game['result_udemae_exp_pre'] = game['result_udemae_exp']
+
+            self._switch_state(self._state_tracking)
+
         return matched
 
-    def analyze(self, context):
+    def _state_tracking(self, context):
+        frame = context['engine']['frame']
+
+        if frame is None:
+            return False
+
+        matched = self.mask_udemae_msg.match(frame) and self._analyze(context)
+
+        # 画面が続いているならそのまま
+        if matched:
+            return True
+
+        # 1000ms 以内の非マッチはチャタリングとみなす
+        if not matched and self.matched_in(context, 1000):
+            return False
+
+        # それ以上マッチングしなかった場合 -> シーンを抜けている
+        if not self.matched_in(context, 30 * 1000, attr='_last_event_msec'):
+
+            # >>>>> To be removed: emulates old interface.
+            game = context['game']
+            context['scenes']['result_udemae'] = {}
+            context['scenes']['result_udemae'][
+                'udemae_str'] = game['result_udemae_str_pre']
+            context['scenes']['result_udemae'][
+                'udemae_exp'] = game['result_udemae_exp_pre']
+            context['scenes']['result_udemae'][
+                'udemae_str_after'] = game['result_udemae_str']
+            context['scenes']['result_udemae'][
+                'udemae_exp_after'] = game['result_udemae_exp']
+            # <<<<<
+
+            self.dump(context)
+            self._call_plugins('on_result_udemae')
+
+        self._last_event_msec = context['engine']['msec']
+        self._switch_state(self._state_default)
+
+        return False
+
+    def _analyze(self, context):
         udemae_str = None
         udemae_exp = None
 
@@ -74,8 +136,8 @@ class ResultUdemae(object):
                 img_udemae_exp)
 
         if (udemae_exp is not None):
-            # ウデマエの数字は 0~100 (99?) しかありえない
-            if (udemae_exp < 0) or (udemae_exp > 100):
+            # ウデマエの数字は 0~99 しかありえない
+            if (udemae_exp < 0) or (udemae_exp > 99):
                 udemae_exp = None
 
         # ウデマエが正しく取得できない場合は別の画面を誤認識している
@@ -84,57 +146,24 @@ class ResultUdemae(object):
         if not (udemae_str and udemae_exp):
             return False
 
-        # 認識開始直後なら udemae_(str|exp)_pre を設定
-        # FIXME
-
-        if not ('result_udemae' in context['scenes']):
-            context['scenes']['result_udemae'] = {
-                'udemae_str_pre': udemae_str,
-                'udemae_exp_pre': udemae_exp,
-            }
-
-        # udemae_(str|exp)_after は常に最新の値を指す
-
-        context['scenes']['result_udemae']['udemae_str_after'] = udemae_str
-        context['scenes']['result_udemae']['udemae_exp_after'] = udemae_exp
+        game = context['game']
+        game['result_udemae_str'] = udemae_str
+        game['result_udemae_exp'] = udemae_exp
 
         return True
 
-    def match_loop(self):
-        # FIXME: チャタリング対策
-        # FIXME: 投票ベース検出にする
-        in_trigger = False
+    def dump(self, context):
+        game = context['game']
+        print(
+            '%s:  udemae change: %s %s -> %s %s' % (self,
+                                                    game['result_udemae_str_pre'], game[
+                                                        'result_udemae_exp_pre'],
+                                                    game['result_udemae_str'], game[
+                                                        'result_udemae_exp'],
+                                                    ))
 
-        while True:
-            context = (yield in_trigger)
-            callPlugins = context['engine']['service']['callPlugins']
-            t = context['engine']['msec']
+    def _init_scene(self, debug=False):
 
-            if self.match1(context):
-                r = self.analyze(context)
-                if r:
-                    context['scenes']['result_udemae'][
-                        'last_update'] = context['engine']['msec']
-                    in_trigger = True
-                # FIXME: r == False の場合別シーンの誤認識 or チャタリング
-
-            else:
-                if in_trigger:
-                    last_match = context['scenes'][
-                        'result_udemae']['last_update']
-                    if ((last_match + 100) < t):
-                        # トリガ状態だが未検出状態がしばらく続いた
-                        callPlugins('on_result_udemae')
-                        in_trigger = False
-
-    def match(self, context):
-        return self.cor.send(context)
-
-    def __init__(self, debug=False):
-        self.cor = self.match_loop()
-        self.cor.send(None)
-
-        # "ウデマエ" 文字列。オレンジ色。 IkaMatcher の拡張が必要
         self.mask_udemae_msg = IkaMatcher(
             561, 245, 144, 52,
             img_file='masks/result_udemae.png',
@@ -150,35 +179,5 @@ class ResultUdemae(object):
         self.number_recoginizer = character_recoginizer.NumberRecoginizer()
         self.udemae_recoginizer = character_recoginizer.UdemaeRecoginizer()
 
-
 if __name__ == "__main__":
-    target = cv2.imread(sys.argv[1])
-    obj = ResultUdemae(debug=True)
-
-    def callPlugins(event):
-        pass
-
-    context = {
-        'engine': {
-            'msec': 0,
-            'frame': target,
-            'service': {
-                'callPlugins': callPlugins
-            },
-        },
-        'game': {
-        },
-        'scenes': {
-        },
-    }
-
-    matched = obj.match(context)
-    analyzed = obj.analyze(context)
-    print("matched %s" % (matched))
-
-    for field in context['scenes']['result_udemae']:
-        if field.startswith('img_'):
-            value = '(image)'
-    print(context['scenes'])
-
-    cv2.waitKey()
+    ResultJudge.main_func()

@@ -66,6 +66,7 @@ class Twitter(object):
         self.tweet_kd = self.checkTweetKd.GetValue()
         self.tweet_my_score = self.checkTweetMyScore.GetValue()
         self.tweet_udemae = self.checkTweetUdemae.GetValue()
+        self.use_reply = self.checkUseReply.GetValue()
         self.consumer_key = self.editConsumerKey.GetValue()
         self.consumer_secret = self.editConsumerSecret.GetValue()
         self.access_token = self.editAccessToken.GetValue()
@@ -95,6 +96,7 @@ class Twitter(object):
         self.checkTweetKd.SetValue(self.tweet_kd)
         self.checkTweetMyScore.SetValue(self.tweet_my_score)
         self.checkTweetUdemae.SetValue(self.tweet_udemae)
+        self.checkUseReply.SetValue(self.use_reply)
 
         try:
             {
@@ -137,6 +139,7 @@ class Twitter(object):
         self.tweet_kd = False
         self.tweet_my_score = False
         self.tweet_udemae = False
+        self.use_reply = True
         self.consumer_key_type = 'ikalog'
         self.consumer_key = ''
         self.consumer_secret = ''
@@ -167,6 +170,9 @@ class Twitter(object):
         if 'TweetUdemae' in conf:
             self.tweet_udemae = conf['TweetUdemae']
 
+        if 'UseReply' in conf:
+            self.use_reply = conf['UseReply']
+
         if 'ConsumerKeyType' in conf:
             self.consumer_key_type = conf['ConsumerKeyType']
 
@@ -195,6 +201,7 @@ class Twitter(object):
             'TweetMyScore': self.tweet_my_score,
             'TweetKd': self.tweet_kd,
             'TweetUdemae': self.tweet_udemae,
+            'UseReply': self.use_reply,
             'ConsumerKeyType': self.consumer_key_type,
             'ConsumerKey': self.consumer_key,
             'ConsumerSecret': self.consumer_secret,
@@ -328,6 +335,8 @@ class Twitter(object):
         self.checkTweetKd = wx.CheckBox(self.panel, wx.ID_ANY, u'K/D を投稿する')
         self.checkTweetUdemae = wx.CheckBox(
             self.panel, wx.ID_ANY, u'ウデマエを投稿する')
+        self.checkUseReply = wx.CheckBox(
+            self.panel, wx.ID_ANY, u'@_ikalog_ へのリプライとして投稿する (タイムラインを汚しません)')
         self.editFooter = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
         self.radioIkaLogKey = wx.RadioButton(
@@ -354,6 +363,7 @@ class Twitter(object):
         layout.Add(self.radioOwnKey)
 
         self.layout.Add(self.checkEnable)
+        self.layout.Add(self.checkUseReply)
         self.layout.Add(self.checkAttachImage)
         self.layout.Add(self.checkTweetMyScore)
         self.layout.Add(self.checkTweetKd)
@@ -381,8 +391,10 @@ class Twitter(object):
 
         self.radioIkaLogKey.Bind(
             wx.EVT_RADIOBUTTON, self.on_consumer_key_mode_switch)
-        self.radioOwnKey.Bind(wx.EVT_RADIOBUTTON, self.on_consumer_key_mode_switch)
-        self.buttonIkaLogAuth.Bind(wx.EVT_BUTTON, self.on_ika_log_auth_button_click)
+        self.radioOwnKey.Bind(wx.EVT_RADIOBUTTON,
+                              self.on_consumer_key_mode_switch)
+        self.buttonIkaLogAuth.Bind(
+            wx.EVT_BUTTON, self.on_ika_log_auth_button_click)
         self.buttonTest.Bind(wx.EVT_BUTTON, self.on_test_button_click)
 
     ##
@@ -468,6 +480,10 @@ class Twitter(object):
             s = '%s %s' % (s, fes_title)
 
         s = '%s (%s) %s #IkaLogResult' % (s, t, self.footer)
+
+        if self.use_reply:
+            s = '@_ikalog_ %s' % s
+
         return s
 
     ##
@@ -476,7 +492,7 @@ class Twitter(object):
     # @param context   IkaLog context
     #
     def on_game_individual_result(self, context):
-        self.img_result_detail  = context['engine']['frame']
+        self.img_result_detail = context['engine']['frame']
 
     def on_game_session_end(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
@@ -491,7 +507,7 @@ class Twitter(object):
         IkaUtils.dprint('投稿内容 %s' % s)
 
         media = self.post_media(self.img_result_detail
-            ) if self.attach_image else None
+                                ) if self.attach_image else None
         self.tweet(s, media=media)
 
         self.img_result_detail = None
@@ -520,8 +536,9 @@ class Twitter(object):
     # @param tweet_my_score    If true, post score.
     # @param tweet_kd          If true, post killed/death.
     # @param tweet_udemae      If true, post udemae(rank).
+    # @param use_reply         If true, post the tweet as a reply to @_ikalog_
     #
-    def __init__(self, consumer_key=None, consumer_secret=None, access_token=None, access_token_secret=None, attach_image=False, footer='', tweet_my_score=False, tweet_kd=False, tweet_udemae=False):
+    def __init__(self, consumer_key=None, consumer_secret=None, access_token=None, access_token_secret=None, attach_image=False, footer='', tweet_my_score=False, tweet_kd=False, tweet_udemae=False, use_reply=True):
         self.enabled = not((consumer_key is None) or (consumer_secret is None) or (
             access_token is None) or (access_token_secret is None))
         self.consumer_key_type = 'own'
@@ -533,6 +550,7 @@ class Twitter(object):
         self.tweet_my_score = tweet_my_score
         self.tweet_kd = tweet_kd
         self.tweet_udemae = tweet_udemae
+        self.use_reply = use_reply
         self.footer = footer
 
         self.img_result_detail = None
