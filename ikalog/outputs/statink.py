@@ -370,6 +370,33 @@ class StatInk(object):
                 ['int', 'my_point', 'score'],
             ], payload, me)
 
+        players = []
+        for e in context['game']['players']:
+            player = {}
+            player['team'] = 'my' if (e['team'] == me['team']) else 'his'
+            player['is_me'] = 'yes' if e['me'] else 'no'
+            self._set_values(
+                [  # 'type', 'stat.ink Field', 'IkaLog Field'
+                    ['int', 'rank_in_team', 'rank_in_team'],
+                    ['int', 'kill', 'kills'],
+                    ['int', 'death', 'deaths'],
+                    ['int', 'level', 'rank'],
+                    ['int', 'point', 'score'],
+                ], player, e)
+
+            if 'weapon' in e:
+                weapon = self.encode_weapon_name(e['weapon'])
+                if weapon:
+                    player['weapon'] = weapon
+
+            if payload.get('rule', 'nawabari') != 'nawabari':
+                if 'udemae_pre' in e:
+                    player['rank'] = str(e['udemae_pre']).lower()
+
+            players.append(player)
+
+        payload['players'] = players
+
         # ResultUdemae
 
         if payload.get('rule', 'nawabari') != 'nawabari':
