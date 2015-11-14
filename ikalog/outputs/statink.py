@@ -118,6 +118,7 @@ class StatInk(object):
                 'ハコフグ倉庫': 'hakofugu',
                 'ヒラメが丘団地': 'hirame',
                 'ホッケふ頭': 'hokke',
+                'キンメダイ美術館': 'kinmedai',
                 'マサバ海峡大橋': 'masaba',
                 'モンガラキャンプ場': 'mongara',
                 'モズク農園': 'mozuku',
