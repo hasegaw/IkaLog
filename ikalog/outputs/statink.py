@@ -157,6 +157,7 @@ class StatInk(object):
                 'デュアルスイーパー': 'dualsweeper',
                 'デュアルスイーパーカスタム': 'dualsweeper_custom',
                 'H3リールガン': 'h3reelgun',
+                'H3リールガンD': 'h3reelgun_d',
                 'ヒーローシューターレプリカ': 'heroshooter_replica',
                 'ホットブラスター': 'hotblaster',
                 'ホットブラスターカスタム': 'hotblaster_custom',
