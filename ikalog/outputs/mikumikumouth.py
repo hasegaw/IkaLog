@@ -112,6 +112,9 @@ class MikuMikuMouthDictionaly(object):
         'death_reason_identified': [
             {'text': '{reason}で倒された', 'emotion': 'none', 'tag': 'white'}
         ],
+        'death_reason_oob': [
+            {'text': '場外に落ちた', 'emotion': 'bikkuri', 'tag': 'white'},
+        ],
         'finish': [
             {'text': 'ゲーム終了！', 'emotion': 'greeting', 'tag': 'white'},
         ],
@@ -228,9 +231,12 @@ class MikuMikuMouth(object):
 
     def on_game_death_reason_identified(self, context):
         reason = context['game']['last_death_reason']
-        label = self._death_reason_label(reason)
-        data = self._text('death_reason_identified')
-        data['text'] = data['text'].format(reason=label)
+        if reason in oob_reasons:
+            data = self._text('death_reason_oob')
+        else:
+            label = self._death_reason_label(reason)
+            data = self._text('death_reason_identified')
+            data['text'] = data['text'].format(reason=label)
         self._read(data)
 
     def _death_reason_label(self, reason):
@@ -242,6 +248,8 @@ class MikuMikuMouth(object):
             return sub_weapons[reason]['ja']
         if reason in special_weapons:
             return special_weapons[reason]['ja']
+        if reason in hoko_attacks:
+            return hoko_attacks[reason]['ja']
         return self.custom_read['unknown']
 
     def on_game_finish(self, context):
