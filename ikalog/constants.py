@@ -144,6 +144,18 @@ special_weapons = {
 
 deadly_special_weapons = ['daioika', 'megaphone', 'supershot', 'tornado', ]
 
+hoko_attacks = {
+    'hoko_shot': {'ja': 'ガチホコショット', 'en': 'Rainmaker Shot', },
+    'hoko_barrier': {'ja': 'ガチホコバリア', 'en': 'Rainmaker Shield', },
+    'hoko_inksplode': {'ja': 'ガチホコ爆発', 'en': 'Rainmaker Inksplode', },
+}
+
+oob_reasons = {
+    'oob': {'ja': '場外', 'en': 'Out of Bounds', },
+    'fall': {'ja': '転落', 'en': 'Fall', },
+    'drown': {'ja': '水死', 'en': 'Drowning', },
+}
+
 udemae_strings = [
         's+', 's', 'a+', 'a', 'a-', 'b+', 'b', 'b-', 'c+', 'c', 'c-'
 ]
