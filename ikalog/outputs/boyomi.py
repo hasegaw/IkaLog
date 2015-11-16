@@ -117,6 +117,7 @@ class BoyomiDictionary(object):
         'killed': ['倒した！', 'やったぁ'],
         'dead': ['あああああああ', 'ぎゃああああ', 'うわああああ'],
         'death_reason_identified': ['{reason}で倒された'],
+        'death_reason_oob': ['場外に落ちた'],
         'finish': ['ゲーム終了！'],
         'individual_result_win': ['勝った！', 'やったぜ'],
         'individual_result_lose': ['負けた！', 'くやしい'],
@@ -215,10 +216,15 @@ class Boyomi(object):
 
     def on_game_death_reason_identified(self, context):
         reason = context['game']['last_death_reason']
-        label = self._death_reason_label(reason)
-        self._read(
-            self._text('death_reason_identified').format(reason=label)
-        )
+        if reason in oob_reasons:
+            self._read(
+                self._text('death_reason_oob')
+            )
+        else:
+            label = self._death_reason_label(reason)
+            self._read(
+                self._text('death_reason_identified').format(reason=label)
+            )
 
     def _death_reason_label(self, reason):
         if reason in self.custom_read:
@@ -229,6 +235,8 @@ class Boyomi(object):
             return sub_weapons[reason]['ja']
         if reason in special_weapons:
             return special_weapons[reason]['ja']
+        if reason in hoko_attacks:
+            return hoko_attacks[reason]['ja']
         return self.custom_read['unknown']
 
     def on_game_finish(self, context):
