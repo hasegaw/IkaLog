@@ -238,6 +238,7 @@ class IkaEngine:
             scenes.ResultDetail(self),
             scenes.ResultUdemae(self),
             scenes.ResultGears(self),
+            scenes.ResultFesta(self),
             scenes.Lobby(self),
         ]
 

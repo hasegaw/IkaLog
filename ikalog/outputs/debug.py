@@ -107,6 +107,15 @@ class DebugLog(object):
     def on_result_gears(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
+    def on_result_festa(self, context):
+        game = context['game']
+        s = 'festa change: %s -> %s title_changed %s' % (
+            game.get('result_festa_exp_pre', None),
+            game.get('result_festa_exp', None),
+            game.get('result_festa_title_changed', None),
+        )
+        self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
+
     def on_game_session_end(self, context):
         s = "death_reasons = %s" % (context['game']['death_reasons'])
         self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)

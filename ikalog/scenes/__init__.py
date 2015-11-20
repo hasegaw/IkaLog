@@ -32,6 +32,7 @@ from .result_detail import ResultDetail
 from .result_judge import ResultJudge
 from .result_udemae import ResultUdemae
 from .result_gears import ResultGears
+from .result_festa import ResultFesta
 
 from .lobby import Lobby
 from .plaza_user_stat import PlazaUserStat
