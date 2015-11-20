@@ -365,7 +365,6 @@ class ResultDetail(StatefulScene):
 
         if matched:
             self._match_start_msec = context['engine']['msec']
-            self.analyze(context)
             self._switch_state(self._state_tracking)
         return matched
 
