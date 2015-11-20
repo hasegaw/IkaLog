@@ -366,6 +366,7 @@ class ResultDetail(StatefulScene):
         if matched:
             self._match_start_msec = context['engine']['msec']
             self._switch_state(self._state_tracking)
+            self._last_frame = None
         return matched
 
     def _state_tracking(self, context):
@@ -374,27 +375,46 @@ class ResultDetail(StatefulScene):
         if frame is None:
             return False
 
+        # マッチ1: 既知のマスクでざっくり
         matched = IkaUtils.matchWithMask(
             context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
 
-        # 画面が続いているならそのまま
+        # マッチ2: マッチ1を満たした場合は、白文字が安定するまで待つ
+        matched2 = False
+
         if matched:
+            img_white = matcher.MM_WHITE().evaluate(context['engine']['frame'][:, 640:1280])
+
+            if self._last_frame is not None:
+                # 保存済みフレームとの差分をとってみる
+                img_diff = abs(img_white - self._last_frame)
+                img_diff2 = cv2.inRange(img_diff, 32, 255)
+                img_diff_pixels = int(np.sum(img_diff2) / 255)
+
+                # 差が 10 ピクセル以下なら。HDMIノイズ多いなぁ
+                matched2 = img_diff_pixels < 10
+
+            self._last_frame = img_white
+
+        # 画面が続いているならそのまま
+        if matched2:
             if not self.matched_in(context, 30 * 1000, attr='_last_event_msec'):
                 self.analyze(context)
 #                self.dump(context)
                 self._call_plugins('on_result_detail')
                 self._call_plugins('on_game_individual_result')
                 self._last_event_msec = context['engine']['msec']
+
+        if matched:
             return True
 
         # 1000ms 以内の非マッチはチャタリングとみなす
-        if not matched and self.matched_in(context, 1000):
-            return False
-
         # それ以上マッチングしなかった場合 -> シーンを抜けている
-        self._last_event_msec = context['engine']['msec']
-        self._match_start_msec = - 100 * 1000
-        self._switch_state(self._state_default)
+        if not self.matched_in(context, 1000):
+            self._last_event_msec = context['engine']['msec']
+            self._match_start_msec = - 100 * 1000
+            self._switch_state(self._state_default)
+
         return False
 
     def dump(self, context):
