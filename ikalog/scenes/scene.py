@@ -105,7 +105,10 @@ class Scene(object):
     def is_another_scene_matched(self, context, scene_name):
         scene = self.find_scene_object(scene_name)
 
-        return (scene is not None) and (scene.match(context) != False)
+        if scene is None:
+            return None
+
+        return (scene.match(context) != False)
 
     def find_scene_object(self, scene_name):
         if (self.engine is None):

@@ -54,22 +54,103 @@ class IkaConfig:
 
     _launch = 0
 
-    def auto_calibrate(self, img):
-        self._offset_filter.calibrateWarp(img)
-        self._offset_filter.enable()
+    # on_valide_warp
+    # Handler being called by warp calibration process.
+    # Caller passes the four edge points in raw image to crop game screen.
+    #
+    # Return True to approve the points. Calibration process can be canceled
+    # by passing False.
+    #
+    # @param self The object pointer.
+    # @param points Points. [ left_top, right_top, right_bottom, left_bottom ]
+    # @return Approve (True) or delcline (False).
+    def on_validate_warp(self, points):
+        w = int(points[1][0] - points[0][0])
+        h = int(points[2][1] - points[1][1])
+        print('on_validate_warp: ', w, h)
 
-    def read(self):
+        acceptable_geoms = [[720, 1280], [1080, 1920]]
+
+        acceptable = False
+        exact = False
+        for geom in acceptable_geoms:
+            if (geom[0] - 3 < h) and (h < geom[0] + 3):
+                if (geom[1] - 3 < w) and (w < geom[1] + 3):
+                    acceptable = True
+
+            if geom[0] == h and geom[1] == w:
+                exact = True
+
+        if exact:
+            pass
+
+        elif acceptable:
+            msg = '\n'.join([
+                'キャリブレーションできましたが、期待する画面サイズと異なります (%d x %d)' % (w, h),
+                'IkaLog への入力サイズは 1280 x 720 もしくは 1920 x 1080 です。',
+                '各種認識が正常に動作しない可能性があります。', '',
+                '再度キャリブレーションすると改善する場合があります。',
+                '',
+            ])
+            try:
+                r = wx.MessageDialog(None, msg, 'Warining',
+                                     wx.OK | wx.ICON_ERROR).ShowModal()
+            except:
+                IkaUtils.dprint(msg)
+        else:
+            return False
+
+        self.last_capture_geom = (h, w)
+        return True
+
+    def auto_calibrate(self, img):
+        r = self._warp_filter.calibrateWarp(
+            img,
+            validation_func=self.on_validate_warp
+        )
+        if r:
+            self._warp_filter.enable()
+            IkaUtils.dprint('キャリブレーション成功')
+            return True
+        else:
+            msg = '\n'.join([
+                'WiiU の画面が検知できませんでした',
+                '入力サイズは 1280 x 720 もしくは 1920 x 1080 です。',
+                'キャリブレーションを中断します。'
+            ])
+            try:
+                r = wx.MessageDialog(None, msg, 'Warining',
+                                     wx.OK | wx.ICON_ERROR).ShowModal()
+            except:
+                IkaUtils.dprint(msg)
+            return False
+
+    def read_raw(self):
         from PIL import ImageGrab
 
-        img = ImageGrab.grab(None)
+        try:
+            img = ImageGrab.grab(None)
+        except TypeError:
+            # なぜ発生することがあるのか、よくわからない
+            IkaUtils.dprint('%s: Failed to grab desktop image' % self)
+            return None
+
         img = np.asarray(img)
+        return img
+
+    def read(self):
+        img = self.read_raw()
+
+        if img is None:
+            return None, None
 
         if self._calibration_requested:
             self._calibration_requested = False
             img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
             self.auto_calibrate(img_bgr)
 
-        img = self._offset_filter.execute(img)
+        img = self._warp_filter.execute(img)
+
         img = cv2.resize(img, (self._out_width, self._out_height))
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
@@ -94,21 +175,25 @@ class IkaConfig:
                 "pip install Pillow"
             )
 
+    def reset(self):
+        self._warp_filter = WarpFilter(self)
+
     def __init__(self, bbox=None):
         '''
         bbox -- bbox Crop bounding box as (x, y, w, h)
         '''
         self._check_import()
+        self.last_input_geom = None
 
         self._launch = self._time()
 
-        self._offset_filter = WarpFilter(self)
+        self._warp_filter = WarpFilter(self)
         self._calibration_requested = False
         if bbox is not None:
-            self._offset_filter.set_bbox(
+            self._warp_filter.set_bbox(
                 bbox[0], bbox[1], bbox[2], bbox[3],
             )
-            self._offset_filter.enable()
+            self._warp_filter.enable()
 
         IkaUtils.dprint('%s: initalizing screen capture' % (self))
 

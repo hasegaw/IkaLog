@@ -140,6 +140,7 @@ learnImageGroup(weapons, "プライムシューターコラボ", dir="プライ�
 learnImageGroup(weapons, "プロモデラーMG", dir="プロモデラーMG銀")
 learnImageGroup(weapons, "プロモデラーRG", dir="プロモデラーRG金")
 learnImageGroup(weapons, "ボールドマーカー", dir="ボールドマーカー")
+learnImageGroup(weapons, "ボールドマーカーネオ", dir="ボールドマーカーネオ")
 learnImageGroup(weapons, "ホクサイ", dir="ホクサイ")
 learnImageGroup(weapons, "ホットブラスター", dir="ホットブラスター")
 learnImageGroup(weapons, "ホットブラスターカスタム", dir="ホットブラスターカスタム")

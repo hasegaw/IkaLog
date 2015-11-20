@@ -27,6 +27,7 @@ stages = {
     'hakofugu': {'ja': 'ハコフグ倉庫',        'en': 'Walleye Warehouse', },
     'hirame':   {'ja': 'ヒラメが丘団地',      'en': 'Flounder Heights', },
     'hokke':    {'ja': 'ホッケふ頭',          'en': 'Port Mackerel'},
+    'kinmedai': {'ja': 'キンメダイ美術館',    'en': 'Museum Alfonsino'},
     'masaba':   {'ja': 'マサバ海峡大橋',      'en': 'Hammerhead Bridge', },
     'mongara':  {'ja': 'モンガラキャンプ場',  'en': 'Camp Triggerfish', },
     'mozuku':   {'ja':  'モズク農園',         'en': 'Kelp Dome', },
@@ -48,6 +49,7 @@ weapons = {
     '96gal': {'ja': 'ガロン96'},
     '96gal_deco': {'ja': 'ガロンデコ96'},
     'bold': {'ja': 'ボールドマーカー'},
+    'bold_neo': {'ja': 'ボールドマーカーネオ'},
     'dualsweeper': {'ja': 'デュアルスイーパー'},
     'dualsweeper_custom': {'ja': 'デュアルスイーパーカスタム'},
     'h3reelgun': {'ja': 'H3リールガン'},
@@ -141,6 +143,18 @@ special_weapons = {
 }
 
 deadly_special_weapons = ['daioika', 'megaphone', 'supershot', 'tornado', ]
+
+hoko_attacks = {
+    'hoko_shot': {'ja': 'ガチホコショット', 'en': 'Rainmaker Shot', },
+    'hoko_barrier': {'ja': 'ガチホコバリア', 'en': 'Rainmaker Shield', },
+    'hoko_inksplode': {'ja': 'ガチホコ爆発', 'en': 'Rainmaker Inksplode', },
+}
+
+oob_reasons = {
+    'oob': {'ja': '場外', 'en': 'Out of Bounds', },
+    'fall': {'ja': '転落', 'en': 'Fall', },
+    'drown': {'ja': '水死', 'en': 'Drowning', },
+}
 
 udemae_strings = [
         's+', 's', 'a+', 'a', 'a-', 'b+', 'b', 'b-', 'c+', 'c', 'c-'

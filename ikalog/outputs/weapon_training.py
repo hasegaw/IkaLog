@@ -69,7 +69,7 @@ if __name__ == "__main__":
     from ikalog.scenes import result_detail
     import os
 
-    obj = result_detail.ResultDetail()
+    obj = result_detail.ResultDetail(None)
     out = WeaponTraining()
     for in_file in sys.argv[1:]:
         target = cv2.imread(in_file)
@@ -82,7 +82,7 @@ if __name__ == "__main__":
         basename, ext = os.path.splitext(os.path.basename(in_file))
 
         context = {
-            'engine': {'frame': target},
+            'engine': {'frame': target, 'msec': 0, },
             'game': {'map': {'name': ''}, 'rule': {'name': ''}},
         }
 

@@ -103,7 +103,7 @@ class WarpFilter(Filter):
         self.M = cv2.getPerspectiveTransform(self.pts1, self.pts2)
         return True
 
-    def calibrateWarp(self, capture_image):
+    def calibrateWarp(self, capture_image, validation_func=None):
         capture_image_gray = cv2.cvtColor(capture_image, cv2.COLOR_BGR2GRAY)
 
         capture_image_keypoints, capture_image_descriptors = self.detector.detectAndCompute(
@@ -137,6 +137,9 @@ class WarpFilter(Filter):
             self.calibration_requested = False
             return False
 
+        if len(status) < 1000:
+            return False
+
         calibration_image_height, calibration_image_width = self.calibration_image_size
 
         corners = np.float32(
@@ -151,6 +154,10 @@ class WarpFilter(Filter):
 
         IkaUtils.dprint('pts1: %s' % [pts1])
         IkaUtils.dprint('pts2: %s' % [self.pts2])
+
+        if validation_func is not None:
+            if not validation_func(pts1):
+                return False
 
         self.M = cv2.getPerspectiveTransform(pts1, self.pts2)
         return True
