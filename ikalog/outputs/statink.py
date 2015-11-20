@@ -24,6 +24,8 @@ import pprint
 
 import urllib3
 import umsgpack
+
+from ikalog.constants import fes_rank_titles
 from ikalog.version import IKALOG_VERSION
 from ikalog.utils import *
 
@@ -425,6 +427,25 @@ class StatInk(object):
                 [  # 'type', 'stat.ink Field', 'IkaLog Field'
                     ['int', 'cash_after', 'cash'],
                 ], payload, context['scenes']['result_gears'])
+
+        # ResultFesta
+        if payload['lobby'] == 'fest':
+            self._set_values(
+                [  # 'type', 'stat.ink Field', 'IkaLog Field'
+                    ['int', 'fest_exp', 'result_festa_exp_pre'],
+                    ['int', 'fest_exp_after', 'result_festa_exp'],
+                ], payload, context['game'])
+
+            if payload.get('fest_title', None) is not None:
+                current_title = payload['fest_title']
+                if context['game'].get('result_festa_title_changed', False):
+                    try:
+                        index = fes_rank_titles.index(current_title)
+                        current_title = fes_rank_titles[index + 1]
+                    except IndexError:
+                        IkaUtils.dprint('%s: IndexError at fes_rank_titles' % self)
+
+                    payload['fest_title_after'] = current_title.lower()
 
         # Team colors
         if ('my_team_color' in context['game']):

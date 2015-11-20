@@ -157,5 +157,9 @@ oob_reasons = {
 }
 
 udemae_strings = [
-        's+', 's', 'a+', 'a', 'a-', 'b+', 'b', 'b-', 'c+', 'c', 'c-'
+    's+', 's', 'a+', 'a', 'a-', 'b+', 'b', 'b-', 'c+', 'c', 'c-'
+]
+
+fes_rank_titles = [
+    'fanboy', 'friend', 'defender', 'campion', 'king'
 ]
