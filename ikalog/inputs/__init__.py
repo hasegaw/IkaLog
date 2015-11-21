@@ -20,5 +20,6 @@
 
 from .cvcapture import CVCapture
 from .cvfile import CVFile
+from .cvgst import CVgst
 from .screencapture import ScreenCapture
 from .osx import *
