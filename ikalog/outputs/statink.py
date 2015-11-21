@@ -445,7 +445,7 @@ class StatInk(object):
                     except IndexError:
                         IkaUtils.dprint('%s: IndexError at fes_rank_titles' % self)
 
-                    payload['fest_title_after'] = current_title.lower()
+                payload['fest_title_after'] = current_title.lower()
 
         # Team colors
         if ('my_team_color' in context['game']):
