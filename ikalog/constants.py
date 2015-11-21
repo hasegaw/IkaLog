@@ -161,5 +161,5 @@ udemae_strings = [
 ]
 
 fes_rank_titles = [
-    'fanboy', 'friend', 'defender', 'campion', 'king'
+    'fanboy', 'friend', 'defender', 'champion', 'king'
 ]
