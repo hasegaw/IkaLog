@@ -348,6 +348,9 @@ class ResultDetail(StatefulScene):
         self._last_event_msec = - 100 * 1000
         self._match_start_msec = - 100 * 1000
 
+        self._last_frame = None
+        self._diff_pixels = []
+
     def _state_default(self, context):
         if self.matched_in(context, 30 * 1000):
             return False
@@ -366,9 +369,6 @@ class ResultDetail(StatefulScene):
         if matched:
             self._match_start_msec = context['engine']['msec']
             self._switch_state(self._state_tracking)
-            self._last_frame = None
-            self._still_frame = (None, 640 * 720)
-            self._diff_pixels = []
         return matched
 
     def _state_tracking(self, context):
@@ -385,35 +385,43 @@ class ResultDetail(StatefulScene):
         # 条件1: 前回のイメージとの白文字の diff が 0 pixel になること
         # 条件2: 過去n回文の白文字の diff が <10 pixels になること
         #        (ノイズが多いキャプチャデバイス向けの救済策)
+        diff_pixels = None
+        img_current_h_i16 = None
 
         matched_diff0 = False
         matched_diff10 = False
 
         if matched:
-            img_white2 = self._white_filter.evaluate(frame[626:626+45, 640:1280])
-            img_white = np.array(
-                img_white2,
-                np.int16,
-            )
+            img_current_bgr = frame[626:626+45, 640:1280]
+            img_current_hsv = cv2.cvtColor(img_current_bgr, cv2.COLOR_BGR2HSV)
+            img_current_h_i16 = np.array(img_current_hsv[:, :, 1], np.int16)
 
-            if self._last_frame is not None:
-                # 保存済みフレームとの差分をとってみる
-                img_diff = abs(img_white - self._last_frame)
-                img_diff2 = cv2.inRange(img_diff, 128, 255)
-                diff_pixels = int(np.sum(img_diff2) / 255)
+        if matched and (self._last_frame is not None):
+            img_diff = abs(img_current_h_i16 - self._last_frame)
+            img_diff_u8 = np.array(img_diff, np.uint8)
 
-                if diff_pixels < self._still_frame[1]:
-                    self._still_frame = (frame, diff_pixels)
-                    matched_diff0 = (diff_pixels == 0)
+            img_white = self._white_filter.evaluate(img_current_bgr)
+            img_diff_u8[img_white < 128] = 0
+            img_diff_u8[img_diff_u8 < 16] = 0
+            img_diff_u8[img_diff_u8 > 1] = 255
 
-                self._diff_pixels.append(diff_pixels)
-                if len(self._diff_pixels) > 4:
-                    self._diff_pixels.pop(0)
-                    matched_diff10 = np.max(self._diff_pixels) < 20
+            # cv2.imshow('DIFF', img_diff_u8)
+            # cv2.imshow('white', img_white)
 
-                # print('img_diff_pixels', self._still_frame[1], diff_pixels, self._diff_pixels, matched_diff0, matched_diff10)
+            diff_pixels = int(np.sum(img_diff_u8) / 255)
 
-            self._last_frame = img_white
+        if img_current_h_i16 is not None:
+            self._last_frame = img_current_h_i16
+
+        if diff_pixels is not None:
+            matched_diff0 = (diff_pixels == 0)
+
+            self._diff_pixels.append(diff_pixels)
+            if len(self._diff_pixels) > 4:
+                self._diff_pixels.pop(0)
+                matched_diff10 = np.max(self._diff_pixels) < 10
+
+            # print('img_diff_pixels', diff_pixels, self._diff_pixels, matched_diff0, matched_diff10)
 
         # escaped: 1000ms 以上の非マッチが続きシーンを抜けたことが確定
         # matched2: 白文字が安定している(条件1 or 条件2を満たしている)
@@ -441,11 +449,11 @@ class ResultDetail(StatefulScene):
                     '  ・HDMIキャプチャデバイスからのノイズ入力が多い\n',
                     '　・ブロックノイズが多いビデオファイルを処理している\n',
                     '　・正しいフォーマットで画像が入力されていない\n',
-                    '　min(diff_pixels): %s' % self._still_frame[1],
+                    '　min(diff_pixels): %s' % min(self._diff_pixels),
                 )))
 
             self._last_event_msec = context['engine']['msec']
-            self._match_start_msec = - 100 * 1000
+            self.reset()
             self._switch_state(self._state_default)
 
         return False
