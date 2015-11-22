@@ -94,6 +94,7 @@ weapons = {
     'splatroller_collabo': {'ja': 'スプラローラーコラボ'},
 
     'bamboo14mk1': {'ja': '14式竹筒銃・甲'},
+    'bamboo14mk2': {'ja': '14式竹筒銃・乙'},
     'herocharger_replica': {'ja': 'ヒーローチャージャーレプリカ'},
     'liter3k': {'ja': 'リッター3K'},
     'liter3k_custom': {'ja': 'リッター3Kカスタム'},
@@ -111,6 +112,7 @@ weapons = {
 
     'barrelspinner': {'ja': 'バレルスピナー'},
     'barrelspinner_deco': {'ja': 'バレルスピナーデコ'},
+    'hydra': {'ja': 'ハイドラント'},
     'splatspinner': {'ja': 'スプラスピナー'},
 }
 

@@ -90,6 +90,7 @@ def loopbackTest():
 weapons = IkaGlyphRecoginizer()
 
 learnImageGroup(weapons, "14式竹筒銃・甲", dir="14式竹筒銃・甲")
+learnImageGroup(weapons, "14式竹筒銃・乙", dir="14式竹筒銃・乙")
 learnImageGroup(weapons, "3Kスコープ", dir="3Kスコープ")
 learnImageGroup(weapons, "3Kスコープカスタム", dir="3Kスコープカスタム")
 learnImageGroup(weapons, "L3リールガン", dir="L3リールガン")
@@ -126,6 +127,7 @@ learnImageGroup(weapons, "デュアルスイーパー", dir="デュアルスイ�
 learnImageGroup(weapons, "デュアルスイーパーカスタム", dir="デュアルスイーパーカスタム")
 learnImageGroup(weapons, "ノヴァブラスター", dir="ノヴァブラスター")
 learnImageGroup(weapons, "ノヴァブラスターネオ", dir="ノヴァブラスターネオ")
+learnImageGroup(weapons, "ハイドラント", dir="ハイドラント")
 learnImageGroup(weapons, "バケットスローシャー", dir="バケットスローシャー")
 learnImageGroup(weapons, "パブロ", dir="パブロ")
 learnImageGroup(weapons, "パブロ・ヒュー", dir="パブロ・ヒュー")

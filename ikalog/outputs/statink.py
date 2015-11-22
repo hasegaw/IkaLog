@@ -160,6 +160,7 @@ class StatInk(object):
                 'デュアルスイーパーカスタム': 'dualsweeper_custom',
                 'H3リールガン': 'h3reelgun',
                 'H3リールガンD': 'h3reelgun_d',
+                'ハイドラント': 'hydra',
                 'ヒーローシューターレプリカ': 'heroshooter_replica',
                 'ホットブラスター': 'hotblaster',
                 'ホットブラスターカスタム': 'hotblaster_custom',
@@ -200,6 +201,7 @@ class StatInk(object):
                 'スプラローラーコラボ': 'splatroller_collabo',
 
                 '14式竹筒銃・甲': 'bamboo14mk1',
+                '14式竹筒銃・乙': 'bamboo14mk2',
                 'ヒーローチャージャーレプリカ': 'herocharger_replica',
                 'リッター3K': 'liter3k',
                 'リッター3Kカスタム': 'liter3k_custom',
