@@ -367,6 +367,8 @@ class ResultDetail(StatefulScene):
             self._match_start_msec = context['engine']['msec']
             self._switch_state(self._state_tracking)
             self._last_frame = None
+            self._still_frame = (None, 640 * 720)
+            self._diff_pixels = []
         return matched
 
     def _state_tracking(self, context):
@@ -380,37 +382,67 @@ class ResultDetail(StatefulScene):
             context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
 
         # マッチ2: マッチ1を満たした場合は、白文字が安定するまで待つ
-        matched2 = False
+        # 条件1: 前回のイメージとの白文字の diff が 0 pixel になること
+        # 条件2: 過去n回文の白文字の diff が <10 pixels になること
+        #        (ノイズが多いキャプチャデバイス向けの救済策)
+
+        matched_diff0 = False
+        matched_diff10 = False
 
         if matched:
-            img_white = matcher.MM_WHITE().evaluate(context['engine']['frame'][:, 640:1280])
+            img_white = np.array(
+                self._white_filter.evaluate(frame[:, 640:1280]),
+                np.int16,
+            )
 
             if self._last_frame is not None:
                 # 保存済みフレームとの差分をとってみる
                 img_diff = abs(img_white - self._last_frame)
                 img_diff2 = cv2.inRange(img_diff, 32, 255)
-                img_diff_pixels = int(np.sum(img_diff2) / 255)
+                diff_pixels = int(np.sum(img_diff2) / 255)
 
-                # 差が 10 ピクセル以下なら。HDMIノイズ多いなぁ
-                matched2 = img_diff_pixels < 10
+                if diff_pixels < self._still_frame[1]:
+                    self._still_frame = (frame, diff_pixels)
+                    matched_diff0 = (diff_pixels == 0)
+
+                self._diff_pixels.append(diff_pixels)
+                if len(self._diff_pixels) > 4:
+                    self._diff_pixels.pop(0)
+                    matched_diff10 = np.max(self._diff_pixels) < 10
+
+                # print('img_diff_pixels', self._still_frame[1], diff_pixels, self._diff_pixels, matched_diff0, matched_diff10)
 
             self._last_frame = img_white
 
-        # 画面が続いているならそのまま
-        if matched2:
-            if not self.matched_in(context, 30 * 1000, attr='_last_event_msec'):
-                self.analyze(context)
-#                self.dump(context)
-                self._call_plugins('on_result_detail')
-                self._call_plugins('on_game_individual_result')
-                self._last_event_msec = context['engine']['msec']
+        # escaped: 1000ms 以上の非マッチが続きシーンを抜けたことが確定
+        # matched2: 白文字が安定している(条件1 or 条件2を満たしている)
+        # triggered: すでに一定時間以内にイベントが取りがされた
+        escaped = not self.matched_in(context, 1000)
+        matched2 = matched_diff0 or matched_diff10
+        triggered = self.matched_in(
+            context, 30 * 1000, attr='_last_event_msec')
+
+        if matched2 and (not triggered):
+            self.analyze(context)
+            # self.dump(context)
+            self._call_plugins('on_result_detail')
+            self._call_plugins('on_game_individual_result')
+            self._last_event_msec = context['engine']['msec']
+            triggered = True
 
         if matched:
             return True
 
-        # 1000ms 以内の非マッチはチャタリングとみなす
-        # それ以上マッチングしなかった場合 -> シーンを抜けている
-        if not self.matched_in(context, 1000):
+        if escaped:
+            if not triggered:
+                IkaUtils.dprint(''.join((
+                    '%s: 戦績画面を検出しましたが静止画を認識できませんでした。考えられる原因\n' % self,
+                    '  ・HDMIキャプチャデバイスからのノイズ入力が多い\n',
+                    '　・ブロックノイズが多いビデオファイルを処理している\n',
+                    '　・正しいフォーマットで画像が入力されていない\n',
+                    '　min(diff_pixels): %s' % self._still_frame[1],
+                )))
+
             self._last_event_msec = context['engine']['msec']
             self._match_start_msec = - 100 * 1000
             self._switch_state(self._state_default)
@@ -474,6 +506,7 @@ class ResultDetail(StatefulScene):
 
         winlose = cv2.imread('masks/result_detail.png')
         self.winlose_gray = cv2.cvtColor(winlose, cv2.COLOR_BGR2GRAY)
+        self._white_filter = matcher.MM_WHITE()
 
         self.udemae_recoginizer = UdemaeRecoginizer()
         self.number_recoginizer = NumberRecoginizer()
