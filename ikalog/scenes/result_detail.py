@@ -390,15 +390,16 @@ class ResultDetail(StatefulScene):
         matched_diff10 = False
 
         if matched:
+            img_white2 = self._white_filter.evaluate(frame[626:626+45, 640:1280])
             img_white = np.array(
-                self._white_filter.evaluate(frame[:, 640:1280]),
+                img_white2,
                 np.int16,
             )
 
             if self._last_frame is not None:
                 # 保存済みフレームとの差分をとってみる
                 img_diff = abs(img_white - self._last_frame)
-                img_diff2 = cv2.inRange(img_diff, 32, 255)
+                img_diff2 = cv2.inRange(img_diff, 128, 255)
                 diff_pixels = int(np.sum(img_diff2) / 255)
 
                 if diff_pixels < self._still_frame[1]:
@@ -408,7 +409,7 @@ class ResultDetail(StatefulScene):
                 self._diff_pixels.append(diff_pixels)
                 if len(self._diff_pixels) > 4:
                     self._diff_pixels.pop(0)
-                    matched_diff10 = np.max(self._diff_pixels) < 10
+                    matched_diff10 = np.max(self._diff_pixels) < 20
 
                 # print('img_diff_pixels', self._still_frame[1], diff_pixels, self._diff_pixels, matched_diff0, matched_diff10)
 
