@@ -72,94 +72,9 @@ import pickle
 import cv2
 import numpy as np
 
-from ikalog.inputs.filters import Filter, WarpFilterModel
 from ikalog.utils import *
 
-class WarpFilter(Filter):
-
-    def filter_matches(self, kp1, kp2, matches, ratio=0.75):
-        mkp1, mkp2 = [], []
-        for m in matches:
-            if len(m) == 2 and m[0].distance < m[1].distance * ratio:
-                m = m[0]
-                mkp1.append(kp1[m.queryIdx])
-                mkp2.append(kp2[m.trainIdx])
-        p1 = np.float32([kp.pt for kp in mkp1])
-        p2 = np.float32([kp.pt for kp in mkp2])
-        kp_pairs = zip(mkp1, mkp2)
-        return p1, p2, kp_pairs
-
-    def set_bbox(self, x, y, w, h):
-        corners = np.float32(
-            [[x, y], [x + w, y], [w + x, y + h], [x, y + h]]
-        )
-
-        self.pts1 = np.float32(corners)
-
-        IkaUtils.dprint('pts1: %s' % [self.pts1])
-        IkaUtils.dprint('pts2: %s' % [self.pts2])
-
-        self.M = cv2.getPerspectiveTransform(self.pts1, self.pts2)
-        return True
-
-    def calibrateWarp(self, capture_image, validation_func=None):
-        capture_image_gray = cv2.cvtColor(capture_image, cv2.COLOR_BGR2GRAY)
-
-        capture_image_keypoints, capture_image_descriptors = self.detector.detectAndCompute(
-            capture_image_gray, None)
-        print('caputure_image - %d features' % (len(capture_image_keypoints)))
-
-        print('matching...')
-
-        raw_matches = self.matcher.knnMatch(
-            self.calibration_image_descriptors,
-            trainDescriptors=capture_image_descriptors,
-            k=2
-        )
-        p1, p2, kp_pairs = self.filter_matches(
-            self.calibration_image_keypoints,
-            capture_image_keypoints,
-            raw_matches,
-        )
-
-        if len(p1) >= 4:
-            H, status = cv2.findHomography(p1, p2, cv2.RANSAC, 5.0)
-            print('%d / %d  inliers/matched' % (np.sum(status), len(status)))
-        else:
-            H, status = None, None
-            print('%d matches found, not enough for homography estimation' % len(p1))
-            self.calibration_requested = False
-            return False
-
-        if H is None:
-            # Should never reach there...
-            self.calibration_requested = False
-            return False
-
-        if len(status) < 1000:
-            return False
-
-        calibration_image_height, calibration_image_width = self.calibration_image_size
-
-        corners = np.float32(
-            [[0, 0],
-             [calibration_image_width, 0],
-             [calibration_image_width, calibration_image_height],
-             [0, calibration_image_height]]
-        )
-
-        pts1 = np.float32(cv2.perspectiveTransform(
-            corners.reshape(1, -1, 2), H).reshape(-1, 2) + (0, 0))
-
-        IkaUtils.dprint('pts1: %s' % [pts1])
-        IkaUtils.dprint('pts2: %s' % [self.pts2])
-
-        if validation_func is not None:
-            if not validation_func(pts1):
-                return False
-
-        self.M = cv2.getPerspectiveTransform(pts1, self.pts2)
-        return True
+class WarpFilterModel(object):
 
     def tuples2keyPoints(self, tuples):
         new_l = []
@@ -193,39 +108,53 @@ class WarpFilter(Filter):
         ], f)
         f.close()
 
-    def initializeCalibration(self):
-        model_object = WarpFilterModel()
+    def __new__(cls, *args, **kwargs):
 
-        if not model_object.trained:
-            raise Exception('Could not intialize WarpFilterModel')
+        if not hasattr(cls, '__instance__'):
+            cls.__instance__ = super(
+                WarpFilterModel, cls).__new__(cls, *args, **kwargs)
 
-        self.detector = model_object.detector
-        self.norm = model_object.norm
-        self.matcher = model_object.matcher
+        return cls.__instance__
 
-        self.calibration_image_size = model_object.calibration_image_size
-        self.calibration_image_keypoints = model_object.calibration_image_keypoints
-        self.calibration_image_descriptors = model_object.calibration_image_descriptors
+    def __init__(self):
 
-        self.reset()
+        if hasattr(self, 'trained') and self.trained:
+            return
 
-    def reset(self):
-        # input source
-        w = 1280
-        h = 720
+        super(WarpFilterModel, self).__init__()
 
-        self.pts2 = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
-        self.M = cv2.getPerspectiveTransform(self.pts2, self.pts2)
+        model_filename = os.path.join(
+            IkaUtils.baseDirectory(), 'data', 'webcam_calibration.model')
+        # print(model_filename)
 
-    def pre_execute(self, frame):
-        return True
+        self.detector = cv2.AKAZE_create()
+        self.norm = cv2.NORM_HAMMING
+        self.matcher = cv2.BFMatcher(self.norm)
 
-    def execute(self, frame):
-        if not (self.enabled and self.pre_execute(frame)):
-            return frame
+        try:
+            self.loadModelFromFile(model_filename)
+            num_keypoints = len(self.calibration_image_keypoints)
+            IkaUtils.dprint('%s: Loaded model data\n  %s (%d keypoints)' % (self, model_filename, num_keypoints))
+        except:
+            IkaUtils.dprint('%s: Could not load model data. Trying to rebuild...' % self)
 
-        return cv2.warpPerspective(frame, self.M, (1280, 720))
+            calibration_image = cv2.imread('camera/ika_usbcam/Pause.png', 0)
+            self.calibration_image_size = calibration_image.shape[:2]
+            calibration_image_hight, calibration_image_width = \
+                calibration_image.shape[ :2] 
+            self.calibration_image_keypoints, self.calibration_image_descriptors = \
+                self.detector.detectAndCompute( calibration_image, None)
 
-    def __init__(self, parent, debug=False):
-        super().__init__(parent, debug=debug)
-        self.initializeCalibration()
+            print(self.calibration_image_keypoints)
+            print(self.calibration_image_descriptors)
+
+            self.saveModelToFile(model_filename)
+            IkaUtils.dprint('%s: Created model data')
+
+        self.trained = True
+
+
+if __name__ == "__main__":
+    WarpFilterModel()
+    WarpFilterModel()
+    WarpFilterModel()

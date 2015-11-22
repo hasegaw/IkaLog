@@ -72,7 +72,7 @@ import pickle
 import cv2
 import numpy as np
 
-from ikalog.inputs.filters import Filter
+from ikalog.inputs.filters import Filter, WarpFilterModel
 from ikalog.utils import *
 
 
@@ -147,68 +147,19 @@ class OffsetFilter(Filter):
 
         return True
 
-    def tuples2keyPoints(self, tuples):
-        new_l = []
-        for point in tuples:
-            pt, size, angle, response, octave, class_id = point
-            new_l.append(cv2.KeyPoint(
-                pt[0], pt[1], size, angle, response, octave, class_id))
-        return new_l
-
-    def keyPoints2tuples(self, points):
-        new_l = []
-        for point in points:
-            new_l.append((point.pt, point.size, point.angle, point.response, point.octave,
-                          point.class_id))
-        return new_l
-
-    def loadModelFromFile(self, file):
-        f = open(file, 'rb')
-        l = pickle.load(f)
-        f.close()
-        self.calibration_image_size = l[0]
-        self.calibration_image_keypoints = self.tuples2keyPoints(l[1])
-        self.calibration_image_descriptors = l[2]
-
-    def saveModelToFile(self, file):
-        f = open(file, 'wb')
-        pickle.dump([
-            self.calibration_image_size,
-            self.keyPoints2tuples(self.calibration_image_keypoints),
-            self.calibration_image_descriptors,
-        ], f)
-        f.close()
-
     def initializeCalibration(self):
-        model_filename = os.path.join(
-            IkaUtils.baseDirectory(), 'data', 'webcam_calibration.model')
-        print(model_filename)
+        model_object = WarpFilterModel()
 
-        self.detector = cv2.AKAZE_create()
-        self.norm = cv2.NORM_HAMMING
-        self.matcher = cv2.BFMatcher(self.norm)
+        if not model_object.trained:
+            raise Exception('Could not intialize WarpFilterModel')
 
-        self.loadModelFromFile(model_filename)
-        IkaUtils.dprint('%s: Loaded model data')
-        try:
-            IkaUtils.dprint('%s: Loaded model data')
-        except:
+        self.detector = model_object.detector
+        self.norm = model_object.norm
+        self.matcher = model_object.matcher
 
-            calibration_image = cv2.imread('camera/ika_usbcam/Pause.png', 0)
-            self.calibration_image_size = calibration_image.shape[:2]
-            calibration_image_hight, calibration_image_width = calibration_image.shape[
-                :2]
-
-            self.calibration_image_keypoints, self.calibration_image_descriptors = self.detector.detectAndCompute(
-                calibration_image, None)
-            print(self.calibration_image_keypoints)
-            print(self.calibration_image_descriptors)
-
-            self.saveModelToFile(model_filename)
-            IkaUtils.dprint('%s: Created model data')
-
-        print('calibration_image - %d features' %
-              (len(self.calibration_image_keypoints)))
+        self.calibration_image_size = model_object.calibration_image_size
+        self.calibration_image_keypoints = model_object.calibration_image_keypoints
+        self.calibration_image_descriptors = model_object.calibration_image_descriptors
 
         self.reset()
 

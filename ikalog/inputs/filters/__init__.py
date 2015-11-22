@@ -20,6 +20,8 @@
 
 from .filter import Filter
 
+from .warp_model import WarpFilterModel
+
 from .deinterlace import DeinterlaceFilter
 from .offset import OffsetFilter
 from .warp import WarpFilter
