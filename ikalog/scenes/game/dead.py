@@ -122,6 +122,7 @@ class GameDead(StatefulScene):
 
             self.dump(context)
             self._call_plugins('on_game_death_reason_identified')
+            self._call_plugins('on_game_respawn')
 
         self._last_event_msec = context['engine']['msec']
         self._switch_state(self._state_default)
