@@ -89,7 +89,8 @@ class GameStart(StatefulScene):
         return item_top[1]
 
     def _state_default(self, context):
-        if self.is_another_scene_matched(context, 'GameTimerIcon'):
+        timer_icon = self.find_scene_object('GameTimerIcon')
+        if (timer_icon is not None) and timer_icon.matched_in(context, 3000):
             return False
 
         frame = context['engine']['frame']
@@ -137,7 +138,8 @@ class GameStart(StatefulScene):
             return False
 
         # それ以上マッチングしなかった場合 -> シーンを抜けている
-        if not self.matched_in(context, 1000, attr='_last_event_msec'):
+
+        if not self.matched_in(context, 20000, attr='_last_event_msec'):
             context['game']['map'] = self.elect(context, self.stage_votes)
             context['game']['rule'] = self.elect(context, self.rule_votes)
 
