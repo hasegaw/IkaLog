@@ -96,6 +96,7 @@ class CVCapture(object):
     cap = None
     out_width = 1280
     out_height = 720
+    from_file = False
     need_resize = False
     need_deinterlace = False
     realtime = True
@@ -227,7 +228,6 @@ class CVCapture(object):
 
         IkaUtils.dprint('%s: initalizing capture device %s' % (self, source))
         self.realtime = True
-        self.from_file = False
         if self.is_windows():
             self.init_capture(700 + source)
         else:

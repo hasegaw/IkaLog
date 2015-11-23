@@ -29,6 +29,7 @@ class CVgst(object):
     cap = None
     out_width = 1280
     out_height = 720
+    from_file = False
     need_resize = False
     need_deinterlace = False
     realtime = False
