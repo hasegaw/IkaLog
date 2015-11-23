@@ -346,8 +346,8 @@ class ResultDetail(StatefulScene):
         super(ResultDetail, self).reset()
 
         self._last_event_msec = - 100 * 1000
-        self._match_start_msec = - 100 * 1000
 
+        self._match_start_msec = - 100 * 1000
         self._last_frame = None
         self._diff_pixels = []
 
@@ -443,7 +443,7 @@ class ResultDetail(StatefulScene):
             return True
 
         if escaped:
-            if not triggered:
+            if not triggered and (len(self._diff_pixels) > 0):
                 IkaUtils.dprint(''.join((
                     '%s: 戦績画面を検出しましたが静止画を認識できませんでした。考えられる原因\n' % self,
                     '  ・HDMIキャプチャデバイスからのノイズ入力が多い\n',
@@ -452,8 +452,9 @@ class ResultDetail(StatefulScene):
                     '　min(diff_pixels): %s' % min(self._diff_pixels),
                 )))
 
-            self._last_event_msec = context['engine']['msec']
-            self.reset()
+            self._match_start_msec = - 100 * 1000
+            self._last_frame = None
+            self._diff_pixels = []
             self._switch_state(self._state_default)
 
         return False
