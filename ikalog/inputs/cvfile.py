@@ -29,6 +29,7 @@ class CVFile(object):
     cap = None
     out_width = 1280
     out_height = 720
+    from_file = True
     need_resize = False
     need_deinterlace = False
     realtime = False
@@ -97,6 +98,7 @@ class CVFile(object):
 
         self.init_capture(source)
 
+        self.fps = self.cap.get(cv2.CAP_PROP_FPS)
         # ToDo: タイミング情報がとれるかをテストする
 
     def __init__(self):
