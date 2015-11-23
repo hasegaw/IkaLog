@@ -443,7 +443,7 @@ class ResultDetail(StatefulScene):
             return True
 
         if escaped:
-            if not triggered and (len(self._diff_pixels) > 0):
+            if (not triggered) and (len(self._diff_pixels) > 0):
                 IkaUtils.dprint(''.join((
                     '%s: 戦績画面を検出しましたが静止画を認識できませんでした。考えられる原因\n' % self,
                     '  ・HDMIキャプチャデバイスからのノイズ入力が多い\n',
