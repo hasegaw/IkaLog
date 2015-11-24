@@ -48,6 +48,8 @@ class DebugLog(object):
     def on_frame_read_failed(self, context):
         pass
 
+    # In-game typical events
+
     def on_game_killed(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
@@ -85,6 +87,72 @@ class DebugLog(object):
     def on_game_finish(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
+    # Common events to ranked battles.
+
+    def on_game_ranked_we_lead(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_ranked_they_lead(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    # Ranked, Splatzone battles
+
+    def on_game_splatzone_we_got(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_splatzone_we_lost(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_splatzone_they_got(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_splatzone_they_lost(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    # Ranked, Rainmaker battles
+
+    def on_game_rainmaker_we_got(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_rainmaker_we_lost(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_rainmaker_they_got(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_rainmaker_they_lost(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    # Ranked, Tower control battles
+
+    def on_game_tower_we_got(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_tower_we_lost(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_tower_they_got(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_tower_they_lost(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    # Counter / Object Tracking
+
+    def on_game_paint_score_update(self, context):
+        if 0:
+            s = 'paint_score: %s' % context['game'].get('paint_score', 0)
+            self.write_debug_log(sys._getframe().f_code.co_name, context,
+                text=s)
+
+    def on_game_objective_position_update(self, context):
+        if 0:
+            s = 'pos: %s' % context['game']['tower'].get('pos', 0)
+            self.write_debug_log(sys._getframe().f_code.co_name, context,
+                text=s)
+
+    # Result Scenes
+
     def on_result_judge(self, context):
         s = "judge: %s, knockout: %s" % (
             context['game'].get('judge', None), context['game'].get('knockout', None))
@@ -116,12 +184,18 @@ class DebugLog(object):
         )
         self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
 
+    # Session end
+
     def on_game_session_end(self, context):
         s = "death_reasons = %s" % (context['game']['death_reasons'])
         self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
 
+    # UI support
+
     def on_option_tab_create(self, notebook):
         pass
+
+    # Constructor
 
     def __init__(self, dir='debug/', screenshot=False):
         self.dir = dir
