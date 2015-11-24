@@ -124,6 +124,24 @@ class BoyomiDictionary(object):
         'individual_result_unknown': ['よくわからない', 'どういうことだ？'],
         'individual_kill_death': ['{kill}キル{death}デス'],
         'session_end': ['おつかれさまでした'],
+
+        'ranked_we_lead':  ['カウントリードした', 'このまま行けば勝てるぞ', ],
+        'ranked_they_lead':  ['カウントリードされた', 'このままでは負けるぞ', ],
+
+        'splatzone_we_got': ['エリア確保した', 'エリア確保！'],
+        'splatzone_we_lost':  ['カウントストップされた', 'エリアを失った'],
+        'splatzone_they_got':  ['エリア確保された', 'エリアを取られた', ],
+        'splatzone_they_lost':  ['カウントストップした', '食い止めた！', ],
+
+        'tower_we_got': ['ヤグラゲット', 'ホコわ我らのもの'],
+        'tower_we_lost':  ['ヤグラがやられた', 'ヤグラを失った'],
+        'tower_they_got':  ['ヤグラをとられた', ],
+        'tower_they_lost':  ['ヤグラをとめた', 'ヤグラをストップした', '食い止めた！', ],
+
+        'rainmaker_we_got': ['ほこゲット', 'ホコわ我らのもの'],
+        'rainmaker_we_lost':  ['ホコがやられた', 'ホコを失った'],
+        'rainmaker_they_got':  ['ホコをとられた', ],
+        'rainmaker_they_lost':  ['ホコをとめた', 'ホコをストップした', '食い止めた！', ],
     }
 
     def __init__(self, config):
@@ -248,6 +266,48 @@ class Boyomi(object):
 
     def on_game_finish(self, context):
         self._read_text('finish')
+
+    def on_game_ranked_we_lead(self, context):
+        self._read_text('ranked_we_lead')
+
+    def on_game_ranked_they_lead(self, context):
+        self._read_text('ranked_they_lead')
+
+    def on_game_splatzone_we_got(self, context):
+        self._read_text('splatzone_we_got')
+
+    def on_game_splatzone_we_lost(self, context):
+        self._read_text('splatzone_we_lost')
+
+    def on_game_splatzone_they_got(self, context):
+        self._read_text('splatzone_they_got')
+
+    def on_game_splatzone_they_lost(self, context):
+        self._read_text('splatzone_they_lost')
+
+    def on_game_rainmaker_we_got(self, context):
+        self._read_text('rainmaker_we_got')
+
+    def on_game_rainmaker_we_lost(self, context):
+        self._read_text('rainmaker_we_lost')
+
+    def on_game_rainmaker_they_got(self, context):
+        self._read_text('rainmaker_they_got')
+
+    def on_game_rainmaker_they_lost(self, context):
+        self._read_text('rainmaker_they_lost')
+
+    def on_game_tower_we_got(self, context):
+        self._read_text('tower_we_got')
+
+    def on_game_tower_we_lost(self, context):
+        self._read_text('tower_we_lost')
+
+    def on_game_tower_they_got(self, context):
+        self._read_text('tower_they_got')
+
+    def on_game_tower_they_lost(self, context):
+        self._read_text('tower_they_lost')
 
     def on_game_individual_result(self, context):
         map = IkaUtils.map2text(context['game']['map'])
