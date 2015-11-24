@@ -431,7 +431,7 @@ class StatInk(object):
                 ], payload, context['scenes']['result_gears'])
 
         # ResultFesta
-        if payload['lobby'] == 'fest':
+        if payload.get('lobby',None) == 'fest':
             self._set_values(
                 [  # 'type', 'stat.ink Field', 'IkaLog Field'
                     ['int', 'fest_exp', 'result_festa_exp_pre'],
