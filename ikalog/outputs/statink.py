@@ -656,6 +656,18 @@ class StatInk(object):
                 })
                 self.time_last_score_msec = event_msec
 
+    def on_game_objective_position_update(self, context):
+        event_msec = context['engine']['msec'] - self.time_start_at_msec
+
+        if (self.time_last_objective_msec is None) or (event_msec - self.time_last_objective_msec >= 200):
+            self.events.append({
+                'type': 'objective',
+                'position': context['game']['tower'].get('pos', 0),
+                'at': event_msec / 1000,
+            })
+            self.time_last_objective_msec = event_msec
+
+
     def __init__(self, api_key=None, debug=False, dry_run=False):
         self.enabled = not (api_key is None)
         self.api_key = api_key
@@ -667,6 +679,7 @@ class StatInk(object):
 
         self.events = []
         self.time_last_score_msec = None
+        self.time_last_objective_msec = None
 
         self.img_result_detail = None
         self.img_judge = None
