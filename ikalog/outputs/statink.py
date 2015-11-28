@@ -659,6 +659,8 @@ class StatInk(object):
                 self.time_last_score_msec = event_msec
 
     def on_game_objective_position_update(self, context):
+        return
+
         event_msec = context['engine']['msec'] - self.time_start_at_msec
 
         if (self.time_last_objective_msec is None) or (event_msec - self.time_last_objective_msec >= 200):
