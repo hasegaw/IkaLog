@@ -214,8 +214,10 @@ class StatInk(object):
                 'スクイックリンα': 'squiclean_a',
                 'スクイックリンβ': 'squiclean_b',
 
-                'バケットスローシャー': 'bucketslosher',
+                'バケットスロッシャー': 'bucketslosher',
+                'バケットスロッシャーデコ': 'bucketslosher_deco',
                 'ヒッセン': 'hissen',
+                'スクリュースロッシャー': 'screwslosher'
 
                 'バレルスピナー': 'barrelspinner',
                 'バレルスピナーデコ': 'barrelspinner_deco',

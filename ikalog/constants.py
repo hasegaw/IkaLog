@@ -107,8 +107,10 @@ weapons = {
     'squiclean_a': {'ja': 'スクイックリンα'},
     'squiclean_b': {'ja': 'スクイックリンβ'},
 
-    'bucketslosher': {'ja': 'バケットスローシャー'},
+    'bucketslosher': {'ja': 'バケットスロッシャー'},
+    'bucketslosher_deco': {'ja': 'バケットスロッシャーデコ'},
     'hissen': {'ja': 'ヒッセン'},
+    'screwslosher': {'ja': 'スクリュースロッシャー'},
 
     'barrelspinner': {'ja': 'バレルスピナー'},
     'barrelspinner_deco': {'ja': 'バレルスピナーデコ'},
