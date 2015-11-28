@@ -217,7 +217,7 @@ class StatInk(object):
                 'バケットスロッシャー': 'bucketslosher',
                 'バケットスロッシャーデコ': 'bucketslosher_deco',
                 'ヒッセン': 'hissen',
-                'スクリュースロッシャー': 'screwslosher'
+                'スクリュースロッシャー': 'screwslosher',
 
                 'バレルスピナー': 'barrelspinner',
                 'バレルスピナーデコ': 'barrelspinner_deco',
