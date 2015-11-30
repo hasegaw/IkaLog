@@ -41,7 +41,8 @@ class IkaEngine:
         self.session_close_wdt = context['engine']['msec'] + (20 * 1000)
 
     def on_result_gears(self, context):
-        self.session_close_wdt = context['engine']['msec'] + (1 * 1000)
+        if self.session_close_wdt is not None:
+            self.session_close_wdt = context['engine']['msec'] + (1 * 1000)
 
     def dprint(self, text):
         print(text, file=sys.stderr)
