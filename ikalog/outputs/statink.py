@@ -583,6 +583,7 @@ class StatInk(object):
         self.time_end_at = None
         self.events = []
         self.time_last_score_msec = None
+        self.time_last_objective_msec = None
 
         # check if context['engine']['msec'] exists
         # to allow unit test.
