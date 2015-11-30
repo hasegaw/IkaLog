@@ -28,52 +28,6 @@ from ikalog.utils.character_recoginizer import *
 
 class GameKill(StatefulScene):
 
-    def recoginize_and_vote_death_reason(self, context):
-        if self.deadly_weapon_recoginizer is None:
-            return False
-        img_weapon = context['engine']['frame'][218:218 + 51, 452:452 + 410]
-        img_weapon_gray = cv2.cvtColor(img_weapon, cv2.COLOR_BGR2GRAY)
-        ret, img_weapon_b = cv2.threshold(
-            img_weapon_gray, 230, 255, cv2.THRESH_BINARY)
-
-        # (覚) 学習用に保存しておくのはこのデータ
-        if 1:  # (self.time_last_write + 5000 < context['engine']['msec']):
-            import time
-            filename = os.path.join(
-                'training', '_deadly_weapons.%s.png' % time.time())
-            cv2.imwrite(filename, img_weapon_b)
-            self.time_last_write = context['engine']['msec']
-
-        img_weapon_b_bgr = cv2.cvtColor(img_weapon_b, cv2.COLOR_GRAY2BGR)
-        weapon_id = self.deadly_weapon_recoginizer.match(img_weapon_b_bgr)
-
-        # 投票する(あとでまとめて開票)
-        votes = self._cause_of_death_votes
-        votes[weapon_id] = votes.get(weapon_id, 0) + 1
-
-    def count_death_reason_votes(self, context):
-        votes = self._cause_of_death_votes
-        if len(votes) == 0:
-            return None
-        print('votes=%s' % votes)
-
-        most_possible_id = None
-        most_possible_count = 0
-        for weapon_id in votes.keys():
-            weapon_count = votes[weapon_id]
-            if most_possible_count < weapon_count:
-                most_possible_id = weapon_id
-                most_possible_count = weapon_count
-
-        if (most_possible_count == 0) or (most_possible_id is None):
-            return None
-
-        context['game']['last_death_reason'] = most_possible_id
-        context['game']['death_reasons'][most_possible_id] = \
-            context['game']['death_reasons'].get(most_possible_id, 0) + 1
-
-        return most_possible_id
-
     def reset(self):
         super(GameKill, self).reset()
 
@@ -112,25 +66,6 @@ class GameKill(StatefulScene):
             self.frames_since_last_kill = 0
             self.last_kills = kills
 
-    def a_state_default(self, context):
-        if not self.is_another_scene_matched(context, 'GameTimerIcon'):
-            return False
-
-        frame = context['engine']['frame']
-
-        if frame is None:
-            return False
-
-        self.last_kills = 0
-        current_kills = self.countKills(context)
-        matched = current_kills > 0
-
-        if matched:
-            self.increment_kills(context, current_kills)
-            self._switch_state(self._state_tracking)
-
-        return matched
-
     def _state_default(self, context):
         if self.last_kills == 0 and (not self.is_another_scene_matched(context, 'GameTimerIcon')):
             return False
@@ -161,7 +96,7 @@ class GameKill(StatefulScene):
         return True
 
     def dump(self, context):
-        print('last_death_reason %s' % context['game']['death_reasons'])
+        pass
 
     def _analyze(self, context):
         pass
