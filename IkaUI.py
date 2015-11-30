@@ -197,8 +197,9 @@ if __name__ == "__main__":
     gui = IkaLogGUI()
     input_plugin.on_option_tab_create(gui.options.notebookOptions)
     gui.frame.Show()
-    engine = IkaEngine()
 
+    engine = IkaEngine()
+    engine.close_session_at_eof = True
     engine.set_capture(input_plugin)
     plugins = []
 

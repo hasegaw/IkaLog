@@ -208,8 +208,17 @@ class IkaEngine:
         while not self._stop:
             if self._pause:
                 time.sleep(0.5)
-            else:
+                continue
+
+            try:
                 self.process_frame()
+            except EOFError:
+                # EOF. Close session if close_session_at_eof is set.
+                if self.close_session_at_eof:
+                    if self.session_close_wdt is not None:
+                        self.dprint('Closing current session at EOF')
+                        self.session_close()
+                raise
 
         cv2.destroyAllWindows()
 
@@ -250,4 +259,7 @@ class IkaEngine:
 
         self._stop = False
         self._pause = True
+
+        self.close_session_at_eof = False
+
         self.create_context()

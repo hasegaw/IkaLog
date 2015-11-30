@@ -37,5 +37,6 @@ engine = IkaEngine()
 engine.pause(False)
 engine.set_capture(capture)
 engine.set_plugins(OutputPlugins)
+engine.close_session_at_eof = True
 engine.run()
 IkaUtils.dprint('bye!')
