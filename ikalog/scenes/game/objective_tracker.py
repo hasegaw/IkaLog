@@ -27,6 +27,7 @@ from ikalog.utils import *
 
 # Tracker the control tower (or rainmaker)
 
+
 class ObjectiveTracker(Scene):
     # 720p サイズでの値
     tower_width = 580
@@ -97,8 +98,12 @@ class ObjectiveTracker(Scene):
             # 値がとれていない
             xPos_pct = context['game']['tower']['pos']
 
-
         new_pos = int(xPos_pct)
+        # 現在位置から飛びすぎている場合、1秒間は無視する
+        if abs(new_pos - context['game']['tower']['pos']) > 30:
+            if self.matched_in(context, 1000, attr='_last_update_msec'):
+                return False
+
         new_min = min(new_pos, context['game']['tower']['min'])
         new_max = max(new_pos, context['game']['tower']['max'])
 
@@ -109,12 +114,15 @@ class ObjectiveTracker(Scene):
         context['game']['tower']['max'] = new_max
         if updated:
             self._call_plugins('on_game_objective_position_update')
+
+        self._last_update_msec = context['engine']['msec']
         return True
 
     def _init_scene(self):
         self.ui_tower_mask = cv2.imread('masks/ui_tower.png')
         self.ui_tower_mask = self.ui_tower_mask[
             self.tower_line_top:self.tower_line_top + self.tower_line_height, self.tower_left:self.tower_left + self.tower_width]
+        self._last_update_msec = -100 * 1000
 
 if __name__ == "__main__":
     target = cv2.imread(sys.argv[1])
