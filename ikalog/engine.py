@@ -244,6 +244,7 @@ class IkaEngine:
             scenes.ResultJudge(self),
             scenes.PaintScoreTracker(self),
             scenes.ObjectiveTracker(self),
+            scenes.SplatzoneTracker(self),
             scenes.ResultDetail(self),
             scenes.ResultUdemae(self),
             scenes.ResultGears(self),

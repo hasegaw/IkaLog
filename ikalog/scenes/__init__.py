@@ -27,6 +27,7 @@ from .game.timer_icon import GameTimerIcon
 from .game.oob import GameOutOfBound
 from .game.paint_score_tracker import PaintScoreTracker
 from .game.objective_tracker import ObjectiveTracker
+from .game.splatzone_tracker import SplatzoneTracker
 
 from .result_detail import ResultDetail
 from .result_judge import ResultJudge

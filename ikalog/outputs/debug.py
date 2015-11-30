@@ -151,6 +151,17 @@ class DebugLog(object):
             self.write_debug_log(sys._getframe().f_code.co_name, context,
                 text=s)
 
+    def on_game_splatzone_counter_update(self, context):
+        if 1:
+            s = 'my_team: %s(%s), counter_team: %s(%s)' % (
+                context['game']['splatzone_my_team_counter']['value'],
+                context['game']['splatzone_my_team_counter']['injury_value'],
+                context['game']['splatzone_counter_team_counter']['value'],
+                context['game']['splatzone_counter_team_counter']['injury_value'],
+            )
+            self.write_debug_log(sys._getframe().f_code.co_name, context,
+                text=s)
+
     # Result Scenes
 
     def on_result_judge(self, context):
