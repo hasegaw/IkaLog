@@ -152,7 +152,7 @@ class DebugLog(object):
                 text=s)
 
     def on_game_splatzone_counter_update(self, context):
-        if 1:
+        if 0:
             s = 'my_team: %s(%s), counter_team: %s(%s)' % (
                 context['game']['splatzone_my_team_counter']['value'],
                 context['game']['splatzone_my_team_counter']['injury_value'],
