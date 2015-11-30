@@ -164,7 +164,7 @@ class IkaEngine:
 
         skip_frames = 0
         if (self.capture.from_file and self.capture.fps > 28):
-            skip_frames = int(self.capture.fps / 3)
+            skip_frames = int(self.capture.fps * 0.1)
 
         frame, t = self.read_next_frame(skip_frames=skip_frames)
 
