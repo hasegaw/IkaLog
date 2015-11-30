@@ -228,6 +228,7 @@ class IkaEngine:
 
     def set_plugins(self, plugins):
         self.output_plugins = [self]
+        self.output_plugins.extend(self.scenes)
         self.output_plugins.extend(plugins)
 
     def pause(self, pause):
