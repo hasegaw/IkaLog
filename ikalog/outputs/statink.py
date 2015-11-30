@@ -46,11 +46,15 @@ class StatInk(object):
     def apply_ui(self):
         self.enabled = self.checkEnable.GetValue()
         self.show_response_enabled = self.checkShowResponseEnable.GetValue()
+        self.track_objective_enabled = self.checkTrackObjectiveEnable.GetValue()
+        self.track_splatzone_enabled = self.checkTrackSplatzoneEnable.GetValue()
         self.api_key = self.editApiKey.GetValue()
 
     def refresh_ui(self):
         self.checkEnable.SetValue(self.enabled)
         self.checkShowResponseEnable.SetValue(self.show_response_enabled)
+        self.checkTrackObjectiveEnable.SetValue(self.track_objective_enabled)
+        self.checkTrackSplatzoneEnable.SetValue(self.track_splatzone_enabled)
 
         if not self.api_key is None:
             self.editApiKey.SetValue(self.api_key)
@@ -60,6 +64,8 @@ class StatInk(object):
     def on_config_reset(self, context=None):
         self.enabled = False
         self.show_response_enabled = False
+        self.track_objective_enabled = False
+        self.track_splatzone_enabled = False
         self.api_key = None
 
     def on_config_load_from_context(self, context):
@@ -69,14 +75,11 @@ class StatInk(object):
         except:
             conf = {}
 
-        if 'Enable' in conf:
-            self.enabled = conf['Enable']
-
-        if 'ShowResponse' in conf:
-            self.show_response_enabled = conf['ShowResponse']
-
-        if 'APIKEY' in conf:
-            self.api_key = conf['APIKEY']
+        self.enabled = conf.get('Enable', False)
+        self.show_response_enabled = conf.get('ShowResponse', False)
+        self.track_objective_enabled = conf.get('TrackObjective', False)
+        self.track_splatzone_enabled = conf.get('TrackSplatzone', False)
+        self.api_key = conf.get('APIKEY', '')
 
         self.refresh_ui()
         return True
@@ -85,6 +88,8 @@ class StatInk(object):
         context['config']['stat.ink'] = {
             'Enable': self.enabled,
             'ShowResponse': self.show_response_enabled,
+            'TrackObjective': self.track_objective_enabled,
+            'TrackSplatzone': self.track_splatzone_enabled,
             'APIKEY': self.api_key,
         }
 
@@ -98,12 +103,18 @@ class StatInk(object):
         self.panel.SetSizer(self.layout)
         self.checkEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, 'stat.ink へのスコアを送信する')
+        self.checkTrackObjectiveEnable = wx.CheckBox(
+            self.panel, wx.ID_ANY, 'ガチヤグラ／ガチホコの位置を検出する (Experimental)')
+        self.checkTrackSplatzoneEnable = wx.CheckBox(
+            self.panel, wx.ID_ANY, 'ガチエリアのカウントを検出する (Experimental)')
         self.checkShowResponseEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, 'stat.ink からの応答をコンソールに出力する')
         self.editApiKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
         self.layout.Add(self.checkEnable)
         self.layout.Add(self.checkShowResponseEnable)
+        self.layout.Add(self.checkTrackObjectiveEnable)
+        self.layout.Add(self.checkTrackSplatzoneEnable)
         self.layout.Add(wx.StaticText(
             self.panel, wx.ID_ANY, u'APIキー'))
         self.layout.Add(self.editApiKey, flag=wx.EXPAND)
@@ -659,7 +670,8 @@ class StatInk(object):
                 self.time_last_score_msec = event_msec
 
     def on_game_objective_position_update(self, context):
-        return
+        if not self.track_objective_enabled:
+            return
 
         event_msec = context['engine']['msec'] - self.time_start_at_msec
 
@@ -671,8 +683,23 @@ class StatInk(object):
             })
             self.time_last_objective_msec = event_msec
 
+    def on_game_splatzone_counter_update(self, context):
+        if not self.track_splatzone_enabled:
+            return
 
-    def __init__(self, api_key=None, debug=False, dry_run=False):
+        event_msec = context['engine']['msec'] - self.time_start_at_msec
+        self.events.append({
+            'type': 'splatzone',
+            'my_team_count': context['game']['splatzone_my_team_counter']['value'],
+            'my_team_injury_count': None,
+            'his_team_count': context['game']['splatzone_counter_team_counter']['value'],
+            'his_team_injury_count': None,
+            'at': event_msec / 1000,
+        })
+        self.time_last_score_msec = event_msec
+
+
+    def __init__(self, api_key=None, track_objective=False, track_splatzone=False, debug=False, dry_run=False):
         self.enabled = not (api_key is None)
         self.api_key = api_key
         self.dry_run = dry_run
@@ -690,6 +717,8 @@ class StatInk(object):
 
         self.debug_writePayloadToFile = debug
         self.show_response_enabled = debug
+        self.track_objective_enabled = track_objective
+        self.track_splatzone_enabled = track_splatzone
 
 if __name__ == "__main__":
     # main として呼ばれた場合
