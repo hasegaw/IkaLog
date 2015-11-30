@@ -21,12 +21,12 @@ import sys
 
 import cv2
 
-from ikalog.scenes.stateful_scene import StatefulScene
+from ikalog.scenes.scene import Scene
 from ikalog.utils import *
 from ikalog.utils.character_recoginizer import *
 
 
-class GameKill(StatefulScene):
+class GameKill(Scene):
 
     def reset(self):
         super(GameKill, self).reset()
@@ -34,7 +34,7 @@ class GameKill(StatefulScene):
         self.last_kills = 0
         self.total_kills = 0
         self._msec_last_kill = 0
-        self.frames_since_last_kill = 0
+        self._msec_last_decrease = 0
 
     def countKills(self, context):
         img_gray = cv2.cvtColor(context['engine']['frame'][
@@ -60,13 +60,14 @@ class GameKill(StatefulScene):
             context['game']['kills'] = context['game'].get('kills', 0) + delta
             self.total_kills = context['game']['kills']
 
-            self._call_plugins('on_game_killed')
+            for i in range(delta):
+                self._call_plugins('on_game_killed')
 
             self._msec_last_kill = context['engine']['msec']
-            self.frames_since_last_kill = 0
+            self._msec_last_decrease = context['engine']['msec']
             self.last_kills = kills
 
-    def _state_default(self, context):
+    def match_no_cache(self, context):
         if self.last_kills == 0 and (not self.is_another_scene_matched(context, 'GameTimerIcon')):
             return False
 
@@ -78,22 +79,16 @@ class GameKill(StatefulScene):
         current_kills = self.countKills(context)
         self.increment_kills(context, current_kills)
 
-        # print('KILLS %d LAST_KILLS %d TOTAL %d' % (current_kills, self.last_kills, self.total_kills))
-        if current_kills < self.last_kills:
-            self.frames_since_last_kill = self.frames_since_last_kill + 1
+        # print('KILLS %d LAST_KILLS %d TOTAL %d' % (current_kills, self.last_kills, self.total_kills, ))
+        if current_kills >= self.last_kills:
+            self._msec_last_decrease = context['engine']['msec']
 
-        # 3秒以上 or 5 フレーム間は last_kill の値を維持する
-        cond1 = self.matched_in(context, 3 * 1000, attr='_msec_last_kill')
-        cond2 = (5 < self.frames_since_last_kill)
-
-        if (cond1 or cond2):
+        # 150ms のチャタリングは無視
+        if not self.matched_in(context, 150, attr='_msec_last_decrease'):
             self.last_kills = min(self.last_kills, current_kills)
+ 
 
-        if self.last_kills == 0:
-            # self._switch_state(self._state_default)
-            return False
-
-        return True
+        return self.last_kills > 0
 
     def dump(self, context):
         pass
