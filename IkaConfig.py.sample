@@ -107,7 +107,7 @@ class IkaConfig:
             #     dry_run=False,
             #     track_splatzone=False,
             #     track_objective=False,
-            # )
+            # ),
 
             # Twitter: Twitter 連携
             # outputs.Twitter(
