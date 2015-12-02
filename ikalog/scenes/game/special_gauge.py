@@ -41,7 +41,11 @@ class GameSpecialGauge(Scene):
         frame = context['engine']['frame']
 
         img = frame[34:34+102, 1117:1117+102]
-        img_filtered = 255 - self._mm_dark.evaluate(img)
+        img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        img_filtered = img_hsv[:, :, 1]
+        img_filtered[img_hsv[:, :, 1] > 64] = 255
+        img_filtered[img_hsv[:, :, 2] > 64] = 255
+        img_filtered[img_filtered <= 64] = 0
         img_masked = np.minimum(img_filtered, self._mask_gauge[:, :, 0])
         # cv2.imshow('gauge', img_masked)
 
