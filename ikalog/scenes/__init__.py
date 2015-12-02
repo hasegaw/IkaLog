@@ -25,6 +25,7 @@ from .game.dead import GameDead
 from .game.finish import GameFinish
 from .game.timer_icon import GameTimerIcon
 from .game.oob import GameOutOfBound
+from .game.special_gauge import GameSpecialGauge
 from .game.paint_score_tracker import PaintScoreTracker
 from .game.objective_tracker import ObjectiveTracker
 from .game.splatzone_tracker import SplatzoneTracker

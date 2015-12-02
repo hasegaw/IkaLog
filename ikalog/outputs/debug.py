@@ -162,6 +162,12 @@ class DebugLog(object):
             self.write_debug_log(sys._getframe().f_code.co_name, context,
                 text=s)
 
+    def on_game_special_gauge_update(self, context):
+        if 0:
+            s = 'special: %spct' % (context['game']['special_gauge'])
+            self.write_debug_log(sys._getframe().f_code.co_name, context,
+                text=s)
+
     # Result Scenes
 
     def on_result_judge(self, context):
