@@ -295,6 +295,25 @@ class StatInk(object):
                 elif f_type == 'str_lower':
                     dest[f_statink] = str(src[f_ikalog]).lower()
 
+    def _add_event(self, context, event_data=None):
+        assert event_data is not None
+        if (not 'at'in event_data) and (self.time_start_at_msec is not None):
+            offset_msec = context['engine']['msec'] - self.time_start_at_msec
+            event_data['at'] = int(offset_msec / 100) / 10
+        else:
+            IkaUtils.dprint('%s: Event %s not logged due to no timing information.' % (
+                self, event_data['type']))
+            return
+
+        self.events.append(event_data)
+
+    def _add_ranked_battle_event(self, context, event_sub_type=None):
+        assert event_sub_type is not None
+        self._add_event(context, {
+            'type': 'ranked_battle_event',
+            'value': event_sub_type,
+        })
+
     def composite_payload(self, context):
         payload = {}
 
@@ -444,7 +463,7 @@ class StatInk(object):
                 ], payload, context['scenes']['result_gears'])
 
         # ResultFesta
-        if payload.get('lobby',None) == 'fest':
+        if payload.get('lobby', None) == 'fest':
             self._set_values(
                 [  # 'type', 'stat.ink Field', 'IkaLog Field'
                     ['int', 'fest_exp', 'result_festa_exp_pre'],
@@ -458,7 +477,8 @@ class StatInk(object):
                         index = fes_rank_titles.index(current_title)
                         current_title = fes_rank_titles[index + 1]
                     except IndexError:
-                        IkaUtils.dprint('%s: IndexError at fes_rank_titles' % self)
+                        IkaUtils.dprint(
+                            '%s: IndexError at fes_rank_titles' % self)
 
                 payload['fest_title_after'] = current_title.lower()
 
@@ -641,20 +661,10 @@ class StatInk(object):
         self.post_payload(payload)
 
     def on_game_killed(self, context):
-        if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
-            event_msec = context['engine']['msec'] - self.time_start_at_msec
-            self.events.append({
-                'type': 'killed',
-                'at': event_msec / 1000,
-            })
+        self._add_event(context, {'type': 'killed'})
 
     def on_game_dead(self, context):
-        if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
-            event_msec = context['engine']['msec'] - self.time_start_at_msec
-            self.events.append({
-                'type': 'dead',
-                'at': event_msec / 1000,
-            })
+        self._add_event(context, {'type': 'dead'})
 
     def on_game_paint_score_update(self, context):
         score = context['game'].get('paint_score', 0)
@@ -662,11 +672,9 @@ class StatInk(object):
             event_msec = context['engine']['msec'] - self.time_start_at_msec
             # 前回のスコアイベントから 200ms 経っていない場合は処理しない
             if (self.time_last_score_msec is None) or (event_msec - self.time_last_score_msec >= 200):
-                # IkaUtils.dprint('%s: score=%d at %.3f' % (self, score, event_msec / 1000))
-                self.events.append({
+                self._add_event(context, {
                     'type': 'point',
                     'point': score,
-                    'at': event_msec / 1000,
                 })
                 self.time_last_score_msec = event_msec
 
@@ -677,10 +685,9 @@ class StatInk(object):
         event_msec = context['engine']['msec'] - self.time_start_at_msec
 
         if (self.time_last_objective_msec is None) or (event_msec - self.time_last_objective_msec >= 200):
-            self.events.append({
+            self._add_event(context, {
                 'type': 'objective',
                 'position': context['game']['tower'].get('pos', 0),
-                'at': event_msec / 1000,
             })
             self.time_last_objective_msec = event_msec
 
@@ -689,16 +696,56 @@ class StatInk(object):
             return
 
         event_msec = context['engine']['msec'] - self.time_start_at_msec
-        self.events.append({
+        self._add_event(context, {
             'type': 'splatzone',
             'my_team_count': context['game']['splatzone_my_team_counter']['value'],
             'my_team_injury_count': None,
             'his_team_count': context['game']['splatzone_counter_team_counter']['value'],
             'his_team_injury_count': None,
-            'at': event_msec / 1000,
         })
         self.time_last_score_msec = event_msec
 
+    def on_game_splatzone_we_got(self, context):
+        self._add_ranked_battle_event(context, 'we_got')
+
+    def on_game_splatzone_we_lost(self, context):
+        self._add_ranked_battle_event(context, 'we_lost')
+
+    def on_game_splatzone_they_got(self, context):
+        self._add_ranked_battle_event(context, 'they_got')
+
+    def on_game_splatzone_they_lost(self, context):
+        self._add_ranked_battle_event(context, 'they_lost')
+
+    def on_game_rainmaker_we_got(self, context):
+        self._add_ranked_battle_event(context, 'we_got')
+
+    def on_game_rainmaker_we_lost(self, context):
+        self._add_ranked_battle_event(context, 'we_lost')
+
+    def on_game_rainmaker_they_got(self, context):
+        self._add_ranked_battle_event(context, 'they_got')
+
+    def on_game_rainmaker_they_lost(self, context):
+        self._add_ranked_battle_event(context, 'they_lost')
+
+    def on_game_towercontrol_we_took(self, context):
+        self._add_ranked_battle_event(context, 'we_got')
+
+    def on_game_towercontrol_we_lost(self, context):
+        self._add_ranked_battle_event(context, 'we_lost')
+
+    def on_game_towercontrol_they_took(self, context):
+        self._add_ranked_battle_event(context, 'they_got')
+
+    def on_game_towercontrol_they_lost(self, context):
+        self._add_ranked_battle_event(context, 'they_lost')
+
+    def on_game_ranked_we_lead(self, context):
+        self._add_ranked_battle_event(context, 'we_lead')
+
+    def on_game_ranked_they_lead(self, context):
+        self._add_ranked_battle_event(context, 'they_lead')
 
     def __init__(self, api_key=None, track_objective=False, track_splatzone=False, debug=False, dry_run=False):
         self.enabled = not (api_key is None)
