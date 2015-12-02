@@ -244,9 +244,12 @@ class IkaEngine:
             scenes.GameOutOfBound(self),
             scenes.GameFinish(self),
             scenes.ResultJudge(self),
+
+            scenes.GameRankedBattleEvents(self),
             scenes.PaintScoreTracker(self),
             scenes.ObjectiveTracker(self),
             scenes.SplatzoneTracker(self),
+
             scenes.ResultDetail(self),
             scenes.ResultUdemae(self),
             scenes.ResultGears(self),
