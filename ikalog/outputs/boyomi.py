@@ -5,6 +5,7 @@
 #  ======
 #  Copyright (C) 2015 ExceptionError
 #  Copyright (C) 2015 Takeshi HASEGAWA
+#  Copyright (C) 2015 AIZAWA Hina
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -26,6 +27,7 @@ import traceback
 
 from ikalog.constants import *
 from ikalog.utils import *
+from .commentator import Commentator
 
 # Needed in GUI mode
 try:
@@ -108,86 +110,15 @@ class BoyomiClient(object):
         self._close()
 
 
-class BoyomiDictionary(object):
-    _config = {
-        'lobby_matching': ['しばらく待ちましょう'],
-        'lobby_matched': ['メンバーが揃いました'],
-        'start': ['{map}で{rule}が始まります'],
-        'go_sign': ['ゲームスタート！'],
-        'killed': ['倒した！', 'やったぁ'],
-        'dead': ['あああああああ', 'ぎゃああああ', 'うわああああ'],
-        'death_reason_identified': ['{reason}で倒された'],
-        'death_reason_oob': ['場外に落ちた'],
-        'finish': ['ゲーム終了！'],
-        'individual_result_win': ['勝った！', 'やったぜ'],
-        'individual_result_lose': ['負けた！', 'くやしい'],
-        'individual_result_unknown': ['よくわからない', 'どういうことだ？'],
-        'individual_kill_death': ['{kill}キル{death}デス'],
-        'session_end': ['おつかれさまでした'],
-
-        'ranked_we_lead':  ['カウントリードした', 'このまま行けば勝てるぞ', ],
-        'ranked_they_lead':  ['カウントリードされた', 'このままでは負けるぞ', ],
-
-        'splatzone_we_got': ['エリア確保した', 'エリア確保！'],
-        'splatzone_we_lost':  ['カウントストップされた', 'エリアを失った'],
-        'splatzone_they_got':  ['エリア確保された', 'エリアを取られた', ],
-        'splatzone_they_lost':  ['カウントストップした', '食い止めた！', ],
-
-        'tower_we_got': ['ヤグラゲット', 'ホコわ我らのもの'],
-        'tower_we_lost':  ['ヤグラがやられた', 'ヤグラを失った'],
-        'tower_they_got':  ['ヤグラをとられた', ],
-        'tower_they_lost':  ['ヤグラをとめた', 'ヤグラをストップした', '食い止めた！', ],
-
-        'rainmaker_we_got': ['ほこゲット', 'ホコわ我らのもの'],
-        'rainmaker_we_lost':  ['ホコがやられた', 'ホコを失った'],
-        'rainmaker_they_got':  ['ホコをとられた', ],
-        'rainmaker_they_lost':  ['ホコをとめた', 'ホコをストップした', '食い止めた！', ],
-    }
-
-    def __init__(self, config):
-        for key in self._config.keys():
-            if key in config:
-                self._config[key] = config[key]
-
-    def text(self, key):
-        return random.choice(self._config.get(key, ['']))
-
-    def get_config(self):
-        return self._config
-
-
-class Boyomi(object):
+class Boyomi(Commentator):
     '''
     棒読みクライアント
     '''
-    custom_read = {
-        'initialize': '棒読みちゃん読み上げテストです',
-        '52gal': 'ごーにーガロン',
-        '52gal_deco': 'ごーにーガロンデコ',
-        '96gal': 'きゅーろくガロン',
-        '96gal_deco': 'きゅーろくガロンデコ',
-        'nzap85': 'エヌザップ85',
-        'nzap89': 'エヌザップ89',
-        'bamboo14mk1': '14式竹筒銃・こう',
-        'bamboo14mk2': '14式竹筒銃・おつ',
-        'liter3k': 'リッター3ケー',
-        'liter3k_custom': 'リッター3ケーカスタム',
-        'liter3k_scope': '3ケースコープ',
-        'liter3k_scope_custom': '3ケースコープカスタム',
-        'promodeler_rg': 'プロモデラーアールジー',
-        'promodeler_mg': 'プロモデラーエムジー',
-        'squiclean_a': 'スクイックリンアルファ',
-        'squiclean_b': 'スクイックリンベータ',
-        'rapid_elite': 'ラピッドブラスターエリート',
-        'unknown': '未知の武器',
-    }
 
     def __init__(self, host='127.0.0.1', port=50001, dictionary={}):
-        self._enabled = True
-
-        self._dict = BoyomiDictionary(dictionary)
+        super(Boyomi, self).__init__(dictionary)
         self._client = BoyomiClient(host, port)
-        self._read(self.custom_read['initialize'])
+        self._read_event('initialize')
 
     def config_key(self):
         return 'boyomi'
@@ -201,133 +132,8 @@ class Boyomi(object):
         config[self.config_key()] = boyomi
         return config
 
-    def _read(self, message):
-        if (self._client is None) or (not self._enabled):
-            return
-
-        try:
-            self._client.read(message)
-        except ConnectionRefusedError:
-            error = '「{message}」を読み上げることができませんでした'.format(message=message)
-            IkaUtils.dprint(error)
-
-    def _text(self, key):
-        return self._dict.text(key)
-
-    def _read_text(self, key):
-        self._read(self._text(key))
-
-    def on_lobby_matching(self, context):
-        self._read_text('lobby_matching')
-
-    def on_lobby_matched(self, context):
-        self._read_text('lobby_matched')
-
-    def on_game_start(self, context):
-        map_text = IkaUtils.map2text(context['game']['map'], unknown='スプラトゥーン')
-        rule_text = IkaUtils.rule2text(context['game']['rule'], unknown='ゲーム')
-        self._read(
-            self._text('start').format(map=map_text, rule=rule_text)
-        )
-
-    def on_game_go_sign(self, context):
-        self._read_text('go_sign')
-
-    def on_game_killed(self, context):
-        self._read_text('killed')
-
-    def on_game_dead(self, context):
-        self._read_text('dead')
-
-    def on_game_death_reason_identified(self, context):
-        reason = context['game']['last_death_reason']
-        if reason in oob_reasons:
-            self._read(
-                self._text('death_reason_oob')
-            )
-        else:
-            label = self._death_reason_label(reason)
-            self._read(
-                self._text('death_reason_identified').format(reason=label)
-            )
-
-    def _death_reason_label(self, reason):
-        if reason in self.custom_read:
-            return self.custom_read[reason]
-        if reason in weapons:
-            return weapons[reason]['ja']
-        if reason in sub_weapons:
-            return sub_weapons[reason]['ja']
-        if reason in special_weapons:
-            return special_weapons[reason]['ja']
-        if reason in hoko_attacks:
-            return hoko_attacks[reason]['ja']
-        return self.custom_read['unknown']
-
-    def on_game_finish(self, context):
-        self._read_text('finish')
-
-    def on_game_ranked_we_lead(self, context):
-        self._read_text('ranked_we_lead')
-
-    def on_game_ranked_they_lead(self, context):
-        self._read_text('ranked_they_lead')
-
-    def on_game_splatzone_we_got(self, context):
-        self._read_text('splatzone_we_got')
-
-    def on_game_splatzone_we_lost(self, context):
-        self._read_text('splatzone_we_lost')
-
-    def on_game_splatzone_they_got(self, context):
-        self._read_text('splatzone_they_got')
-
-    def on_game_splatzone_they_lost(self, context):
-        self._read_text('splatzone_they_lost')
-
-    def on_game_rainmaker_we_got(self, context):
-        self._read_text('rainmaker_we_got')
-
-    def on_game_rainmaker_we_lost(self, context):
-        self._read_text('rainmaker_we_lost')
-
-    def on_game_rainmaker_they_got(self, context):
-        self._read_text('rainmaker_they_got')
-
-    def on_game_rainmaker_they_lost(self, context):
-        self._read_text('rainmaker_they_lost')
-
-    def on_game_tower_we_got(self, context):
-        self._read_text('tower_we_got')
-
-    def on_game_tower_we_lost(self, context):
-        self._read_text('tower_we_lost')
-
-    def on_game_tower_they_got(self, context):
-        self._read_text('tower_they_got')
-
-    def on_game_tower_they_lost(self, context):
-        self._read_text('tower_they_lost')
-
-    def on_game_individual_result(self, context):
-        map = IkaUtils.map2text(context['game']['map'])
-        rule = IkaUtils.rule2text(context['game']['rule'])
-        won = IkaUtils.getWinLoseText(
-            context['game']['won'],
-            win_text=self._text('individual_result_win'),
-            lose_text=self._text('individual_result_lose'),
-            unknown_text=self._text('individual_result_unknown')
-        )
-        self._read(won)
-        me = IkaUtils.getMyEntryFromContext(context)
-        kill = me['kills']
-        death = me['deaths']
-        self._read(
-            self._text('individual_kill_death').format(kill=kill, death=death)
-        )
-
-    def on_game_session_end(self, context):
-        self._read_text('session_end')
+    def _do_read(self, message):
+        self._client.read(message['text'])
 
     def initialize_client(self):
         try:

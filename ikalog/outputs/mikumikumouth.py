@@ -5,6 +5,7 @@
 #  ======
 #  Copyright (C) 2015 ExceptionError
 #  Copyright (C) 2015 Takeshi HASEGAWA
+#  Copyright (C) 2015 AIZAWA Hina
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -29,7 +30,7 @@ import threading
 
 from ikalog.constants import *
 from ikalog.utils import *
-
+from .commentator import Commentator
 
 class MikuMikuMouthServer(object):
     ''' みくみくまうすにコマンドを送信するサーバーです
@@ -79,102 +80,15 @@ class MikuMikuMouthServer(object):
         self._send(json.dumps(data))
 
 
-class MikuMikuMouthDictionaly(object):
-    '''
-    みくみくまうす辞書
-    '''
-    _config = {
-        'lobby_matching': [
-            {'text': 'しばらく待ちましょう', 'emotion': 'response', 'tag': 'white'},
-        ],
-        'lobby_matched': [
-            {'text': 'メンバーが揃いました', 'emotion': 'hakushu', 'tag': 'white'},
-        ],
-        'start': [
-            {
-                'text': '{map}で{rule}が始まります',
-                'emotion': 'greeting',
-                'tag': 'white'
-            },
-        ],
-        'go_sign': [
-            {'text': 'ゲームスタート！', 'emotion': 'meirei', 'tag': 'white'},
-        ],
-        'killed': [
-            {'text': '倒した！', 'emotion': 'warai', 'tag': 'white'},
-            {'text': 'やったぁ', 'emotion': 'wktk', 'tag': 'white'},
-        ],
-        'dead': [
-            {'text': 'ぎゃあああああ', 'emotion': 'no', 'tag': 'white'},
-            {'text': 'あああああああ', 'emotion': 'cry', 'tag': 'white'},
-            {'text': 'うわあああああ', 'emotion': 'bikkuri', 'tag': 'white'},
-        ],
-        'death_reason_identified': [
-            {'text': '{reason}で倒された', 'emotion': 'none', 'tag': 'white'}
-        ],
-        'death_reason_oob': [
-            {'text': '場外に落ちた', 'emotion': 'bikkuri', 'tag': 'white'},
-        ],
-        'finish': [
-            {'text': 'ゲーム終了！', 'emotion': 'greeting', 'tag': 'white'},
-        ],
-        'individual_result_win': [
-            {'text': '勝った！', 'emotion': 'happy', 'tag': 'white'},
-            {'text': 'やったぁ', 'emotion': 'shy', 'tag': 'white'},
-        ],
-        'individual_result_lose': [
-            {'text': '負けた！', 'emotion': 'no', 'tag': 'white'},
-            {'text': 'くやしい', 'emotion': 'cry', 'tag': 'white'},
-        ],
-        'individual_result_unknown': [
-            {'text': 'よくわからない', 'emotion': 'question', 'tag': 'white'},
-            {'text': 'どういうこと？', 'emotion': 'tsukkomi', 'tag': 'white'},
-        ],
-        'individual_kill_death': [
-            {'text': '{kill}キル{death}デス', 'emotion': 'none', 'tag': 'white'},
-        ],
-        'session_end': [
-            {'text': 'おつかれさまでした', 'emotion': 'byebye', 'tag': 'white'},
-        ],
-    }
-
-    def __init__(self, config):
-        for key in self._config.keys():
-            if key in config:
-                self._config[key] = config[key]
-
-    def data(self, key):
-        return random.choice(self._config.get(key, [''])).copy()
-
-    def get_config(self):
-        return self._config
-
-
-class MikuMikuMouth(object):
+class MikuMikuMouth(Commentator):
     '''
     みくみくまうすサーバー
     '''
-    custom_read = {
-        'initialize': '棒読みちゃん読み上げテストです',
-        'nzap85': 'エヌザップ85',
-        'nzap89': 'エヌザップ89',
-        'bamboo14mk1': '14式竹筒銃・こう',
-        'liter3k': 'リッター3ケー',
-        'liter3k_custom': 'リッター3ケーカスタム',
-        'liter3k_scope': '3ケースコープ',
-        'liter3k_scope_custom': '3ケースコープカスタム',
-        'squiclean_a': 'スクイックリンアルファ',
-        'squiclean_b': 'スクイックリンベータ',
-        'rapid_elite': 'ラピッドブラスターエリート',
-        'unknown': '未知の武器',
-    }
-
     def __init__(self, host='127.0.0.1', port=50082, dictionary={}):
-        self._enabled = True
-        self._dict = MikuMikuMouthDictionaly(dictionary)
+        super(MikuMikuMouth, self).__init__(dictionary)
         self._server = MikuMikuMouthServer(host, port)
         self._server.listen()
-        self._read(self.custom_read['initialize'])
+        self._read_event('initialize');
 
     def config_key(self):
         return 'mikumikumouth'
@@ -188,89 +102,9 @@ class MikuMikuMouth(object):
         config[self.config_key()] = mikumikumouth
         return config
 
-    def _read(self, message):
+    def _do_read(self, message):
         if (self._server is None) or (not self._enabled):
             return
 
-        try:
-            self._server.talk(message)
-        except ConnectionRefusedError:
-            error = '「{message}」を読み上げることができませんでした'.format(message=message)
-            IkaUtils.dprint(error)
-
-    def _text(self, key):
-        return self._dict.data(key)
-
-    def _read_text(self, key):
-        self._read(self._text(key))
-
-    def on_stop(self, context):
-        self._server.close()
-
-    def on_lobby_matching(self, context):
-        self._read_text('lobby_matching')
-
-    def on_lobby_matched(self, context):
-        self._read_text('lobby_matched')
-
-    def on_game_start(self, context):
-        map_text = IkaUtils.map2text(context['game']['map'], unknown='スプラトゥーン')
-        rule_text = IkaUtils.rule2text(context['game']['rule'], unknown='ゲーム')
-        data = self._text('start')
-        data['text'] = data['text'].format(map=map_text, rule=rule_text)
-        self._read(data)
-
-    def on_game_go_sign(self, context):
-        self._read_text('go_sign')
-
-    def on_game_killed(self, context):
-        self._read_text('killed')
-
-    def on_game_dead(self, context):
-        self._read_text('dead')
-
-    def on_game_death_reason_identified(self, context):
-        reason = context['game']['last_death_reason']
-        if reason in oob_reasons:
-            data = self._text('death_reason_oob')
-        else:
-            label = self._death_reason_label(reason)
-            data = self._text('death_reason_identified')
-            data['text'] = data['text'].format(reason=label)
-        self._read(data)
-
-    def _death_reason_label(self, reason):
-        if reason in self.custom_read:
-            return self.custom_read[reason]
-        if reason in weapons:
-            return weapons[reason]['ja']
-        if reason in sub_weapons:
-            return sub_weapons[reason]['ja']
-        if reason in special_weapons:
-            return special_weapons[reason]['ja']
-        if reason in hoko_attacks:
-            return hoko_attacks[reason]['ja']
-        return self.custom_read['unknown']
-
-    def on_game_finish(self, context):
-        self._read_text('finish')
-
-    def on_game_individual_result(self, context):
-        map = IkaUtils.map2text(context['game']['map'])
-        rule = IkaUtils.rule2text(context['game']['rule'])
-        won = IkaUtils.getWinLoseText(
-            context['game']['won'],
-            win_text=self._text('individual_result_win'),
-            lose_text=self._text('individual_result_lose'),
-            unknown_text=self._text('individual_result_unknown')
-        )
-        self._read(won)
-        me = IkaUtils.getMyEntryFromContext(context)
-        kill = me['kills']
-        death = me['deaths']
-        data = self._text('individual_kill_death')
-        data['text'] = data['text'].format(kill=kill, death=death)
-        self._read(data)
-
-    def on_game_session_end(self, context):
-        self._read_text('session_end')
+        message["tag"] = "white"
+        self._server.talk(message)
