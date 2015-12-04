@@ -132,6 +132,7 @@ class StatInk(object):
                 'ヒラメが丘団地': 'hirame',
                 'ホッケふ頭': 'hokke',
                 'キンメダイ美術館': 'kinmedai',
+                'マヒマヒリゾート&スパ': 'mahimahi',
                 'マサバ海峡大橋': 'masaba',
                 'モンガラキャンプ場': 'mongara',
                 'モズク農園': 'mozuku',
