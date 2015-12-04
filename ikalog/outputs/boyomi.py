@@ -207,7 +207,7 @@ class Boyomi(Commentator):
         self.apply_ui()
 
     def on_test_button_click(self, event):
-        self._read(self.custom_read['initialize'])
+        self._read_event('initialize')
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
