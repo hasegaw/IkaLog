@@ -174,6 +174,7 @@ class GameStart(StatefulScene):
             {'name': 'ヒラメが丘団地',     'file': 'masks/nawabari_hirame.png'},
             {'name': 'マサバ海峡大橋',     'file': 'masks/nawabari_masaba.png'},
             {'name': 'キンメダイ美術館',   'file': 'masks/gachi_kinmedai.png'},
+            {'name': 'マヒマヒリゾート&スパ', 'file': 'masks/gachi_mahimahi.png'}
         ]
 
         self.rule_list = [
