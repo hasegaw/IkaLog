@@ -108,3 +108,6 @@ class MikuMikuMouth(Commentator):
 
         message["tag"] = "white"
         self._server.talk(message)
+
+    def on_stop(self, context):
+        self._server.close()
