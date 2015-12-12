@@ -97,9 +97,17 @@ class IkaConfig:
             # outputs.Slack(url='https://hooks.slack.com/services/(incoming hook endpoint)'),
 
             # StatInk: stat.ink (スプラトゥーンプレイ実績投稿サイト)
-            # https://stat.ink/ でアカウント登録し API キーを取得してください
-            #
-            # outputs.StatInk(api_key='YOUR_API_KEY_HERE'),
+            #   api_key  APIキー。 https://stat.ink/ に登録し取得してください
+            #   dry_run  Trueの場合 stat.ink に送信しない(テストモード)
+            #   track_splatzone  ガチエリアの時系列情報を送信する
+            #   track_objective  ヤグラ／ホコの時系列情報を送信する
+
+            # outputs.StatInk(
+            #     api_key='YOUR_API_KEY_HERE',
+            #     dry_run=False,
+            #     track_splatzone=False,
+            #     track_objective=False,
+            # ),
 
             # Twitter: Twitter 連携
             # outputs.Twitter(
