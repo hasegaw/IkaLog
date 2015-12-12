@@ -28,7 +28,6 @@ IkaLog GUI 版 (IkaUI) は IkaLog をウインドウアプリとして動くよ�
 #### GUI版のみにある機能
 
 - Windows 用 EXE アプリケーションになっているので簡単に使える
-- タイムライン表示が可能（Experimental)
 - 設定が画面上でできる
 
 #### コマンドライン版にのみあり、現在 GUI では使えない機能
@@ -37,7 +36,6 @@ IkaLog GUI 版 (IkaUI) は IkaLog をウインドウアプリとして動くよ�
 
 - Fluentd 連携 (データベースやWebサービスに戦績を投稿)
 - Hue (Phillips製フルカラーLED電球)にチーム色を設定
-- キャプチャボードの表示ズレ対策 (IkaInput_CVCapture.offset)
 - そのほか自分でプラグインを自由に追加可能
 - [自分の Python スクリプトから IkaLog を利用する (Embedded IkaLog)](EmbeddedIkaLog.md)
 - etc...
@@ -120,6 +118,7 @@ IkaLog は現在下記3タイプの入力が可能です。
 |--------------|------|
 |Capture through AmarecTV|アマレコのライブ機能を経由してキャプチャします(デフォルト)|
 |Realtime Capture from HDMI grabber|HDMI キャプチャデバイスを経由してキャプチャします|
+|Realtime Capture from Desktop|Windows 画面上に表示された WiiU 画面を見つけてキャプチャします|
 |Read from pre-recorded video file (for testing)|録画済みのビデオファイルを再生します|
 
 ##### アマレコTVのライブ機能を介して入力する
@@ -134,13 +133,22 @@ Realtime Capture from HDMI Grabber のラジオボタンを選択し、
 - コンピュータに接続しているキャプチャデバイスがただしく表示されていない場合、 IkaLog 起動後に USB3.0 のキャプチャデバイスを新たに接続した場合は Reload Devices ボタンをクリックしてみてください。
 - キャプチャデバイスとして Input Device 1〜10 が表示される場合、 IkaLog がキャプチャデバイスの取得に失敗しています。
 
+##### デスクトップ上の WiiU 画面を取り込む
+
+Realtime Capture from Desktop を利用すると Windows のプライマリ画面上に表示された
+WiiU 画面を見つけて、その範囲を取り込むことができます。
+
+- デスクトップキャプチャで取り込めるサイズは「デスクトップ全体」「1280x720」「1920x1080」のいずれかです。 <br>中途半端に縮小、拡大されたものは受け付けません。（認識率が悪くなり stat.ink へのノイズ投稿が多かったため制限を追加しました）
+- キャリブレーション（WiiU画面を見つける作業）は起動時に毎回必要です。
+- デスクトップ上で WiiU 画面に他のウインドウ（Windowsの通知やメッセンジャーアプリなど）が表示されるとそれごと取り込みます。特に stat.ink などへ投稿する際には十分注意してください。
+- [つかいかた on YouTube](https://www.youtube.com/watch?v=SAdkOp9vMUE)
+
 ##### ファイルを指定する
 
 Read from pre-recorded video file (for testing)
 ラジオボックスを選択し、下の枠にファイル名を入力すると、
 指定された動画ファイルを入力ソースとして利用できます。
-普段使うことはないかと思いますが、
-ガチヤグラ／ホコのグラフを書いたりするときに使えるかもしれません。
+主に開発時のテスト用としてつけているものです。
 
 ### Screenshot ()スクリーンショット保存の設定)
 
@@ -444,10 +452,14 @@ FFMPEG で H.264 720p 3Mbps 以上のデータであればだいたいの場合�
 IkaLog の開発にあたって多くの方々のご協力をいただいております。ありがとうございます。
 
 - コントリビュータの皆さん
+  - @Deathmetalland
   - @ExceptionError
+  - @gleentea
   - @itoooon
   - @kshimo69
   - @mzsm_j
+  - shinh
+  - XenonAbe
 
 - IkaLog と連携するサービスを提供していただいている方
   - @fetus_hina ([stat.ink](http://stat.ink))
