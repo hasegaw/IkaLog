@@ -234,6 +234,7 @@ class StatInk(object):
                 'バレルスピナー': 'barrelspinner',
                 'バレルスピナーデコ': 'barrelspinner_deco',
                 'スプラスピナー': 'splatspinner',
+                'スプラスピナーコラボ': 'splatspinner_collabo',
             }[weapon]
         except:
             IkaUtils.dprint(

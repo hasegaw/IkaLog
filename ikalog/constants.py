@@ -117,6 +117,7 @@ weapons = {
     'barrelspinner_deco': {'ja': 'バレルスピナーデコ'},
     'hydra': {'ja': 'ハイドラント'},
     'splatspinner': {'ja': 'スプラスピナー'},
+    'splatspinner_collabo': {'ja': 'スプラスピナーコラボ'},
 }
 
 sub_weapons = {
