@@ -16,6 +16,7 @@ from .statink import StatInk
 from .twitter import Twitter
 from .videorecorder import OBS
 from .weapon_training import WeaponTraining
+from .gearpower_training import GearpowerTraining
 from .websocket_server import WebSocketServer
 from .boyomi import Boyomi
 from .mikumikumouth import MikuMikuMouth

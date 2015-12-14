@@ -94,10 +94,25 @@ class ResultGears(StatefulScene):
             gear['img_sub1'] = img_gear[158:158 + 36, 41:41 + 37]
             gear['img_sub2'] = img_gear[158:158 + 36, 85:85 + 37]
             gear['img_sub3'] = img_gear[158:158 + 36, 130:130 + 37]
-            gears.append(gear)
+            # for field in gear.keys():
+            #     cv2.imwrite('/tmp/_gear.%d.%s.png' % (n, field), gear[field])
 
-#            for field in gear.keys():
-#                cv2.imwrite('/tmp/_gear.%d.%s.png' % (n, field), gear[field])
+            # マッチした最後のフレームにおけるギアパワーを返す
+            # 未開放のギアパワーがこの試合で開放されたときに位置がずれて正しく認識されない場合がある
+            gearstr = {}
+            for field in gear:
+                if field == 'img_name':
+                    continue
+                elif field.startswith('img_'):
+                    if self.gearpower_recoginizer and self.gearpower_recoginizer.trained:
+                        try:
+                            result, distance = self.gearpower_recoginizer.match(gear[field])
+                            gearstr[field.replace('img_','')] = result
+                        except:
+                            IkaUtils.dprint('Exception occured in gearpower recoginization.')
+                            IkaUtils.dprint(traceback.format_exc())
+            gear.update(gearstr)
+            gears.append(gear)
         return gears
 
     def dump(self, context):
@@ -113,7 +128,11 @@ class ResultGears(StatefulScene):
         for n in range(len(context['scenes']['result_gears']['gears'])):
             gear = context['scenes']['result_gears']['gears'][n]
             for field in gear:
-                print('  gear %d : %s' % (n, field))
+                if field.startswith('img_'):
+                    print('  gear %d : %s : %s' % (n, field, '(image)'))
+                else:
+                    print('  gear %d : %s : %s' %
+                      (n, field, gear[field]))
 
     def _analyze(self, context):
         frame = context['engine']['frame']
@@ -161,6 +180,9 @@ class ResultGears(StatefulScene):
     def _init_scene(self, debug=False):
         self.udemae_recoginizer = UdemaeRecoginizer()
         self.number_recoginizer = NumberRecoginizer()
+        self.gearpower_recoginizer = GearpowerRecoginizer()
+        self.gearpower_recoginizer.load_model_from_file("data/gearpowers.knn.data")
+        self.gearpower_recoginizer.knn_train()
 
         self.mask_okane_msg = IkaMatcher(
             866, 48, 99, 41,
