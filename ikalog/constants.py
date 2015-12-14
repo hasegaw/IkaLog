@@ -169,3 +169,35 @@ udemae_strings = [
 fes_rank_titles = [
     'fanboy', 'friend', 'defender', 'champion', 'king'
 ]
+
+gear_abilities = {
+    'bomb_range_up': { 'ja': 'ボム飛距離アップ' },
+    'bomb_sniffer': { 'ja': 'ボムサーチ' },
+    'cold_blooded': { 'ja': 'マーキングガード' },
+    'comeback': { 'ja': 'カムバック' },
+    'damage_up': { 'ja': '攻撃力アップ' },
+    'defense_up' : { 'ja': '防御力アップ' },
+    'empty': { 'ja': '空' },
+    'haunt' : { 'ja': 'うらみ' },
+    'ink_recovery_up' : { 'ja': 'インク回復力アップ' },
+    'ink_resistance_up': { 'ja': '安全シューズ' },
+    'ink_saver_main': { 'ja': 'インク効率アップ（メイン）' },
+    'ink_saver_sub': { 'ja': 'インク効率アップ（サブ）' },
+    'last-ditch_effort': { 'ja': 'ラストスパート' },
+    'locked': { 'ja': '未開放' },
+    'ninja_squid' : { 'ja': 'イカニンジャ' },
+    'opening_gambit' : { 'ja': 'スタートダッシュ' },
+    'quick_respawn' : { 'ja': '復活時間短縮' },
+    'quick_super_jump' : { 'ja': 'スーパージャンプ時間短縮', },
+    'recon': { 'ja': 'スタートレーダー', },
+    'run_speed_up': { 'ja' : 'ヒト移動速度アップ' },
+    'special_charge_up': { 'ja' :  'スペシャル増加量アップ' },
+    'special_duration_up': { 'ja' :  'スペシャル時間延長', },
+    'special_saver': { 'ja' :  'スペシャル減少量ダウン', },
+    'stealth_jump': { 'ja' :  'ステルスジャンプ', },
+    'swim_speed_up': { 'ja' :  'イカダッシュ速度アップ', },
+    'tenacity': { 'ja' :  '逆境', }
+}
+
+for ability in gear_abilities.keys():
+    gear_abilities[ability]['id'] = ability

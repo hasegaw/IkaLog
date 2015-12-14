@@ -20,10 +20,12 @@
 
 import sys
 
+from ikalog.constants import gear_abilities
+
 sys.path.append('.')
 train_basedir = sys.argv[1]
 
-from ikalog.utils.gearpower_recoginizer import GearpowerRecoginizer
+from ikalog.utils import GearPowerRecoginizer
 
 
 def learnImageGroup(recoginizer=None, name="unknown", dir=None):
@@ -70,7 +72,7 @@ def loopbackTest():
     for sample in misses:
         param, r = gearpowers.analyze_image(sample, debug=True)
         misses_hist.append(r)
-    gearpowers.show_learned_gearpower_image(misses_hist, 'Misses', save='misses.png')
+    gearpowers.show_learned_icon_image(misses_hist, 'Misses', save='misses.png')
 
     # file にリスト書き出し
     f = open('gearpowers.html', 'w')
@@ -87,39 +89,15 @@ def loopbackTest():
     f.close()
     return s
 
-gearpowers = GearpowerRecoginizer()
+gearpowers = GearPowerRecoginizer()
 
-learnImageGroup(gearpowers, "ボム飛距離アップ", dir="bomb_range_up" )
-learnImageGroup(gearpowers, "ボムサーチ", dir="bomb_sniffer")
-learnImageGroup(gearpowers, "マーキングガード", dir="cold_blooded")
-learnImageGroup(gearpowers, "カムバック", dir="comeback")
-learnImageGroup(gearpowers, "攻撃力アップ", dir="damage_up")
-learnImageGroup(gearpowers, "防御力アップ", dir="defense_up")
-learnImageGroup(gearpowers, "空", dir="empty")
-learnImageGroup(gearpowers, "うらみ", dir="haunt")
-learnImageGroup(gearpowers, "インク回復力アップ", dir="ink_recovery_up")
-learnImageGroup(gearpowers, "安全シューズ", dir="ink_resistence_up")
-learnImageGroup(gearpowers, "インク効率アップ（メイン）", dir="ink_saver_main")
-learnImageGroup(gearpowers, "インク効率アップ（サブ）", dir="ink_saver_sub")
-learnImageGroup(gearpowers, "ラストスパート", dir="last-ditch_effort")
-learnImageGroup(gearpowers, "未開放", dir="locked")
-learnImageGroup(gearpowers, "イカニンジャ", dir="ninja_squid")
-learnImageGroup(gearpowers, "スタートダッシュ", dir="opening_gambit")
-learnImageGroup(gearpowers, "復活時間短縮", dir="quick_respawn")
-learnImageGroup(gearpowers, "スーパージャンプ時間短縮", dir="quick_super_jump")
-learnImageGroup(gearpowers, "スタートレーダー", dir="recon")
-learnImageGroup(gearpowers, "ヒト移動速度アップ", dir="run_speed_up")
-learnImageGroup(gearpowers, "スペシャル増加量アップ", dir="special_charge_up")
-learnImageGroup(gearpowers, "スペシャル時間延長", dir="special_duration_up")
-learnImageGroup(gearpowers, "スペシャル減少量ダウン", dir="special_saver")
-learnImageGroup(gearpowers, "ステルスジャンプ", dir="stealth_jump")
-learnImageGroup(gearpowers, "イカダッシュ速度アップ", dir="swim_speed_up")
-learnImageGroup(gearpowers, "逆境", dir="tenacity")
+for ability in gear_abilities:
+    learnImageGroup(gearpowers, ability, ability)
 
 gearpowers.knn_train_from_group()
-gearpowers.save_model_to_file('data/gearpowers.knn.data')
+gearpowers.save_model_to_file()
 gearpowers.knn_reset()
-gearpowers.load_model_from_file('data/gearpowers.knn.data')
+gearpowers.load_model_from_file()
 gearpowers.knn_train()
 if 1:
     s = loopbackTest()

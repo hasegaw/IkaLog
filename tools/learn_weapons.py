@@ -23,7 +23,7 @@ import sys
 sys.path.append('.')
 train_basedir = sys.argv[1]
 
-from ikalog.utils import IkaGlyphRecoginizer
+from ikalog.utils import WeaponRecoginizer
 
 
 def learnImageGroup(recoginizer=None, name="unknown", dir=None):
@@ -70,7 +70,7 @@ def loopbackTest():
     for sample in misses:
         param, r = weapons.analyze_image(sample, debug=True)
         misses_hist.append(r)
-    weapons.show_learned_weapon_image(misses_hist, 'Misses', save='misses.png')
+    weapons.show_learned_icon_image(misses_hist, 'Misses', save='misses.png')
 
     # file にリスト書き出し
     f = open('weapons.html', 'w')
@@ -87,7 +87,7 @@ def loopbackTest():
     f.close()
     return s
 
-weapons = IkaGlyphRecoginizer()
+weapons = WeaponRecoginizer()
 
 learnImageGroup(weapons, "14式竹筒銃・甲", dir="14式竹筒銃・甲")
 learnImageGroup(weapons, "14式竹筒銃・乙", dir="14式竹筒銃・乙")
@@ -160,9 +160,9 @@ learnImageGroup(weapons, "ロングブラスターカスタム", dir="ロング�
 learnImageGroup(weapons, "わかばシューター", dir="わかばシューター")
 
 weapons.knn_train_from_group()
-weapons.save_model_to_file('data/weapons.knn.data')
+weapons.save_model_to_file()
 weapons.knn_reset()
-weapons.load_model_from_file('data/weapons.knn.data')
+weapons.load_model_from_file()
 weapons.knn_train()
 if 1:
     s = loopbackTest()

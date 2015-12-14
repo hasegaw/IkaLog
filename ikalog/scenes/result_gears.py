@@ -21,6 +21,7 @@ import sys
 import cv2
 
 from ikalog.scenes.stateful_scene import StatefulScene
+from ikalog.constants import gear_abilities
 from ikalog.utils import *
 
 
@@ -131,8 +132,8 @@ class ResultGears(StatefulScene):
                 if field.startswith('img_'):
                     print('  gear %d : %s : %s' % (n, field, '(image)'))
                 else:
-                    print('  gear %d : %s : %s' %
-                      (n, field, gear[field]))
+                    ability = gear_abilities.get(gear[field], { 'ja': None})['ja']
+                    print('  gear %d : %s : %s' % (n, field, ability))
 
     def _analyze(self, context):
         frame = context['engine']['frame']
@@ -180,8 +181,8 @@ class ResultGears(StatefulScene):
     def _init_scene(self, debug=False):
         self.udemae_recoginizer = UdemaeRecoginizer()
         self.number_recoginizer = NumberRecoginizer()
-        self.gearpower_recoginizer = GearpowerRecoginizer()
-        self.gearpower_recoginizer.load_model_from_file("data/gearpowers.knn.data")
+        self.gearpower_recoginizer = GearPowerRecoginizer()
+        self.gearpower_recoginizer.load_model_from_file()
         self.gearpower_recoginizer.knn_train()
 
         self.mask_okane_msg = IkaMatcher(
