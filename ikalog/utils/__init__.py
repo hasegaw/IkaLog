@@ -22,6 +22,7 @@ from __future__ import print_function
 from .ikautils import IkaUtils
 from .matcher import IkaMatcher
 from .glyph_recoginizer import IkaGlyphRecoginizer
+from .gearpower_recoginizer import GearpowerRecoginizer
 from .character_recoginizer import CharacterRecoginizer
 from .character_recoginizer.number import NumberRecoginizer
 from .character_recoginizer.udemae import UdemaeRecoginizer
