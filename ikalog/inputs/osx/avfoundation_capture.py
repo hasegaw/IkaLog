@@ -175,3 +175,7 @@ if __name__ == "__main__":
         image = cv2.resize(frame, (1280, 720))
         cv2.imshow(obj.__class__.__name__, image)
         k = cv2.waitKey(1)
+
+        if k == ord('s'):
+            import time
+            cv2.imwrite('screenshot_%d.png' % int(time.time()), frame)
