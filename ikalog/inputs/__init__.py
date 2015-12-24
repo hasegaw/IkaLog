@@ -23,3 +23,4 @@ from .cvfile import CVFile
 from .cvgst import CVgst
 from .screencapture import ScreenCapture
 from .osx import *
+from .consolidated_input import ConsolidatedInput
