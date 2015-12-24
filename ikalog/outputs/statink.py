@@ -25,7 +25,7 @@ import pprint
 import urllib3
 import umsgpack
 
-from ikalog.constants import fes_rank_titles
+from ikalog.constants import fes_rank_titles, stages, weapons
 from ikalog.version import IKALOG_VERSION
 from ikalog.utils import *
 
@@ -122,28 +122,19 @@ class StatInk(object):
         self.panel.SetSizer(self.layout)
 
     def encode_stage_name(self, context):
-        try:
-            stage = IkaUtils.map2text(context['game']['map'])
-            return {
-                'アロワナモール': 'arowana',
-                'Bバスパーク': 'bbass',
-                'デカライン高架下': 'dekaline',
-                'ハコフグ倉庫': 'hakofugu',
-                'ヒラメが丘団地': 'hirame',
-                'ホッケふ頭': 'hokke',
-                'キンメダイ美術館': 'kinmedai',
-                'マヒマヒリゾート&スパ': 'mahimahi',
-                'マサバ海峡大橋': 'masaba',
-                'モンガラキャンプ場': 'mongara',
-                'モズク農園': 'mozuku',
-                'ネギトロ炭鉱': 'negitoro',
-                'シオノメ油田': 'shionome',
-                'タチウオパーキング': 'tachiuo'
-            }[stage]
-        except:
+        stage = IkaUtils.map2text(context['game']['map'])
+
+        # FIXME: 現状返ってくる key が日本語表記なので id に変換
+        stage_id = None
+        for k in stages:
+            if stages[k]['ja'] == stage:
+                stage_id = k
+
+        if stage_id is None:
             IkaUtils.dprint(
                 '%s: Failed convert staage name %s to stat.ink value' % (self, stage))
-            return None
+
+        return stage_id
 
     def encode_rule_name(self, context):
         try:
@@ -160,86 +151,16 @@ class StatInk(object):
             return None
 
     def encode_weapon_name(self, weapon):
-        try:
-            return {
-                'ガロン52': '52gal',
-                'ガロンデコ52': '52gal_deco',
-                'ガロン96': '96gal',
-                'ガロンデコ96': '96gal_deco',
-                'ボールドマーカー': 'bold',
-                'ボールドマーカーネオ': 'bold_neo',
-                'デュアルスイーパー': 'dualsweeper',
-                'デュアルスイーパーカスタム': 'dualsweeper_custom',
-                'H3リールガン': 'h3reelgun',
-                'H3リールガンD': 'h3reelgun_d',
-                'ハイドラント': 'hydra',
-                'ヒーローシューターレプリカ': 'heroshooter_replica',
-                'ホットブラスター': 'hotblaster',
-                'ホットブラスターカスタム': 'hotblaster_custom',
-                'ジェットスイーパー': 'jetsweeper',
-                'ジェットスイーパーカスタム': 'jetsweeper_custom',
-                'L3リールガン': 'l3reelgun',
-                'L3リールガンD': 'l3reelgun_d',
-                'ロングブラスター': 'longblaster',
-                'ロングブラスターカスタム': 'longblaster_custom',
-                'もみじシューター': 'momiji',
-                'ノヴァブラスター': 'nova',
-                'ノヴァブラスターネオ': 'nova_neo',
-                'N-ZAP85': 'nzap85',
-                'N-ZAP89': 'nzap89',
-                'オクタシューターレプリカ': 'octoshooter_replica',
-                'プライムシューター': 'prime',
-                'プライムシューターコラボ': 'prime_collabo',
-                'プロモデラーMG': 'promodeler_mg',
-                'プロモデラーRG': 'promodeler_rg',
-                'ラピッドブラスター': 'rapid',
-                'ラピッドブラスターデコ': 'rapid_deco',
-                'Rブラスターエリート': 'rapid_elite',
-                'シャープマーカー': 'sharp',
-                'シャープマーカーネオ': 'sharp_neo',
-                'スプラシューター': 'sshooter',
-                'スプラシューターコラボ': 'sshooter_collabo',
-                'わかばシューター': 'wakaba',
+        # FIXME: 現状返ってくる key が日本語表記なので id に変換
+        weapon_id = None
+        for k in weapons:
+            if weapons[k]['ja'] == weapon:
+                weapon_id = k
 
-                'カーボンローラー': 'carbon',
-                'カーボンローラーデコ': 'carbon_deco',
-                'ダイナモローラー': 'dynamo',
-                'ダイナモローラーテスラ': 'dynamo_tesla',
-                'ヒーローローラーレプリカ': 'heroroller_replica',
-                'ホクサイ': 'hokusai',
-                'パブロ': 'pablo',
-                'パブロ・ヒュー': 'pablo_hue',
-                'スプラローラー': 'splatroller',
-                'スプラローラーコラボ': 'splatroller_collabo',
-
-                '14式竹筒銃・甲': 'bamboo14mk1',
-                '14式竹筒銃・乙': 'bamboo14mk2',
-                'ヒーローチャージャーレプリカ': 'herocharger_replica',
-                'リッター3K': 'liter3k',
-                'リッター3Kカスタム': 'liter3k_custom',
-                '3Kスコープ': 'liter3k_scope',
-                '3Kスコープカスタム': 'liter3k_scope_custom',
-                'スプラチャージャー': 'splatcharger',
-                'スプラチャージャーワカメ': 'splatcharger_wakame',
-                'スプラスコープ': 'splatscope',
-                'スプラスコープワカメ': 'splatscope_wakame',
-                'スクイックリンα': 'squiclean_a',
-                'スクイックリンβ': 'squiclean_b',
-
-                'バケットスロッシャー': 'bucketslosher',
-                'バケットスロッシャーデコ': 'bucketslosher_deco',
-                'ヒッセン': 'hissen',
-                'スクリュースロッシャー': 'screwslosher',
-
-                'バレルスピナー': 'barrelspinner',
-                'バレルスピナーデコ': 'barrelspinner_deco',
-                'スプラスピナー': 'splatspinner',
-                'スプラスピナーコラボ': 'splatspinner_collabo',
-            }[weapon]
-        except:
+        if weapon_id is None:
             IkaUtils.dprint(
                 '%s: Failed convert weapon name %s to stas.ink value' % (self, weapon))
-            return None
+        return weapon_id
 
     def encode_image(self, img):
         if IkaUtils.isWindows():
