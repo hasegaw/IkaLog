@@ -21,6 +21,7 @@
 #  IkaLog Constants
 
 stages = {
+    'anchovy': {'ja': 'アンチョビットゲームズ', 'en': 'Ancho-V Games'},
     'arowana':  {'ja': 'アロワナモール',      'en': 'Arowana mall'},
     'bbass':    {'ja': 'Bバスパーク',         'en': 'Blackbelly Skatepark'},
     'dekaline': {'ja': 'デカライン高架下',    'en': 'Urchin Underpass'},
@@ -34,6 +35,7 @@ stages = {
     'mozuku':   {'ja':  'モズク農園',         'en': 'Kelp Dome', },
     'negitoro': {'ja': 'ネギトロ炭鉱',        'en': 'Bulefin Depot', },
     'shionome': {'ja': 'シオノメ油田',        'en': 'Saltspray Rig', },
+    'shottsuru': {'ja': 'ショッツル鉱山',     'en': 'Piranha Pit'},
     'tachiuo':  {'ja':  'タチウオパーキング', 'en':  'Moray Towers', },
 }
 
@@ -75,6 +77,7 @@ weapons = {
     'promodeler_mg': {'ja': 'プロモデラーMG'},
     'promodeler_rg': {'ja': 'プロモデラーRG'},
     'rapid': {'ja': 'ラピッドブラスター'},
+    'rapid_elite_deco': {'ja': 'Rブラスタ—エリートデコ'},
     'rapid_deco': {'ja': 'ラピッドブラスターデコ'},
     'rapid_elite': {'ja': 'Rブラスターエリート'},
     'sharp': {'ja': 'シャープマーカー'},
@@ -111,6 +114,7 @@ weapons = {
     'bucketslosher': {'ja': 'バケットスロッシャー'},
     'bucketslosher_deco': {'ja': 'バケットスロッシャーデコ'},
     'hissen': {'ja': 'ヒッセン'},
+    'hissen_hue': {'ja': 'ヒッセン・ヒュー'},
     'screwslosher': {'ja': 'スクリュースロッシャー'},
 
     'barrelspinner': {'ja': 'バレルスピナー'},
@@ -171,32 +175,32 @@ fes_rank_titles = [
 ]
 
 gear_abilities = {
-    'bomb_range_up': { 'ja': 'ボム飛距離アップ' },
-    'bomb_sniffer': { 'ja': 'ボムサーチ' },
-    'cold_blooded': { 'ja': 'マーキングガード' },
-    'comeback': { 'ja': 'カムバック' },
-    'damage_up': { 'ja': '攻撃力アップ' },
-    'defense_up' : { 'ja': '防御力アップ' },
-    'empty': { 'ja': '空' },
-    'haunt' : { 'ja': 'うらみ' },
-    'ink_recovery_up' : { 'ja': 'インク回復力アップ' },
-    'ink_resistance_up': { 'ja': '安全シューズ' },
-    'ink_saver_main': { 'ja': 'インク効率アップ（メイン）' },
-    'ink_saver_sub': { 'ja': 'インク効率アップ（サブ）' },
-    'last-ditch_effort': { 'ja': 'ラストスパート' },
-    'locked': { 'ja': '未開放' },
-    'ninja_squid' : { 'ja': 'イカニンジャ' },
-    'opening_gambit' : { 'ja': 'スタートダッシュ' },
-    'quick_respawn' : { 'ja': '復活時間短縮' },
-    'quick_super_jump' : { 'ja': 'スーパージャンプ時間短縮', },
-    'recon': { 'ja': 'スタートレーダー', },
-    'run_speed_up': { 'ja' : 'ヒト移動速度アップ' },
-    'special_charge_up': { 'ja' :  'スペシャル増加量アップ' },
-    'special_duration_up': { 'ja' :  'スペシャル時間延長', },
-    'special_saver': { 'ja' :  'スペシャル減少量ダウン', },
-    'stealth_jump': { 'ja' :  'ステルスジャンプ', },
-    'swim_speed_up': { 'ja' :  'イカダッシュ速度アップ', },
-    'tenacity': { 'ja' :  '逆境', }
+    'bomb_range_up': {'ja': 'ボム飛距離アップ'},
+    'bomb_sniffer': {'ja': 'ボムサーチ'},
+    'cold_blooded': {'ja': 'マーキングガード'},
+    'comeback': {'ja': 'カムバック'},
+    'damage_up': {'ja': '攻撃力アップ'},
+    'defense_up': {'ja': '防御力アップ'},
+    'empty': {'ja': '空'},
+    'haunt': {'ja': 'うらみ'},
+    'ink_recovery_up': {'ja': 'インク回復力アップ'},
+    'ink_resistance_up': {'ja': '安全シューズ'},
+    'ink_saver_main': {'ja': 'インク効率アップ（メイン）'},
+    'ink_saver_sub': {'ja': 'インク効率アップ（サブ）'},
+    'last-ditch_effort': {'ja': 'ラストスパート'},
+    'locked': {'ja': '未開放'},
+    'ninja_squid': {'ja': 'イカニンジャ'},
+    'opening_gambit': {'ja': 'スタートダッシュ'},
+    'quick_respawn': {'ja': '復活時間短縮'},
+    'quick_super_jump': {'ja': 'スーパージャンプ時間短縮', },
+    'recon': {'ja': 'スタートレーダー', },
+    'run_speed_up': {'ja': 'ヒト移動速度アップ'},
+    'special_charge_up': {'ja':  'スペシャル増加量アップ'},
+    'special_duration_up': {'ja':  'スペシャル時間延長', },
+    'special_saver': {'ja':  'スペシャル減少量ダウン', },
+    'stealth_jump': {'ja':  'ステルスジャンプ', },
+    'swim_speed_up': {'ja':  'イカダッシュ速度アップ', },
+    'tenacity': {'ja':  '逆境', }
 }
 
 for ability in gear_abilities.keys():
