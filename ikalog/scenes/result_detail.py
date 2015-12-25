@@ -460,7 +460,8 @@ class ResultDetail(StatefulScene):
         entry_top = [101, 166, 231, 296, 431, 496, 561, 626]
 
         # auto_warp() or auto_offset() で画面位置の調整
-        img = self.auto_warp(context)
+        # img = self.auto_warp(context)
+        img = None
         if img is not None:
             matched = IkaUtils.matchWithMask(
                 img,
@@ -470,8 +471,8 @@ class ResultDetail(StatefulScene):
                 img = None
 
         if img is None:
-            IkaUtils.dprint('%s: Falling back to auto_offset()' % self)
-            img = self.auto_offset(context, img)
+            # IkaUtils.dprint('%s: Falling back to auto_offset()' % self)
+            img = self.auto_offset(context)
 
         # インクリング一覧
         context['game']['players'] = []
