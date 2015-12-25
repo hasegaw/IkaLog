@@ -37,15 +37,12 @@ weapons.load_model_from_file()
 weapons.knn_train()
 
 
-class IkaLogAPIHandler(SimpleHTTPRequestHandler):
+class APIServer(object):
 
-    def weapon_recoginition_req(self, payload):
-
-        response_payload = []
+    def recoginize_weapons(self, payload):
+        weapons_list = []
         for img_bytes in payload:
             img = cv2.imdecode(np.fromstring(img_bytes, dtype='uint8'), 1)
-            cv2.imshow('img', img)
-            cv2.waitKey(1)
             result, distance = weapons.match(img)
 
             # FIXME: 現状返ってくる key が日本語表記なので id に変換
@@ -54,12 +51,30 @@ class IkaLogAPIHandler(SimpleHTTPRequestHandler):
                 if ikalog.constants.weapons[k]['ja'] == result:
                     weapon_id = k
 
-            response_payload.append({'weapon': weapon_id})
+            weapons_list.append({'weapon': weapon_id})
 
-        mp_r_payload_bytes = umsgpack.packb(response_payload)
-        mp_r_payload = ''.join(map(chr, mp_r_payload_bytes))
+        response_payload = {
+            'status': 'ok',
+            'weapons': weapons_list,
+        }
 
-        body = json.dumps(response_payload)
+        return response_payload
+
+    def process_request(self, path, payload):
+        handler = {
+            '/api/v1/recoginizer/weapon': self.recoginize_weapons,
+        }.get(path, None)
+
+        if handler is None:
+            raise Exception('Invalid API Path %s' % path)
+
+        return handler(payload)
+
+
+class HTTPRequestHandler(SimpleHTTPRequestHandler):
+
+    def _send_response_json(self, response):
+        body = json.dumps(response)
 
         self.send_response(200)
         self.send_header('Content-type', 'text/html; charset=utf-8')
@@ -71,23 +86,24 @@ class IkaLogAPIHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
         length = int(self.headers.get('content-length'))
         data = self.rfile.read(length)
+
+        # FIXME: support both of msgpack and JSON format.
         payload = umsgpack.unpackb(data)
 
-        paths = {
-            '/api/v1/recoginizer/weapon': self.weapon_recoginition_req,
-        }
-        func = paths.get(self.path, None)
-        if func is not None:
-            func(payload)
-            return
-        else:
-            logging.warning('No handler found')
+        # FixMe: catch expcetion.
+        response = self._server.process_request(
+            self.path,
+            payload)
 
-        SimpleHTTPRequestHandler.do_GET(self)
+        self._send_response_json(response)
 
+    def __init__(self, *args, **kwargs):
+        self._server = APIServer()
+        super(HTTPRequestHandler, self).__init__(*args, **kwargs)
 
-host = 'localhost'
-port = 8000
-httpd = HTTPServer((host, port), IkaLogAPIHandler)
-print('serving at port', port)
-httpd.serve_forever()
+if __name__ == "__main__":
+    host = 'localhost'
+    port = 8000
+    httpd = HTTPServer((host, port), HTTPRequestHandler)
+    print('serving at port', port)
+    httpd.serve_forever()
