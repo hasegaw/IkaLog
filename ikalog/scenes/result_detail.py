@@ -321,13 +321,12 @@ class ResultDetail(StatefulScene):
 
             context['game']['players'].append(e)
 
-            e_ = e.copy()
-            for f in list(e.keys()):
-                if f.startswith('img_'):
-                    del e_[f]
-            print(e_)
-
-        print(context['game']['won'])
+            if 0:
+                e_ = e.copy()
+                for f in list(e.keys()):
+                    if f.startswith('img_'):
+                        del e_[f]
+                print(e_)
 
         # チームカラー
         team_colors = self.analyze_team_colors(context)
