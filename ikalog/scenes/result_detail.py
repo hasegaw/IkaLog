@@ -310,6 +310,9 @@ class ResultDetail(StatefulScene):
 
             e = self.analyze_entry(img_entry)
 
+            if e.get('rank',None) is None:
+                continue
+
             # team, rank_in_team
             e['team'] = 1 if entry_id < 4 else 2
             e['rank_in_team'] = entry_id + \
