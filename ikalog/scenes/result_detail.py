@@ -558,6 +558,7 @@ class ResultDetail(StatefulScene):
 
         # そのほか
         # context['game']['timestamp'] = datetime.now()
+        self._call_plugins_later('on_result_detail_still')
 
         return True
 

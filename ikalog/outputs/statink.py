@@ -557,11 +557,11 @@ class StatInk(object):
         IkaUtils.dprint('%s: Discarded screenshots' % self)
 
     ##
-    # on_game_individual_result Hook
+    # on_result_detail_still Hook
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def on_game_individual_result(self, context):
+    def on_result_detail_still(self, context):
         self.img_result_detail = context['engine']['frame']
         IkaUtils.dprint('%s: Gathered img_result (%s)' %
                         (self, self.img_result_detail.shape))

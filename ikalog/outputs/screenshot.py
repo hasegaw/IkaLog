@@ -120,11 +120,11 @@ class Screenshot(object):
         print("スクリーンショット %s を保存しました" % destfile)
 
     ##
-    # on_game_individual_result Hook
+    # on_result_detail_still Hook
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def on_game_individual_result(self, context):
+    def on_result_detail_still(self, context):
         timestr = time.strftime("%Y%m%d_%H%M%S", time.localtime())
         destfile = os.path.join(self.dir, 'ikabattle_%s.png' % timestr)
 
