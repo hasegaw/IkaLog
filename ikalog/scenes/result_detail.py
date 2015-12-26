@@ -23,12 +23,14 @@ import datetime
 import os
 import pickle
 import sys
+import threading
 import traceback
 from datetime import datetime
 
 import cv2
 import numpy as np
 
+from ikalog.api import APIClient
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 from ikalog.inputs.filters import OffsetFilter
@@ -228,6 +230,45 @@ class ResultDetail(StatefulScene):
                             (self, best_match[2], best_match[3]))
 
         return best_match[0]
+
+    def async_recoginiton_worker(self, context):
+        IkaUtils.dprint('%s: weapons recoginition started.' % self)
+
+        import time
+        time.sleep(5)
+
+        weapons_list = []
+        for player in context['game']['players']:
+            weapons_list.append(player.get('img_weapon', None))
+
+        # local
+        try:
+            if self._client_local is not None:
+                weapon_response_list = self._client_local.recoginize_weapons(
+                    weapons_list)
+                for entry_id in range(len(weapon_response_list)):
+                    context['game']['players'][entry_id]['weapon'] = \
+                        weapon_response_list[entry_id]
+        except:
+            IkaUtils.dprint('Exception occured in weapon recoginization.')
+            IkaUtils.dprint(traceback.format_exc())
+
+        # remote
+        try:
+            if self._client_remote is not None:
+                weapon_response_list = self._client_remote.recoginize_weapons(
+                    weapons_list)
+                for entry_id in range(len(weapon_response_list)):
+                    context['game']['players'][entry_id]['weapon'] = \
+                        weapon_response_list[entry_id]
+        except:
+            IkaUtils.dprint('Exception occured in weapon recoginization.')
+            IkaUtils.dprint(traceback.format_exc())
+
+        IkaUtils.dprint('%s: weapons recoginition done.' % self)
+
+        self._call_plugins_later('on_result_detail')
+        self._call_plugins_later('on_game_individual_result')
 
     def is_entry_me(self, img_entry):
         # ヒストグラムから、入力エントリが自分かを判断
@@ -440,14 +481,6 @@ class ResultDetail(StatefulScene):
                 IkaUtils.dprint('Exception occured in K/D recoginization.')
                 IkaUtils.dprint(traceback.format_exc())
 
-        if self.weapons and self.weapons.trained:
-            try:
-                result, distance = self.weapons.match(entry['img_weapon'])
-                entry['weapon'] = result
-            except:
-                IkaUtils.dprint('Exception occured in weapon recoginization.')
-                IkaUtils.dprint(traceback.format_exc())
-
         return entry
 
     def analyze(self, context):
@@ -476,6 +509,7 @@ class ResultDetail(StatefulScene):
 
         # インクリング一覧
         context['game']['players'] = []
+        weapon_list = []
         entry_id = 0
 
         for entry_id in range(len(entry_top)):  # 0..7
@@ -486,7 +520,7 @@ class ResultDetail(StatefulScene):
 
             e = self.analyze_entry(img_entry)
 
-            if e.get('rank',None) is None:
+            if e.get('rank', None) is None:
                 continue
 
             # team, rank_in_team
@@ -506,6 +540,13 @@ class ResultDetail(StatefulScene):
                     if f.startswith('img_'):
                         del e_[f]
                 print(e_)
+
+        if 1:
+            worker = threading.Thread(
+                target=self.async_recoginiton_worker, args=(context,))
+            worker.start()
+        else:
+            self.async_recoginiton_worker(context)
 
         # チームカラー
         team_colors = self.analyze_team_colors(context, img)
@@ -570,7 +611,7 @@ class ResultDetail(StatefulScene):
         matched_diff10 = False
 
         if matched:
-            img_current_bgr = frame[626:626+45, 640:1280]
+            img_current_bgr = frame[626:626 + 45, 640:1280]
             img_current_hsv = cv2.cvtColor(img_current_bgr, cv2.COLOR_BGR2HSV)
             img_current_h_i16 = np.array(img_current_hsv[:, :, 1], np.int16)
 
@@ -612,8 +653,8 @@ class ResultDetail(StatefulScene):
         if matched2 and (not triggered):
             self.analyze(context)
             # self.dump(context)
-            self._call_plugins('on_result_detail')
-            self._call_plugins('on_game_individual_result')
+#            self._call_plugins('on_result_detail')
+#            self._call_plugins('on_game_individual_result')
             self._last_event_msec = context['engine']['msec']
             triggered = True
 
@@ -701,11 +742,10 @@ class ResultDetail(StatefulScene):
         self.fes_gender_recoginizer = character_recoginizer.FesGenderRecoginizer()
         self.fes_level_recoginizer = character_recoginizer.FesLevelRecoginizer()
 
-        self.weapons = WeaponRecoginizer()
-        self.weapons.load_model_from_file()
-        self.weapons.knn_train()
-
         self.load_akaze_model()
+        self._client_local = APIClient(local_mode=True)
+        # APIClient(local_mode=False, base_uri='http://localhost:8000')
+        self._client_remote = None
 
 if __name__ == "__main__":
     ResultDetail.main_func()
