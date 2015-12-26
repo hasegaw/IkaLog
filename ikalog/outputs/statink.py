@@ -157,6 +157,9 @@ class StatInk(object):
             if weapons[k]['ja'] == weapon:
                 weapon_id = k
 
+        if (weapon_id is None) and (weapons.get(weapon, None) is not None):
+            weapon_id = weapon
+
         if weapon_id is None:
             IkaUtils.dprint(
                 '%s: Failed convert weapon name %s to stas.ink value' % (self, weapon))
