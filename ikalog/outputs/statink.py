@@ -550,6 +550,8 @@ class StatInk(object):
                 self.time_start_at = int(
                     self.time_end_at - int(duration_msec / 1000))
 
+        self.on_game_paint_score_update(context)
+
         # 戦績画面はこの後にくるはずなので今までにあるデータは捨てる
         self.img_result_detail = None
         self.img_judge = None
