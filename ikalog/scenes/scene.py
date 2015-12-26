@@ -130,8 +130,10 @@ class Scene(object):
 
         if (engine is not None) and hasattr(engine, 'call_plugins'):
             self._call_plugins = engine.call_plugins
+            self._call_plugins_later = engine.call_plugins_later
         else:
             self._call_plugins = self._call_plugins_nop
+            self._call_plugins_later = self.call_plugins_nop
         self._init_scene()
 
         self.reset()
