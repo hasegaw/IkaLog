@@ -18,7 +18,7 @@
 #  limitations under the License.
 #
 
-from ikalog.utils import IconRecoginizer
+from ikalog.utils.icon_recoginizer import IconRecoginizer
 
 
 class WeaponRecoginizer(IconRecoginizer):
