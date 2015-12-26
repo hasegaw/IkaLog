@@ -74,6 +74,9 @@ class IkaEngine:
                     self.dprint(traceback.format_exc())
                     self.dprint('<<<<<')
 
+    def call_plugins_later(self, event_name, debug=False):
+        self._event_queue.append(event_name)
+
     def read_next_frame(self, skip_frames=0):
         for i in range(skip_frames):
             frame, t = self.capture.read()
@@ -154,6 +157,7 @@ class IkaEngine:
                     scene.analyze(context)
             print('%s: escaping %s' % (self, scene.__class__.__name__))
 
+
     def find_scene_object(self, scene_class_name):
         for scene in self.scenes:
             if scene.__class__.__name__ == scene_class_name:
@@ -203,6 +207,9 @@ class IkaEngine:
                     op.on_key_press(context, key)
                 except:
                     pass
+
+        while len(self._event_queue) > 0:
+            self.call_plugins(self._event_queue.pop(0))
 
     def run(self):
         # Main loop.
@@ -266,6 +273,7 @@ class IkaEngine:
 
         self._stop = False
         self._pause = True
+        self._event_queue = []
 
         self.close_session_at_eof = False
 
