@@ -19,7 +19,10 @@
 #
 
 import json
+import urllib3
 
+import cv2
+import numpy as np
 import umsgpack
 
 from ikalog.api import APIServer
@@ -52,7 +55,10 @@ class APIClient(object):
 
     def recoginize_weapons(self, weapons_list):
         payload = []
-        payload = weapons_list
+
+        for img_weapon in weapons_list:
+            result, img_weapon_png = cv2.imencode('.png', img_weapon)
+            payload.append(img_weapon_png.tostring())
 
         response = self._request_func(
             '/api/v1/recoginizer/weapon',
@@ -98,7 +104,9 @@ if __name__ == "__main__":
 
     for filename in files:
         f = open(filename, 'rb')
-        payload.append(f.read())
+        img_bytes = f.read()
+        img = cv2.imdecode(np.fromstring(img_bytes, dtype='uint8'), 1)
+        payload.append(img)
         f.close()
 
     # Test APIServer on this process

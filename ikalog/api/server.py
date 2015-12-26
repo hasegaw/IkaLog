@@ -43,6 +43,7 @@ class APIServer(object):
         weapons_list = []
         for img_bytes in payload:
             img = cv2.imdecode(np.fromstring(img_bytes, dtype='uint8'), 1)
+            assert img is not None
             result, distance = weapons.match(img)
 
             # FIXME: 現状返ってくる key が日本語表記なので id に変換
