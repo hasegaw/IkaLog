@@ -221,7 +221,7 @@ class IconRecoginizer(object):
 #                        return
 
         # とりあえず最初のいくつかを学習
-        for sample_tuple in group_info['images'][1:20]:
+        for sample_tuple in group_info['images'][1:100]:
             group_info['learn_samples'].append(sample_tuple)
 
         print('  読み込み画像数', len(group_info['images']))
