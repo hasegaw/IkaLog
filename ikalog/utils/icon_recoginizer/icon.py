@@ -29,15 +29,39 @@ class IconRecoginizer(object):
     # Models
     groups = []
 
+    def down_sample(self, src, w, h):
+        sy = src.shape[0]
+        sx = src.shape[1]
+
+        out_img = np.zeros((h, w), np.uint8)
+        for x in range(w):
+            for y in range(h):
+                x1 = int((x / w) * sx)
+                y1 = int((y / h) * sy)
+                x2 = int(((x + 1) / w) * sx)
+                y2 = int(((y + 1) / h) * sy)
+                out_img[y, x] = np.amax(src[y1:y2, x1:x2])
+
+        max_value = np.amax(out_img)
+        if max_value > 0:
+            out_img = ((out_img * 1.0) / max_value)
+
+        if 0:
+            cv2.imshow('orig', cv2.resize(src, (128, 128),
+                                          interpolation=cv2.INTER_NEAREST))
+            cv2.imshow('resize', cv2.resize(
+                out_img, (128, 128), interpolation=cv2.INTER_NEAREST))
+            cv2.waitKey(10)
+
+        return out_img
+
     # Normalize the image.
     #
     # - Crop the image
     # - Apply Laplacian edge detector
     # - Convert to grayscale
-    # - Apply image thresholding
-    # - Apply contour finding process
-    # - Draw filled contours
-    # - Resize to 8x8
+    # - Threshold the image
+    # - Down-sample to 12x12
     #
     # @param img    the source image
     # @return (img,out_img)  the result
@@ -47,8 +71,7 @@ class IconRecoginizer(object):
 
         out_img = img.copy()
 
-        h = img.shape[0]
-        w = img.shape[1]
+        h, w = img.shape[0:2]
 
         laplacian_threshold = 60
         img_laplacian = cv2.Laplacian(out_img, cv2.CV_64F)
@@ -59,11 +82,8 @@ class IconRecoginizer(object):
             img_laplacian_gray, laplacian_threshold, 255, 0)
         img_contours, contours, hierarchy = cv2.findContours(
             img_laplacian_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
-        out_img = np.zeros((h, w, 3), np.uint8)
-        cv2.drawContours(out_img, contours, -1, (255, 255, 255), cv2.FILLED)
-        img_mask = out_img.copy()
-        out_img = cv2.cvtColor(out_img, cv2.COLOR_BGR2GRAY)
-        out_img = cv2.resize(out_img, (8, 8))
+        out_img = img_laplacian_mask
+        out_img = self.down_sample(out_img, 12, 12)
 
         if False:
             cv2.imshow('orig', cv2.resize(img, (160, 160)))
@@ -71,12 +91,10 @@ class IconRecoginizer(object):
                 img_laplacian_abs, (160, 160)))
             cv2.imshow('laplacian_gray', cv2.resize(
                 img_laplacian_gray, (160, 160)))
-            cv2.imshow('contours', cv2.resize(img_contours, (160, 160)))
             cv2.imshow('out', cv2.resize(out_img, (160, 160)))
             cv2.moveWindow('orig', 80, 20)
             cv2.moveWindow('laplacian_abs', 80, 220)
             cv2.moveWindow('laplacian_gray', 80, 420)
-            cv2.moveWindow('contours', 80, 620)
             cv2.moveWindow('out', 80, 820)
             ch = 0xFF & cv2.waitKey(1)
             if ch == ord('q'):
@@ -84,7 +102,7 @@ class IconRecoginizer(object):
         return [
             out_img,
             img,
-            img_mask
+            img,  # ununsed
         ]
 
     # Analyze a image.
