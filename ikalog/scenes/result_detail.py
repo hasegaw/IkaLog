@@ -234,9 +234,6 @@ class ResultDetail(StatefulScene):
     def async_recoginiton_worker(self, context):
         IkaUtils.dprint('%s: weapons recoginition started.' % self)
 
-        import time
-        time.sleep(5)
-
         weapons_list = []
         for player in context['game']['players']:
             weapons_list.append(player.get('img_weapon', None))
