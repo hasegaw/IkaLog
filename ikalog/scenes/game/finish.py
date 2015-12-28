@@ -59,7 +59,7 @@ class GameFinish(Scene):
             threshold=0.950,
             orig_threshold=0.05,
             bg_method=matcher.MM_BLACK(),
-            fg_method=matcher.MM_WHITE(sat=(0, 255), visibility=(16, 255)),
+            fg_method=matcher.MM_NOT_BLACK(),
             label='Finish',
             debug=debug,
         )
