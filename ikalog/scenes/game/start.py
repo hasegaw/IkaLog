@@ -143,7 +143,6 @@ class GameStart(StatefulScene):
             context['game']['map'] = self.elect(context, self.stage_votes)
             context['game']['rule'] = self.elect(context, self.rule_votes)
 
-            self.dump(context)
             self._call_plugins('on_game_start')
             self._last_event_msec = context['engine']['msec']
 
