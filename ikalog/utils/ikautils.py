@@ -28,6 +28,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
+from ikalog.constants import stages, rules
 
 class IkaUtils(object):
 
@@ -86,20 +87,39 @@ class IkaUtils(object):
         return "%s%s" % (prefix, playerEntry['gender'])
 
     @staticmethod
-    def map2text(map, unknown=None, lang="ja"):
+    def map2id(map, unknown='?'):
         if map is None:
-            if unknown is None:
-                unknown = "?"
             return unknown
         return map.id_
 
     @staticmethod
-    def rule2text(rule, unknown=None, lang="ja"):
+    def map2text(map, unknown='?', lang='ja'):
+        map_id = IkaUtils.map2id(map, unknown=None)
+
+        if map_id is None:
+            return unknown
+
+        try:
+            return stages[map_id][lang]
+        except KeyError:
+            return unknown
+
+    @staticmethod
+    def rule2id(rule, unknown='?'):
         if rule is None:
-            if unknown is None:
-                unknown = "?"
             return unknown
         return rule.id_
+
+    def rule2text(rule, unknown='?', lang='ja'):
+        rule_id = IkaUtils.rule2id(rule, unknown=None)
+
+        if rule_id is None:
+            return unknown
+
+        try:
+            return rules[rule_id][lang]
+        except KeyError:
+            return unknown
 
     @staticmethod
     def cropImageGray(img, left, top, width, height):

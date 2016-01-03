@@ -160,28 +160,29 @@ class GameStart(StatefulScene):
         self.election_period = 5 * 1000  # msec
 
         self.map_list = [
-            {'name': 'タチウオパーキング', 'file': 'masks/gachi_tachiuo.png'},
-            {'name': 'モズク農園',         'file': 'masks/nawabari_mozuku.png'},
-            {'name': 'ネギトロ炭鉱',       'file': 'masks/gachi_negitoro.png'},
-            {'name': 'アロワナモール',     'file': 'masks/nawabari_arowana.png'},
-            {'name': 'デカライン高架下',   'file': 'masks/yagura_decaline.png'},
-            {'name': 'Bバスパーク',        'file': 'masks/gachi_buspark.png'},
-            {'name': 'ハコフグ倉庫',       'file': 'masks/gachi_hakofugu.png'},
-            {'name': 'シオノメ油田',       'file': 'masks/gachi_shionome.png'},
-            {'name': 'モンガラキャンプ場', 'file': 'masks/hoko_mongara.png'},
-            {'name': 'ホッケふ頭',         'file': 'masks/nawabari_hokke.png'},
-            {'name': 'ヒラメが丘団地',     'file': 'masks/nawabari_hirame.png'},
-            {'name': 'マサバ海峡大橋',     'file': 'masks/nawabari_masaba.png'},
-            {'name': 'キンメダイ美術館',   'file': 'masks/gachi_kinmedai.png'},
-            {'name': 'マヒマヒリゾート&スパ', 'file': 'masks/gachi_mahimahi.png'},
-            {'name': 'ショッツル鉱山', 'file': 'masks/nawabari_shottsuru.png'}
+            # anchovy
+            {'name': 'arowana',   'file': 'masks/nawabari_arowana.png'},
+            {'name': 'bbass',     'file': 'masks/gachi_buspark.png'},
+            {'name': 'dekaline',  'file': 'masks/yagura_decaline.png'},
+            {'name': 'hakofugu',  'file': 'masks/gachi_hakofugu.png'},
+            {'name': 'hirame',    'file': 'masks/nawabari_hirame.png'},
+            {'name': 'hokke',     'file': 'masks/nawabari_hokke.png'},
+            {'name': 'kinmedai',  'file': 'masks/gachi_kinmedai.png'},
+            {'name': 'mahimahi',  'file': 'masks/gachi_mahimahi.png'},
+            {'name': 'masaba',    'file': 'masks/nawabari_masaba.png'},
+            {'name': 'mongara',   'file': 'masks/hoko_mongara.png'},
+            {'name': 'mozuku',    'file': 'masks/nawabari_mozuku.png'},
+            {'name': 'negitoro',  'file': 'masks/gachi_negitoro.png'},
+            {'name': 'shionome',  'file': 'masks/gachi_shionome.png'},
+            {'name': 'shottsuru', 'file': 'masks/nawabari_shottsuru.png'},
+            {'name': 'tachiuo',   'file': 'masks/gachi_tachiuo.png'},
         ]
 
         self.rule_list = [
-            {'name': 'ガチエリア',     'file': 'masks/gachi_tachiuo.png'},
-            {'name': 'ガチヤグラ',     'file': 'masks/yagura_decaline.png'},
-            {'name': 'ガチホコバトル', 'file': 'masks/hoko_mongara.png'},
-            {'name': 'ナワバリバトル', 'file': 'masks/nawabari_mozuku.png'},
+            {'name': 'nawabari', 'file': 'masks/nawabari_mozuku.png'},
+            {'name': 'area',     'file': 'masks/gachi_tachiuo.png'},
+            {'name': 'yagura',   'file': 'masks/yagura_decaline.png'},
+            {'name': 'hoko',     'file': 'masks/hoko_mongara.png'},
         ]
 
         self.stage_matchers = []

@@ -122,33 +122,12 @@ class StatInk(object):
         self.panel.SetSizer(self.layout)
 
     def encode_stage_name(self, context):
-        stage = IkaUtils.map2text(context['game']['map'])
-
-        # FIXME: 現状返ってくる key が日本語表記なので id に変換
-        stage_id = None
-        for k in stages:
-            if stages[k]['ja'] == stage:
-                stage_id = k
-
-        if stage_id is None:
-            IkaUtils.dprint(
-                '%s: Failed convert staage name %s to stat.ink value' % (self, stage))
-
+        stage_id = IkaUtils.map2id(context['game']['map'], unknown=None)
         return stage_id
 
     def encode_rule_name(self, context):
-        try:
-            rule = IkaUtils.rule2text(context['game']['rule'])
-            return {
-                'ナワバリバトル': 'nawabari',
-                'ガチエリア': 'area',
-                'ガチヤグラ': 'yagura',
-                'ガチホコバトル': 'hoko',
-            }[rule]
-        except:
-            IkaUtils.dprint(
-                '%s: Failed convert rule name %s to stat.ink value' % (self, rule))
-            return None
+        rule_id = IkaUtils.rule2id(context['game']['rule'], unknown=None)
+        return rule_id
 
     def encode_weapon_name(self, weapon):
         # FIXME: 現状返ってくる key が日本語表記なので id に変換
