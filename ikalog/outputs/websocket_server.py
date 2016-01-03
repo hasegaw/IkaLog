@@ -73,7 +73,7 @@ class WebSocketServer(object):
 
         IkaUtils.dprint('%s: number of websockets = %d' %
                         (self, len(websockets)))
-        d_json = json.dumps(d, separators=(',', ':'))
+        d_json = json.dumps(d, separators=(',', ':'), ensure_ascii=False)
 
         for s in websockets:
             IkaUtils.dprint('  Sending a message to %s' % s)
