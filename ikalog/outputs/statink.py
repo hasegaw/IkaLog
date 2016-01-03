@@ -22,6 +22,7 @@ import time
 import os
 import pprint
 
+import cv2
 import urllib3
 import umsgpack
 
@@ -145,35 +146,14 @@ class StatInk(object):
         return weapon_id
 
     def encode_image(self, img):
-        if IkaUtils.isWindows():
-            temp_file = os.path.join(
-                os.environ['TMP'], '_image_for_statink.png')
-        else:
-            temp_file = '_image_for_statink.png'
+        result, img_png = cv2.imencode('.png', img)
 
-        IkaUtils.dprint('%s: Using temporary file %s' % (self, temp_file))
-
-        try:
-            if os.path.exists(temp_file):
-                os.remove(temp_file)
-        except:
-            IkaUtils.dprint(
-                '%s: Failed to remove existing temporary file %s' % (self, temp_file))
-            IkaUtils.dprint(traceback.format_exc())
-
-        try:
-            # ToDo: statink accepts only 16x9
-            IkaUtils.writeScreenshot(temp_file, img)
-            f = open(temp_file, 'rb')
-            s = f.read()
-            try:
-                f.close()
-                os.remove(temp_file)
-            except:
-                pass
-        except:
-            IkaUtils.dprint('%s: Failed to attach image_result' % self)
+        if not result:
+            IkaUtils.dprint('%s: Failed to encode the image (%s)' %
+                            (self, img.shape))
             return None
+
+        s = img_png.tostring()
 
         IkaUtils.dprint('%s: Encoded screenshot (%dx%d %d bytes)' %
                         (self, img.shape[1], img.shape[0], len(s)))
