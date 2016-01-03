@@ -92,6 +92,7 @@ weapons = {
     'dynamo_tesla': {'ja': 'ダイナモローラーテスラ'},
     'heroroller_replica': {'ja': 'ヒーローローラーレプリカ'},
     'hokusai': {'ja': 'ホクサイ'},
+    'hokusai_hue': {'ja': 'ホクサイ・ヒュー'},
     'pablo': {'ja': 'パブロ'},
     'pablo_hue': {'ja': 'パブロ・ヒュー'},
     'splatroller': {'ja': 'スプラローラー'},
