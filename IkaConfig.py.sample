@@ -130,7 +130,7 @@ class IkaConfig:
             outputs.DebugVideoWriter(dir='./debug_videos/'),
 
             # WebSocket サーバ
-            # outputs.WebSocketServer(),
+            outputs.WebSocketServer(enabled=True),
 
             # 入力ソース
             source,
