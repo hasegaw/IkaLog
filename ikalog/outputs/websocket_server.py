@@ -116,12 +116,6 @@ class WebSocketServer(object):
             'counter_team_color_hsv': context['game']['team_color_hsv'][1].tolist()[0],
         })
 
-    def on_game_paint_score_update(self, context):
-        self._send_message({
-            'event': 'on_game_paint_score_update',
-            'paint_score': context['game'].get('paint_score', 0)
-        })
-
     def on_lobby_matching(self, context):
         self._send_message({
             'event': 'on_lobby_matching',
@@ -141,11 +135,92 @@ class WebSocketServer(object):
             'event': 'on_game_finish',
         })
 
+    # Common events to ranked battles.
+
+    def on_game_ranked_we_lead(self, context):
+        self._send_message({'event': 'on_game_ranked_we_lead'})
+
+    def on_game_ranked_they_lead(self, context):
+        self._send_message({'event': 'on_game_ranked_they_lead'})
+
+    # Ranked, Splatzone battles
+
+    def on_game_splatzone_we_got(self, context):
+        self._send_message({'event': 'on_game_splatzone_we_got'})
+
+    def on_game_splatzone_we_lost(self, context):
+        self._send_message({'event': 'on_game_splatzone_we_lost'})
+
+    def on_game_splatzone_they_got(self, context):
+        self._send_message({'event': 'on_game_splatzone_they_got'})
+
+    def on_game_splatzone_they_lost(self, context):
+        self._send_message({'event': 'on_game_splatzone_they_lost'})
+
+    # Ranked, Rainmaker battles
+
+    def on_game_rainmaker_we_got(self, context):
+        self._send_message({'event': 'on_game_rainmaker_we_got'})
+
+    def on_game_rainmaker_we_lost(self, context):
+        self._send_message({'event': 'on_game_rainmaker_we_lost'})
+
+    def on_game_rainmaker_they_got(self, context):
+        self._send_message({'event': 'on_game_rainmaker_they_got'})
+
+    def on_game_rainmaker_they_lost(self, context):
+        self._send_message({'event': 'on_game_rainmaker_they_lost'})
+
+    # Ranked, Tower control battles
+
+    def on_game_tower_we_got(self, context):
+        self._send_message({'event': 'on_game_tower_we_got'})
+
+    def on_game_tower_we_lost(self, context):
+        self._send_message({'event': 'on_game_tower_we_lost'})
+
+    def on_game_tower_they_got(self, context):
+        self._send_message({'event': 'on_game_tower_they_got'})
+
+    def on_game_tower_they_lost(self, context):
+        self._send_message({'event': 'on_game_tower_they_lost'})
+
+    # Counter / ObjectTracking.
+
+    def on_game_paint_score_update(self, context):
+        self._send_message({
+            'event': 'on_game_paint_score_update',
+            'paint_score': context['game'].get('paint_score', 0)
+        })
+
+    # Result scenes.
+
     def on_result_judge(self, context):
         self._send_message({
             'event': 'on_result_judge',
             'judge': context['game'].get('judge', None),
             'knockout': context['game'].get('knockout', None),
+        })
+
+    def on_result_udemae(self, context):
+        # FIXME: データ追加
+        self._send_message({
+            'event': 'on_result_udemae',
+        })
+
+    def on_result_gears(self, context):
+        # FIXME: データ追加
+        self._send_message({
+            'event': 'on_result_gears',
+        })
+
+    def on_result_festa(self, context):
+        # FIXME: フェスの自分のタイトルが知りたい
+        game = context['game']
+        self._send_message({
+            'event': 'on_result_festa',
+            'festa_exp_pre': game.get('reslut_festa_exp_pre', None),
+            'festa_exp': game.get('reslut_festa_exp', None),
         })
 
     def on_game_individual_result(self, context):
