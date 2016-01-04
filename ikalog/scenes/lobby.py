@@ -211,9 +211,9 @@ class Lobby(Scene):
         self.mask_rule = IkaMatcher(
             72, 269, 90, 25,
             img_file='masks/ui_lobby_public.png',
-            threshold=0.90,
-            orig_threshold=0.15,
-            bg_method=matcher.MM_BLACK(),
+            threshold=0.70,
+            orig_threshold=0.25,
+            bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='Pub/Rule',
             debug=debug
@@ -222,9 +222,9 @@ class Lobby(Scene):
         self.mask_stage = IkaMatcher(
             72, 386, 110, 35,
             img_file='masks/ui_lobby_public.png',
-            threshold=0.90,
+            threshold=0.70,
             orig_threshold=0.15,
-            bg_method=matcher.MM_BLACK(),
+            bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='Pub/Stage',
             debug=debug
@@ -233,9 +233,9 @@ class Lobby(Scene):
         self.mask_tag_rule = IkaMatcher(
             126, 249, 76, 26,
             img_file='masks/ui_lobby_tag_matching.png',
-            threshold=0.90,
+            threshold=0.70,
             orig_threshold=0.15,
-            bg_method=matcher.MM_BLACK(),
+            bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='Tag/Rule',
             debug=debug
@@ -244,9 +244,9 @@ class Lobby(Scene):
         self.mask_tag_stage = IkaMatcher(
             156, 360, 94, 36,
             img_file='masks/ui_lobby_tag_matching.png',
-            threshold=0.90,
+            threshold=0.70,
             orig_threshold=0.15,
-            bg_method=matcher.MM_BLACK(),
+            bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='Tag/Stage',
             debug=debug
@@ -256,9 +256,9 @@ class Lobby(Scene):
         self.mask_matching = IkaMatcher(
             826, 37, 280, 34,
             img_file='masks/ui_lobby_public.png',
-            threshold=0.90,
+            threshold=0.80,
             orig_threshold=0.15,
-            bg_method=matcher.MM_BLACK(),
+            bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='Matching',
             debug=debug
@@ -268,8 +268,8 @@ class Lobby(Scene):
         self.mask_matched = IkaMatcher(
             826, 37, 280, 34,
             img_file='masks/ui_lobby_public_matched.png',
-            threshold=0.90,
-            orig_threshold=0.15,
+            threshold=0.80,
+            orig_threshold=0.20,
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
@@ -281,7 +281,7 @@ class Lobby(Scene):
         self.mask_tag_matched = IkaMatcher(
             826, 24, 280, 34,
             img_file='masks/ui_lobby_tag_matched.png',
-            threshold=0.90,
+            threshold=0.80,
             orig_threshold=0.50,
             bg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(150, 180), visibility=(0, 255)),
@@ -295,7 +295,7 @@ class Lobby(Scene):
         self.mask_tag_matching = IkaMatcher(
             826, 24, 280, 34,
             img_file='masks/ui_lobby_tag_matching.png',
-            threshold=0.90,
+            threshold=0.80,
             orig_threshold=0.50,
             bg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(150, 180), visibility=(0, 255)),
@@ -307,7 +307,7 @@ class Lobby(Scene):
         self.mask_fes_matched = IkaMatcher(
             851, 383, 225, 30,
             img_file='masks/ui_lobby_fes_matched.png',
-            threshold=0.90,
+            threshold=0.80,
             orig_threshold=0.30,
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_COLOR_BY_HUE(
@@ -319,7 +319,7 @@ class Lobby(Scene):
         self.mask_private_rule = IkaMatcher(
             78, 133, 74, 24,
             img_file='masks/ui_lobby_private_matched.png',
-            threshold=0.90,
+            threshold=0.80,
             orig_threshold=0.15,
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),

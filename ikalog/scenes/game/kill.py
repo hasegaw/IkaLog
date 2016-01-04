@@ -100,8 +100,8 @@ class GameKill(Scene):
         self.mask_killed = IkaMatcher(
             0, 0, 25, 30,
             img_file='masks/ui_killed.png',
-            threshold=0.90,
-            orig_threshold=0.10,
+            threshold=0.80,
+            orig_threshold=0.20,
             bg_method=matcher.MM_WHITE(sat=(0, 255), visibility=(0, 48)),
             fg_method=matcher.MM_WHITE(visibility=(192, 255)),
             label='killed',

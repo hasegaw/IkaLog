@@ -141,8 +141,8 @@ class GameDead(StatefulScene):
         self.mask_dead = IkaMatcher(
             1057, 657, 137, 26,
             img_file='masks/ui_dead.png',
-            threshold=0.90,
-            orig_threshold=0.30,
+            threshold=0.80,
+            orig_threshold=0.40,
             bg_method=matcher.MM_WHITE(sat=(0, 255), visibility=(0, 48)),
             fg_method=matcher.MM_WHITE(visibility=(192, 255)),
             label='dead',

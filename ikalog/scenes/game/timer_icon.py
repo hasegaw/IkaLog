@@ -46,8 +46,8 @@ class GameTimerIcon(Scene):
         self.mask_timer = IkaMatcher(
             self.timer_left, self.timer_top, self.timer_top, self.timer_height,
             img_file='masks/ingame_timer.png',
-            threshold=0.9,
-            orig_threshold=0.35,
+            threshold=0.8,
+            orig_threshold=0.4,
             bg_method=matcher.MM_BLACK(visibility=(0, 32)),
             fg_method=matcher.MM_WHITE(visibility=(160, 256)),
             label='timer_icon',
