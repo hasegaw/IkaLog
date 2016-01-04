@@ -22,6 +22,7 @@ import copy
 import datetime
 import os
 import pickle
+import re
 import sys
 import threading
 import traceback
@@ -538,7 +539,7 @@ class ResultDetail(StatefulScene):
                         del e_[f]
                 print(e_)
 
-        if 1:
+        if 0:
             worker = threading.Thread(
                 target=self.async_recoginiton_worker, args=(context,))
             worker.start()
