@@ -33,7 +33,7 @@ class GameGoSign(Scene):
         self._last_event_msec = - 100 * 1000
 
     def match_no_cache(self, context):
-        if self.is_another_scene_matched(context, 'GameTimerIcon'):
+        if not self.is_another_scene_matched(context, 'GameTimerIcon'):
             return False
 
         frame = context['engine']['frame']
@@ -56,7 +56,7 @@ class GameGoSign(Scene):
         self.mask_go_sign = IkaMatcher(
             472, 140, 332, 139,
             img_file='masks/ui_go.png',
-            threshold=0.95,
+            threshold=0.90,
             orig_threshold=0.5,
             label='Go!',
             bg_method=matcher.MM_WHITE(sat=(32, 255), visibility=(0, 210)),
