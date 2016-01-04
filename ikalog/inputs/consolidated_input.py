@@ -31,7 +31,7 @@ from ikalog.utils import *
 
 class DuplexedOutput(object):
     from_file = True
-    fps=120
+    fps = 120
 
     def read(self):
         if self.next_frame is None:
@@ -47,7 +47,7 @@ class DuplexedOutput(object):
 
     def set_frame(self, frame, time):
         assert frame is not None
-        p = self.points
+        p = self._points
         self.next_frame = cv2.resize(
             frame[p[1]:p[3], p[0]: p[2], :],
             (1280, 720),
@@ -56,10 +56,15 @@ class DuplexedOutput(object):
 
         self.next_time = time
 
-    def __init__(self, parent, points):
+    def set_bbox(self, points, enable):
+        self._enable = enable
+        self._points = points
+        print('%s: set_bbox(%s, %s)' % (self, points, enable))
+
+    def __init__(self, parent):
         self.next_frame = None
         self.next_time = None
-        self.points = points
+
 
 class ConsolidatedInput(object):
     cap = None
@@ -68,52 +73,47 @@ class ConsolidatedInput(object):
     out_width = 1280
 
     def next_frame(self):
+        while (time.time() < self.blank_until):
+            sleep(0.1)
+
         current_frame, current_time = self.source.read()
 
         if current_frame is None:
             return False
 
-        cv2.imshow('Consolidated Input', cv2.resize(current_frame, (640,360)))
+        cv2.imshow('Consolidated Input', cv2.resize(current_frame, (640, 360)))
 
         for view in self.outputs:
             view.set_frame(current_frame, current_time)
-        
-    def config_720p(self):
+
+    def config_720p_single(self, port):
+        for i in range(4):
+            if (i + 1) == port:
+                points = (0, 0, 1280, 720)
+            else:
+                points = (0, 0, 10, 10)
+            self.outputs[i].set_bbox(points, enable=True)
+        self._blank_until = time.time() + 0.5
+
+    def config_720p_quad(self):
         w = 1280
         h = 720
-        self.outputs = []
 
         for i in range(4):
-            x = i % 2 
+            x = i % 2
             y = int(i / 2)
             x1 = (w * x) / 2
             y1 = (h * y) / 2
-            x2 = int(x1 + w / 2 )
+            x2 = int(x1 + w / 2)
             y2 = int(y1 + h / 2)
-            print(x, y, '', x1, y1, x2, y2)
-
-            output = DuplexedOutput(self, (x1, y1, x2, y2))
-            self.outputs.append(output)
+            self.outputs[i].set_bbox((x1, y1, x2, y2), enable=True)
+        self._blank_until = time.time() + 0.5
 
     def __init__(self, source):
         self.source = source
-        self.config_720p()
-        print(self.outputs)
-#import sys
-#import time
-#import ikalog.inputs as inputs
-#
-#source = inputs.CVFile()
-#source.start_video_file(sys.argv[1])
-#a = ConsolidatedInput(source)
-#
-#while True:
-#    a.next_frame()
-#
-#    for output in a.outputs:
-#        f, t = output.read()
-#        if f is not None:
-#            cv2.imshow(str(output), f)
-#
-#    cv2.waitKey(1)
-#
+        self.blank_until = 0
+        self.outputs = []
+        for i in range(4):
+            output = DuplexedOutput(self)
+            self.outputs.append(output)
+        self.config_720p_quad()
