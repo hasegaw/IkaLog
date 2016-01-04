@@ -192,9 +192,9 @@ class IconRecoginizer(object):
         responses = np.array(self.responses, np.float32)
         responses = responses.reshape((responses.size, 1))
 
-        print('start model.train', len(responses))
         self.model.train(samples, cv2.ml.ROW_SAMPLE, responses)
-        print('done model.train')
+        print('%s: KNN Trained (%d samples)' % \
+            (self, len(responses)) )
         self.trained = True
 
     def learn_image_group(self, name=None, dir=None):
