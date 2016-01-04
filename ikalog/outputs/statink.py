@@ -324,6 +324,39 @@ class StatInk(object):
 
         payload['players'] = players
 
+        # ResultGears
+
+        try:
+            gears_list = []
+            for e in context['scenes']['result_gears']['gears']:
+                primary_ability = e.get('main', None)
+                secondary_abilities = [
+                    e.get('sub1', None),
+                    e.get('sub2', None),
+                    e.get('sub3', None),
+                ]
+
+                gear = {'secondary_abilities': []}
+                if primary_ability is not None:
+                    gear['primary_ability'] = primary_ability
+
+                for ability in secondary_abilities:
+                    if (ability is None) or (ability == 'empty'):
+                        continue
+                    gear['secondary_abilities'].append(ability)
+
+                gears_list.append(gear)
+
+            payload['gears'] = {
+                'headgear': gears_list[0],
+                'clothing': gears_list[1],
+                'shoes': gears_list[2],
+            }
+        except:
+            IkaUtils.dprint(
+                '%s: Failed in ResultGears payload. Fix me...' % self)
+            IkaUtils.dprint(traceback.format_exc())
+
         # ResultUdemae
 
         if payload.get('rule', 'nawabari') != 'nawabari':
@@ -437,7 +470,7 @@ class StatInk(object):
             IkaUtils.dprint(traceback.format_exc())
 
     def post_payload(self, payload, api_key=None):
-        if self.dry_run:
+        if self.dry_run == True:
             IkaUtils.dprint(
                 '%s: Dry-run mode, skipping POST to stat.ink.' % self)
             return
@@ -459,6 +492,9 @@ class StatInk(object):
         # duplicated.
         payload = payload.copy()
         payload['apikey'] = api_key
+        if self.dry_run == 'server':
+            payload['test'] = 'dry_run'
+
         mp_payload_bytes = umsgpack.packb(payload)
         mp_payload = ''.join(map(chr, mp_payload_bytes))
 
@@ -650,7 +686,7 @@ class StatInk(object):
         self.img_result_detail = None
         self.img_judge = None
 
-        self.debug_writePayloadToFile = debug
+        self.debug_writePayloadToFile = False
         self.show_response_enabled = debug
         self.track_objective_enabled = track_objective
         self.track_splatzone_enabled = track_splatzone
