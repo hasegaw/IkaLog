@@ -148,10 +148,9 @@ class SplatzoneTracker(Scene):
         if self.is_another_scene_matched(context, 'GameTimerIcon') == False:
             return False
 
-        if 1:
-            rule = IkaUtils.rule2text(context['game']['rule'])
-            if rule != 'ガチエリア':
-                return False
+        rule_id = IkaUtils.rule2id(context['game']['rule'])
+        if rule_id != 'area':
+            return False
 
         frame = context['engine']['frame']
 

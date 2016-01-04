@@ -48,14 +48,14 @@ class GameRankedBattleEvents(StatefulScene):
         self._masks_active = {}
 
     def on_game_start(self, context):
-        rule = IkaUtils.rule2text(context['game']['rule'])
-        if rule == 'ガチエリア':
+        rule_id = IkaUtils.rule2id(context['game']['rule'])
+        if rule_id == 'area':
             self._masks_active = self._masks_splatzone.copy()
             self._masks_active.update(self._masks_ranked)
-        elif rule == 'ガチホコバトル':
+        elif rule_id == 'hoko':
             self._masks_active = self._masks_rainmaker.copy()
             self._masks_active.update(self._masks_ranked)
-        elif rule == 'ガチヤグラ':
+        elif rule_id == 'yagura':
             self._masks_active = self._masks_towercontrol.copy()
             self._masks_active.update(self._masks_ranked)
         else:
@@ -109,11 +109,6 @@ class GameRankedBattleEvents(StatefulScene):
         self._switch_state(self._state_triggered)
 
     def _state_default(self, context):
-        if 0:
-            rule = IkaUtils.rule2text(context['game']['rule'])
-            if rule != 'ガチエリア':
-                return False
-
         if 0:
             if self.is_another_scene_matched(context, 'GameTimerIcon'):
                 return False

@@ -81,8 +81,9 @@ class ObjectiveTracker(Scene):
         if context['game']['rule'] is None:
             return None
 
-        applicable_modes = [u'ガチヤグラ', u'ガチホコバトル', 'ガチヤグラ', 'ガチホコバトル']
-        if not (IkaUtils.rule2text(context['game']['rule']) in applicable_modes):
+        rule_id = IkaUtils.rule2id(context['game']['rule'])
+        applicable_modes = ['yagura', 'hoko']
+        if not (rule_id in applicable_modes):
             return None
 
         xPos_pct = self.tower_pos(context)
