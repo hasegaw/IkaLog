@@ -539,7 +539,7 @@ class ResultDetail(StatefulScene):
                         del e_[f]
                 print(e_)
 
-        if 0:
+        if 1:
             worker = threading.Thread(
                 target=self.async_recoginiton_worker, args=(context,))
             worker.start()
