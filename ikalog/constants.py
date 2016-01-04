@@ -188,7 +188,7 @@ gear_abilities = {
     'ink_resistance_up': {'ja': '安全シューズ'},
     'ink_saver_main': {'ja': 'インク効率アップ（メイン）'},
     'ink_saver_sub': {'ja': 'インク効率アップ（サブ）'},
-    'last-ditch_effort': {'ja': 'ラストスパート'},
+    'last_ditch_effort': {'ja': 'ラストスパート'},
     'locked': {'ja': '未開放'},
     'ninja_squid': {'ja': 'イカニンジャ'},
     'opening_gambit': {'ja': 'スタートダッシュ'},
