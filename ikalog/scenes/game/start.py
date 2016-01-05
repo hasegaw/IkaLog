@@ -23,6 +23,7 @@ import cv2
 
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
+from ikalog.constants import stages, rules
 
 
 class GameStart(StatefulScene):
@@ -159,62 +160,36 @@ class GameStart(StatefulScene):
     def _init_scene(self, debug=False):
         self.election_period = 5 * 1000  # msec
 
-        self.map_list = [
-            # anchovy
-            {'name': 'arowana',   'file': 'masks/nawabari_arowana.png'},
-            {'name': 'bbass',     'file': 'masks/gachi_buspark.png'},
-            {'name': 'dekaline',  'file': 'masks/yagura_decaline.png'},
-            {'name': 'hakofugu',  'file': 'masks/gachi_hakofugu.png'},
-            {'name': 'hirame',    'file': 'masks/nawabari_hirame.png'},
-            {'name': 'hokke',     'file': 'masks/nawabari_hokke.png'},
-            {'name': 'kinmedai',  'file': 'masks/gachi_kinmedai.png'},
-            {'name': 'mahimahi',  'file': 'masks/gachi_mahimahi.png'},
-            {'name': 'masaba',    'file': 'masks/nawabari_masaba.png'},
-            {'name': 'mongara',   'file': 'masks/hoko_mongara.png'},
-            {'name': 'mozuku',    'file': 'masks/nawabari_mozuku.png'},
-            {'name': 'negitoro',  'file': 'masks/gachi_negitoro.png'},
-            {'name': 'shionome',  'file': 'masks/gachi_shionome.png'},
-            {'name': 'shottsuru', 'file': 'masks/nawabari_shottsuru.png'},
-            {'name': 'tachiuo',   'file': 'masks/gachi_tachiuo.png'},
-        ]
-
-        self.rule_list = [
-            {'name': 'nawabari', 'file': 'masks/nawabari_mozuku.png'},
-            {'name': 'area',     'file': 'masks/gachi_tachiuo.png'},
-            {'name': 'yagura',   'file': 'masks/yagura_decaline.png'},
-            {'name': 'hoko',     'file': 'masks/hoko_mongara.png'},
-        ]
-
         self.stage_matchers = []
         self.rule_matchers = []
 
-        for map in self.map_list:
-            map['mask'] = IkaMatcher(
+        for stage_id in stages.keys():
+            stage = IkaMatcher(
                 self.mapname_left, self.mapname_top, self.mapname_width, self.mapname_height,
-                img_file=map['file'],
+                img_file='stage_%s.png' % stage_id,
                 threshold=0.95,
                 orig_threshold=0.30,
                 bg_method=matcher.MM_NOT_WHITE(),
                 fg_method=matcher.MM_WHITE(),
-                label='map:%s' % map['name'],
+                label='stage:%s' % stage_id,
                 debug=debug,
             )
-            self.stage_matchers.append(map['mask'])
-            setattr(map['mask'], 'id_', map['name'])
+            self.stage_matchers.append(stage)
+            setattr(stage, 'id_', stage_id)
 
-        for rule in self.rule_list:
-            rule['mask'] = IkaMatcher(
+        for rule_id in rules.keys():
+            rule = IkaMatcher(
                 self.rulename_left, self.rulename_top, self.rulename_width, self.rulename_height,
-                img_file=rule['file'],
+                img_file='rule_%s.png' % rule_id,
                 threshold=0.95,
                 orig_threshold=0.30,
                 bg_method=matcher.MM_NOT_WHITE(),
                 fg_method=matcher.MM_WHITE(),
-                label='rule:%s' % rule['name'],
+                label='rule:%s' % rule_id,
                 debug=debug,
             )
-            setattr(rule['mask'], 'id_', rule['name'])
-            self.rule_matchers.append(rule['mask'])
+            setattr(rule, 'id_', rule_id)
+            self.rule_matchers.append(rule)
 
 if __name__ == "__main__":
     GameStart.main_func()

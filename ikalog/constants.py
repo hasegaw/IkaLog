@@ -21,7 +21,7 @@
 #  IkaLog Constants
 
 stages = {
-    'anchovy': {'ja': 'アンチョビットゲームズ', 'en': 'Ancho-V Games'},
+    # 'anchovy': {'ja': 'アンチョビットゲームズ', 'en': 'Ancho-V Games'},
     'arowana':  {'ja': 'アロワナモール',      'en': 'Arowana mall'},
     'bbass':    {'ja': 'Bバスパーク',         'en': 'Blackbelly Skatepark'},
     'dekaline': {'ja': 'デカライン高架下',    'en': 'Urchin Underpass'},
