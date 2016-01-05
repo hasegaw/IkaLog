@@ -245,6 +245,12 @@ class IkaMatcher(object):
         if os.path.exists(f):
             return f
 
+        f = os.path.join(IkaUtils.baseDirectory(), 'masks', 'ja', img_file)
+        if os.path.exists(f):
+            IkaUtils.dprint('%s: mask %s: using ja version' %
+                (self, img_file))
+            return f
+
         raise Exception('Could not find image file %s (lang %s)' % (img_file, lang))
 
 
