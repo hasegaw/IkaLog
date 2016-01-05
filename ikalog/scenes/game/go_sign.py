@@ -55,7 +55,7 @@ class GameGoSign(Scene):
     def _init_scene(self, debug=False):
         self.mask_go_sign = IkaMatcher(
             472, 140, 332, 139,
-            img_file='masks/ui_go.png',
+            img_file='game_go_sign.png',
             threshold=0.90,
             orig_threshold=0.5,
             label='Go!',
