@@ -140,7 +140,7 @@ class GameDead(StatefulScene):
     def _init_scene(self, debug=False):
         self.mask_dead = IkaMatcher(
             1057, 657, 137, 26,
-            img_file='masks/ui_dead.png',
+            img_file='game_dead.png',
             threshold=0.90,
             orig_threshold=0.30,
             bg_method=matcher.MM_WHITE(sat=(0, 255), visibility=(0, 48)),
