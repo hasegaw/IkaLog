@@ -192,3 +192,7 @@ class IkaUtils(object):
             self.dprint("Screenshot: failed")
             return False
         return True
+
+    @staticmethod
+    def get_lang():
+        return os.environ.get('IKALOG_LANG', 'ja')
