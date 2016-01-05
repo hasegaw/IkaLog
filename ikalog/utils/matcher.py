@@ -228,6 +228,26 @@ class IkaMatcher(object):
         matched, fg_score, bg_score = self.match_score(img, debug)
         return matched
 
+    def _find_image_file(self, img_file=None, lang=None):
+        if lang is None:
+            lang = IkaUtils.get_lang()
+
+        if lang is not None:
+            f = os.path.join(IkaUtils.baseDirectory(), 'masks', lang, img_file)
+            if os.path.exists(f):
+                return f
+
+        f = os.path.join(IkaUtils.baseDirectory(), 'masks', img_file)
+        if os.path.exists(f):
+            return f
+
+        f = os.path.join(IkaUtils.baseDirectory(), img_file)
+        if os.path.exists(f):
+            return f
+
+        raise Exception('Could not find image file %s (lang %s)' % (img_file, lang))
+
+
     # Constructor.
     # @param self                 The object.
     # @param left                 Left of the mask.
@@ -260,7 +280,7 @@ class IkaMatcher(object):
             self.bg_method = MM_NOT_WHITE()
 
         if not img_file is None:
-            img_file2 = os.path.join(IkaUtils.baseDirectory(), img_file)
+            img_file2 = self._find_image_file(img_file)
             img = cv2.imread(img_file2)
 
             if img is None:
