@@ -103,7 +103,7 @@ class ResultJudge(Scene):
     def _init_scene(self, debug=False):
         self.mask_win = IkaMatcher(
             73, 34, 181, 94,
-            img_file='masks/result_judge_win.png',
+            img_file='result_judge_win.png',
             threshold=0.9,
             orig_threshold=0.100,
             bg_method=matcher.MM_NOT_WHITE(),
@@ -114,7 +114,7 @@ class ResultJudge(Scene):
 
         self.mask_win_ko = IkaMatcher(
             123, 572, 318, 57,
-            img_file='masks/result_judge_win.png',
+            img_file='result_judge_win.png',
             threshold=0.9,
             orig_threshold=0.100,
             bg_method=matcher.MM_NOT_WHITE(),
@@ -125,7 +125,7 @@ class ResultJudge(Scene):
 
         self.mask_lose = IkaMatcher(
             73, 34, 181, 94,
-            img_file='masks/result_judge_lose.png',
+            img_file='result_judge_lose.png',
             threshold=0.9,
             orig_threshold=0.100,
             bg_method=matcher.MM_NOT_WHITE(),
@@ -136,7 +136,7 @@ class ResultJudge(Scene):
 
         self.mask_lose_ko = IkaMatcher(
             820, 572, 318, 57,
-            img_file='masks/result_judge_lose.png',
+            img_file='result_judge_lose.png',
             threshold=0.9,
             orig_threshold=0.100,
             bg_method=matcher.MM_NOT_WHITE(),

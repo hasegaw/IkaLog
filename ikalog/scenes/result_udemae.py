@@ -166,7 +166,7 @@ class ResultUdemae(StatefulScene):
 
         self.mask_udemae_msg = IkaMatcher(
             561, 245, 144, 52,
-            img_file='masks/result_udemae.png',
+            img_file='result_udemae.png',
             threshold=0.90,
             orig_threshold=0.200,
             fg_method=matcher.MM_COLOR_BY_HUE(

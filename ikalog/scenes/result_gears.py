@@ -187,7 +187,7 @@ class ResultGears(StatefulScene):
 
         self.mask_okane_msg = IkaMatcher(
             866, 48, 99, 41,
-            img_file='masks/result_gears.png',
+            img_file='result_gears.png',
             threshold=0.90,
             orig_threshold=0.20,
             bg_method=matcher.MM_BLACK(visibility=(0, 64)),
@@ -198,7 +198,7 @@ class ResultGears(StatefulScene):
 
         self.mask_level_msg = IkaMatcher(
             869, 213, 91, 41,
-            img_file='masks/result_gears.png',
+            img_file='result_gears.png',
             threshold=0.90,
             orig_threshold=0.20,
             bg_method=matcher.MM_BLACK(),
@@ -210,7 +210,7 @@ class ResultGears(StatefulScene):
 
         self.mask_gears_msg = IkaMatcher(
             887, 410, 73, 45,
-            img_file='masks/result_gears.png',
+            img_file='result_gears.png',
             threshold=0.90,
             orig_threshold=0.20,
             bg_method=matcher.MM_BLACK(),
