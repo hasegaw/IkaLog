@@ -43,6 +43,8 @@ class GameStart(StatefulScene):
 
     def reset(self):
         super(GameStart, self).reset()
+        self.stage_votes = []
+        self.rule_votes = []
 
         self._last_event_msec = - 100 * 1000
 
@@ -154,8 +156,15 @@ class GameStart(StatefulScene):
         pass
 
     def dump(self, context):
-        print(self.stage_votes)
-        print(self.rule_votes)
+        for v in self.stage_votes:
+            if v[1] is None:
+                continue
+            print('stage', v[0], v[1].id_)
+
+        for v in self.rule_votes:
+            if v[1] is None:
+                continue
+            print('rule', v[0], v[1].id_)
 
     def _init_scene(self, debug=False):
         self.election_period = 5 * 1000  # msec
