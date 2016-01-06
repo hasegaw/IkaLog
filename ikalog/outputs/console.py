@@ -18,6 +18,8 @@
 #  limitations under the License.
 #
 
+import gettext
+
 from datetime import datetime
 import time
 
@@ -27,6 +29,8 @@ from ikalog.utils import *
 # IkaLog Output Plugin: Show message on Console
 #
 
+t = gettext.translation('console', 'locale', fallback=True)
+_ = t.gettext
 
 class Console(object):
 
@@ -38,16 +42,17 @@ class Console(object):
     def on_game_start(self, context):
         map = IkaUtils.map2text(context['game']['map'])
         rule = IkaUtils.rule2text(context['game']['rule'])
-        print("ゲームスタート。マップ %s ルール %s" % (map, rule))
+        print(_('Game Start. Stage: %(stage)s Rule: %(rule)s') % {'rule': rule, 'stage':map})
 
     def on_game_killed(self, context):
-        print("プレイヤーをたおした！")
+        print(_('Splatted!'))
 
     def on_game_dead(self, context):
-        print("たおされた！")
+        print(_('You are splatted!'))
 
     def on_game_death_reason_identified(self, context):
-        s = "死因: %s" % (context['game']['last_death_reason'])
+        s = _('Cause of death: %(cause_of_death)s') % \
+            { 'cause_of_death': context['game']['last_death_reason']}
         print(s)
 
     ##
@@ -59,31 +64,36 @@ class Console(object):
         map = IkaUtils.map2text(context['game']['map'])
         rule = IkaUtils.rule2text(context['game']['rule'])
         won = IkaUtils.getWinLoseText(
-            context['game']['won'], win_text="勝ち", lose_text="負け", unknown_text="不明")
+            context['game']['won'],
+            win_text="勝ち",
+            lose_text="負け",
+            unknown_text="不明"
+        )
         t = datetime.now()
         t_str = t.strftime("%Y,%m,%d,%H,%M")
         t_unix = int(time.mktime(t.timetuple()))
         me = IkaUtils.getMyEntryFromContext(context)
 
-        s = 'ゲーム終了。'
-        s = '%s ステージ:%s' % (s, map)
-        s = '%s ルール:%s' % (s, rule)
-        s = '%s %s' % (s, won)
+        s = _('Game Start. Stage: %(stage)s Rule: %(rule)s Result: %(result)s') % \
+            {'rule': rule, 'stage':map, 'result': won}
 
         if ('score' in me):
-            s = '%s %sp' % (s, me['score'])
+            s = s + ' ' + _('%sp') % (s, me['score'])
 
         if ('kills' in me) and ('deaths' in me):
-            s = '%s %dK/%dD' % (s, me['kills'], me['deaths'])
+            try:
+                s = s + ' ' + _('%dK/%dD') % (int(me['kills']), int(me['deaths']))
+            except ValueError:
+                pass
 
         if 'weapon' in me:
-            s = '%s 使用ブキ:%s' % (s, me['weapon'])
+            s = s + ' ' + _('Weapon: %s') % (me['weapon'])
 
         if ('rank_in_team' in me):
-            s = '%s チーム内順位: %d' % (s, me['rank_in_team'])
+            s = s + ' ' + _('Rank in the team: %s') % (me['rank_in_team'])
 
         if ('udemae_pre' in me) and me['udemae_pre']:
-            s = '%s プレイ前ウデマエ %s' % (s, me['udemae_pre'])
+            s = s + ' ' + _('Rank: %s') % (me['udemae_pre'])
 
         return s
 
@@ -97,4 +107,4 @@ class Console(object):
         print(s)
 
     def on_game_session_end(self, context):
-        print('ゲームセッション終了')
+        print(_('Game Session end.'))

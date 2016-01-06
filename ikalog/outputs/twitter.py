@@ -22,6 +22,7 @@
 
 import os
 from datetime import datetime
+import gettext
 import json
 
 import cv2
@@ -34,6 +35,9 @@ try:
     import wx
 except:
     pass
+
+t = gettext.translation('twitter', 'locale', fallback=True)
+_ = t.gettext
 
 # IkaOutput_Twitter: IkaLog Output Plugin for Twitter
 #
@@ -256,7 +260,7 @@ class Twitter(object):
 
     def on_test_button_click(self, event):
         dlg = wx.TextEntryDialog(
-            None, '投稿内容を入力してください', caption='投稿テスト', value='マンメンミ')
+            None, _('Enter your test tweet.'), caption=_('Test Twitter integration'), value=_('Staaaay Fresh!'))
         r = dlg.ShowModal()
         s = dlg.GetValue()
         dlg.Destroy()
@@ -286,9 +290,10 @@ class Twitter(object):
         auth_web_url = oauth_session.authorization_url(authorization_url)
 
         msg = "Twitter の利用認証を行います。\n下記のURLをブラウザにペーストし、Twitterサイトで認証ページを開いてください。"
+        msg = _('Access the URL below to get authenticated at Twitter.')
 
         dlg = wx.TextEntryDialog(
-            None, msg, caption='OAuth認証', value=auth_web_url)
+            None, msg, caption=_('OAuth Process 1'), value=auth_web_url)
         r = dlg.ShowModal()
         dlg.Destroy()
 
@@ -296,8 +301,8 @@ class Twitter(object):
             return
 
         msg = "Twitter サイトにて認証に成功すると PIN コードが表示されます。\n表示された PIN コードを下記に入力してください。"
-
-        dlg = wx.TextEntryDialog(None, msg, caption='OAuth認証', value='')
+        msg = _('Once you are authenticated at Twitter, you\'ll get PIN code. \nEnter PIN here:')
+        dlg = wx.TextEntryDialog(None, msg, caption=_('OAuth Proess 2'), value='')
         dlg.ShowModal()
         pin = dlg.GetValue()
         dlg.Destroy()
@@ -327,26 +332,26 @@ class Twitter(object):
         self.layout = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.layout)
         self.checkEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'Twitter へ戦績を通知する')
+            self.panel, wx.ID_ANY, _('Post game results to Twitter'))
         self.checkAttachImage = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'戦績画面を画像添付する')
+            self.panel, wx.ID_ANY, _('Attach a screenshot'))
         self.checkTweetMyScore = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'自スコアを投稿する')
-        self.checkTweetKd = wx.CheckBox(self.panel, wx.ID_ANY, u'K/D を投稿する')
+            self.panel, wx.ID_ANY, _('Include my score'))
+        self.checkTweetKd = wx.CheckBox(self.panel, wx.ID_ANY, _('Include my K/D raito'))
         self.checkTweetUdemae = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'ウデマエを投稿する')
+            self.panel, wx.ID_ANY, _('Include my rank in ranked mode'))
         self.checkUseReply = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'@_ikalog_ へのリプライとして投稿する (タイムラインを汚しません)')
+            self.panel, wx.ID_ANY, _('Reply to @_ikalog_ to keep my followers\' timeline clean'))
         self.editFooter = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
         self.radioIkaLogKey = wx.RadioButton(
-            self.panel, wx.ID_ANY, u'IkaLog内部キー')
-        self.radioOwnKey = wx.RadioButton(self.panel, wx.ID_ANY, u'自分のキー')
+            self.panel, wx.ID_ANY, _('Use WinIkaLog Consumer Key (Easy)'))
+        self.radioOwnKey = wx.RadioButton(self.panel, wx.ID_ANY, _('Use your own Consumer Key'))
 
         self.buttonIkaLogAuth = wx.Button(
-            self.panel, wx.ID_ANY, u'Twitter 連携認証')
+            self.panel, wx.ID_ANY, _('Connect to Twitter'))
         self.buttonTest = wx.Button(
-            self.panel, wx.ID_ANY, u'投稿テスト(反映済みの設定を使用します)')
+            self.panel, wx.ID_ANY, _('Test (Press Apply before this)'))
         self.editConsumerKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
         self.editConsumerSecret = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
         self.editAccessToken = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
@@ -368,22 +373,22 @@ class Twitter(object):
         self.layout.Add(self.checkTweetMyScore)
         self.layout.Add(self.checkTweetKd)
         self.layout.Add(self.checkTweetUdemae)
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'フッタ'))
+        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Additional Message')))
 
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'使用するAPIキー'))
+        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Consumer Key to use')))
         self.layout.Add(layout)
 
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'Consumer Key'))
+        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Consumer Key')))
         self.layout.Add(self.editConsumerKey, flag=wx.EXPAND)
         self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, u'Consumer Key Secret'))
+            self.panel, wx.ID_ANY, _('Consumer Key Secret')))
         self.layout.Add(self.editConsumerSecret, flag=wx.EXPAND)
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'Access Token'))
+        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Access Token')))
         self.layout.Add(self.editAccessToken, flag=wx.EXPAND)
         self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, u'Access Token Secret'))
+            self.panel, wx.ID_ANY, _('Access Token Secret')))
         self.layout.Add(self.editAccessTokenSecret, flag=wx.EXPAND)
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'フッタ'))
+        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Additional Message')))
         self.layout.Add(self.editFooter, flag=wx.EXPAND)
         self.layout.Add(self.buttonTest)
 
@@ -456,33 +461,38 @@ class Twitter(object):
     # @param context   IkaLog context
     #
     def get_text_game_individual_result(self, context):
-        map = IkaUtils.map2text(context['game']['map'], unknown='スプラトゥーン')
-        rule = IkaUtils.rule2text(context['game']['rule'], unknown='バトル')
-        won = IkaUtils.getWinLoseText(
-            context['game']['won'], win_text='勝ち', lose_text='負け', unknown_text='参加し')
+        stage = IkaUtils.map2text(context['game']['map'], unknown=_('unknown stage'), lang=_('lang'))
+        rule = IkaUtils.rule2text(context['game']['rule'], unknown=_('unknown rule'), lang=_('lang'))
+
+        result = IkaUtils.getWinLoseText(
+            context['game']['won'], win_text=_('won'),
+            lose_text=_('lose'),
+            unknown_text=_('played'))
+
         t = datetime.now().strftime("%Y/%m/%d %H:%M")
 
-        s = '%sで%sに%sました' % (map, rule, won)
+        s = _('Just %(result)s %(rule)s at %(stage)s') % \
+            { 'stage': stage, 'rule': rule, 'result': result}
 
         me = IkaUtils.getMyEntryFromContext(context)
 
         if ('score' in me) and self.tweet_my_score:
-            s = '%s %sp' % (s, me['score'])
+            s = s + ' %sp' % (me['score'])
 
         if ('kills' in me) and ('deaths' in me) and self.tweet_kd:
-            s = '%s %dk/%dd' % (s, me['kills'], me['deaths'])
+            s = s + '%dk/%dd' % (me['kills'], me['deaths'])
 
         if ('udemae_pre' in me) and self.tweet_udemae:
-            s = '%s ウデマエ %s' % (s, me['udemae_pre'])
+            s = s + _(' Rank: %s') % (s, me['udemae_pre'])
 
         fes_title = IkaUtils.playerTitle(me)
         if fes_title:
-            s = '%s %s' % (s, fes_title)
+            s = ' %s' % (s, fes_title)
 
         s = '%s (%s) %s #IkaLogResult' % (s, t, self.footer)
 
         if self.use_reply:
-            s = '@_ikalog_ %s' % s
+            s = '@_ikalog_ ' + s
 
         return s
 
@@ -504,7 +514,7 @@ class Twitter(object):
             return False
 
         s = self.get_text_game_individual_result(context)
-        IkaUtils.dprint('投稿内容 %s' % s)
+        IkaUtils.dprint('Tweet: %s' % s)
 
         media = self.post_media(self.img_result_detail
                                 ) if self.attach_image else None
@@ -570,4 +580,4 @@ if __name__ == "__main__":
             "map": {"name": "map_name"},
             "rule": {"name": "rule_name"},
             "won": True, }}))
-    obj.tweet('＜8ヨ 〜〜')
+    obj.tweet('Staaaay Fresh!')
