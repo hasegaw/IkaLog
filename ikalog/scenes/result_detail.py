@@ -732,10 +732,16 @@ class ResultDetail(StatefulScene):
             debug=debug,
         )
 
-        winlose = cv2.imread('masks/result_detail.png')
-        self.winlose_gray = cv2.cvtColor(winlose, cv2.COLOR_BGR2GRAY)
-        self._white_filter = matcher.MM_WHITE()
+        base_dir = IkaUtils.baseDirectory()
+        lang = IkaUtils.get_lang()
 
+        mask_file = os.path.join(base_dir, 'masks', lang, 'result_detail.png')
+        if not os.path.exists(mask_file):
+            mask_file = os.path.join(base_dir, 'masks', 'result_detail.png')
+        winlose = cv2.imread(mask_file)
+        self.winlose_gray = cv2.cvtColor(winlose, cv2.COLOR_BGR2GRAY)
+
+        self._white_filter = matcher.MM_WHITE()
         self.udemae_recoginizer = UdemaeRecoginizer()
         self.number_recoginizer = NumberRecoginizer()
         self.fes_gender_recoginizer = character_recoginizer.FesGenderRecoginizer()
