@@ -74,7 +74,7 @@ class ResultGears(StatefulScene):
 
         # それ以上マッチングしなかった場合 -> シーンを抜けている
         if not self.matched_in(context, 30 * 1000, attr='_last_event_msec'):
-            self.dump(context)
+            # self.dump(context)
             self._call_plugins('on_result_gears')
 
         self._last_event_msec = context['engine']['msec']
