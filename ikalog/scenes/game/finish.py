@@ -55,7 +55,7 @@ class GameFinish(Scene):
     def _init_scene(self, debug=False):
         self.mask_finish = IkaMatcher(
             0, 0, 1280, 720,
-            img_file='masks/ui_finish.png',
+            img_file='game_finish.png',
             threshold=0.950,
             orig_threshold=0.05,
             bg_method=matcher.MM_BLACK(),

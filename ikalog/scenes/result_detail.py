@@ -723,7 +723,7 @@ class ResultDetail(StatefulScene):
     def _init_scene(self, debug=False):
         self.mask_win = IkaMatcher(
             651, 47, 99, 33,
-            img_file='masks/result_detail.png',
+            img_file='result_detail.png',
             threshold=0.950,
             orig_threshold=0.05,
             bg_method=matcher.MM_NOT_WHITE(),
