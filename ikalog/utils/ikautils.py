@@ -99,10 +99,13 @@ class IkaUtils(object):
         if map_id is None:
             return unknown
 
-        try:
-            return stages[map_id][lang]
-        except KeyError:
+        if stages.get(map_id, None) is None:
             return unknown
+
+        if stages[map_id].get(lang, None) is None:
+            return stages[map_id]['en']
+
+        return stages[map_id][lang]
 
     @staticmethod
     def rule2id(rule, unknown='?'):
@@ -113,13 +116,18 @@ class IkaUtils(object):
     def rule2text(rule, unknown='?', lang='ja'):
         rule_id = IkaUtils.rule2id(rule, unknown=None)
 
+
         if rule_id is None:
             return unknown
 
-        try:
-            return rules[rule_id][lang]
-        except KeyError:
+        if rules.get(rule_id, None) is None:
             return unknown
+
+        if rules[rule_id].get(lang, None) is None:
+            return rules[rule_id]['en']
+
+        return rules[rule_id][lang]
+
 
     @staticmethod
     def cropImageGray(img, left, top, width, height):
