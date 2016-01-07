@@ -502,8 +502,6 @@ class StatInk(object):
             print(req.data.decode('utf-8'))
             IkaUtils.dprint('%s: == Response end ===' % self)
 
-        self._call_plugins_later('on_statink_posted')
-
     def post_payload(self, payload, api_key=None):
         if self.dry_run == True:
             IkaUtils.dprint(
