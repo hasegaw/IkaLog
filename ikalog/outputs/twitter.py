@@ -461,8 +461,8 @@ class Twitter(object):
     # @param context   IkaLog context
     #
     def get_text_game_individual_result(self, context):
-        stage = IkaUtils.map2text(context['game']['map'], unknown=_('unknown stage'), lang=_('lang'))
-        rule = IkaUtils.rule2text(context['game']['rule'], unknown=_('unknown rule'), lang=_('lang'))
+        stage = IkaUtils.map2text(context['game']['map'], unknown=_('unknown stage'))
+        rule = IkaUtils.rule2text(context['game']['rule'], unknown=_('unknown rule'))
 
         result = IkaUtils.getWinLoseText(
             context['game']['won'], win_text=_('won'),
