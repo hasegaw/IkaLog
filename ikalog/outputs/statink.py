@@ -21,6 +21,7 @@
 import time
 import os
 import pprint
+import threading
 
 import cv2
 import urllib3
@@ -469,13 +470,36 @@ class StatInk(object):
             IkaUtils.dprint('%s: Failed to write msgpack file' % self)
             IkaUtils.dprint(traceback.format_exc())
 
+    def _post_payload_worker(self, payload):
+        if self.dry_run == 'server':
+            payload['test'] = 'dry_run'
+
+        mp_payload_bytes = umsgpack.packb(payload)
+        mp_payload = ''.join(map(chr, mp_payload_bytes))
+
+        url_statink_v1_battle = 'https://stat.ink/api/v1/battle'
+
+        http_headers = {
+            'Content-Type': 'application/x-msgpack',
+        }
+
+        IkaUtils.dprint('%s: POST %s' % (self, url_statink_v1_battle))
+        pool = urllib3.PoolManager()
+        req = pool.urlopen('POST', url_statink_v1_battle,
+                           headers=http_headers,
+                           body=mp_payload,
+                           )
+        IkaUtils.dprint('%s: POST Done.')
+
+        if self.show_response_enabled:
+            print(req.data.decode('utf-8'))
+
+        self._call_plugins_later('on_statink_posted')
+
     def post_payload(self, payload, api_key=None):
         if self.dry_run == True:
             IkaUtils.dprint(
                 '%s: Dry-run mode, skipping POST to stat.ink.' % self)
-            return
-
-        url_statink_v1_battle = 'https://stat.ink/api/v1/battle'
 
         if api_key is None:
             api_key = self.api_key
@@ -483,29 +507,15 @@ class StatInk(object):
         if api_key is None:
             raise('No API key specified')
 
-        http_headers = {
-            'Content-Type': 'application/x-msgpack',
-        }
-
         # Payload data will be modified, so we copy it.
         # It is not deep copy, so only dict object is
         # duplicated.
         payload = payload.copy()
         payload['apikey'] = api_key
-        if self.dry_run == 'server':
-            payload['test'] = 'dry_run'
 
-        mp_payload_bytes = umsgpack.packb(payload)
-        mp_payload = ''.join(map(chr, mp_payload_bytes))
-
-        pool = urllib3.PoolManager()
-        req = pool.urlopen('POST', url_statink_v1_battle,
-                           headers=http_headers,
-                           body=mp_payload,
-                           )
-
-        if self.show_response_enabled:
-            print(req.data.decode('utf-8'))
+        thread = threading.Thread(
+            target=self._post_payload_worker, args=(payload,))
+        thread.start()
 
     def print_payload(self, payload):
         payload = payload.copy()
