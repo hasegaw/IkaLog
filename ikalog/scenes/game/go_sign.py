@@ -30,6 +30,7 @@ class GameGoSign(Scene):
     def reset(self):
         super(GameGoSign, self).reset()
 
+        self._last_game_start_msec = - 100 * 1000
         self._last_event_msec = - 100 * 1000
 
     def match_no_cache(self, context):
@@ -43,14 +44,21 @@ class GameGoSign(Scene):
         if not matched:
             return False
 
+        if not self.matched_in(context, 60 * 1000, attr='_last_game_start_msec'):
+            return False
+
         if not self.matched_in(context, 60 * 1000, attr='_last_event_msec'):
             self._call_plugins('on_game_go_sign')
             self._last_event_msec = context['engine']['msec']
+            self._last_game_start_msec = -100 * 1000
 
         return matched
 
     def _analyze(self, context):
         pass
+
+    def on_game_start(self, context):
+        self._last_game_start_msec = context['engine']['msec']
 
     def _init_scene(self, debug=False):
         self.mask_go_sign = IkaMatcher(
