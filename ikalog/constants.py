@@ -22,7 +22,7 @@
 
 stages = {
     # 'anchovy': {'ja': 'アンチョビットゲームズ', 'en': 'Ancho-V Games'},
-    'arowana':  {'ja': 'アロワナモール',      'en': 'Arowana mall'},
+    'arowana':  {'ja': 'アロワナモール',      'en': 'Arowana Mall'},
     'bbass':    {'ja': 'Bバスパーク',         'en': 'Blackbelly Skatepark'},
     'dekaline': {'ja': 'デカライン高架下',    'en': 'Urchin Underpass'},
     'hakofugu': {'ja': 'ハコフグ倉庫',        'en': 'Walleye Warehouse', },
@@ -40,7 +40,7 @@ stages = {
 }
 
 rules = {
-    'nawabari': {'ja': 'ナワバリバトル', 'en': 'Turf war', },
+    'nawabari': {'ja': 'ナワバリバトル', 'en': 'Turf War', },
     'area': {'ja': 'ガチエリア', 'en': 'Splat Zones', },
     'yagura': {'ja': 'ガチヤグラ', 'en': 'Tower Control', },
     'hoko': {'ja': 'ガチホコバトル', 'en': 'Rainmaker', },
@@ -117,12 +117,12 @@ weapons = {
     'hissen': {'ja': 'ヒッセン', 'en': 'Tri-Slosher'},
     'hissen_hue': {'ja': 'ヒッセン・ヒュー', 'en': 'Tri-Slosher Nouveau'},
     'screwslosher': {'ja': 'スクリュースロッシャー', 'en': 'Sloshing Machine'},
-    # 'screwslosher_neo': {'ja': 'スクリュースロッシャーネオ', 'en': 'Sloshing Machine Neo'},
+    # 'screwslosher_neo': {'ja': 'スクリュースロッシャー', 'en': 'Sloshing Machine Neo'},
 
     'barrelspinner': {'ja': 'バレルスピナー', 'en': 'Heavy Splatling'},
     'barrelspinner_deco': {'ja': 'バレルスピナーデコ', 'en': 'Heavy Splatling Deco'},
     'hydra': {'ja': 'ハイドラント', 'en': 'Hydra Splatling'},
-    # 'hydra_custom': {'ja': 'ハイドラントカスタム', 'en': 'Custom Hydra Splatling'},
+    # 'hydra_custom': {'ja': 'ハイドラント', 'en': 'Custom Hydra Splatling'},
     'splatspinner': {'ja': 'スプラスピナー', 'en': 'Mini Splatling'},
     'splatspinner_collabo': {'ja': 'スプラスピナーコラボ', 'en': 'Zink Mini Splatling'},
 }
@@ -178,32 +178,32 @@ fes_rank_titles = [
 ]
 
 gear_abilities = {
-    'bomb_range_up': {'ja': 'ボム飛距離アップ'},
-    'bomb_sniffer': {'ja': 'ボムサーチ'},
-    'cold_blooded': {'ja': 'マーキングガード'},
-    'comeback': {'ja': 'カムバック'},
-    'damage_up': {'ja': '攻撃力アップ'},
-    'defense_up': {'ja': '防御力アップ'},
-    'empty': {'ja': '空'},
-    'haunt': {'ja': 'うらみ'},
-    'ink_recovery_up': {'ja': 'インク回復力アップ'},
-    'ink_resistance_up': {'ja': '安全シューズ'},
-    'ink_saver_main': {'ja': 'インク効率アップ（メイン）'},
-    'ink_saver_sub': {'ja': 'インク効率アップ（サブ）'},
-    'last_ditch_effort': {'ja': 'ラストスパート'},
-    'locked': {'ja': '未開放'},
-    'ninja_squid': {'ja': 'イカニンジャ'},
-    'opening_gambit': {'ja': 'スタートダッシュ'},
-    'quick_respawn': {'ja': '復活時間短縮'},
-    'quick_super_jump': {'ja': 'スーパージャンプ時間短縮', },
-    'recon': {'ja': 'スタートレーダー', },
-    'run_speed_up': {'ja': 'ヒト移動速度アップ'},
-    'special_charge_up': {'ja':  'スペシャル増加量アップ'},
-    'special_duration_up': {'ja':  'スペシャル時間延長', },
-    'special_saver': {'ja':  'スペシャル減少量ダウン', },
-    'stealth_jump': {'ja':  'ステルスジャンプ', },
-    'swim_speed_up': {'ja':  'イカダッシュ速度アップ', },
-    'tenacity': {'ja':  '逆境', }
+    'bomb_range_up': {'ja': 'ボム飛距離アップ', 'en': 'Bomb Range Up'},
+    'bomb_sniffer': {'ja': 'ボムサーチ', 'en': 'Bomb Sniffer'},
+    'cold_blooded': {'ja': 'マーキングガード', 'en': 'Cold Blooded'},
+    'comeback': {'ja': 'カムバック', 'en': 'Comeback'},
+    'damage_up': {'ja': '攻撃力アップ', 'en': 'Damage Up'},
+    'defense_up': {'ja': '防御力アップ', 'en': 'Defense Up'},
+    'empty': {'ja': '空', 'en': ''},
+    'haunt': {'ja': 'うらみ', 'en': 'Haunt'},
+    'ink_recovery_up': {'ja': 'インク回復力アップ', 'en': 'Ink Recovery Up'},
+    'ink_resistance_up': {'ja': '安全シューズ', 'en': 'Ink Resistance'},
+    'ink_saver_main': {'ja': 'インク効率アップ（メイン）', 'en': 'Ink Saver (Main)'},
+    'ink_saver_sub': {'ja': 'インク効率アップ（サブ）', 'en': 'Ink Saver (Sub)'},
+    'last_ditch_effort': {'ja': 'ラストスパート', 'en': 'Last-Ditch Effort'},
+    'locked': {'ja': '未開放', 'en': ''},
+    'ninja_squid': {'ja': 'イカニンジャ', 'en': 'Ninja Squid'},
+    'opening_gambit': {'ja': 'スタートダッシュ', 'en': 'Opening Gambit'},
+    'quick_respawn': {'ja': '復活時間短縮', 'en': 'Quick Respawn'},
+    'quick_super_jump': {'ja': 'スーパージャンプ時間短縮', 'en': 'Quick Super Jump'},
+    'recon': {'ja': 'スタートレーダー', 'en': 'Recon'},
+    'run_speed_up': {'ja': 'ヒト移動速度アップ', 'en': 'Run Speed Up'},
+    'special_charge_up': {'ja':  'スペシャル増加量アップ', 'en': 'Special Charge Up'},
+    'special_duration_up': {'ja':  'スペシャル時間延長', 'en': 'Special Duration Up'},
+    'special_saver': {'ja':  'スペシャル減少量ダウン', 'en': 'Special Saver'},
+    'stealth_jump': {'ja':  'ステルスジャンプ', 'en': 'Stealth Jump'},
+    'swim_speed_up': {'ja':  'イカダッシュ速度アップ', 'en': 'Swim Speed Up'},
+    'tenacity': {'ja':  '逆境', 'en': 'Tenacity'}
 }
 
 for ability in gear_abilities.keys():
