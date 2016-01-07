@@ -138,7 +138,15 @@ class DeadlyWeaponRecoginizer(CharacterRecoginizer):
         self.x_cutter = self  # 変則的だがカッターとして自分を使う
         self.sample_height = 16
 
-        model_name = 'data/deadly_weapons.%s.model' % IkaUtils.get_lang()
+        lang = IkaUtils.get_lang()[0]
+        for lang_ in IkaUtils.get_lang():
+            model_name = 'data/deadly_weapons.%s.model' % lang_
+            if os.path.isfile(model_name):
+                lang = lang_
+                break
+
+        model_name = 'data/deadly_weapons.%s.model' % lang
+
         if os.path.isfile(model_name):
             self.load_model_from_file(model_name)
             self.train()
@@ -147,7 +155,7 @@ class DeadlyWeaponRecoginizer(CharacterRecoginizer):
         IkaUtils.dprint('Building %s' % model_name)
         data = []
 
-        for file in self._find_png_files('training/deadly_weapons/%s' % IkaUtils.get_lang()):
+        for file in self._find_png_files('training/deadly_weapons/%s' % lang):
             s = os.path.basename(file).split('.')
             if len(s) != 3:
                 continue

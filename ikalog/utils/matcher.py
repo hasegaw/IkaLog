@@ -228,14 +228,18 @@ class IkaMatcher(object):
         matched, fg_score, bg_score = self.match_score(img, debug)
         return matched
 
-    def _find_image_file(self, img_file=None, lang=None):
-        if lang is None:
-            lang = IkaUtils.get_lang()
+    def _find_image_file(self, img_file=None, languages=None):
+        if languages is None:
+            languages = IkaUtils.get_lang()
 
-        if lang is not None:
-            f = os.path.join(IkaUtils.baseDirectory(), 'masks', lang, img_file)
-            if os.path.exists(f):
-                return f
+        if languages is not None:
+            if not isinstance(languages, list):
+                languages = [lang]
+
+            for lang in languages:
+                f = os.path.join(IkaUtils.baseDirectory(), 'masks', lang, img_file)
+                if os.path.exists(f):
+                    return f
 
         f = os.path.join(IkaUtils.baseDirectory(), 'masks', img_file)
         if os.path.exists(f):

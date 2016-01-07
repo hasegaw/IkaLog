@@ -733,9 +733,12 @@ class ResultDetail(StatefulScene):
         )
 
         base_dir = IkaUtils.baseDirectory()
-        lang = IkaUtils.get_lang()
+        languages = IkaUtils.get_lang()
+        for lang in languages:
+            mask_file = os.path.join(base_dir, 'masks', lang, 'result_detail.png')
+            if os.path.exists(mask_file):
+                continue
 
-        mask_file = os.path.join(base_dir, 'masks', lang, 'result_detail.png')
         if not os.path.exists(mask_file):
             mask_file = os.path.join(base_dir, 'masks', 'result_detail.png')
         winlose = cv2.imread(mask_file)

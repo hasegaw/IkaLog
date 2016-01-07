@@ -93,7 +93,7 @@ class IkaUtils(object):
         return map.id_
 
     @staticmethod
-    def map2text(map, unknown='?', lang='ja'):
+    def map2text(map, unknown='?', languages=None):
         map_id = IkaUtils.map2id(map, unknown=None)
 
         if map_id is None:
@@ -102,10 +102,22 @@ class IkaUtils(object):
         if stages.get(map_id, None) is None:
             return unknown
 
-        if stages[map_id].get(lang, None) is None:
-            return stages[map_id]['en']
+        if languages is None:
+            languages = IkaUtils.get_lang()
 
-        return stages[map_id][lang]
+        if not isinstance(languages, list):
+            languages = [languages]
+
+        # fallback list
+        languages.extend(['en', 'ja'])
+
+        for lang in languages:
+            map_text = stages[map_id].get(lang, None)
+            if map_text is not None:
+                return map_text
+
+        # Should not reach here
+        return map_id
 
     @staticmethod
     def rule2id(rule, unknown='?'):
@@ -113,9 +125,8 @@ class IkaUtils(object):
             return unknown
         return rule.id_
 
-    def rule2text(rule, unknown='?', lang='ja'):
+    def rule2text(rule, unknown='?', languages=None):
         rule_id = IkaUtils.rule2id(rule, unknown=None)
-
 
         if rule_id is None:
             return unknown
@@ -123,10 +134,22 @@ class IkaUtils(object):
         if rules.get(rule_id, None) is None:
             return unknown
 
-        if rules[rule_id].get(lang, None) is None:
-            return rules[rule_id]['en']
+        if languages is None:
+            languages = IkaUtils.get_lang()
 
-        return rules[rule_id][lang]
+        if not isinstance(languages, list):
+            languages = [languages]
+
+        # fallback list
+        languages.extend(['en', 'ja'])
+
+        for lang in languages:
+            rule_text = rules[rule_id].get(lang, None)
+            if rule_text is not None:
+                return rule_text
+
+        # Should not reach here
+        return rule_id
 
 
     @staticmethod
@@ -203,4 +226,12 @@ class IkaUtils(object):
 
     @staticmethod
     def get_lang():
-        return os.environ.get('IKALOG_LANG', 'ja')
+        lang_list = []
+        ikalog_lang = os.environ.get('IKALOG_LANG', 'ja')
+        lang_list.append(ikalog_lang)
+
+        ikalog_lang_short = re.sub('_.*', '', ikalog_lang)
+        if not ikalog_lang_short in lang_list:
+            lang_list.append(ikalog_lang_short)
+
+        return lang_list
