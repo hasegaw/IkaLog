@@ -65,16 +65,16 @@ class Console(object):
         rule = IkaUtils.rule2text(context['game']['rule'])
         won = IkaUtils.getWinLoseText(
             context['game']['won'],
-            win_text="勝ち",
-            lose_text="負け",
-            unknown_text="不明"
+            win_text=_('won'),
+            lose_text=_('lose'),
+            unknown_text=_('unknown'),
         )
         t = datetime.now()
         t_str = t.strftime("%Y,%m,%d,%H,%M")
         t_unix = int(time.mktime(t.timetuple()))
         me = IkaUtils.getMyEntryFromContext(context)
 
-        s = _('Game Start. Stage: %(stage)s Rule: %(rule)s Result: %(result)s') % \
+        s = _('Game Result: Stage %(stage)s, Rule %(rule)s, Result %(result)s') % \
             {'rule': rule, 'stage':map, 'result': won}
 
         if ('score' in me):
