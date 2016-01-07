@@ -192,6 +192,10 @@ def engine_thread_func():
     IkaUtils.dprint('IkaEngine thread terminated')
 
 if __name__ == "__main__":
+    # currently IkaUI support Japanese only.
+    os.environ['LANG'] = 'ja_JP.utf8'
+
+
     application = wx.App()
     input_plugin = VideoCapture()
     gui = IkaLogGUI()
