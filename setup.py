@@ -35,7 +35,10 @@ def addDirectory(dir):
             Mydata_files.append(f2)
 
 addDirectory('masks')
+addDirectory('masks/ja')
+addDirectory('masks/en_NA')
 addDirectory('data')
+addDirectory('locale/ja/LC_MESSAGES')
 
 Mydata_files.append(('', [requests.certs.where()]))
 Mydata_files.append(('lib', ['lib/videoinput.dll']))
