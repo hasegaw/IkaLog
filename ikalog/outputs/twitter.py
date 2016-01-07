@@ -479,7 +479,7 @@ class Twitter(object):
             s = s + ' %sp' % (me['score'])
 
         if ('kills' in me) and ('deaths' in me) and self.tweet_kd:
-            s = s + '%dk/%dd' % (me['kills'], me['deaths'])
+            s = s + ' %dk/%dd' % (me['kills'], me['deaths'])
 
         if ('udemae_pre' in me) and self.tweet_udemae:
             s = s + _(' Rank: %s') % (s, me['udemae_pre'])

@@ -490,7 +490,7 @@ class StatInk(object):
                            headers=http_headers,
                            body=mp_payload,
                            )
-        IkaUtils.dprint('%s: POST Done.')
+        IkaUtils.dprint('%s: POST Done.' % self)
 
         statink_reponse = json.loads(req.data.decode('utf-8'))
         error = 'error' in statink_reponse
