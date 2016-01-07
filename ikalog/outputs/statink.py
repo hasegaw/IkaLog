@@ -18,10 +18,11 @@
 #  limitations under the License.
 #
 
-import time
+import json
 import os
 import pprint
 import threading
+import time
 
 import cv2
 import urllib3
@@ -491,8 +492,15 @@ class StatInk(object):
                            )
         IkaUtils.dprint('%s: POST Done.')
 
-        if self.show_response_enabled:
+        statink_reponse = json.loads(req.data.decode('utf-8'))
+        error = 'error' in statink_reponse
+        if error:
+            IkaUtils.dprint('%s: API Error occured')
+
+        if self.show_response_enabled or error:
+            IkaUtils.dprint('%s: == Response begin ==' % self)
             print(req.data.decode('utf-8'))
+            IkaUtils.dprint('%s: == Response end ===' % self)
 
         self._call_plugins_later('on_statink_posted')
 
