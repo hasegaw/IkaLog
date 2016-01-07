@@ -174,7 +174,7 @@ udemae_strings = [
 ]
 
 fes_rank_titles = [
-    'fanboy', 'friend', 'defender', 'champion', 'king'
+    'fanboy', 'fiend', 'defender', 'champion', 'king'
 ]
 
 gear_abilities = {
