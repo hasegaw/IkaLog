@@ -424,20 +424,18 @@ class Twitter(object):
     ##
     # Post a screenshot to Twitter
     # @param  self    The object pointer.
-    # @param  frame   The image to be posted.
+    # @param  img     The image to be posted.
     # @return media   The media ID
     #
-    def post_media(self, frame):
+    def post_media(self, img):
+        result, img_png = cv2.imencode('.png', img)
 
-        if IkaUtils.isWindows():
-            temp_file = os.path.join(
-                os.environ['TMP'], '_image_for_twitter.jpg')
-        else:
-            temp_file = '_image_for_twitter.jpg'
+        if not result:
+            IkaUtils.dprint('%s: Failed to encode the image (%s)' %
+                            (self, img.shape))
+            return None
 
-        IkaUtils.writeScreenshot(temp_file, cv2.resize(frame, (640, 360)))
-
-        files = {"media": open(temp_file, "rb")}
+        files = { "media": img_png.tostring() }
 
         CK = self._preset_ck if self.consumer_key_type == 'ikalog' else self.consumer_key
         CS = self._preset_cs if self.consumer_key_type == 'ikalog' else self.consumer_secret
@@ -450,6 +448,7 @@ class Twitter(object):
         if req.status_code == 200:
             return json.loads(req.text)['media_id']
 
+        IkaUtis.dprint('%s: Failed to post media.' % self)
         return None
 
     ##
