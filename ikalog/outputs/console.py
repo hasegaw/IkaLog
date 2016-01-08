@@ -78,7 +78,7 @@ class Console(object):
             {'rule': rule, 'stage':map, 'result': won}
 
         if ('score' in me):
-            s = s + ' ' + _('%sp') % (s, me['score'])
+            s = s + ' ' + _('%sp') % (me['score'])
 
         if ('kills' in me) and ('deaths' in me):
             try:
