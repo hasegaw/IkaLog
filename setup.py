@@ -18,10 +18,10 @@
 #  limitations under the License.
 #
 
+import certifi
 from distutils.core import setup
 import os
 import py2exe
-import requests.certs
 import shutil
 
 Mydata_files = []
@@ -40,7 +40,7 @@ addDirectory('masks/en_NA')
 addDirectory('data')
 addDirectory('locale/ja/LC_MESSAGES')
 
-Mydata_files.append(('', [requests.certs.where()]))
+Mydata_files.append(('', [certifi.where()]))
 Mydata_files.append(('lib', ['lib/videoinput.dll']))
 Mydata_files.append(('tools', ['tools/ControlOBS.au3']))
 Mydata_files.append(('tools', ['tools/ControlAmarecTV.au3']))
