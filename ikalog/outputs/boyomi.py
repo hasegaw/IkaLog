@@ -20,6 +20,7 @@
 #  limitations under the License.
 #
 
+import gettext
 import random
 import socket
 import sys
@@ -28,6 +29,9 @@ import traceback
 from ikalog.constants import *
 from ikalog.utils import *
 from .commentator import Commentator
+
+t = gettext.translation('boyomi', 'locale', fallback=True)
+_ = t.gettext
 
 # Needed in GUI mode
 try:
@@ -112,7 +116,8 @@ class BoyomiClient(object):
 
 class Boyomi(Commentator):
     '''
-    棒読みクライアント
+    Boyomi-chan client.
+    Boyomi-chan is Japnanese speech server.
     '''
 
     def __init__(self, host='127.0.0.1', port=50001, dictionary={}):
@@ -139,7 +144,7 @@ class Boyomi(Commentator):
         try:
             self._client = BoyomiClient(self._host, int(self._port))
         except:
-            IkaUtils.dprint('棒読みちゃんの設定が反映できませんでした。設定値を見直してください。')
+            IkaUtils.dprint(_('Failed to apply configuration to boyomi client. Review your settings.'))
             self.dprint(traceback.format_exc())
             self._client = None
             return False
@@ -211,23 +216,23 @@ class Boyomi(Commentator):
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, '棒読みちゃん')
+        self.page = notebook.InsertPage(0, self.panel, _('Boyomi'))
         self.layout = wx.BoxSizer(wx.VERTICAL)
 
         self.check_enable = wx.CheckBox(
-            self.panel, wx.ID_ANY, '棒読みちゃんで実況する')
+            self.panel, wx.ID_ANY, _('Enable Boyomi client'))
         self.edit_host = wx.TextCtrl(self.panel, wx.ID_ANY, 'host')
         self.edit_port = wx.TextCtrl(self.panel, wx.ID_ANY, 'port')
-        self.button_test = wx.Button(self.panel, wx.ID_ANY, 'テスト')
+        self.button_test = wx.Button(self.panel, wx.ID_ANY, _('Test intergration'))
 
         try:
             layout = wx.GridSizer(2, 4)
         except:
             layout = wx.GridSizer(2)
 
-        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ホスト'))
+        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('host')))
         layout.Add(self.edit_host)
-        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ポート'))
+        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('port')))
         layout.Add(self.edit_port)
 
         self.layout.Add(self.check_enable)

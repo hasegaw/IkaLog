@@ -1,4 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
 #
 #  IkaLog
 #  ======
@@ -16,11 +15,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+#
 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2016-01-06 19:04+JST\n"
+"POT-Creation-Date: 2016-01-08 13:25+JST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,47 +30,23 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: ikalog/outputs/console.py:45
-msgid "Game Start. Stage: %(stage)s Rule: %(rule)s"
-msgstr "ゲーム開始。ステージ: %(stage)s ルール: %(rule)s"
+#: ikalog/outputs/screenshot.py:95
+msgid "Screenshot"
+msgstr "スクリーンショット"
 
-#: ikalog/outputs/console.py:48
-msgid "Splatted!"
-msgstr "たおした！"
+#: ikalog/outputs/screenshot.py:99
+msgid "Save screenshots of game results"
+msgstr "戦績画面のスクリーンショットを保存"
 
-#: ikalog/outputs/console.py:51
-msgid "You are splatted!"
-msgstr "やられた！"
+#: ikalog/outputs/screenshot.py:101
+msgid "Save drawings in Inkopolis"
+msgstr "ハイカラシティで Miiverse 投稿画像を保存"
 
-#: ikalog/outputs/console.py:54
-msgid "Cause of death: %s"
-msgstr "死因: %s"
+#: ikalog/outputs/screenshot.py:105
+msgid "Folder to save screenshots"
+msgstr "スクリーンショット保存先フォルダ"
 
-#: ikalog/outputs/console.py:72
-msgid "Game Finished. Stage %s, Rule %s, Result %s"
-msgstr ""
-
-#: ikalog/outputs/console.py:76
-msgid "%sp"
-msgstr ""
-
-#: ikalog/outputs/console.py:79
-msgid "%dK/%dD"
-msgstr ""
-
-#: ikalog/outputs/console.py:82
-msgid "Weapon: %s"
-msgstr ""
-
-#: ikalog/outputs/console.py:85
-msgid "Rank in the team: %s"
-msgstr ""
-
-#: ikalog/outputs/console.py:88
-msgid "Rank: %s (was: %s)"
-msgstr ""
-
-#: ikalog/outputs/console.py:102
-msgid "Game Session end."
-msgstr ""
+#: ikalog/outputs/screenshot.py:124 ikalog/outputs/screenshot.py:136
+msgid "Saved a screenshot %s"
+msgstr "スクリーンショット %s を保存しました"
 

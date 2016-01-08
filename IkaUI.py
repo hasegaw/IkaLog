@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 
+import gettext
 import os
 import threading
 
@@ -30,6 +31,8 @@ from ikalog.ui.panel import *
 from ikalog.ui import VideoCapture
 from ikalog.utils import *
 
+t = gettext.translation('IkaUI', 'locale', fallback=True)
+_ = t.gettext
 
 class IkaLogGUI(object):
 
@@ -47,8 +50,12 @@ class IkaLogGUI(object):
         engine.call_plugins('on_config_reset', debug=True)
 
     def on_options_load_default_click(self, sender):
-        r = wx.MessageDialog(None, 'All of IkaLog config will be reset. Are you sure to load default?', 'Confirmation',
-                             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION).ShowModal()
+        r = wx.MessageDialog(
+            None,
+            _('All of IkaLog config will be reset. Are you sure to load default?'),
+            _('Confirmation'),
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION
+        ).ShowModal()
 
         if r != wx.ID_YES:
             return
@@ -89,11 +96,11 @@ class IkaLogGUI(object):
             if button == activeButton:
                 button.Disable()
                 panel.Show()
-                print('%s is shown' % panel)
+                # print('%s is shown' % panel)
             else:
                 button.Enable()
                 panel.Hide()
-                print('%s is hidden' % panel)
+                # print('%s is hidden' % panel)
 
         # リサイズイベントが発生しないと画面レイアウトが正しくならないので
         try:
@@ -110,7 +117,7 @@ class IkaLogGUI(object):
 
     def update_enable_button(self):
         color = '#00A000' if self.enable else '#C0C0C0'
-        label = 'Stop' if self.enable else 'Start'
+        label = _('Stop') if self.enable else _('Start')
         self.button_enable.SetBackgroundColour(color)
         self.button_enable.SetLabel(label)
 
@@ -130,12 +137,12 @@ class IkaLogGUI(object):
 
     def create_buttons_ui(self):
         panel = self.frame
-        self.button_enable = wx.Button(panel, wx.ID_ANY, u'Enable')
-        self.button_preview = wx.Button(panel, wx.ID_ANY, u'Preview')
-        self.button_timeline = wx.Button(panel, wx.ID_ANY, u'Timeline')
-        self.button_last_result = wx.Button(panel, wx.ID_ANY, u'Last Result')
-        self.button_options = wx.Button(panel, wx.ID_ANY, u'Options')
-        self.button_debug_log = wx.Button(panel, wx.ID_ANY, u'Debug Log')
+        self.button_enable = wx.Button(panel, wx.ID_ANY, _('Enable'))
+        self.button_preview = wx.Button(panel, wx.ID_ANY, _('Preview'))
+        self.button_timeline = wx.Button(panel, wx.ID_ANY, _('Timeline'))
+        self.button_last_result = wx.Button(panel, wx.ID_ANY, _('Last Result'))
+        self.button_options = wx.Button(panel, wx.ID_ANY, _('Options'))
+        self.button_debug_log = wx.Button(panel, wx.ID_ANY, _('Debug Log'))
 
         self.buttons_layout = wx.BoxSizer(wx.HORIZONTAL)
         self.buttons_layout.Add(self.button_enable)
@@ -192,9 +199,7 @@ def engine_thread_func():
     IkaUtils.dprint('IkaEngine thread terminated')
 
 if __name__ == "__main__":
-    # currently IkaUI support Japanese only.
-    os.environ['LANG'] = 'ja_JP.utf8'
-
+    IkaUtils.dprint(_('Hello!'))
 
     application = wx.App()
     input_plugin = VideoCapture()
@@ -260,3 +265,5 @@ if __name__ == "__main__":
     engine_thread.daemon = True
     engine_thread.start()
     application.MainLoop()
+
+    IkaUtils.dprint(_('Bye!'))

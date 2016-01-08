@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 
+import gettext
 import os
 import time
 
@@ -29,6 +30,9 @@ try:
     import wx
 except:
     pass
+
+t = gettext.translation('screenshot', 'locale', fallback=True)
+_ = t.gettext
 
 # IkaOutput_Screenshot: IkaLog Output Plugin for Screenshots
 #
@@ -88,17 +92,17 @@ class Screenshot(object):
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, 'Screenshot')
+        self.page = notebook.InsertPage(0, self.panel, _('Screenshot'))
         self.layout = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.layout)
         self.checkResultDetailEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'戦績画面のスクリーンショットを保存する')
+            self.panel, wx.ID_ANY, _('Save screenshots of game results'))
         self.checkMiiverseDrawingEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'広場で他プレイヤーの画面を開いた際、投稿を自動保存する')
+            self.panel, wx.ID_ANY, _('Save drawings in Inkopolis'))
         self.editDir = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
         self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, u'スクリーンショット保存先ディレクトリ'))
+            self.panel, wx.ID_ANY, _('Folder to save screenshots')))
         self.layout.Add(self.editDir, flag=wx.EXPAND)
         self.layout.Add(self.checkResultDetailEnable)
         self.layout.Add(self.checkMiiverseDrawingEnable)
@@ -117,7 +121,7 @@ class Screenshot(object):
         destfile = os.path.join(self.dir, 'miiverse_%s.png' % timestr)
 
         IkaUtils.writeScreenshot(destfile, drawing)
-        print("スクリーンショット %s を保存しました" % destfile)
+        print(_('Saved a screenshot %s') % destfile)
 
     ##
     # on_result_detail_still Hook
@@ -129,7 +133,7 @@ class Screenshot(object):
         destfile = os.path.join(self.dir, 'ikabattle_%s.png' % timestr)
 
         IkaUtils.writeScreenshot(destfile, context['engine']['frame'])
-        print("スクリーンショット %s を保存しました" % destfile)
+        print(_('Saved a screenshot %s') % destfile)
 
     def on_key_press(self, context, key):
         if not (key == 0x53 or key == 0x73):

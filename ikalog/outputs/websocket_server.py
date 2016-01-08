@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 
+import gettext
 import json
 import os
 import sys
@@ -41,10 +42,12 @@ except:
 
 from ikalog.utils import *
 
-websockets = []
+t = gettext.translation('websocket_server', 'locale', fallback=True)
+_ = t.gettext
 
 # IkaLog Output Plugin: WebSocket server.
 
+websockets = []
 
 class IndexHandler(tornado.web.RequestHandler):
 
@@ -355,20 +358,22 @@ class WebSocketServer(object):
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, 'WebSocket')
+        self.page = notebook.InsertPage(0, self.panel, _('WebSocket Server'))
         self.layout = wx.BoxSizer(wx.VERTICAL)
 
         self.check_enable = wx.CheckBox(
-            self.panel, wx.ID_ANY, 'WebSocket による別アプリからの連携を許可')
+            self.panel, wx.ID_ANY, _('Enable WebSocket Server'))
         self.edit_port = wx.TextCtrl(self.panel, wx.ID_ANY, 'port')
 
         layout = wx.GridSizer(2)
-        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, 'WebSocket ポート'))
+        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Listen port')))
         layout.Add(self.edit_port)
 
         self.layout.Add(self.check_enable)
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY,
-                                      '※ アクセス制御は行っていませんので悪用に注意してください'))
+        self.layout.Add(wx.StaticText(
+            self.panel, wx.ID_ANY,
+            _('WARINIG: The server is accessible from anyone.'),
+        ))
         self.layout.Add(layout, flag=wx.EXPAND)
 
         self.panel.SetSizer(self.layout)

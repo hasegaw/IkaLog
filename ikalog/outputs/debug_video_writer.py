@@ -18,14 +18,19 @@
 #  limitations under the License.
 #
 
+import gettext
 import os
 import sys
+import threading
 import time
+
 import numpy as np
 import cv2
-import threading
 
 from ikalog.utils import *
+
+t = gettext.translation('flight_recorder', 'locale', fallback=True)
+_ = t.gettext
 
 # Needed in GUI mode
 try:
@@ -105,22 +110,21 @@ class DebugVideoWriter(object):
     def on_button_record_stop_click(self, event):
         self.stop_recording()
 
-
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, 'Video Writer')
+        self.page = notebook.InsertPage(0, self.panel, _('Flight recorder'))
         self.layout = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.layout)
 
         self.edit_dir = wx.TextCtrl(self.panel, wx.ID_ANY, 'hoge')
-        self.button_record_start = wx.Button(self.panel, wx.ID_ANY, '録画開始')
-        self.button_record_stop = wx.Button(self.panel, wx.ID_ANY, '録画停止')
+        self.button_record_start = wx.Button(self.panel, wx.ID_ANY, _('Start recording'))
+        self.button_record_stop = wx.Button(self.panel, wx.ID_ANY, _('Stop recording'))
 
         self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, 'IkaLog の不具合調査を行うためのビデオログを残すための機能です。'))
+            self.panel, wx.ID_ANY, _('Flight recorder for IkaLog video recognition problems.')))
 
         self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, 'ログ保存先ディレクトリ'))
+            self.panel, wx.ID_ANY, _('Output Folder')))
 
         self.layout.Add(self.edit_dir, flag=wx.EXPAND)
         self.layout.Add(self.button_record_start)

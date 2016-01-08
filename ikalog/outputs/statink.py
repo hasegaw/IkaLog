@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 
+import gettext
 import json
 import os
 import pprint
@@ -32,6 +33,8 @@ from ikalog.constants import fes_rank_titles, stages, weapons
 from ikalog.version import IKALOG_VERSION
 from ikalog.utils import *
 
+t = gettext.translation('statink', 'locale', fallback=True)
+_ = t.gettext
 
 # Needed in GUI mode
 try:
@@ -101,17 +104,17 @@ class StatInk(object):
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, 'stat.ink')
+        self.page = notebook.InsertPage(0, self.panel, _('stat.ink'))
         self.layout = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.layout)
         self.checkEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, 'stat.ink へのスコアを送信する')
+            self.panel, wx.ID_ANY, _('Post game results to stat.ink'))
         self.checkTrackObjectiveEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, 'ガチヤグラ／ガチホコの位置を検出する (Experimental)')
+            self.panel, wx.ID_ANY, _('Include position data of tracked objectives (Experimental)'))
         self.checkTrackSplatzoneEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, 'ガチエリアのカウントを検出する (Experimental)')
+            self.panel, wx.ID_ANY, _('Include Splat Zone conuters (Experimental'))
         self.checkShowResponseEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, 'stat.ink からの応答をコンソールに出力する')
+            self.panel, wx.ID_ANY, _('Show stat.ink response in console'))
         self.editApiKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
         self.layout.Add(self.checkEnable)
@@ -119,7 +122,7 @@ class StatInk(object):
         self.layout.Add(self.checkTrackObjectiveEnable)
         self.layout.Add(self.checkTrackSplatzoneEnable)
         self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, u'APIキー'))
+            self.panel, wx.ID_ANY, _('API Key')))
         self.layout.Add(self.editApiKey, flag=wx.EXPAND)
 
         self.panel.SetSizer(self.layout)

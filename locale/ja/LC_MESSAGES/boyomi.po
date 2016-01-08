@@ -1,4 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
 #
 #  IkaLog
 #  ======
@@ -20,7 +19,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2016-01-06 19:04+JST\n"
+"POT-Creation-Date: 2016-01-08 13:02+JST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,48 +28,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
+#: ikalog/outputs/boyomi.py:147
+msgid "Failed to apply configuration to boyomi client. Review your settings."
+msgstr "設定を反映できませんでした。設定値を見直してください。"
 
-#: ikalog/outputs/console.py:45
-msgid "Game Start. Stage: %(stage)s Rule: %(rule)s"
-msgstr "ゲーム開始。ステージ: %(stage)s ルール: %(rule)s"
+#: ikalog/outputs/boyomi.py:219
+msgid "Boyomi"
+msgstr "棒読みちゃん"
 
-#: ikalog/outputs/console.py:48
-msgid "Splatted!"
-msgstr "たおした！"
+#: ikalog/outputs/boyomi.py:223
+msgid "Enable Boyomi client"
+msgstr "棒読みちゃん連携を有効化"
 
-#: ikalog/outputs/console.py:51
-msgid "You are splatted!"
-msgstr "やられた！"
+#: ikalog/outputs/boyomi.py:226
+msgid "Test intergration"
+msgstr "連携テスト"
 
-#: ikalog/outputs/console.py:54
-msgid "Cause of death: %s"
-msgstr "死因: %s"
+#: ikalog/outputs/boyomi.py:233
+msgid "host"
+msgstr "接続先ホスト名"
 
-#: ikalog/outputs/console.py:72
-msgid "Game Finished. Stage %s, Rule %s, Result %s"
-msgstr ""
-
-#: ikalog/outputs/console.py:76
-msgid "%sp"
-msgstr ""
-
-#: ikalog/outputs/console.py:79
-msgid "%dK/%dD"
-msgstr ""
-
-#: ikalog/outputs/console.py:82
-msgid "Weapon: %s"
-msgstr ""
-
-#: ikalog/outputs/console.py:85
-msgid "Rank in the team: %s"
-msgstr ""
-
-#: ikalog/outputs/console.py:88
-msgid "Rank: %s (was: %s)"
-msgstr ""
-
-#: ikalog/outputs/console.py:102
-msgid "Game Session end."
-msgstr ""
+#: ikalog/outputs/boyomi.py:235
+msgid "port"
+msgstr "接続先ポート番号"
 

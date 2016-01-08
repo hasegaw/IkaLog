@@ -17,33 +17,33 @@ msgstr ""
 
 #: ikalog/outputs/twitter.py:263
 msgid "Enter your test tweet."
-msgstr ""
+msgstr "テストツイートを入力してください"
 
 #: ikalog/outputs/twitter.py:263
 msgid "Staaaay Fresh!"
-msgstr ""
+msgstr "イカ、よろしく〜"
 
 #: ikalog/outputs/twitter.py:263
 msgid "Test Twitter integration"
-msgstr ""
+msgstr "連携テスト"
 
 #: ikalog/outputs/twitter.py:293
 msgid "Access the URL below to get authenticated at Twitter."
-msgstr ""
+msgstr "下記URLにアクセスしてTwitter認証を進めてください。"
 
 #: ikalog/outputs/twitter.py:296
 msgid "OAuth Process 1"
-msgstr ""
+msgstr "OAuth 認証 1"
 
 #: ikalog/outputs/twitter.py:304
 msgid ""
 "Once you are authenticated at Twitter, you'll get PIN code. \n"
 "Enter PIN here:"
-msgstr ""
+msgstr "認証に成功すると PIN コードが表示されます。\n表示された PIN コードを入力してください。"
 
 #: ikalog/outputs/twitter.py:305
 msgid "OAuth Proess 2"
-msgstr ""
+msgstr "OAuth 認証 2"
 
 #: ikalog/outputs/twitter.py:335
 msgid "Post game results to Twitter"
