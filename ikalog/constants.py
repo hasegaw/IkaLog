@@ -117,7 +117,7 @@ weapons = {
     'hissen': {'ja': 'ヒッセン', 'en': 'Tri-Slosher'},
     'hissen_hue': {'ja': 'ヒッセン・ヒュー', 'en': 'Tri-Slosher Nouveau'},
     'screwslosher': {'ja': 'スクリュースロッシャー', 'en': 'Sloshing Machine'},
-    # 'screwslosher_neo': {'ja': 'スクリュースロッシャーネオ', 'en': 'Sloshing Machine Neo'},
+    'screwslosher_neo': {'ja': 'スクリュースロッシャーネオ', 'en': 'Sloshing Machine Neo'},
 
     'barrelspinner': {'ja': 'バレルスピナー', 'en': 'Heavy Splatling'},
     'barrelspinner_deco': {'ja': 'バレルスピナーデコ', 'en': 'Heavy Splatling Deco'},

@@ -372,7 +372,7 @@ class WebSocketServer(object):
         self.layout.Add(self.check_enable)
         self.layout.Add(wx.StaticText(
             self.panel, wx.ID_ANY,
-            _('WARNING: The server is accessible from anyone.'),
+            _('WARNING: The server is accessible by anyone.'),
         ))
         self.layout.Add(layout, flag=wx.EXPAND)
 
