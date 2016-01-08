@@ -42,18 +42,74 @@ class Console(object):
     def on_game_start(self, context):
         map = IkaUtils.map2text(context['game']['map'])
         rule = IkaUtils.rule2text(context['game']['rule'])
-        print(_('Game Start. Stage: %(stage)s Rule: %(rule)s') % {'rule': rule, 'stage':map})
+        print(_('Game Start. Stage: %(stage)s, Mode: %(rule)s') % {'rule': rule, 'stage':map})
 
     def on_game_killed(self, context):
-        print(_('Splatted!'))
+        print(_('Splatted an enemy!'))
 
     def on_game_dead(self, context):
-        print(_('You are splatted!'))
+        print(_('You were splatted!'))
 
     def on_game_death_reason_identified(self, context):
         s = _('Cause of death: %(cause_of_death)s') % \
             { 'cause_of_death': context['game']['last_death_reason']}
         print(s)
+
+    def on_game_go_sign(self, context): # "Go!"
+        print(_('Go!'))
+
+    def on_game_finish(self, context): # Finish tape
+        print(_('Game End.'))
+
+    # Ranked battle common events
+
+    def on_game_ranked_we_lead(self, context):
+        print(_('We\'ve taken the lead!'))
+
+    def on_game_ranked_they_lead(self, context):
+        print(_('We lost the lead!'))
+
+    # Ranked, Splat Zone battles
+
+    def on_game_splatzone_we_got(self, context):
+        print(_('We\'re in control!'))
+
+    def on_game_splatzone_we_lost(self, context):
+        print(_('We lost control!'))
+
+    def on_game_splatzone_they_got(self, context):
+        print(_('They\'re in control!'))
+
+    def on_game_splatzone_they_lost(self, context):
+        print(_('They lost control!'))
+
+    # Ranked, Rainmaker battles
+
+    def on_game_rainmaker_we_got(self, context):
+        print(_('We have the Rainmaker!'))
+
+    def on_game_rainmaker_we_lost(self, context):
+        print(_('We lost the Rainmaker!'))
+
+    def on_game_rainmaker_they_got(self, context):
+        print(_('They have the Rainmaker!'))
+
+    def on_game_rainmaker_they_lost(self, context):
+        print(_('They lost the Rainmaker!'))
+
+    # Ranked, Tower Control battles
+
+    def on_game_tower_we_got(self, context):
+        print(_('We took the tower!'))
+
+    def on_game_tower_we_lost(self, context):
+        print(_('We lost the tower!'))
+
+    def on_game_tower_they_got(self, context):
+        print(_('They took the tower!'))
+
+    def on_game_tower_they_lost(self, context):
+        print(_('They lost the tower!'))
 
     ##
     # Generate a message for on_game_individual_result.
@@ -74,7 +130,7 @@ class Console(object):
         t_unix = int(time.mktime(t.timetuple()))
         me = IkaUtils.getMyEntryFromContext(context)
 
-        s = _('Game Result: Stage %(stage)s, Rule %(rule)s, Result %(result)s') % \
+        s = _('Results. Stage: %(stage)s, Mode: %(rule)s, Result: %(result)s') % \
             {'rule': rule, 'stage':map, 'result': won}
 
         if ('score' in me):
