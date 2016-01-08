@@ -133,6 +133,8 @@ class ResultGears(StatefulScene):
                     print('  gear %d : %s : %s' % (n, field, '(image)'))
                 else:
                     ability = gear_abilities.get(gear[field], { 'ja': None})['ja']
+                    ability = ability.encode().decode("unicode-escape").encode("latin1").decode("utf-8")
+                    # Mac gives Japanese text, Windows gives escape sequences
                     print('  gear %d : %s : %s' % (n, field, ability))
 
     def _analyze(self, context):
