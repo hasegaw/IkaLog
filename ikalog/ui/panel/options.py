@@ -61,7 +61,6 @@ class OptionsPanel(wx.Panel):
         self.notebookOptions = wx.Notebook(self.panelOptions, wx.ID_ANY)
         self.layoutOptions = wx.BoxSizer(wx.VERTICAL)
         self.layoutOptions.Add(self.notebookOptions, flag=wx.EXPAND)
-        self.panelOptions.SetSizer(self.layoutOptions)
 
         buttonsLayout = wx.BoxSizer(wx.HORIZONTAL)
         self.buttonOptionApply = wx.Button(
