@@ -22,6 +22,7 @@ from __future__ import print_function
 from .ikautils import IkaUtils
 from .matcher import IkaMatcher
 from .certifi import Certifi
+from .localization import Localization
 from .icon_recoginizer.icon import IconRecoginizer
 from .icon_recoginizer.weapon import WeaponRecoginizer
 from .icon_recoginizer.gearpower import GearPowerRecoginizer
