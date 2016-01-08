@@ -18,7 +18,6 @@
 #  limitations under the License.
 #
 
-import gettext
 import json
 import os
 import pprint
@@ -33,8 +32,7 @@ from ikalog.constants import fes_rank_titles, stages, weapons
 from ikalog.version import IKALOG_VERSION
 from ikalog.utils import *
 
-t = gettext.translation('statink', 'locale', fallback=True)
-_ = t.gettext
+_ = Localization.gettext_translation('statink', fallback=True).gettext
 
 # Needed in GUI mode
 try:

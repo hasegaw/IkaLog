@@ -18,8 +18,6 @@
 #  limitations under the License.
 #
 
-import gettext
-
 from datetime import datetime
 import time
 
@@ -29,8 +27,7 @@ from ikalog.utils import *
 # IkaLog Output Plugin: Show message on Console
 #
 
-t = gettext.translation('console', 'locale', fallback=True)
-_ = t.gettext
+_ = Localization.gettext_translation('console', fallback=True).gettext
 
 class Console(object):
 

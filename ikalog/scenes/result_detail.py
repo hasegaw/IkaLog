@@ -733,7 +733,7 @@ class ResultDetail(StatefulScene):
         )
 
         base_dir = IkaUtils.baseDirectory()
-        languages = IkaUtils.get_lang()
+        languages = Localization.get_game_languages()
         for lang in languages:
             mask_file = os.path.join(base_dir, 'masks', lang, 'result_detail.png')
             if os.path.exists(mask_file):

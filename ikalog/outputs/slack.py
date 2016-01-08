@@ -18,8 +18,6 @@
 #  limitations under the License.
 #
 
-import gettext
-
 from ikalog.utils import *
 
 # Needed in GUI mode
@@ -28,8 +26,7 @@ try:
 except:
     pass
 
-t = gettext.translation('slack', 'locale', fallback=True)
-_ = t.gettext
+_ = Localization.gettext_translation('slack', fallback=True).gettext
 
 # IkaOutput_Slack: IkaLog Output Plugin for Slack
 #

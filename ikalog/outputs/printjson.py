@@ -19,15 +19,13 @@
 #
 
 from datetime import datetime
-import gettext
 import json
 import os
 import time
 
 from ikalog.utils import *
 
-t = gettext.translation('json', 'locale', fallback=True)
-_ = t.gettext
+_ = Localization.gettext_translation('json', fallback=True).gettext
 
 # Needed in GUI mode
 try:

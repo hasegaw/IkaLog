@@ -18,7 +18,6 @@
 #  limitations under the License.
 #
 
-import gettext
 import os
 import time
 
@@ -31,8 +30,7 @@ try:
 except:
     pass
 
-t = gettext.translation('screenshot', 'locale', fallback=True)
-_ = t.gettext
+_ = Localization.gettext_translation('screenshot', fallback=True).gettext
 
 # IkaOutput_Screenshot: IkaLog Output Plugin for Screenshots
 #

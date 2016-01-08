@@ -29,6 +29,7 @@ import numpy as np
 from PIL import Image
 
 from ikalog.constants import stages, rules, gear_abilities
+from ikalog.utils.localization import Localization
 
 class IkaUtils(object):
 
@@ -103,7 +104,7 @@ class IkaUtils(object):
             return unknown
 
         if languages is None:
-            languages = IkaUtils.get_lang()
+            languages = Localization.get_languages()
 
         if not isinstance(languages, list):
             languages = [languages]
@@ -136,7 +137,7 @@ class IkaUtils(object):
             return unknown
 
         if languages is None:
-            languages = IkaUtils.get_lang()
+            languages = Localization.get_languages()
 
         if not isinstance(languages, list):
             languages = [languages]
@@ -169,7 +170,7 @@ class IkaUtils(object):
             return unknown
 
         if languages is None:
-            languages = IkaUtils.get_lang()
+            languages = Localization.get_languages()
 
         if not isinstance(languages, list):
             languages = [languages]
@@ -256,15 +257,3 @@ class IkaUtils(object):
             self.dprint("Screenshot: failed")
             return False
         return True
-
-    @staticmethod
-    def get_lang():
-        lang_list = []
-        ikalog_lang = os.environ.get('IKALOG_LANG', 'ja')
-        lang_list.append(ikalog_lang)
-
-        ikalog_lang_short = re.sub('_.*', '', ikalog_lang)
-        if not ikalog_lang_short in lang_list:
-            lang_list.append(ikalog_lang_short)
-
-        return lang_list

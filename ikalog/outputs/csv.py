@@ -19,14 +19,12 @@
 #
 
 from datetime import datetime
-import gettext
 import os
 import time
 
 from ikalog.utils import *
 
-t = gettext.translation('csv', 'locale', fallback=True)
-_ = t.gettext
+_ = Localization.gettext_translation('csv', fallback=True).gettext
 
 # Needed in GUI mode
 try:

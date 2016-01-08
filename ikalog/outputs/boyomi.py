@@ -20,7 +20,6 @@
 #  limitations under the License.
 #
 
-import gettext
 import random
 import socket
 import sys
@@ -30,8 +29,7 @@ from ikalog.constants import *
 from ikalog.utils import *
 from .commentator import Commentator
 
-t = gettext.translation('boyomi', 'locale', fallback=True)
-_ = t.gettext
+_ = Localization.gettext_translation('boyomi', fallback=True).gettext
 
 # Needed in GUI mode
 try:

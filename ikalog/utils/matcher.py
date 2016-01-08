@@ -20,6 +20,7 @@
 
 import traceback
 from ikalog.utils.ikautils import *
+from ikalog.utils.localization import Localization
 
 
 class MM_WHITE(object):
@@ -230,7 +231,7 @@ class IkaMatcher(object):
 
     def _find_image_file(self, img_file=None, languages=None):
         if languages is None:
-            languages = IkaUtils.get_lang()
+            languages = Localization.get_game_languages()
 
         if languages is not None:
             if not isinstance(languages, list):

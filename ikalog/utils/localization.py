@@ -17,7 +17,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from ikalog.utils.ikautils import *
+from ikalog.utils import *
 
 import gettext
 import os
@@ -91,7 +91,13 @@ class Localization(object):
 
     @staticmethod
     def gettext_translation(domain, localdir=None, languages=None, class_=None, fallback=False, codeset=None):
-        if localdir is None:
-            localdir = os.path.join(IkaUtils.baseDirectory(), 'locale')
-        return gettext.translation(domain, localdir, fallback=True)
+        if languages is None:
+            languages = Localization.get_languages()
 
+        if localdir is None:
+            localdir = os.path.join(
+                # IkaUtils.baseDirectory(),
+                'locale'
+            )
+
+        return gettext.translation(domain, localdir, fallback=True)

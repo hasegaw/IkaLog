@@ -18,7 +18,6 @@
 #  limitations under the License.
 #
 
-import gettext
 import os
 import sys
 import threading
@@ -29,8 +28,7 @@ import cv2
 
 from ikalog.utils import *
 
-t = gettext.translation('flight_recorder', 'locale', fallback=True)
-_ = t.gettext
+_ = Localization.gettext_translation('flight_recorder', fallback=True).gettext
 
 # Needed in GUI mode
 try:

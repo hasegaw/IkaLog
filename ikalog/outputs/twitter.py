@@ -22,7 +22,6 @@
 
 import os
 from datetime import datetime
-import gettext
 import json
 
 import cv2
@@ -36,8 +35,7 @@ try:
 except:
     pass
 
-t = gettext.translation('twitter', 'locale', fallback=True)
-_ = t.gettext
+_ = Localization.gettext_translation('twitter', fallback=True).gettext
 
 # IkaOutput_Twitter: IkaLog Output Plugin for Twitter
 #

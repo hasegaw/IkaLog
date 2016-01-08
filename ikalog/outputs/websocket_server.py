@@ -18,7 +18,6 @@
 #  limitations under the License.
 #
 
-import gettext
 import json
 import os
 import sys
@@ -42,8 +41,7 @@ except:
 
 from ikalog.utils import *
 
-t = gettext.translation('websocket_server', 'locale', fallback=True)
-_ = t.gettext
+_ = Localization.gettext_translation('websocket_server', fallback=True).gettext
 
 # IkaLog Output Plugin: WebSocket server.
 

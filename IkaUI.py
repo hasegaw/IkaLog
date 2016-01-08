@@ -31,8 +31,7 @@ from ikalog.ui.panel import *
 from ikalog.ui import VideoCapture
 from ikalog.utils import *
 
-t = gettext.translation('IkaUI', 'locale', fallback=True)
-_ = t.gettext
+_ = Localization.gettext_translation('IkaUI', fallback=True).gettext
 
 class IkaLogGUI(object):
 

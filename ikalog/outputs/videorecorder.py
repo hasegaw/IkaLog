@@ -18,7 +18,6 @@
 #  limitations under the License.
 #
 
-import gettext
 import time
 import os
 import traceback
@@ -36,8 +35,7 @@ except:
 # IkaLog Output Plugin: Show message on Console
 #
 
-t = gettext.translation('video_recorder', 'locale', fallback=True)
-_ = t.gettext
+_ = Localization.gettext_translation('video_recorder', fallback=True).gettext
 
 class OBS(object):
 
