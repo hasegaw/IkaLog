@@ -554,6 +554,7 @@ class StatInk(object):
         self.events = []
         self.time_last_score_msec = None
         self.time_last_objective_msec = None
+        self.last_dead_event = None
 
         # check if context['engine']['msec'] exists
         # to allow unit test.
@@ -616,7 +617,15 @@ class StatInk(object):
         self._add_event(context, {'type': 'killed'})
 
     def on_game_dead(self, context):
-        self._add_event(context, {'type': 'dead'})
+        self.last_dead_event = {'type': 'dead'}
+        self._add_event(context, self.last_dead_event)
+
+    def on_game_death_reason_identified(self, context):
+        # 死因が特定されたら最後の死亡イベントに追加する
+        if self.last_dead_event is not None:
+            reason = context['game']['last_death_reason']
+            self.last_dead_event['reason'] = reason
+            self.last_dead_event = None
 
     def on_game_paint_score_update(self, context):
         score = context['game'].get('paint_score', 0)
@@ -711,6 +720,7 @@ class StatInk(object):
         self.events = []
         self.time_last_score_msec = None
         self.time_last_objective_msec = None
+        self.last_dead_event = None
 
         self.img_result_detail = None
         self.img_judge = None
