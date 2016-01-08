@@ -52,8 +52,8 @@ class IkaLogGUI(object):
     def on_options_load_default_click(self, sender):
         r = wx.MessageDialog(
             None,
-            _('All of IkaLog config will be reset. Are you sure to load default?'),
-            _('Confirmation'),
+            _('IkaLog preferences will be reset to default. Continue?'),
+            _('Confirm'),
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION
         ).ShowModal()
 
