@@ -41,6 +41,6 @@ msgid "Listen port"
 msgstr "着信ポート番号"
 
 #: ikalog/outputs/websocket_server.py:375
-msgid "WARINIG: The server is accessible from anyone."
+msgid "WARNING: The server is accessible by anyone."
 msgstr "注意: 本機能はアクセス制御をしていないため予期せぬ所から接続される可能性があります。"
 

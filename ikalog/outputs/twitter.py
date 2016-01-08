@@ -260,7 +260,7 @@ class Twitter(object):
 
     def on_test_button_click(self, event):
         dlg = wx.TextEntryDialog(
-            None, _('Enter your test tweet.'), caption=_('Test Twitter integration'), value=_('Staaaay Fresh!'))
+            None, _('Enter your test tweet.'), caption=_('Test Twitter integration'), value=_('Staaaay fresh!'))
         r = dlg.ShowModal()
         s = dlg.GetValue()
         dlg.Destroy()
@@ -301,7 +301,7 @@ class Twitter(object):
             return
 
         msg = "Twitter サイトにて認証に成功すると PIN コードが表示されます。\n表示された PIN コードを下記に入力してください。"
-        msg = _('Once you are authenticated at Twitter, you\'ll get PIN code. \nEnter PIN here:')
+        msg = _('You\'ll receive a PIN code once authenticated via Twitter. \nEnter PIN here:')
         dlg = wx.TextEntryDialog(None, msg, caption=_('OAuth Proess 2'), value='')
         dlg.ShowModal()
         pin = dlg.GetValue()
@@ -345,7 +345,7 @@ class Twitter(object):
         self.editFooter = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
         self.radioIkaLogKey = wx.RadioButton(
-            self.panel, wx.ID_ANY, _('Use WinIkaLog Consumer Key (Easy)'))
+            self.panel, wx.ID_ANY, _('Use WinIkaLog Consumer Key (easy)'))
         self.radioOwnKey = wx.RadioButton(self.panel, wx.ID_ANY, _('Use your own Consumer Key'))
 
         self.buttonIkaLogAuth = wx.Button(

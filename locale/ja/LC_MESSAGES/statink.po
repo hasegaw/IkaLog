@@ -36,12 +36,12 @@ msgid "Post game results to stat.ink"
 msgstr "戦績を stat.ink に投稿する"
 
 #: ikalog/outputs/statink.py:113
-msgid "Include position data of tracked objectives (Experimental)"
-msgstr "投稿内容にヤグラ／ホコの位置情報を含める（Experimental)"
+msgid "Include position data of tracked objectives (experimental)"
+msgstr "投稿内容にヤグラ／ホコの位置情報を含める（experimental)"
 
 #: ikalog/outputs/statink.py:115
-msgid "Include Splat Zone conuters (Experimental"
-msgstr "投稿内容にガチエリアのカウント情報を含める（Experimental)"
+msgid "Include Splat Zone counters (experimental)"
+msgstr "投稿内容にガチエリアのカウント情報を含める（experimental)"
 
 #: ikalog/outputs/statink.py:117
 msgid "Show stat.ink response in console"

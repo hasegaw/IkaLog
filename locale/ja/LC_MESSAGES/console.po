@@ -31,46 +31,110 @@ msgstr ""
 
 
 #: ikalog/outputs/console.py:45
-msgid "Game Start. Stage: %(stage)s Rule: %(rule)s"
-msgstr "ゲーム開始。ステージ: %(stage)s ルール: %(rule)s"
+msgid "Game Start. Stage: %(stage)s, Mode: %(rule)s"
+msgstr "ゲーム開始。ステージ: %(stage)s, ルール: %(rule)s"
 
 #: ikalog/outputs/console.py:48
-msgid "Splatted!"
+msgid "Splatted an enemy!"
 msgstr "たおした！"
 
 #: ikalog/outputs/console.py:51
-msgid "You are splatted!"
+msgid "You were splatted!"
 msgstr "やられた！"
 
 #: ikalog/outputs/console.py:54
 msgid "Cause of death: %s"
 msgstr "死因: %s"
 
-#: ikalog/outputs/console.py:72
-msgid "Game Finished. Stage %s, Rule %s, Result %s"
+#: ikalog/outputs/console.py:59
+msgid "Go!"
 msgstr ""
 
-#: ikalog/outputs/console.py:76
+#: ikalog/outputs/console.py:62
+msgid "Game End."
+msgstr ""
+
+#: ikalog/outputs/console.py:67
+msgid "We've taken the lead!"
+msgstr ""
+
+#: ikalog/outputs/console.py:70
+msgid "We lost the lead!"
+msgstr ""
+
+#: ikalog/outputs/console.py:75
+msgid "We're in control!"
+msgstr ""
+
+#: ikalog/outputs/console.py:78
+msgid "We lost control!"
+msgstr ""
+
+#: ikalog/outputs/console.py:81
+msgid "They're in control!"
+msgstr ""
+
+#: ikalog/outputs/console.py:84
+msgid "They lost control!"
+msgstr ""
+
+#: ikalog/outputs/console.py:89
+msgid "We have the Rainmaker!"
+msgstr ""
+
+#: ikalog/outputs/console.py:92
+msgid "We lost the Rainmaker!"
+msgstr ""
+
+#: ikalog/outputs/console.py:95
+msgid "They have the Rainmaker!"
+msgstr ""
+
+#: ikalog/outputs/console.py:98
+msgid "They lost the Rainmaker!"
+msgstr ""
+
+#: ikalog/outputs/console.py:103
+msgid "We took the tower!"
+msgstr ""
+
+#: ikalog/outputs/console.py:106
+msgid "We lost the tower!"
+msgstr ""
+
+#: ikalog/outputs/console.py:109
+msgid "They took the tower!"
+msgstr ""
+
+#: ikalog/outputs/console.py:112
+msgid "They lost the tower!"
+msgstr ""
+
+#: ikalog/outputs/console.py:133
+msgid "Results. Stage: %s, Mode: %s, Result: %s"
+msgstr ""
+
+#: ikalog/outputs/console.py:137
 msgid "%sp"
 msgstr ""
 
-#: ikalog/outputs/console.py:79
+#: ikalog/outputs/console.py:141
 msgid "%dK/%dD"
 msgstr ""
 
-#: ikalog/outputs/console.py:82
+#: ikalog/outputs/console.py:146
 msgid "Weapon: %s"
 msgstr ""
 
-#: ikalog/outputs/console.py:85
+#: ikalog/outputs/console.py:149
 msgid "Rank in the team: %s"
 msgstr ""
 
-#: ikalog/outputs/console.py:88
+#: ikalog/outputs/console.py:152
 msgid "Rank: %s (was: %s)"
 msgstr ""
 
-#: ikalog/outputs/console.py:102
+#: ikalog/outputs/console.py:166
 msgid "Game Session end."
 msgstr ""
 

@@ -372,7 +372,7 @@ class WebSocketServer(object):
         self.layout.Add(self.check_enable)
         self.layout.Add(wx.StaticText(
             self.panel, wx.ID_ANY,
-            _('WARINIG: The server is accessible from anyone.'),
+            _('WARNING: The server is accessible from anyone.'),
         ))
         self.layout.Add(layout, flag=wx.EXPAND)
 
@@ -380,7 +380,7 @@ class WebSocketServer(object):
 
     def __init__(self, enabled=False, bind_addr='127.0.0.1', port=9090):
         if not _tornado_imported:
-            print("モジュール tornado がロードできませんでした。 WebSocet サーバが起動できません。")
+            print("モジュール tornado がロードできませんでした。 WebSocket サーバが起動できません。")
             print("インストールするには以下のコマンドを利用してください。\n    pip install tornado\n")
             return
         self._enabled = enabled
