@@ -485,11 +485,21 @@ class StatInk(object):
         }
 
         IkaUtils.dprint('%s: POST %s' % (self, url_statink_v1_battle))
-        pool = urllib3.PoolManager()
-        req = pool.urlopen('POST', url_statink_v1_battle,
-                           headers=http_headers,
-                           body=mp_payload,
-                           )
+
+        pool = urllib3.PoolManager(
+            cert_reqs = 'CERT_REQUIRED', # Force certificate check
+            ca_certs = Certifi.where(),  # Path to the Certifi bundle.
+        )
+
+        try:
+            req = pool.urlopen('POST', url_statink_v1_battle,
+                               headers=http_headers,
+                               body=mp_payload,
+                               )
+        except urllib3.exceptions.SSLError as e:
+            # Handle incorrect certificate error.
+            IkaUtils.dprint('%s: SSLError, value: %s' % (self, e.value))
+
         IkaUtils.dprint('%s: POST Done.' % self)
 
         statink_reponse = json.loads(req.data.decode('utf-8'))
