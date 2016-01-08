@@ -20,7 +20,7 @@ msgid "Enter your test tweet."
 msgstr "テストツイートを入力してください"
 
 #: ikalog/outputs/twitter.py:263
-msgid "Staaaay Fresh!"
+msgid "Staaaay fresh!"
 msgstr "イカ、よろしく〜"
 
 #: ikalog/outputs/twitter.py:263
@@ -37,7 +37,7 @@ msgstr "OAuth 認証 1"
 
 #: ikalog/outputs/twitter.py:304
 msgid ""
-"Once you are authenticated at Twitter, you'll get PIN code. \n"
+"You'll receive a PIN code once authenticated via Twitter. \n"
 "Enter PIN here:"
 msgstr "認証に成功すると PIN コードが表示されます。\n表示された PIN コードを入力してください。"
 
@@ -70,7 +70,7 @@ msgid "Reply to @_ikalog_ to keep my followers' timeline clean"
 msgstr "@_ikalog_ へのリプライとして投稿（フォロワーのTLを汚しません）"
 
 #: ikalog/outputs/twitter.py:348
-msgid "Use WinIkaLog Consumer Key (Easy)"
+msgid "Use WinIkaLog Consumer Key (easy)"
 msgstr "WinIkaLog のコンシューマキーを使う（簡単）"
 
 #: ikalog/outputs/twitter.py:349

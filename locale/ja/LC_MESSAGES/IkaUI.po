@@ -30,11 +30,11 @@ msgstr ""
 
 
 #: IkaUI.py:55
-msgid "All of IkaLog config will be reset. Are you sure to load default?"
+msgid "IkaLog preferences will be reset to default. Continue?"
 msgstr "設定がすべてリセットされます。よろしいですか？"
 
 #: IkaUI.py:56
-msgid "Confirmation"
+msgid "Confirm"
 msgstr "確認"
 
 #: IkaUI.py:120
