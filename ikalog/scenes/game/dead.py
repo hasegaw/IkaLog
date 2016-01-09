@@ -69,8 +69,8 @@ class GameDead(StatefulScene):
             return None
 
         context['game']['last_death_reason'] = most_possible_id
-        context['game']['death_reasons'][most_possible_id] = \
-            context['game']['death_reasons'].get(most_possible_id, 0) + 1
+        context['game']['cause_of_death'][most_possible_id] = \
+            context['game']['cause_of_death'].get(most_possible_id, 0) + 1
 
         return most_possible_id
 
@@ -121,7 +121,8 @@ class GameDead(StatefulScene):
             self.count_death_reason_votes(context)
 
             self.dump(context)
-            self._call_plugins('on_game_death_reason_identified')
+            if 'last_death_reason' in context['game']:
+                self._call_plugins('on_game_death_reason_identified')
             self._call_plugins('on_game_respawn')
 
         self._last_event_msec = context['engine']['msec']
@@ -132,7 +133,7 @@ class GameDead(StatefulScene):
         return False
 
     def dump(self, context):
-        print('last_death_reason %s' % context['game']['death_reasons'])
+        print('cause of death: %s' % context['game']['cause_of_death'])
 
     def _analyze(self, context):
         pass
