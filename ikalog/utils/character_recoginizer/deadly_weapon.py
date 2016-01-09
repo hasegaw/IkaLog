@@ -138,8 +138,8 @@ class DeadlyWeaponRecoginizer(CharacterRecoginizer):
         self.x_cutter = self  # 変則的だがカッターとして自分を使う
         self.sample_height = 16
 
-        lang = IkaUtils.get_lang()[0]
-        for lang_ in IkaUtils.get_lang():
+        lang = Localization.get_game_languages()[0]
+        for lang_ in Localization.get_game_languages():
             model_name = 'data/deadly_weapons.%s.model' % lang_
             if os.path.isfile(model_name):
                 lang = lang_
