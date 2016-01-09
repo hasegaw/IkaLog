@@ -192,7 +192,7 @@ class ResultDetail(StatefulScene):
 
         # 変形した画像がマスクと一致するか？
         matched = IkaUtils.matchWithMask(
-            new_frame, self.winlose_gray, 0.997, 0.20)
+            new_frame, self.winlose_gray, 0.9969, 0.20)
         if matched:
             return new_frame
 
@@ -217,7 +217,7 @@ class ResultDetail(StatefulScene):
                 filter.offset = (ox, oy)
                 img = filter.execute(context['engine']['frame'])
                 IkaUtils.matchWithMask(
-                    context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
+                    context['engine']['frame'], self.winlose_gray, 0.9969, 0.20)
                 score = self.mask_win.match_score(img)
 
                 if not score[0]:
@@ -496,7 +496,7 @@ class ResultDetail(StatefulScene):
         if img is not None:
             matched = IkaUtils.matchWithMask(
                 img,
-                self.winlose_gray, 0, 997, 0.20
+                self.winlose_gray, 0, 9969, 0.20
             )
             if not matched:
                 img = None
@@ -582,7 +582,7 @@ class ResultDetail(StatefulScene):
             return False
 
         matched = IkaUtils.matchWithMask(
-            context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
+            context['engine']['frame'], self.winlose_gray, 0.9969, 0.20)
 
         if matched:
             self._match_start_msec = context['engine']['msec']
@@ -597,7 +597,7 @@ class ResultDetail(StatefulScene):
 
         # マッチ1: 既知のマスクでざっくり
         matched = IkaUtils.matchWithMask(
-            context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
+            context['engine']['frame'], self.winlose_gray, 0.9969, 0.20)
 
         # マッチ2: マッチ1を満たした場合は、白文字が安定するまで待つ
         # 条件1: 前回のイメージとの白文字の diff が 0 pixel になること
