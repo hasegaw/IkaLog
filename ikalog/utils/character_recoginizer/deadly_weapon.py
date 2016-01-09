@@ -152,10 +152,11 @@ class DeadlyWeaponRecoginizer(CharacterRecoginizer):
             self.train()
             return
 
-        IkaUtils.dprint('Building %s' % model_name)
+        samples_path = 'training/deadly_weapons/%s' % lang
+        IkaUtils.dprint('Building %s from %s' % (model_name, samples_path))
         data = []
 
-        for file in self._find_png_files('training/deadly_weapons/%s' % lang):
+        for file in self._find_png_files(samples_path):
             s = os.path.basename(file).split('.')
             if len(s) != 3:
                 continue
@@ -175,6 +176,7 @@ class DeadlyWeaponRecoginizer(CharacterRecoginizer):
             img_normalized = cv2.cvtColor(img_normalized, cv2.COLOR_GRAY2BGR)
             self.add_sample(self.name2id(weapon_name), img_normalized)
 
+        IkaUtils.dprint('Writing %s' % model_name)
         self.save_model_to_file(model_name)
 
         self.train()
