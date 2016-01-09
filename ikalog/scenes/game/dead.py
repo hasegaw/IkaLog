@@ -120,8 +120,9 @@ class GameDead(StatefulScene):
         if not self.matched_in(context, 5 * 1000, attr='_last_event_msec'):
             self.count_death_reason_votes(context)
 
-            self.dump(context)
-            self._call_plugins('on_game_death_reason_identified')
+            if 'last_death_reason' in context['game']:
+                self._call_plugins('on_game_death_reason_identified')
+
             self._call_plugins('on_game_respawn')
 
         self._last_event_msec = context['engine']['msec']
