@@ -41,6 +41,7 @@ addDirectory('data')
 addDirectory('locale/ja/LC_MESSAGES')
 
 Mydata_files.append(('', [certifi.where()]))
+Mydata_files.append(('', ['tools/WinIkaLog_ja.BAT', 'tools/WinIkaLog_en_NA.BAT']))
 Mydata_files.append(('lib', ['lib/videoinput.dll']))
 Mydata_files.append(('tools', ['tools/ControlOBS.au3']))
 Mydata_files.append(('tools', ['tools/ControlAmarecTV.au3']))
