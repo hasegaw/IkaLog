@@ -113,6 +113,7 @@ learnImageGroup(weapons, "シャープマーカーネオ", dir="シャープマ�
 learnImageGroup(weapons, "スクイックリンα", dir="スクイックリンA")
 learnImageGroup(weapons, "スクイックリンβ", dir="スクイックリンB")
 learnImageGroup(weapons, "スクリュースロッシャー", dir="スクリュースロッシャー")
+learnImageGroup(weapons, "スクリュースロッシャーネオ", dir="スクリュースロッシャーネオ")
 learnImageGroup(weapons, "スプラシューター", dir="スプラシューター")
 learnImageGroup(weapons, "スプラシューターコラボ", dir="スプラシューターコラボ")
 learnImageGroup(weapons, "スプラスコープ", dir="スプラスコープ")
