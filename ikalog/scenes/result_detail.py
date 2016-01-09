@@ -192,7 +192,7 @@ class ResultDetail(StatefulScene):
 
         # 変形した画像がマスクと一致するか？
         matched = IkaUtils.matchWithMask(
-            new_frame, self.winlose_gray, 0.9969, 0.20)
+            new_frame, self.winlose_gray, 0.997, 0.22)
         if matched:
             return new_frame
 
@@ -217,7 +217,7 @@ class ResultDetail(StatefulScene):
                 filter.offset = (ox, oy)
                 img = filter.execute(context['engine']['frame'])
                 IkaUtils.matchWithMask(
-                    context['engine']['frame'], self.winlose_gray, 0.9969, 0.20)
+                    context['engine']['frame'], self.winlose_gray, 0.997, 0.22)
                 score = self.mask_win.match_score(img)
 
                 if not score[0]:
@@ -496,7 +496,7 @@ class ResultDetail(StatefulScene):
         if img is not None:
             matched = IkaUtils.matchWithMask(
                 img,
-                self.winlose_gray, 0, 9969, 0.20
+                self.winlose_gray, 0, 9969, 0.22
             )
             if not matched:
                 img = None
@@ -582,7 +582,7 @@ class ResultDetail(StatefulScene):
             return False
 
         matched = IkaUtils.matchWithMask(
-            context['engine']['frame'], self.winlose_gray, 0.9969, 0.20)
+            context['engine']['frame'], self.winlose_gray, 0.997, 0.22)
 
         if matched:
             self._match_start_msec = context['engine']['msec']
@@ -597,7 +597,7 @@ class ResultDetail(StatefulScene):
 
         # マッチ1: 既知のマスクでざっくり
         matched = IkaUtils.matchWithMask(
-            context['engine']['frame'], self.winlose_gray, 0.9969, 0.20)
+            context['engine']['frame'], self.winlose_gray, 0.997, 0.22)
 
         # マッチ2: マッチ1を満たした場合は、白文字が安定するまで待つ
         # 条件1: 前回のイメージとの白文字の diff が 0 pixel になること
@@ -648,7 +648,6 @@ class ResultDetail(StatefulScene):
         matched2 = matched_diff0 or matched_diff10
         triggered = self.matched_in(
             context, 30 * 1000, attr='_last_event_msec')
-
         if matched2 and (not triggered):
             self.analyze(context)
             # self.dump(context)
@@ -737,7 +736,7 @@ class ResultDetail(StatefulScene):
         for lang in languages:
             mask_file = os.path.join(base_dir, 'masks', lang, 'result_detail.png')
             if os.path.exists(mask_file):
-                continue
+                break
 
         if not os.path.exists(mask_file):
             mask_file = os.path.join(base_dir, 'masks', 'result_detail.png')
