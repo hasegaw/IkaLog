@@ -31,15 +31,17 @@ class GameDead(StatefulScene):
     def recoginize_and_vote_death_reason(self, context):
         if self.deadly_weapon_recoginizer is None:
             return False
+        # ja coordinates:    [218:218 + 51, 452:452 + 410]
+        # en_NA coordinates: [263:263 + 51, 432:432 + 410]
         img_weapon = context['engine']['frame'][218:218 + 51, 452:452 + 410]
         img_weapon_gray = cv2.cvtColor(img_weapon, cv2.COLOR_BGR2GRAY)
         ret, img_weapon_b = cv2.threshold(
             img_weapon_gray, 230, 255, cv2.THRESH_BINARY)
 
-        # (覚) 学習用に保存しておくのはこのデータ
+        # (覚) 学習用に保存しておくのはこのデータ。 Change to 1 for training.
         if 0:  # (self.time_last_write + 5000 < context['engine']['msec']):
             import time
-            filename = os.path.join(
+            filename = os.path.join( # training/ directory must already exist
                 'training', '_deadly_weapons.%s.png' % time.time())
             cv2.imwrite(filename, img_weapon_b)
             self.time_last_write = context['engine']['msec']
