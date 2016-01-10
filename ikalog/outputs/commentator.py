@@ -40,8 +40,8 @@ class CommentatorDictionary(object):
     '''
     _config = {
         'initialize': [
-	    {'text': '読み上げテストです', 'emotion': 'salute'},
-	],
+            {'text': '読み上げテストです', 'emotion': 'salute'},
+        ],
         'lobby_matching': [
             {'text': 'しばらく待ちましょう', 'emotion': 'response'},
         ],
