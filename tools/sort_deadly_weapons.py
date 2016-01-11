@@ -45,4 +45,4 @@ for reason in sorted(results):
     print("<h3>%s (%d)</h1>" % (reason, len(results[reason])))
 
     for e in results[reason]:
-        print("<!-- %s %s --><img src=%s>" % (reason, e['distance'], e['filename']))
+        print("<!-- %s %s --><img src=\"%s\">" % (reason, e['distance'], e['filename']))
