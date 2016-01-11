@@ -266,14 +266,9 @@ class Twitter(object):
         if r != wx.ID_OK:
             return
 
-        failure = False
-        try:
-            # FixMe: tweet() doesn't return result code
-            self.tweet(s)
-        except:
-            failure = True
-
-        # FixMe
+        response = self.tweet(s)
+        if response.status_code != 200:
+            IkaUtils.dprint('%s: Failed to post tweet. Review your settings.' % self)
 
     def on_ika_log_auth_button_click(self, event):
         from requests_oauthlib import OAuth1Session
@@ -287,7 +282,6 @@ class Twitter(object):
         step1 = oauth_session.fetch_request_token(request_token_url)
         auth_web_url = oauth_session.authorization_url(authorization_url)
 
-        msg = "Twitter の利用認証を行います。\n下記のURLをブラウザにペーストし、Twitterサイトで認証ページを開いてください。"
         msg = _('Access the URL below to get authenticated at Twitter.')
 
         dlg = wx.TextEntryDialog(
@@ -298,7 +292,6 @@ class Twitter(object):
         if r != wx.ID_OK:
             return
 
-        msg = "Twitter サイトにて認証に成功すると PIN コードが表示されます。\n表示された PIN コードを下記に入力してください。"
         msg = _('You\'ll receive a PIN code once authenticated via Twitter. \nEnter PIN here:')
         dlg = wx.TextEntryDialog(None, msg, caption=_('OAuth Proess 2'), value='')
         dlg.ShowModal()
@@ -515,7 +508,10 @@ class Twitter(object):
 
         media = self.post_media(self.img_result_detail
                                 ) if self.attach_image else None
-        self.tweet(s, media=media)
+
+        response = self.tweet(s, media=media)
+        if response.status_code != 200:
+            IkaUtils.dprint('%s: Tweeting failed. Status code = %d' % (self, response.status_code))
 
         self.img_result_detail = None
 
