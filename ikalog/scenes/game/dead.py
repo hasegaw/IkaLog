@@ -36,7 +36,7 @@ class GameDead(StatefulScene):
         img_weapon = context['engine']['frame'][218:218 + 51, 452:452 + 410]
         img_weapon_gray = cv2.cvtColor(img_weapon, cv2.COLOR_BGR2GRAY)
         ret, img_weapon_b = cv2.threshold(
-            img_weapon_gray, 230, 255, cv2.THRESH_BINARY)
+            img_weapon_gray, 220, 255, cv2.THRESH_BINARY)
 
         # (覚) 学習用に保存しておくのはこのデータ。 Change to 1 for training.
         if 0:  # (self.time_last_write + 5000 < context['engine']['msec']):
