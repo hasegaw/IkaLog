@@ -473,13 +473,13 @@ class Twitter(object):
             s = s + ' %dk/%dd' % (me['kills'], me['deaths'])
 
         if ('udemae_pre' in me) and self.tweet_udemae:
-            s = s + _(' Rank: %s') % (s, me['udemae_pre'])
+            s = s + _(' Rank: %s') % (me['udemae_pre'])
 
         fes_title = IkaUtils.playerTitle(me)
         if fes_title:
-            s = ' %s' % (s, fes_title)
+            s = s + ' %s' % (fes_title)
 
-        s = '%s (%s) %s #IkaLogResult' % (s, t, self.footer)
+        s = s + ' (%s) %s #IkaLogResult' % (t, self.footer)
 
         if self.use_reply:
             s = '@_ikalog_ ' + s

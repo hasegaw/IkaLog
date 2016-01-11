@@ -135,5 +135,5 @@ msgstr "%(stage)sで%(rule)sに%(result)s"
 
 #: ikalog/outputs/twitter.py:487
 msgid " Rank: %s"
-msgstr "ウデマエ: %s"
+msgstr " ウデマエ: %s"
 
