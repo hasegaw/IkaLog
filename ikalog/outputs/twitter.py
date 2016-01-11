@@ -419,7 +419,7 @@ class Twitter(object):
 
         twitter = OAuth1Session(
             CK, CS, self.access_token, self.access_token_secret)
-        twitter.post(self.url, params=params)
+        return  twitter.post(self.url, params=params)
 
     ##
     # Post a screenshot to Twitter
