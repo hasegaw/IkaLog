@@ -110,7 +110,7 @@ class StatInk(object):
         self.checkTrackObjectiveEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Include position data of tracked objectives (experimental)'))
         self.checkTrackSplatzoneEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, _('Include Splat Zone counters (experimental'))
+            self.panel, wx.ID_ANY, _('Include Splat Zone counters (experimental)'))
         self.checkShowResponseEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Show stat.ink response in console'))
         self.editApiKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
