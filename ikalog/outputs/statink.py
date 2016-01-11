@@ -343,10 +343,21 @@ class StatInk(object):
                 if primary_ability is not None:
                     gear['primary_ability'] = primary_ability
 
+                # when:
+                #   "Run Speed Up" "Locked" "Empty"
+                # should be: (json-like)
+                #   [ "run_speed_up", null ]
+                #       - "Locked":  send `null`
+                #       - "Empty":   not send
+                #       - Otherwise: predefined id string ("key")
                 for ability in secondary_abilities:
                     if (ability is None) or (ability == 'empty'):
                         continue
-                    gear['secondary_abilities'].append(ability)
+
+                    if (ability == 'locked'):
+                        gear['secondary_abilities'].append(None)
+                    else:
+                        gear['secondary_abilities'].append(ability)
 
                 gears_list.append(gear)
 
