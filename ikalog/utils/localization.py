@@ -17,11 +17,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from ikalog.utils import *
-
 import gettext
 import os
 import re
+
 
 class Localization(object):
 
@@ -41,7 +40,7 @@ class Localization(object):
     @staticmethod
     def expand_languages(languages):
         if isinstance(languages, list):
-            return languages 
+            return languages
 
         assert isinstance(languages, str)
 
@@ -55,7 +54,6 @@ class Localization(object):
                 langs.append(lang_short)
 
         return langs
-
 
     @staticmethod
     def set_game_languages(lang):
@@ -101,3 +99,11 @@ class Localization(object):
             )
 
         return gettext.translation(domain, localdir, fallback=True)
+
+    @staticmethod
+    def print_language_settings():
+        from ikalog.utils import IkaUtils
+        IkaUtils.dprint('IkaLog Primary CLI Language: %s (set LANG to override)'
+                        % Localization.get_languages()[0])
+        IkaUtils.dprint('IkaLog Game Language: %s (set IKALOG_LANG to override)'
+                        % Localization.get_game_languages()[0])

@@ -18,8 +18,10 @@
 #  limitations under the License.
 #
 
-import signal
+from ikalog.utils import Localization, IkaUtils
+Localization.print_language_settings()
 
+import signal
 from ikalog.engine import *
 from IkaConfig import *
 from ikalog.utils import *
