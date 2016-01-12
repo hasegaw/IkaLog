@@ -361,7 +361,7 @@ class StatInk(object):
                         else:
                             gear['secondary_abilities'].append(ability)
 
-                        gears_list.append(gear)
+                    gears_list.append(gear)
 
                 payload['gears'] = {
                     'headgear': gears_list[0],
