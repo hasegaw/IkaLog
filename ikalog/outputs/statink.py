@@ -23,6 +23,7 @@ import os
 import pprint
 import threading
 import time
+import traceback
 
 import cv2
 import urllib3
@@ -329,47 +330,48 @@ class StatInk(object):
 
         # ResultGears
 
-        try:
-            gears_list = []
-            for e in context['scenes']['result_gears']['gears']:
-                primary_ability = e.get('main', None)
-                secondary_abilities = [
-                    e.get('sub1', None),
-                    e.get('sub2', None),
-                    e.get('sub3', None),
-                ]
+        if ('result_gears' in context['scenes']) and ('gears' in context['scenes']['result_gears']):
+            try:
+                gears_list = []
+                for e in context['scenes']['result_gears']['gears']:
+                    primary_ability = e.get('main', None)
+                    secondary_abilities = [
+                        e.get('sub1', None),
+                        e.get('sub2', None),
+                        e.get('sub3', None),
+                    ]
 
-                gear = {'secondary_abilities': []}
-                if primary_ability is not None:
-                    gear['primary_ability'] = primary_ability
+                    gear = {'secondary_abilities': []}
+                    if primary_ability is not None:
+                        gear['primary_ability'] = primary_ability
 
-                # when:
-                #   "Run Speed Up" "Locked" "Empty"
-                # should be: (json-like)
-                #   [ "run_speed_up", null ]
-                #       - "Locked":  send `null`
-                #       - "Empty":   not send
-                #       - Otherwise: predefined id string ("key")
-                for ability in secondary_abilities:
-                    if (ability is None) or (ability == 'empty'):
-                        continue
+                    # when:
+                    #   "Run Speed Up" "Locked" "Empty"
+                    # should be: (json-like)
+                    #   [ "run_speed_up", null ]
+                    #       - "Locked":  send `null`
+                    #       - "Empty":   not send
+                    #       - Otherwise: predefined id string ("key")
+                    for ability in secondary_abilities:
+                        if (ability is None) or (ability == 'empty'):
+                            continue
 
-                    if (ability == 'locked'):
-                        gear['secondary_abilities'].append(None)
-                    else:
-                        gear['secondary_abilities'].append(ability)
+                        if (ability == 'locked'):
+                            gear['secondary_abilities'].append(None)
+                        else:
+                            gear['secondary_abilities'].append(ability)
 
-                gears_list.append(gear)
+                        gears_list.append(gear)
 
-            payload['gears'] = {
-                'headgear': gears_list[0],
-                'clothing': gears_list[1],
-                'shoes': gears_list[2],
-            }
-        except:
-            IkaUtils.dprint(
-                '%s: Failed in ResultGears payload. Fix me...' % self)
-            IkaUtils.dprint(traceback.format_exc())
+                payload['gears'] = {
+                    'headgear': gears_list[0],
+                    'clothing': gears_list[1],
+                    'shoes': gears_list[2],
+                }
+            except:
+                IkaUtils.dprint(
+                    '%s: Failed in ResultGears payload. Fix me...' % self)
+                IkaUtils.dprint(traceback.format_exc())
 
         # ResultUdemae
 
