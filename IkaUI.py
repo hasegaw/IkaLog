@@ -161,7 +161,7 @@ class IkaLogGUI(object):
         self.preview = PreviewPanel(self.frame, size=(640, 360))
         self.last_result = LastResultPanel(self.frame, size=(640, 360))
         self.timeline = TimelinePanel(self.frame, size=(640, 200))
-        self.options = OptionsPanel(self.frame)
+        self.options = OptionsPanel(self.frame, size=(640, 500))
 
         self.layout.Add(self.last_result, flag=wx.EXPAND)
         self.layout.Add(self.preview, flag=wx.EXPAND)
