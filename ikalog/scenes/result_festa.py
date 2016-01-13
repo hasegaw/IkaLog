@@ -140,7 +140,7 @@ class ResultFesta(StatefulScene):
     def _init_scene(self, debug=False):
         self.mask_fespoint_msg = IkaMatcher(
             509, 253, 231, 38,
-            img_file='masks/result_festa.png',
+            img_file='result_fest.png',
             threshold=0.90,
             orig_threshold=0.200,
             fg_method=matcher.MM_NOT_BLACK(),
@@ -151,7 +151,7 @@ class ResultFesta(StatefulScene):
 
         self.mask_newtitle_msg = IkaMatcher(
             339, 316, 249, 31,
-            img_file='masks/result_festa.png',
+            img_file='result_fest.png',
             threshold=0.90,
             orig_threshold=0.500,  # 0.350 ぐらい
             fg_method=matcher.MM_COLOR_BY_HUE(

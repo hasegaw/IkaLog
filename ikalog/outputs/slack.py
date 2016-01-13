@@ -26,6 +26,8 @@ try:
 except:
     pass
 
+_ = Localization.gettext_translation('slack', fallback=True).gettext
+
 # IkaOutput_Slack: IkaLog Output Plugin for Slack
 #
 # Post game results to Slack, using Incoming Hook
@@ -92,20 +94,20 @@ class Slack(object):
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, 'Slack')
+        self.page = notebook.InsertPage(0, self.panel, _('Slack'))
         self.layout = wx.BoxSizer(wx.VERTICAL)
 
         self.checkEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'Slack へ戦績を通知する')
+            self.panel, wx.ID_ANY, _('Post game results to a Slack channel'))
         self.editURL = wx.TextCtrl(self.panel, wx.ID_ANY, u'http:')
-        self.editBotName = wx.TextCtrl(self.panel, wx.ID_ANY, u'＜βコ3')
+        self.editBotName = wx.TextCtrl(self.panel, wx.ID_ANY, _('IkaLog bot'))
 
         layout = wx.BoxSizer(wx.HORIZONTAL)
-        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'投稿者名'))
+        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Bot Name')))
         layout.Add(self.editBotName, flag=wx.EXPAND)
         self.layout.Add(self.checkEnable)
         self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, u'Incoming WebHook API URL'))
+            self.panel, wx.ID_ANY, _('Incoming WebHook API URL')))
         self.layout.Add(self.editURL, flag=wx.EXPAND)
         self.layout.Add(layout, flag=wx.EXPAND)
 
@@ -117,7 +119,7 @@ class Slack(object):
     # @param text     Text message.
     # @param username Username.
     #
-    def post(self, text="", username="＜8コ三"):
+    def post(self, text='', username='IkaLog bot'):
         try:
             import slackweb
             slack = slackweb.Slack(url=self.url)
@@ -151,7 +153,7 @@ class Slack(object):
         fes_info = IkaUtils.playerTitle(
             IkaUtils.getMyEntryFromContext(context))
         if not fes_info is None:
-            s = "%s (フェス %s)" % (s, fes_info)
+            s = s + _(' (Fest title %s)') % (fes_info)
 
         self.post(text=s, username=self.username)
 

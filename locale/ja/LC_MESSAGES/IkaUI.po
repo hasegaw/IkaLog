@@ -1,0 +1,123 @@
+#
+#  IkaLog
+#  ======
+#  Copyright (C) 2015 Takeshi HASEGAWA
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2016-01-08 12:54+JST\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: IkaUI.py:55
+msgid "IkaLog preferences will be reset to default. Continue?"
+msgstr "設定がすべてリセットされます。よろしいですか？"
+
+#: IkaUI.py:56
+msgid "Confirm"
+msgstr "確認"
+
+#: IkaUI.py:120
+msgid "Start"
+msgstr "開始"
+
+#: IkaUI.py:120
+msgid "Stop"
+msgstr "終了"
+
+#: IkaUI.py:140
+msgid "Enable"
+msgstr "有効"
+
+#: IkaUI.py:141
+msgid "Preview"
+msgstr "プレビュー"
+
+#: IkaUI.py:142
+msgid "Timeline"
+msgstr "タイムライン"
+
+#: IkaUI.py:143
+msgid "Last Result"
+msgstr "最後のリザルト"
+
+#: IkaUI.py:144
+msgid "Options"
+msgstr "設定"
+
+#: IkaUI.py:145
+msgid "Debug Log"
+msgstr "デバッグログ"
+
+#: IkaUI.py:202
+msgid "Hello!"
+msgstr "イカ、よろしく〜"
+
+#: IkaUI.py:269
+msgid "Bye!"
+msgstr "バイバイ！"
+
+#: ikalog/ui/capture.py:104
+msgid "Failed to intialize the capture source. Review your configuration"
+msgstr "入力ソースの初期化に失敗しました。設定を見直してください"
+
+#: ikalog/ui/capture.py:105
+msgid "Error"
+msgstr "エラー"
+
+#: ikalog/ui/capture.py:208
+msgid "Capture through AmarecTV"
+msgstr "アマレコLive 経由でキャプチャ"
+
+#: ikalog/ui/capture.py:211
+msgid "Realtime Capture from HDMI grabber"
+msgstr "HDMI(or D4)キャプチャでリアルタイムキャプチャ"
+
+#: ikalog/ui/capture.py:214
+msgid "Realtime Capture from desktop"
+msgstr "Windows デスクトップ上に映っている WiiU 画面を介してキャプチャ"
+
+#: ikalog/ui/capture.py:216
+msgid "Calibrate"
+msgstr "WiiU画面を探す"
+
+#: ikalog/ui/capture.py:218
+msgid "Reset"
+msgstr "リセット"
+
+#: ikalog/ui/capture.py:221
+msgid "Read from pre-recorded video file (for testing)"
+msgstr "ビデオファイルを再生（開発用）"
+
+#: ikalog/ui/capture.py:226
+msgid "Reload Devices"
+msgstr "キャプチャデバイスの一覧を更新"
+
+#: ikalog/ui/capture.py:228
+msgid "Enable Deinterlacing (experimental)"
+msgstr "インタレース解除（普段は不要）"
+
+#: ikalog/ui/capture.py:231
+msgid "Select Input source:"
+msgstr "入力ソース："
+

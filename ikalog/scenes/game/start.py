@@ -23,6 +23,7 @@ import cv2
 
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
+from ikalog.constants import stages, rules
 
 
 class GameStart(StatefulScene):
@@ -42,6 +43,8 @@ class GameStart(StatefulScene):
 
     def reset(self):
         super(GameStart, self).reset()
+        self.stage_votes = []
+        self.rule_votes = []
 
         self._last_event_msec = - 100 * 1000
 
@@ -143,7 +146,6 @@ class GameStart(StatefulScene):
             context['game']['map'] = self.elect(context, self.stage_votes)
             context['game']['rule'] = self.elect(context, self.rule_votes)
 
-            self.dump(context)
             self._call_plugins('on_game_start')
             self._last_event_msec = context['engine']['msec']
 
@@ -154,66 +156,49 @@ class GameStart(StatefulScene):
         pass
 
     def dump(self, context):
-        print(self.stage_votes)
-        print(self.rule_votes)
+        for v in self.stage_votes:
+            if v[1] is None:
+                continue
+            print('stage', v[0], v[1].id_)
+
+        for v in self.rule_votes:
+            if v[1] is None:
+                continue
+            print('rule', v[0], v[1].id_)
 
     def _init_scene(self, debug=False):
         self.election_period = 5 * 1000  # msec
 
-        self.map_list = [
-            {'name': 'タチウオパーキング', 'file': 'masks/gachi_tachiuo.png'},
-            {'name': 'モズク農園',         'file': 'masks/nawabari_mozuku.png'},
-            {'name': 'ネギトロ炭鉱',       'file': 'masks/gachi_negitoro.png'},
-            {'name': 'アロワナモール',     'file': 'masks/nawabari_arowana.png'},
-            {'name': 'デカライン高架下',   'file': 'masks/yagura_decaline.png'},
-            {'name': 'Bバスパーク',        'file': 'masks/gachi_buspark.png'},
-            {'name': 'ハコフグ倉庫',       'file': 'masks/gachi_hakofugu.png'},
-            {'name': 'シオノメ油田',       'file': 'masks/gachi_shionome.png'},
-            {'name': 'モンガラキャンプ場', 'file': 'masks/hoko_mongara.png'},
-            {'name': 'ホッケふ頭',         'file': 'masks/nawabari_hokke.png'},
-            {'name': 'ヒラメが丘団地',     'file': 'masks/nawabari_hirame.png'},
-            {'name': 'マサバ海峡大橋',     'file': 'masks/nawabari_masaba.png'},
-            {'name': 'キンメダイ美術館',   'file': 'masks/gachi_kinmedai.png'},
-            {'name': 'マヒマヒリゾート&スパ', 'file': 'masks/gachi_mahimahi.png'}
-        ]
-
-        self.rule_list = [
-            {'name': 'ガチエリア',     'file': 'masks/gachi_tachiuo.png'},
-            {'name': 'ガチヤグラ',     'file': 'masks/yagura_decaline.png'},
-            {'name': 'ガチホコバトル', 'file': 'masks/hoko_mongara.png'},
-            {'name': 'ナワバリバトル', 'file': 'masks/nawabari_mozuku.png'},
-        ]
-
         self.stage_matchers = []
         self.rule_matchers = []
 
-        for map in self.map_list:
-            map['mask'] = IkaMatcher(
+        for stage_id in stages.keys():
+            stage = IkaMatcher(
                 self.mapname_left, self.mapname_top, self.mapname_width, self.mapname_height,
-                img_file=map['file'],
+                img_file='stage_%s.png' % stage_id,
                 threshold=0.95,
                 orig_threshold=0.30,
                 bg_method=matcher.MM_NOT_WHITE(),
                 fg_method=matcher.MM_WHITE(),
-                label='map:%s' % map['name'],
+                label='stage:%s' % stage_id,
                 debug=debug,
             )
-            self.stage_matchers.append(map['mask'])
-            setattr(map['mask'], 'id_', map['name'])
+            self.stage_matchers.append(stage)
+            setattr(stage, 'id_', stage_id)
 
-        for rule in self.rule_list:
-            rule['mask'] = IkaMatcher(
+        for rule_id in rules.keys():
+            rule = IkaMatcher(
                 self.rulename_left, self.rulename_top, self.rulename_width, self.rulename_height,
-                img_file=rule['file'],
+                img_file='rule_%s.png' % rule_id,
                 threshold=0.95,
                 orig_threshold=0.30,
                 bg_method=matcher.MM_NOT_WHITE(),
                 fg_method=matcher.MM_WHITE(),
-                label='rule:%s' % rule['name'],
+                label='rule:%s' % rule_id,
                 debug=debug,
             )
-            setattr(rule['mask'], 'id_', rule['name'])
-            self.rule_matchers.append(rule['mask'])
+            setattr(rule, 'id_', rule_id)
+            self.rule_matchers.append(rule)
 
 if __name__ == "__main__":
     GameStart.main_func()

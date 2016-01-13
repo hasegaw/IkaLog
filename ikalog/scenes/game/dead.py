@@ -31,15 +31,17 @@ class GameDead(StatefulScene):
     def recoginize_and_vote_death_reason(self, context):
         if self.deadly_weapon_recoginizer is None:
             return False
+        # ja coordinates:    [218:218 + 51, 452:452 + 410]
+        # en_NA coordinates: [263:263 + 51, 432:432 + 410]
         img_weapon = context['engine']['frame'][218:218 + 51, 452:452 + 410]
         img_weapon_gray = cv2.cvtColor(img_weapon, cv2.COLOR_BGR2GRAY)
         ret, img_weapon_b = cv2.threshold(
-            img_weapon_gray, 230, 255, cv2.THRESH_BINARY)
+            img_weapon_gray, 220, 255, cv2.THRESH_BINARY)
 
-        # (覚) 学習用に保存しておくのはこのデータ
+        # (覚) 学習用に保存しておくのはこのデータ。 Change to 1 for training.
         if 0:  # (self.time_last_write + 5000 < context['engine']['msec']):
             import time
-            filename = os.path.join(
+            filename = os.path.join( # training/ directory must already exist
                 'training', '_deadly_weapons.%s.png' % time.time())
             cv2.imwrite(filename, img_weapon_b)
             self.time_last_write = context['engine']['msec']
@@ -120,8 +122,9 @@ class GameDead(StatefulScene):
         if not self.matched_in(context, 5 * 1000, attr='_last_event_msec'):
             self.count_death_reason_votes(context)
 
-            self.dump(context)
-            self._call_plugins('on_game_death_reason_identified')
+            if 'last_death_reason' in context['game']:
+                self._call_plugins('on_game_death_reason_identified')
+
             self._call_plugins('on_game_respawn')
 
         self._last_event_msec = context['engine']['msec']
@@ -140,7 +143,7 @@ class GameDead(StatefulScene):
     def _init_scene(self, debug=False):
         self.mask_dead = IkaMatcher(
             1057, 657, 137, 26,
-            img_file='masks/ui_dead.png',
+            img_file='game_dead.png',
             threshold=0.90,
             orig_threshold=0.30,
             bg_method=matcher.MM_WHITE(sat=(0, 255), visibility=(0, 48)),

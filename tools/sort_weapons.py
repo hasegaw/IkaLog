@@ -25,10 +25,10 @@ import sys
 sys.path.append('.')
 base_dir = sys.argv[1]
 
-from ikalog.utils import IkaGlyphRecoginizer
+from ikalog.utils import WeaponRecoginizer
 
-weapons = IkaGlyphRecoginizer()
-weapons.load_model_from_file('data/weapons.knn.data')
+weapons = WeaponRecoginizer()
+weapons.load_model_from_file()
 weapons.knn_train()
 
 results = {}

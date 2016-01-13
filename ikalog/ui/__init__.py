@@ -18,3 +18,4 @@
 #  limitations under the License.
 #
 from ikalog.ui.capture import VideoCapture
+from ikalog.ui.gui import IkaLogGUI

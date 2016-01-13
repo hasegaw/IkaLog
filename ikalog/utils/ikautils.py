@@ -28,6 +28,8 @@ import cv2
 import numpy as np
 from PIL import Image
 
+from ikalog.constants import stages, rules, gear_abilities
+from ikalog.utils.localization import Localization
 
 class IkaUtils(object):
 
@@ -86,20 +88,103 @@ class IkaUtils(object):
         return "%s%s" % (prefix, playerEntry['gender'])
 
     @staticmethod
-    def map2text(map, unknown=None, lang="ja"):
+    def map2id(map, unknown='?'):
         if map is None:
-            if unknown is None:
-                unknown = "?"
             return unknown
         return map.id_
 
     @staticmethod
-    def rule2text(rule, unknown=None, lang="ja"):
+    def map2text(map, unknown='?', languages=None):
+        map_id = IkaUtils.map2id(map, unknown=None)
+
+        if map_id is None:
+            return unknown
+
+        if stages.get(map_id, None) is None:
+            return unknown
+
+        if languages is None:
+            languages = Localization.get_languages()
+
+        if not isinstance(languages, list):
+            languages = [languages]
+
+        # fallback list
+        languages.extend(['en', 'ja'])
+
+        for lang in languages:
+            map_text = stages[map_id].get(lang, None)
+            if map_text is not None:
+                return map_text
+
+        # Should not reach here
+        return map_id
+
+    @staticmethod
+    def rule2id(rule, unknown='?'):
         if rule is None:
-            if unknown is None:
-                unknown = "?"
             return unknown
         return rule.id_
+
+    @staticmethod
+    def rule2text(rule, unknown='?', languages=None):
+        rule_id = IkaUtils.rule2id(rule, unknown=None)
+
+        if rule_id is None:
+            return unknown
+
+        if rules.get(rule_id, None) is None:
+            return unknown
+
+        if languages is None:
+            languages = Localization.get_languages()
+
+        if not isinstance(languages, list):
+            languages = [languages]
+
+        # fallback list
+        languages.extend(['en', 'ja'])
+
+        for lang in languages:
+            rule_text = rules[rule_id].get(lang, None)
+            if rule_text is not None:
+                return rule_text
+
+        # Should not reach here
+        return rule_id
+
+    @staticmethod
+    def gear_ability2id(gear_ability, unknown='?'):
+        if gear_ability is None:
+            return unknown
+        return gear_ability.id_
+
+    @staticmethod
+    def gear_ability2text(gear_ability, unknown='?', languages=None):
+        gear_ability_id = IkaUtils.gear_ability2id(gear_ability, unknown=None)
+
+        if gear_ability_id is None:
+            return unknown
+
+        if gear_abilities.get(gear_ability_id, None) is None:
+            return unknown
+
+        if languages is None:
+            languages = Localization.get_languages()
+
+        if not isinstance(languages, list):
+            languages = [languages]
+
+        # fallback list
+        languages.extend(['en', 'ja'])
+
+        for lang in languages:
+            gear_ability_text = gear_abilities[gear_ability_id].get(lang, None)
+            if gear_ability_text is not None:
+                return gear_ability_text
+
+        # Should not reach here
+        return gear_ability_id
 
     @staticmethod
     def cropImageGray(img, left, top, width, height):

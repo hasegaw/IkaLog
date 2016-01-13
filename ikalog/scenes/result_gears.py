@@ -21,6 +21,7 @@ import sys
 import cv2
 
 from ikalog.scenes.stateful_scene import StatefulScene
+from ikalog.constants import gear_abilities
 from ikalog.utils import *
 
 
@@ -73,7 +74,7 @@ class ResultGears(StatefulScene):
 
         # それ以上マッチングしなかった場合 -> シーンを抜けている
         if not self.matched_in(context, 30 * 1000, attr='_last_event_msec'):
-            self.dump(context)
+            # self.dump(context)
             self._call_plugins('on_result_gears')
 
         self._last_event_msec = context['engine']['msec']
@@ -131,8 +132,10 @@ class ResultGears(StatefulScene):
                 if field.startswith('img_'):
                     print('  gear %d : %s : %s' % (n, field, '(image)'))
                 else:
-                    print('  gear %d : %s : %s' %
-                      (n, field, gear[field]))
+                    ability = gear_abilities.get(gear[field], { 'ja': None})['ja']
+                    ability = ability.encode().decode("unicode-escape").encode("latin1").decode("utf-8")
+                    # Mac gives Japanese text, Windows gives escape sequences
+                    print('  gear %d : %s : %s' % (n, field, ability))
 
     def _analyze(self, context):
         frame = context['engine']['frame']
@@ -180,13 +183,13 @@ class ResultGears(StatefulScene):
     def _init_scene(self, debug=False):
         self.udemae_recoginizer = UdemaeRecoginizer()
         self.number_recoginizer = NumberRecoginizer()
-        self.gearpower_recoginizer = GearpowerRecoginizer()
-        self.gearpower_recoginizer.load_model_from_file("data/gearpowers.knn.data")
+        self.gearpower_recoginizer = GearPowerRecoginizer()
+        self.gearpower_recoginizer.load_model_from_file()
         self.gearpower_recoginizer.knn_train()
 
         self.mask_okane_msg = IkaMatcher(
             866, 48, 99, 41,
-            img_file='masks/result_gears.png',
+            img_file='result_gears.png',
             threshold=0.90,
             orig_threshold=0.20,
             bg_method=matcher.MM_BLACK(visibility=(0, 64)),
@@ -197,7 +200,7 @@ class ResultGears(StatefulScene):
 
         self.mask_level_msg = IkaMatcher(
             869, 213, 91, 41,
-            img_file='masks/result_gears.png',
+            img_file='result_gears.png',
             threshold=0.90,
             orig_threshold=0.20,
             bg_method=matcher.MM_BLACK(),
@@ -209,7 +212,7 @@ class ResultGears(StatefulScene):
 
         self.mask_gears_msg = IkaMatcher(
             887, 410, 73, 45,
-            img_file='masks/result_gears.png',
+            img_file='result_gears.png',
             threshold=0.90,
             orig_threshold=0.20,
             bg_method=matcher.MM_BLACK(),

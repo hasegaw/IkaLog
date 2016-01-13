@@ -35,6 +35,7 @@ except:
 # IkaLog Output Plugin: Show message on Console
 #
 
+_ = Localization.gettext_translation('video_recorder', fallback=True).gettext
 
 class OBS(object):
 
@@ -100,20 +101,20 @@ class OBS(object):
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, 'OBS')
+        self.page = notebook.InsertPage(0, self.panel, _('Video Recorder'))
         self.layout = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.layout)
         self.checkEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'Open Broadcaster Software の録画／録画停止ボタンを自動操作する')
+            self.panel, wx.ID_ANY, _('Enable control of video recording applications'))
         self.checkAutoRenameEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'録画ファイルの自動リネームを行う')
+            self.panel, wx.ID_ANY, _('Automatically rename recorded videos'))
         self.editControlOBS = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
         self.editDir = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
         self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, u'ControlOBS.au3 パス'))
+            self.panel, wx.ID_ANY, _('Path to controller scripts (ControlOBS.au3)')))
         self.layout.Add(self.editControlOBS, flag=wx.EXPAND)
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'録画フォルダ'))
+        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Recordings Folder')))
         self.layout.Add(self.editDir, flag=wx.EXPAND)
 
         self.layout.Add(self.checkEnable)

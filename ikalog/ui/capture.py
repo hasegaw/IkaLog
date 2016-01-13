@@ -18,9 +18,13 @@
 #  limitations under the License.
 #
 
+import gettext
 from ikalog import inputs
 from ikalog.utils import *
 import wx
+
+t = gettext.translation('IkaUI', 'locale', fallback=True)
+_ = t.gettext
 
 class VideoCapture(object):
 
@@ -96,8 +100,10 @@ class VideoCapture(object):
         # この関数は GUI 動作時にしか呼ばれない。カメラが開けなかった
         # 場合にメッセージを出す
         if not self.initialize_input():
-            r = wx.MessageDialog(None, u'キャプチャデバイスの初期化に失敗しました。設定を見直してください', 'Error',
-                                 wx.OK | wx.ICON_ERROR).ShowModal()
+            r = wx.MessageDialog(None,
+                _('Failed to intialize the capture source. Review your configuration'),
+                _('Eroor'),
+                 wx.OK | wx.ICON_ERROR).ShowModal()
             IkaUtils.dprint(
                 "%s: failed to activate input source >>>>" % (self))
         else:
@@ -199,30 +205,30 @@ class VideoCapture(object):
         self.layout = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.layout)
         self.radioAmarecTV = wx.RadioButton(
-            self.panel, wx.ID_ANY, u'Capture through AmarecTV')
+            self.panel, wx.ID_ANY, _('Capture through AmarecTV'))
 
         self.radioCamera = wx.RadioButton(
-            self.panel, wx.ID_ANY, u'Realtime Capture from HDMI grabber')
+            self.panel, wx.ID_ANY, _('Realtime Capture from HDMI grabber'))
 
         self.radioScreen = wx.RadioButton(
-            self.panel, wx.ID_ANY, u'Realtime Capture from desktop')
+            self.panel, wx.ID_ANY, _('Realtime Capture from desktop'))
         self.buttonCalibrateDesktop = wx.Button(
-            self.panel, wx.ID_ANY, u'Calibrate')
+            self.panel, wx.ID_ANY, _('Calibrate'))
         self.buttonEntireDesktop = wx.Button(
-            self.panel, wx.ID_ANY, u'Reset')
+            self.panel, wx.ID_ANY, _('Reset'))
 
         self.radioFile = wx.RadioButton(
-            self.panel, wx.ID_ANY, u'Read from pre-recorded video file (for testing)')
+            self.panel, wx.ID_ANY, _('Read from pre-recorded video file (for testing)'))
         self.editFile = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
         self.listCameras = wx.ListBox(self.panel, wx.ID_ANY, choices=cameras)
         self.listCameras.SetSelection(0)
         self.buttonReloadDevices = wx.Button(
-            self.panel, wx.ID_ANY, u'Reload Devices')
+            self.panel, wx.ID_ANY, _('Reload Devices'))
         self.checkDeinterlace = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'Enable Deinterlacing (experimental)')
+            self.panel, wx.ID_ANY, _('Enable Deinterlacing (experimental)'))
 
         self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, u'Select Input source:'))
+            self.panel, wx.ID_ANY, _('Select Input source:')))
         self.layout.Add(self.radioAmarecTV)
         self.layout.Add(self.radioCamera)
         self.layout.Add(self.listCameras, flag=wx.EXPAND)
@@ -235,7 +241,6 @@ class VideoCapture(object):
         self.layout.Add(self.radioFile)
         self.layout.Add(self.editFile, flag=wx.EXPAND)
         self.layout.Add(self.checkDeinterlace)
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'Video Offset'))
 
         if is_windows:
             self.radioAmarecTV.SetValue(True)

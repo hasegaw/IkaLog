@@ -210,7 +210,7 @@ class Lobby(Scene):
     def _init_scene(self, debug=False):
         self.mask_rule = IkaMatcher(
             72, 269, 90, 25,
-            img_file='masks/ui_lobby_public.png',
+            img_file='lobby_public_matched.png',
             threshold=0.90,
             orig_threshold=0.15,
             bg_method=matcher.MM_BLACK(),
@@ -221,7 +221,7 @@ class Lobby(Scene):
 
         self.mask_stage = IkaMatcher(
             72, 386, 110, 35,
-            img_file='masks/ui_lobby_public.png',
+            img_file='lobby_public_matched.png',
             threshold=0.90,
             orig_threshold=0.15,
             bg_method=matcher.MM_BLACK(),
@@ -232,7 +232,7 @@ class Lobby(Scene):
 
         self.mask_tag_rule = IkaMatcher(
             126, 249, 76, 26,
-            img_file='masks/ui_lobby_tag_matching.png',
+            img_file='lobby_squad_matching.png',
             threshold=0.90,
             orig_threshold=0.15,
             bg_method=matcher.MM_BLACK(),
@@ -243,7 +243,7 @@ class Lobby(Scene):
 
         self.mask_tag_stage = IkaMatcher(
             156, 360, 94, 36,
-            img_file='masks/ui_lobby_tag_matching.png',
+            img_file='lobby_squad_matching.png',
             threshold=0.90,
             orig_threshold=0.15,
             bg_method=matcher.MM_BLACK(),
@@ -255,7 +255,7 @@ class Lobby(Scene):
         # 背景：緑、赤、黒　文字：白
         self.mask_matching = IkaMatcher(
             826, 37, 280, 34,
-            img_file='masks/ui_lobby_public.png',
+            img_file='lobby_public_matching.png',
             threshold=0.90,
             orig_threshold=0.15,
             bg_method=matcher.MM_BLACK(),
@@ -267,7 +267,7 @@ class Lobby(Scene):
         # 背景：緑、赤、黒　文字：黄色
         self.mask_matched = IkaMatcher(
             826, 37, 280, 34,
-            img_file='masks/ui_lobby_public_matched.png',
+            img_file='lobby_public_matched.png',
             threshold=0.90,
             orig_threshold=0.15,
             bg_method=matcher.MM_BLACK(),
@@ -280,7 +280,7 @@ class Lobby(Scene):
         # 背景：暗い赤、黒　文字：黄色
         self.mask_tag_matched = IkaMatcher(
             826, 24, 280, 34,
-            img_file='masks/ui_lobby_tag_matched.png',
+            img_file='lobby_squad_matched.png',
             threshold=0.90,
             orig_threshold=0.50,
             bg_method=matcher.MM_COLOR_BY_HUE(
@@ -294,7 +294,7 @@ class Lobby(Scene):
         # 背景：暗い赤、黒　文字：白
         self.mask_tag_matching = IkaMatcher(
             826, 24, 280, 34,
-            img_file='masks/ui_lobby_tag_matching.png',
+            img_file='lobby_squad_matching.png',
             threshold=0.90,
             orig_threshold=0.50,
             bg_method=matcher.MM_COLOR_BY_HUE(
@@ -306,7 +306,7 @@ class Lobby(Scene):
 
         self.mask_fes_matched = IkaMatcher(
             851, 383, 225, 30,
-            img_file='masks/ui_lobby_fes_matched.png',
+            img_file='lobby_festa_matched.png',
             threshold=0.90,
             orig_threshold=0.30,
             bg_method=matcher.MM_BLACK(),
@@ -318,7 +318,7 @@ class Lobby(Scene):
 
         self.mask_private_rule = IkaMatcher(
             78, 133, 74, 24,
-            img_file='masks/ui_lobby_private_matched.png',
+            img_file='lobby_private_matched.png',
             threshold=0.90,
             orig_threshold=0.15,
             bg_method=matcher.MM_BLACK(),
@@ -329,7 +329,7 @@ class Lobby(Scene):
 
         self.mask_private_stage = IkaMatcher(
             78, 272, 93, 24,
-            img_file='masks/ui_lobby_private_matched.png',
+            img_file='lobby_private_matched.png',
             threshold=0.80,
             orig_threshold=0.15,
             bg_method=matcher.MM_BLACK(),
@@ -340,7 +340,7 @@ class Lobby(Scene):
 
         self.mask_private_matching_alpha = IkaMatcher(
             738, 39, 170, 27,
-            img_file='masks/ui_lobby_private_matching.png',
+            img_file='lobby_private_matching.png',
             threshold=0.80,
             orig_threshold=0.15,
             bg_method=matcher.MM_NOT_WHITE(),
@@ -351,7 +351,7 @@ class Lobby(Scene):
 
         self.mask_private_matching_bravo = IkaMatcher(
             738, 384, 160, 26,
-            img_file='masks/ui_lobby_private_matching.png',
+            img_file='lobby_private_matching.png',
             threshold=0.80,
             orig_threshold=0.15,
             bg_method=matcher.MM_NOT_WHITE(),
@@ -362,7 +362,7 @@ class Lobby(Scene):
 
         self.mask_private_stage = IkaMatcher(
             78, 272, 93, 24,
-            img_file='masks/ui_lobby_private_matched.png',
+            img_file='lobby_private_matched.png',
             threshold=0.80,
             orig_threshold=0.15,
             bg_method=matcher.MM_BLACK(),
@@ -373,7 +373,7 @@ class Lobby(Scene):
 
         self.mask_private_matched_alpha = IkaMatcher(
             737, 36, 240, 30,
-            img_file='masks/ui_lobby_private_matched.png',
+            img_file='lobby_private_matched.png',
             threshold=0.80,
             orig_threshold=0.15,
             fg_method=matcher.MM_COLOR_BY_HUE(
@@ -384,7 +384,7 @@ class Lobby(Scene):
 
         self.mask_private_matched_bravo = IkaMatcher(
             737, 380, 240, 30,
-            img_file='masks/ui_lobby_private_matched.png',
+            img_file='lobby_private_matched.png',
             threshold=0.80,
             orig_threshold=0.15,
             fg_method=matcher.MM_COLOR_BY_HUE(

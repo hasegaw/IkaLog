@@ -27,6 +27,7 @@ from ikalog.utils import *
 # IkaLog Output Plugin: Show message on Console
 #
 
+_ = Localization.gettext_translation('console', fallback=True).gettext
 
 class Console(object):
 
@@ -38,17 +39,74 @@ class Console(object):
     def on_game_start(self, context):
         map = IkaUtils.map2text(context['game']['map'])
         rule = IkaUtils.rule2text(context['game']['rule'])
-        print("ゲームスタート。マップ %s ルール %s" % (map, rule))
+        print(_('Game Start. Stage: %(stage)s, Mode: %(rule)s') % {'rule': rule, 'stage':map})
 
     def on_game_killed(self, context):
-        print("プレイヤーをたおした！")
+        print(_('Splatted an enemy!'))
 
     def on_game_dead(self, context):
-        print("たおされた！")
+        print(_('You were splatted!'))
 
     def on_game_death_reason_identified(self, context):
-        s = "死因: %s" % (context['game']['last_death_reason'])
+        s = _('Cause of death: %(cause_of_death)s') % \
+            { 'cause_of_death': context['game']['last_death_reason']}
         print(s)
+
+    def on_game_go_sign(self, context): # "Go!"
+        print(_('Go!'))
+
+    def on_game_finish(self, context): # Finish tape
+        print(_('Game End.'))
+
+    # Ranked battle common events
+
+    def on_game_ranked_we_lead(self, context):
+        print(_('We\'ve taken the lead!'))
+
+    def on_game_ranked_they_lead(self, context):
+        print(_('We lost the lead!'))
+
+    # Ranked, Splat Zone battles
+
+    def on_game_splatzone_we_got(self, context):
+        print(_('We\'re in control!'))
+
+    def on_game_splatzone_we_lost(self, context):
+        print(_('We lost control!'))
+
+    def on_game_splatzone_they_got(self, context):
+        print(_('They\'re in control!'))
+
+    def on_game_splatzone_they_lost(self, context):
+        print(_('They lost control!'))
+
+    # Ranked, Rainmaker battles
+
+    def on_game_rainmaker_we_got(self, context):
+        print(_('We have the Rainmaker!'))
+
+    def on_game_rainmaker_we_lost(self, context):
+        print(_('We lost the Rainmaker!'))
+
+    def on_game_rainmaker_they_got(self, context):
+        print(_('They have the Rainmaker!'))
+
+    def on_game_rainmaker_they_lost(self, context):
+        print(_('They lost the Rainmaker!'))
+
+    # Ranked, Tower Control battles
+
+    def on_game_tower_we_got(self, context):
+        print(_('We took the tower!'))
+
+    def on_game_tower_we_lost(self, context):
+        print(_('We lost the tower!'))
+
+    def on_game_tower_they_got(self, context):
+        print(_('They took the tower!'))
+
+    def on_game_tower_they_lost(self, context):
+        print(_('They lost the tower!'))
 
     ##
     # Generate a message for on_game_individual_result.
@@ -59,31 +117,36 @@ class Console(object):
         map = IkaUtils.map2text(context['game']['map'])
         rule = IkaUtils.rule2text(context['game']['rule'])
         won = IkaUtils.getWinLoseText(
-            context['game']['won'], win_text="勝ち", lose_text="負け", unknown_text="不明")
+            context['game']['won'],
+            win_text=_('won'),
+            lose_text=_('lose'),
+            unknown_text=_('unknown'),
+        )
         t = datetime.now()
         t_str = t.strftime("%Y,%m,%d,%H,%M")
         t_unix = int(time.mktime(t.timetuple()))
         me = IkaUtils.getMyEntryFromContext(context)
 
-        s = 'ゲーム終了。'
-        s = '%s ステージ:%s' % (s, map)
-        s = '%s ルール:%s' % (s, rule)
-        s = '%s %s' % (s, won)
+        s = _('Results. Stage: %(stage)s, Mode: %(rule)s, Result: %(result)s') % \
+            {'rule': rule, 'stage':map, 'result': won}
 
         if ('score' in me):
-            s = '%s %sp' % (s, me['score'])
+            s = s + ' ' + _('%sp') % (me['score'])
 
         if ('kills' in me) and ('deaths' in me):
-            s = '%s %dK/%dD' % (s, me['kills'], me['deaths'])
+            try:
+                s = s + ' ' + _('%dK/%dD') % (int(me['kills']), int(me['deaths']))
+            except ValueError:
+                pass
 
         if 'weapon' in me:
-            s = '%s 使用ブキ:%s' % (s, me['weapon'])
+            s = s + ' ' + _('Weapon: %s') % (me['weapon'])
 
         if ('rank_in_team' in me):
-            s = '%s チーム内順位: %d' % (s, me['rank_in_team'])
+            s = s + ' ' + _('Rank in the team: %s') % (me['rank_in_team'])
 
         if ('udemae_pre' in me) and me['udemae_pre']:
-            s = '%s プレイ前ウデマエ %s' % (s, me['udemae_pre'])
+            s = s + ' ' + _('Rank: %s') % (me['udemae_pre'])
 
         return s
 
@@ -97,4 +160,4 @@ class Console(object):
         print(s)
 
     def on_game_session_end(self, context):
-        print('ゲームセッション終了')
+        print(_('Game Session end.'))

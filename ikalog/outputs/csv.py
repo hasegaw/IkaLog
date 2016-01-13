@@ -18,13 +18,13 @@
 #  limitations under the License.
 #
 
-import os
 from datetime import datetime
+import os
 import time
 
 from ikalog.utils import *
 
-
+_ = Localization.gettext_translation('csv', fallback=True).gettext
 
 # Needed in GUI mode
 try:
@@ -85,14 +85,14 @@ class CSV(object):
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, 'CSV')
+        self.page = notebook.InsertPage(0, self.panel, _('CSV'))
         self.layout = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.layout)
         self.checkEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'CSVファイルへ戦績を出力する')
+            self.panel, wx.ID_ANY, _('Enable CSV Log'))
         self.editCsvFilename = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'CSV保存先ファイル'))
+        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Log Filename')))
         self.layout.Add(self.editCsvFilename, flag=wx.EXPAND)
 
         self.layout.Add(self.checkEnable)

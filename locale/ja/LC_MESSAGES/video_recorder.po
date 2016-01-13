@@ -1,0 +1,50 @@
+#
+#  IkaLog
+#  ======
+#  Copyright (C) 2015 Takeshi HASEGAWA
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2016-01-08 13:04+JST\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: ikalog/outputs/videorecorder.py:106
+msgid "Recorder"
+msgstr "ビデオ自動録画"
+
+#: ikalog/outputs/videorecorder.py:110
+msgid "Enable control of video recording applications"
+msgstr "録画ソフトの開始・停止を自動操作する"
+
+#: ikalog/outputs/videorecorder.py:112
+msgid "Automatically rename recorded videos"
+msgstr "録画ファイルを自動的にリネームする"
+
+#: ikalog/outputs/videorecorder.py:117
+msgid "Path to controller scripts (ControlOBS.au3)"
+msgstr "実行する制御スクリプト(ControlOBS.au3)のパス"
+
+#: ikalog/outputs/videorecorder.py:119
+msgid "Recordings Folder"
+msgstr "録画フォルダ"
+

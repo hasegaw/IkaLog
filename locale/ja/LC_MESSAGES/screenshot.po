@@ -1,0 +1,52 @@
+#
+#  IkaLog
+#  ======
+#  Copyright (C) 2015 Takeshi HASEGAWA
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+#
+
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2016-01-08 13:25+JST\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: ikalog/outputs/screenshot.py:95
+msgid "Screenshot"
+msgstr "スクリーンショット"
+
+#: ikalog/outputs/screenshot.py:99
+msgid "Save screenshots of game results"
+msgstr "戦績画面のスクリーンショットを保存"
+
+#: ikalog/outputs/screenshot.py:101
+msgid "Save drawings in Inkopolis"
+msgstr "ハイカラシティで Miiverse 投稿画像を保存"
+
+#: ikalog/outputs/screenshot.py:105
+msgid "Folder to save screenshots"
+msgstr "スクリーンショット保存先フォルダ"
+
+#: ikalog/outputs/screenshot.py:124 ikalog/outputs/screenshot.py:136
+msgid "Saved a screenshot %s"
+msgstr "スクリーンショット %s を保存しました"
+

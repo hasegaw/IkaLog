@@ -138,16 +138,25 @@ class DeadlyWeaponRecoginizer(CharacterRecoginizer):
         self.x_cutter = self  # 変則的だがカッターとして自分を使う
         self.sample_height = 16
 
-        model_name = 'data/deadly_weapon.model'
+        lang = Localization.get_game_languages()[0]
+        for lang_ in Localization.get_game_languages():
+            model_name = 'data/deadly_weapons.%s.model' % lang_
+            if os.path.isfile(model_name):
+                lang = lang_
+                break
+
+        model_name = 'data/deadly_weapons.%s.model' % lang
+
         if os.path.isfile(model_name):
             self.load_model_from_file(model_name)
             self.train()
             return
 
-        IkaUtils.dprint('Building deadly_weapon recoginization model.')
+        samples_path = 'training/deadly_weapons/%s' % lang
+        IkaUtils.dprint('Building %s from %s' % (model_name, samples_path))
         data = []
 
-        for file in self._find_png_files('training/deadly_weapons/'):
+        for file in self._find_png_files(samples_path):
             s = os.path.basename(file).split('.')
             if len(s) != 3:
                 continue
@@ -157,7 +166,6 @@ class DeadlyWeaponRecoginizer(CharacterRecoginizer):
             num = s[1]
 
             print(file)
- #           print('weapon %s num %s' % ( weapon_name, num))
             img = cv2.imread(file)
             img_normalized = self._normalize(img)
 
@@ -168,6 +176,7 @@ class DeadlyWeaponRecoginizer(CharacterRecoginizer):
             img_normalized = cv2.cvtColor(img_normalized, cv2.COLOR_GRAY2BGR)
             self.add_sample(self.name2id(weapon_name), img_normalized)
 
+        IkaUtils.dprint('Writing %s' % model_name)
         self.save_model_to_file(model_name)
 
         self.train()

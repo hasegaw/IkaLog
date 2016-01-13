@@ -18,17 +18,22 @@
 #  limitations under the License.
 #
 
-import time
+import json
 import os
 import pprint
+import threading
+import time
+import traceback
 
+import cv2
 import urllib3
 import umsgpack
 
-from ikalog.constants import fes_rank_titles
+from ikalog.constants import fes_rank_titles, stages, weapons
 from ikalog.version import IKALOG_VERSION
 from ikalog.utils import *
 
+_ = Localization.gettext_translation('statink', fallback=True).gettext
 
 # Needed in GUI mode
 try:
@@ -98,17 +103,17 @@ class StatInk(object):
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, 'stat.ink')
+        self.page = notebook.InsertPage(0, self.panel, _('stat.ink'))
         self.layout = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.layout)
         self.checkEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, 'stat.ink へのスコアを送信する')
+            self.panel, wx.ID_ANY, _('Post game results to stat.ink'))
         self.checkTrackObjectiveEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, 'ガチヤグラ／ガチホコの位置を検出する (Experimental)')
+            self.panel, wx.ID_ANY, _('Include position data of tracked objectives (experimental)'))
         self.checkTrackSplatzoneEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, 'ガチエリアのカウントを検出する (Experimental)')
+            self.panel, wx.ID_ANY, _('Include Splat Zone counters (experimental)'))
         self.checkShowResponseEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, 'stat.ink からの応答をコンソールに出力する')
+            self.panel, wx.ID_ANY, _('Show stat.ink response in console'))
         self.editApiKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
         self.layout.Add(self.checkEnable)
@@ -116,161 +121,43 @@ class StatInk(object):
         self.layout.Add(self.checkTrackObjectiveEnable)
         self.layout.Add(self.checkTrackSplatzoneEnable)
         self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, u'APIキー'))
+            self.panel, wx.ID_ANY, _('API Key')))
         self.layout.Add(self.editApiKey, flag=wx.EXPAND)
 
         self.panel.SetSizer(self.layout)
 
     def encode_stage_name(self, context):
-        try:
-            stage = IkaUtils.map2text(context['game']['map'])
-            return {
-                'アロワナモール': 'arowana',
-                'Bバスパーク': 'bbass',
-                'デカライン高架下': 'dekaline',
-                'ハコフグ倉庫': 'hakofugu',
-                'ヒラメが丘団地': 'hirame',
-                'ホッケふ頭': 'hokke',
-                'キンメダイ美術館': 'kinmedai',
-                'マヒマヒリゾート&スパ': 'mahimahi',
-                'マサバ海峡大橋': 'masaba',
-                'モンガラキャンプ場': 'mongara',
-                'モズク農園': 'mozuku',
-                'ネギトロ炭鉱': 'negitoro',
-                'シオノメ油田': 'shionome',
-                'タチウオパーキング': 'tachiuo'
-            }[stage]
-        except:
-            IkaUtils.dprint(
-                '%s: Failed convert staage name %s to stat.ink value' % (self, stage))
-            return None
+        stage_id = IkaUtils.map2id(context['game']['map'], unknown=None)
+        return stage_id
 
     def encode_rule_name(self, context):
-        try:
-            rule = IkaUtils.rule2text(context['game']['rule'])
-            return {
-                'ナワバリバトル': 'nawabari',
-                'ガチエリア': 'area',
-                'ガチヤグラ': 'yagura',
-                'ガチホコバトル': 'hoko',
-            }[rule]
-        except:
-            IkaUtils.dprint(
-                '%s: Failed convert rule name %s to stat.ink value' % (self, rule))
-            return None
+        rule_id = IkaUtils.rule2id(context['game']['rule'], unknown=None)
+        return rule_id
 
     def encode_weapon_name(self, weapon):
-        try:
-            return {
-                'ガロン52': '52gal',
-                'ガロンデコ52': '52gal_deco',
-                'ガロン96': '96gal',
-                'ガロンデコ96': '96gal_deco',
-                'ボールドマーカー': 'bold',
-                'ボールドマーカーネオ': 'bold_neo',
-                'デュアルスイーパー': 'dualsweeper',
-                'デュアルスイーパーカスタム': 'dualsweeper_custom',
-                'H3リールガン': 'h3reelgun',
-                'H3リールガンD': 'h3reelgun_d',
-                'ハイドラント': 'hydra',
-                'ヒーローシューターレプリカ': 'heroshooter_replica',
-                'ホットブラスター': 'hotblaster',
-                'ホットブラスターカスタム': 'hotblaster_custom',
-                'ジェットスイーパー': 'jetsweeper',
-                'ジェットスイーパーカスタム': 'jetsweeper_custom',
-                'L3リールガン': 'l3reelgun',
-                'L3リールガンD': 'l3reelgun_d',
-                'ロングブラスター': 'longblaster',
-                'ロングブラスターカスタム': 'longblaster_custom',
-                'もみじシューター': 'momiji',
-                'ノヴァブラスター': 'nova',
-                'ノヴァブラスターネオ': 'nova_neo',
-                'N-ZAP85': 'nzap85',
-                'N-ZAP89': 'nzap89',
-                'オクタシューターレプリカ': 'octoshooter_replica',
-                'プライムシューター': 'prime',
-                'プライムシューターコラボ': 'prime_collabo',
-                'プロモデラーMG': 'promodeler_mg',
-                'プロモデラーRG': 'promodeler_rg',
-                'ラピッドブラスター': 'rapid',
-                'ラピッドブラスターデコ': 'rapid_deco',
-                'Rブラスターエリート': 'rapid_elite',
-                'シャープマーカー': 'sharp',
-                'シャープマーカーネオ': 'sharp_neo',
-                'スプラシューター': 'sshooter',
-                'スプラシューターコラボ': 'sshooter_collabo',
-                'わかばシューター': 'wakaba',
+        # FIXME: 現状返ってくる key が日本語表記なので id に変換
+        weapon_id = None
+        for k in weapons:
+            if weapons[k]['ja'] == weapon:
+                weapon_id = k
 
-                'カーボンローラー': 'carbon',
-                'カーボンローラーデコ': 'carbon_deco',
-                'ダイナモローラー': 'dynamo',
-                'ダイナモローラーテスラ': 'dynamo_tesla',
-                'ヒーローローラーレプリカ': 'heroroller_replica',
-                'ホクサイ': 'hokusai',
-                'パブロ': 'pablo',
-                'パブロ・ヒュー': 'pablo_hue',
-                'スプラローラー': 'splatroller',
-                'スプラローラーコラボ': 'splatroller_collabo',
+        if (weapon_id is None) and (weapons.get(weapon, None) is not None):
+            weapon_id = weapon
 
-                '14式竹筒銃・甲': 'bamboo14mk1',
-                '14式竹筒銃・乙': 'bamboo14mk2',
-                'ヒーローチャージャーレプリカ': 'herocharger_replica',
-                'リッター3K': 'liter3k',
-                'リッター3Kカスタム': 'liter3k_custom',
-                '3Kスコープ': 'liter3k_scope',
-                '3Kスコープカスタム': 'liter3k_scope_custom',
-                'スプラチャージャー': 'splatcharger',
-                'スプラチャージャーワカメ': 'splatcharger_wakame',
-                'スプラスコープ': 'splatscope',
-                'スプラスコープワカメ': 'splatscope_wakame',
-                'スクイックリンα': 'squiclean_a',
-                'スクイックリンβ': 'squiclean_b',
-
-                'バケットスロッシャー': 'bucketslosher',
-                'バケットスロッシャーデコ': 'bucketslosher_deco',
-                'ヒッセン': 'hissen',
-                'スクリュースロッシャー': 'screwslosher',
-
-                'バレルスピナー': 'barrelspinner',
-                'バレルスピナーデコ': 'barrelspinner_deco',
-                'スプラスピナー': 'splatspinner',
-                'スプラスピナーコラボ': 'splatspinner_collabo',
-            }[weapon]
-        except:
+        if weapon_id is None:
             IkaUtils.dprint(
                 '%s: Failed convert weapon name %s to stas.ink value' % (self, weapon))
-            return None
+        return weapon_id
 
     def encode_image(self, img):
-        if IkaUtils.isWindows():
-            temp_file = os.path.join(
-                os.environ['TMP'], '_image_for_statink.png')
-        else:
-            temp_file = '_image_for_statink.png'
+        result, img_png = cv2.imencode('.png', img)
 
-        IkaUtils.dprint('%s: Using temporary file %s' % (self, temp_file))
-
-        try:
-            if os.path.exists(temp_file):
-                os.remove(temp_file)
-        except:
-            IkaUtils.dprint(
-                '%s: Failed to remove existing temporary file %s' % (self, temp_file))
-            IkaUtils.dprint(traceback.format_exc())
-
-        try:
-            # ToDo: statink accepts only 16x9
-            IkaUtils.writeScreenshot(temp_file, img)
-            f = open(temp_file, 'rb')
-            s = f.read()
-            try:
-                f.close()
-                os.remove(temp_file)
-            except:
-                pass
-        except:
-            IkaUtils.dprint('%s: Failed to attach image_result' % self)
+        if not result:
+            IkaUtils.dprint('%s: Failed to encode the image (%s)' %
+                            (self, img.shape))
             return None
+
+        s = img_png.tostring()
 
         IkaUtils.dprint('%s: Encoded screenshot (%dx%d %d bytes)' %
                         (self, img.shape[1], img.shape[0], len(s)))
@@ -441,6 +328,51 @@ class StatInk(object):
 
         payload['players'] = players
 
+        # ResultGears
+
+        if ('result_gears' in context['scenes']) and ('gears' in context['scenes']['result_gears']):
+            try:
+                gears_list = []
+                for e in context['scenes']['result_gears']['gears']:
+                    primary_ability = e.get('main', None)
+                    secondary_abilities = [
+                        e.get('sub1', None),
+                        e.get('sub2', None),
+                        e.get('sub3', None),
+                    ]
+
+                    gear = {'secondary_abilities': []}
+                    if primary_ability is not None:
+                        gear['primary_ability'] = primary_ability
+
+                    # when:
+                    #   "Run Speed Up" "Locked" "Empty"
+                    # should be: (json-like)
+                    #   [ "run_speed_up", null ]
+                    #       - "Locked":  send `null`
+                    #       - "Empty":   not send
+                    #       - Otherwise: predefined id string ("key")
+                    for ability in secondary_abilities:
+                        if (ability is None) or (ability == 'empty'):
+                            continue
+
+                        if (ability == 'locked'):
+                            gear['secondary_abilities'].append(None)
+                        else:
+                            gear['secondary_abilities'].append(ability)
+
+                    gears_list.append(gear)
+
+                payload['gears'] = {
+                    'headgear': gears_list[0],
+                    'clothing': gears_list[1],
+                    'shoes': gears_list[2],
+                }
+            except:
+                IkaUtils.dprint(
+                    '%s: Failed in ResultGears payload. Fix me...' % self)
+                IkaUtils.dprint(traceback.format_exc())
+
         # ResultUdemae
 
         if payload.get('rule', 'nawabari') != 'nawabari':
@@ -553,13 +485,51 @@ class StatInk(object):
             IkaUtils.dprint('%s: Failed to write msgpack file' % self)
             IkaUtils.dprint(traceback.format_exc())
 
-    def post_payload(self, payload, api_key=None):
-        if self.dry_run:
-            IkaUtils.dprint(
-                '%s: Dry-run mode, skipping POST to stat.ink.' % self)
-            return
+    def _post_payload_worker(self, payload):
+        if self.dry_run == 'server':
+            payload['test'] = 'dry_run'
+
+        mp_payload_bytes = umsgpack.packb(payload)
+        mp_payload = ''.join(map(chr, mp_payload_bytes))
 
         url_statink_v1_battle = 'https://stat.ink/api/v1/battle'
+
+        http_headers = {
+            'Content-Type': 'application/x-msgpack',
+        }
+
+        IkaUtils.dprint('%s: POST %s' % (self, url_statink_v1_battle))
+
+        pool = urllib3.PoolManager(
+            cert_reqs = 'CERT_REQUIRED', # Force certificate check
+            ca_certs = Certifi.where(),  # Path to the Certifi bundle.
+        )
+
+        try:
+            req = pool.urlopen('POST', url_statink_v1_battle,
+                               headers=http_headers,
+                               body=mp_payload,
+                               )
+        except urllib3.exceptions.SSLError as e:
+            # Handle incorrect certificate error.
+            IkaUtils.dprint('%s: SSLError, value: %s' % (self, e.value))
+
+        IkaUtils.dprint('%s: POST Done.' % self)
+
+        statink_reponse = json.loads(req.data.decode('utf-8'))
+        error = 'error' in statink_reponse
+        if error:
+            IkaUtils.dprint('%s: API Error occured')
+
+        if self.show_response_enabled or error:
+            IkaUtils.dprint('%s: == Response begin ==' % self)
+            print(req.data.decode('utf-8'))
+            IkaUtils.dprint('%s: == Response end ===' % self)
+
+    def post_payload(self, payload, api_key=None):
+        if self.dry_run == True:
+            IkaUtils.dprint(
+                '%s: Dry-run mode, skipping POST to stat.ink.' % self)
 
         if api_key is None:
             api_key = self.api_key
@@ -567,26 +537,15 @@ class StatInk(object):
         if api_key is None:
             raise('No API key specified')
 
-        http_headers = {
-            'Content-Type': 'application/x-msgpack',
-        }
-
         # Payload data will be modified, so we copy it.
         # It is not deep copy, so only dict object is
         # duplicated.
         payload = payload.copy()
         payload['apikey'] = api_key
-        mp_payload_bytes = umsgpack.packb(payload)
-        mp_payload = ''.join(map(chr, mp_payload_bytes))
 
-        pool = urllib3.PoolManager()
-        req = pool.urlopen('POST', url_statink_v1_battle,
-                           headers=http_headers,
-                           body=mp_payload,
-                           )
-
-        if self.show_response_enabled:
-            print(req.data.decode('utf-8'))
+        thread = threading.Thread(
+            target=self._post_payload_worker, args=(payload,))
+        thread.start()
 
     def print_payload(self, payload):
         payload = payload.copy()
@@ -606,6 +565,7 @@ class StatInk(object):
         self.events = []
         self.time_last_score_msec = None
         self.time_last_objective_msec = None
+        self.last_dead_event = None
 
         # check if context['engine']['msec'] exists
         # to allow unit test.
@@ -626,6 +586,8 @@ class StatInk(object):
                 self.time_start_at = int(
                     self.time_end_at - int(duration_msec / 1000))
 
+        self.on_game_paint_score_update(context)
+
         # 戦績画面はこの後にくるはずなので今までにあるデータは捨てる
         self.img_result_detail = None
         self.img_judge = None
@@ -633,11 +595,11 @@ class StatInk(object):
         IkaUtils.dprint('%s: Discarded screenshots' % self)
 
     ##
-    # on_game_individual_result Hook
+    # on_result_detail_still Hook
     # @param self      The Object Pointer
     # @param context   IkaLog context
     #
-    def on_game_individual_result(self, context):
+    def on_result_detail_still(self, context):
         self.img_result_detail = context['engine']['frame']
         IkaUtils.dprint('%s: Gathered img_result (%s)' %
                         (self, self.img_result_detail.shape))
@@ -666,7 +628,15 @@ class StatInk(object):
         self._add_event(context, {'type': 'killed'})
 
     def on_game_dead(self, context):
-        self._add_event(context, {'type': 'dead'})
+        self.last_dead_event = {'type': 'dead'}
+        self._add_event(context, self.last_dead_event)
+
+    def on_game_death_reason_identified(self, context):
+        # 死因が特定されたら最後の死亡イベントに追加する
+        if self.last_dead_event is not None:
+            reason = context['game']['last_death_reason']
+            self.last_dead_event['reason'] = reason
+            self.last_dead_event = None
 
     def on_game_paint_score_update(self, context):
         score = context['game'].get('paint_score', 0)
@@ -761,11 +731,12 @@ class StatInk(object):
         self.events = []
         self.time_last_score_msec = None
         self.time_last_objective_msec = None
+        self.last_dead_event = None
 
         self.img_result_detail = None
         self.img_judge = None
 
-        self.debug_writePayloadToFile = debug
+        self.debug_writePayloadToFile = False
         self.show_response_enabled = debug
         self.track_objective_enabled = track_objective
         self.track_splatzone_enabled = track_splatzone

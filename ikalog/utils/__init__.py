@@ -21,10 +21,13 @@ from __future__ import print_function
 
 from .ikautils import IkaUtils
 from .matcher import IkaMatcher
-from .glyph_recoginizer import IkaGlyphRecoginizer
-from .gearpower_recoginizer import GearpowerRecoginizer
+from .certifi import Certifi
+from .localization import Localization
+from .icon_recoginizer.icon import IconRecoginizer
+from .icon_recoginizer.weapon import WeaponRecoginizer
+from .icon_recoginizer.gearpower import GearPowerRecoginizer
 from .character_recoginizer import CharacterRecoginizer
 from .character_recoginizer.number import NumberRecoginizer
 from .character_recoginizer.udemae import UdemaeRecoginizer
 from .character_recoginizer.fes_gender import FesGenderRecoginizer
-from .character_recoginizer.fes_level import FesLevelRecoginizer 
+from .character_recoginizer.fes_level import FesLevelRecoginizer

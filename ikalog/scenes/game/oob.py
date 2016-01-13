@@ -67,16 +67,7 @@ class GameOutOfBound(Scene):
         pass
 
     def _init_scene(self, debug=False):
-        self.mask_go_sign = IkaMatcher(
-            472, 140, 332, 139,
-            img_file='masks/ui_go.png',
-            threshold=0.95,
-            orig_threshold=0.5,
-            label='Go!',
-            bg_method=matcher.MM_WHITE(sat=(32, 255), visibility=(0, 210)),
-            fg_method=matcher.MM_WHITE(),
-            debug=debug,
-        )
+        pass
 
 if __name__ == "__main__":
     GameGoSign.main_func()

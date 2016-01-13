@@ -17,20 +17,187 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+
+import copy
 import datetime
+import os
+import pickle
+import re
 import sys
+import threading
 import traceback
 from datetime import datetime
 
 import cv2
 import numpy as np
 
+from ikalog.api import APIClient
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 from ikalog.inputs.filters import OffsetFilter
 
 
 class ResultDetail(StatefulScene):
+    #
+    # AKAZE ベースのオフセット／サイズ調整
+    #
+
+    def result_detail_normalizer(self, img):
+        # キーポイントとして不要な部分を削除
+        img = copy.deepcopy(img)
+        cv2.rectangle(img, (0, 000), (680, 720), (0, 0, 0), -1)
+
+        # 特徴画像の生成
+        white_filter = matcher.MM_WHITE()
+        dark_filter = matcher.MM_DARK(visibility=(0, 16))
+        img_w = white_filter.evaluate(img)
+        img_dark = 255 - dark_filter.evaluate(img)
+
+        img_features = img_dark + img_w
+        img_features[:, 1000:1280] = \
+            img_dark[:, 1000:1280] - img_w[:, 1000:1280]
+        # cv2.imshow('features', img_features)
+        # cv2.waitKey(10000)
+
+        return img_features
+
+    def get_keypoints(self, img):
+        detector = cv2.AKAZE_create()
+        keypoints, descriptors = detector.detectAndCompute(
+            img,
+            None,
+        )
+        return keypoints, descriptors
+
+    def filter_matches(self, kp1, kp2, matches, ratio=0.75):
+        mkp1, mkp2 = [], []
+        for m in matches:
+            if len(m) == 2 and m[0].distance < m[1].distance * ratio:
+                m = m[0]
+                mkp1.append(kp1[m.queryIdx])
+                mkp2.append(kp2[m.trainIdx])
+        p1 = np.float32([kp.pt for kp in mkp1])
+        p2 = np.float32([kp.pt for kp in mkp2])
+        kp_pairs = zip(mkp1, mkp2)
+        return p1, p2, kp_pairs
+
+    def tuples_to_keypoints(self, tuples):
+        new_l = []
+        for point in tuples:
+            pt, size, angle, response, octave, class_id = point
+            new_l.append(cv2.KeyPoint(
+                pt[0], pt[1], size, angle, response, octave, class_id))
+        return new_l
+
+    def keypoints_to_tuples(self, points):
+        new_l = []
+        for point in points:
+            new_l.append((point.pt, point.size, point.angle, point.response, point.octave,
+                          point.class_id))
+        return new_l
+
+    def load_model_from_file(self, filename):
+        f = open(filename, 'rb')
+        l = pickle.load(f)
+        f.close()
+        self.ref_image_geometry = l[0]
+        self.ref_keypoints = self.tuples_to_keypoints(l[1])
+        self.ref_descriptors = l[2]
+
+    def save_model_to_file(self, filename):
+        f = open(filename, 'wb')
+        pickle.dump([
+            self.ref_image_geometry,
+            self.keypoints_to_tuples(self.ref_keypoints),
+            self.ref_descriptors,
+        ], f)
+        f.close()
+
+    def rebuild_model(self, dest_filename, src_filename=None, img=None, normalizer_func=None):
+        if img is None:
+            img = cv2.imread(src_filename, 0)
+
+        assert img is not None
+
+        if normalizer_func is not None:
+            img = normalizer_func(img)
+
+        assert img is not None
+
+        self.ref_keypoints, self.ref_descriptors = \
+            self.get_keypoints(img)
+
+        self.ref_image_geometry = img.shape[:2]
+
+        self.save_model_to_file(dest_filename)
+        IkaUtils.dprint('%s: Created model data %s' % (self, dest_filename))
+
+    def load_akaze_model(self):
+        model_filename = os.path.join(
+            IkaUtils.baseDirectory(), 'data', 'result_detail_features.akaze.model')
+
+        try:
+            self.load_model_from_file(model_filename)
+            if self.ref_keypoints == None:
+                raise
+        except:
+            IkaUtils.dprint(
+                '%s: Failed to load akaze model. trying to rebuild...' % self)
+            self.rebuild_model(
+                model_filename,
+                img=cv2.imread('data/result_detail_features.png'),
+                normalizer_func=self.result_detail_normalizer
+            )
+            self.load_model_from_file(model_filename)
+
+    def auto_warp(self, context):
+        # 画面のオフセットを自動検出して image を返す (AKAZE利用)
+
+        frame = context['engine'].get('frame', None)
+        if frame is None:
+            return None
+        keypoints, descs = self.get_keypoints(
+            self.result_detail_normalizer(frame))
+
+        matcher = cv2.BFMatcher(cv2.NORM_HAMMING)
+        raw_matches = matcher.knnMatch(
+            descs,
+            trainDescriptors=self.ref_descriptors,
+            k=2
+        )
+        p2, p1, kp_pairs = self.filter_matches(
+            keypoints,
+            self.ref_keypoints,
+            raw_matches,
+        )
+
+        if len(p1) >= 4:
+            H, status = cv2.findHomography(p1, p2, cv2.RANSAC, 5.0)
+            print('%d / %d  inliers/matched' % (np.sum(status), len(status)))
+        else:
+            H, status = None, None
+            print('%d matches found, not enough for homography estimation' % len(p1))
+            raise
+
+        w = 1280
+        h = 720
+        corners = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
+        pts2 = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
+        pts1 = np.float32(cv2.perspectiveTransform(
+            corners.reshape(1, -1, 2), H).reshape(-1, 2) + (0, 0))
+        M = cv2.getPerspectiveTransform(pts1, pts2)
+
+        # out = cv2.drawKeypoints(img2, keypoints1, None)
+        new_frame = cv2.warpPerspective(frame, M, (w, h))
+
+        # 変形した画像がマスクと一致するか？
+        matched = IkaUtils.matchWithMask(
+            new_frame, self.winlose_gray, 0.997, 0.22)
+        if matched:
+            return new_frame
+
+        IkaUtils.dprint('%s: auto_warp() function broke the image.' % self)
+        return None
 
     def auto_offset(self, context):
         # 画面のオフセットを自動検出して image を返す
@@ -50,7 +217,7 @@ class ResultDetail(StatefulScene):
                 filter.offset = (ox, oy)
                 img = filter.execute(context['engine']['frame'])
                 IkaUtils.matchWithMask(
-                    context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
+                    context['engine']['frame'], self.winlose_gray, 0.997, 0.22)
                 score = self.mask_win.match_score(img)
 
                 if not score[0]:
@@ -64,6 +231,42 @@ class ResultDetail(StatefulScene):
                             (self, best_match[2], best_match[3]))
 
         return best_match[0]
+
+    def async_recoginiton_worker(self, context):
+        IkaUtils.dprint('%s: weapons recoginition started.' % self)
+
+        weapons_list = []
+        for player in context['game']['players']:
+            weapons_list.append(player.get('img_weapon', None))
+
+        # local
+        try:
+            if self._client_local is not None:
+                weapon_response_list = self._client_local.recoginize_weapons(
+                    weapons_list)
+                for entry_id in range(len(weapon_response_list)):
+                    context['game']['players'][entry_id]['weapon'] = \
+                        weapon_response_list[entry_id]
+        except:
+            IkaUtils.dprint('Exception occured in weapon recoginization.')
+            IkaUtils.dprint(traceback.format_exc())
+
+        # remote
+        try:
+            if self._client_remote is not None:
+                weapon_response_list = self._client_remote.recoginize_weapons(
+                    weapons_list)
+                for entry_id in range(len(weapon_response_list)):
+                    context['game']['players'][entry_id]['weapon'] = \
+                        weapon_response_list[entry_id]
+        except:
+            IkaUtils.dprint('Exception occured in weapon recoginization.')
+            IkaUtils.dprint(traceback.format_exc())
+
+        IkaUtils.dprint('%s: weapons recoginition done.' % self)
+
+        self._call_plugins_later('on_result_detail')
+        self._call_plugins_later('on_game_individual_result')
 
     def is_entry_me(self, img_entry):
         # ヒストグラムから、入力エントリが自分かを判断
@@ -135,11 +338,10 @@ class ResultDetail(StatefulScene):
 
         return gender, level, team
 
-    def analyze_team_colors(self, context):
+    def analyze_team_colors(self, context, img):
         # スクリーンショットからチームカラーを推測
         assert 'won' in context['game']
-
-        img = self.auto_offset(context)
+        assert img is not None
 
         if context['game']['won']:
             my_team_color_bgr = img[115:116, 1228:1229]
@@ -277,14 +479,6 @@ class ResultDetail(StatefulScene):
                 IkaUtils.dprint('Exception occured in K/D recoginization.')
                 IkaUtils.dprint(traceback.format_exc())
 
-        if self.weapons and self.weapons.trained:
-            try:
-                result, distance = self.weapons.match(entry['img_weapon'])
-                entry['weapon'] = result
-            except:
-                IkaUtils.dprint('Exception occured in weapon recoginization.')
-                IkaUtils.dprint(traceback.format_exc())
-
         return entry
 
     def analyze(self, context):
@@ -296,10 +490,24 @@ class ResultDetail(StatefulScene):
         entry_height = 45
         entry_top = [101, 166, 231, 296, 431, 496, 561, 626]
 
-        img = self.auto_offset(context)
+        # auto_warp() or auto_offset() で画面位置の調整
+        # img = self.auto_warp(context)
+        img = None
+        if img is not None:
+            matched = IkaUtils.matchWithMask(
+                img,
+                self.winlose_gray, 0, 9969, 0.22
+            )
+            if not matched:
+                img = None
+
+        if img is None:
+            # IkaUtils.dprint('%s: Falling back to auto_offset()' % self)
+            img = self.auto_offset(context)
 
         # インクリング一覧
         context['game']['players'] = []
+        weapon_list = []
         entry_id = 0
 
         for entry_id in range(len(entry_top)):  # 0..7
@@ -309,6 +517,9 @@ class ResultDetail(StatefulScene):
                             entry_left:entry_left + entry_width]
 
             e = self.analyze_entry(img_entry)
+
+            if e.get('rank', None) is None:
+                continue
 
             # team, rank_in_team
             e['team'] = 1 if entry_id < 4 else 2
@@ -321,16 +532,22 @@ class ResultDetail(StatefulScene):
 
             context['game']['players'].append(e)
 
-            e_ = e.copy()
-            for f in list(e.keys()):
-                if f.startswith('img_'):
-                    del e_[f]
-            print(e_)
+            if 0:
+                e_ = e.copy()
+                for f in list(e.keys()):
+                    if f.startswith('img_'):
+                        del e_[f]
+                print(e_)
 
-        print(context['game']['won'])
+        if 0:
+            worker = threading.Thread(
+                target=self.async_recoginiton_worker, args=(context,))
+            worker.start()
+        else:
+            self.async_recoginiton_worker(context)
 
         # チームカラー
-        team_colors = self.analyze_team_colors(context)
+        team_colors = self.analyze_team_colors(context, img)
         context['game']['my_team_color'] = team_colors[0]
         context['game']['counter_team_color'] = team_colors[1]
 
@@ -339,6 +556,7 @@ class ResultDetail(StatefulScene):
 
         # そのほか
         # context['game']['timestamp'] = datetime.now()
+        self._call_plugins_later('on_result_detail_still')
 
         return True
 
@@ -364,7 +582,7 @@ class ResultDetail(StatefulScene):
             return False
 
         matched = IkaUtils.matchWithMask(
-            context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
+            context['engine']['frame'], self.winlose_gray, 0.997, 0.22)
 
         if matched:
             self._match_start_msec = context['engine']['msec']
@@ -379,7 +597,7 @@ class ResultDetail(StatefulScene):
 
         # マッチ1: 既知のマスクでざっくり
         matched = IkaUtils.matchWithMask(
-            context['engine']['frame'], self.winlose_gray, 0.997, 0.20)
+            context['engine']['frame'], self.winlose_gray, 0.997, 0.22)
 
         # マッチ2: マッチ1を満たした場合は、白文字が安定するまで待つ
         # 条件1: 前回のイメージとの白文字の diff が 0 pixel になること
@@ -392,7 +610,7 @@ class ResultDetail(StatefulScene):
         matched_diff10 = False
 
         if matched:
-            img_current_bgr = frame[626:626+45, 640:1280]
+            img_current_bgr = frame[626:626 + 45, 640:1280]
             img_current_hsv = cv2.cvtColor(img_current_bgr, cv2.COLOR_BGR2HSV)
             img_current_h_i16 = np.array(img_current_hsv[:, :, 1], np.int16)
 
@@ -430,12 +648,11 @@ class ResultDetail(StatefulScene):
         matched2 = matched_diff0 or matched_diff10
         triggered = self.matched_in(
             context, 30 * 1000, attr='_last_event_msec')
-
         if matched2 and (not triggered):
             self.analyze(context)
             # self.dump(context)
-            self._call_plugins('on_result_detail')
-            self._call_plugins('on_game_individual_result')
+#            self._call_plugins('on_result_detail')
+#            self._call_plugins('on_game_individual_result')
             self._last_event_msec = context['engine']['msec']
             triggered = True
 
@@ -505,7 +722,7 @@ class ResultDetail(StatefulScene):
     def _init_scene(self, debug=False):
         self.mask_win = IkaMatcher(
             651, 47, 99, 33,
-            img_file='masks/result_detail.png',
+            img_file='result_detail.png',
             threshold=0.950,
             orig_threshold=0.05,
             bg_method=matcher.MM_NOT_WHITE(),
@@ -514,19 +731,28 @@ class ResultDetail(StatefulScene):
             debug=debug,
         )
 
-        winlose = cv2.imread('masks/result_detail.png')
-        self.winlose_gray = cv2.cvtColor(winlose, cv2.COLOR_BGR2GRAY)
-        self._white_filter = matcher.MM_WHITE()
+        base_dir = IkaUtils.baseDirectory()
+        languages = Localization.get_game_languages()
+        for lang in languages:
+            mask_file = os.path.join(base_dir, 'masks', lang, 'result_detail.png')
+            if os.path.exists(mask_file):
+                break
 
+        if not os.path.exists(mask_file):
+            mask_file = os.path.join(base_dir, 'masks', 'result_detail.png')
+        winlose = cv2.imread(mask_file)
+        self.winlose_gray = cv2.cvtColor(winlose, cv2.COLOR_BGR2GRAY)
+
+        self._white_filter = matcher.MM_WHITE()
         self.udemae_recoginizer = UdemaeRecoginizer()
         self.number_recoginizer = NumberRecoginizer()
         self.fes_gender_recoginizer = character_recoginizer.FesGenderRecoginizer()
         self.fes_level_recoginizer = character_recoginizer.FesLevelRecoginizer()
 
-        self.weapons = IkaGlyphRecoginizer()
-        self.weapons.load_model_from_file("data/weapons.knn.data")
-        self.weapons.knn_train()
-
+        self.load_akaze_model()
+        self._client_local = APIClient(local_mode=True)
+        # APIClient(local_mode=False, base_uri='http://localhost:8000')
+        self._client_remote = None
 
 if __name__ == "__main__":
     ResultDetail.main_func()

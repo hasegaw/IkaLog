@@ -23,7 +23,7 @@ import sys
 sys.path.append('.')
 train_basedir = sys.argv[1]
 
-from ikalog.utils import IkaGlyphRecoginizer
+from ikalog.utils import WeaponRecoginizer
 
 
 def learnImageGroup(recoginizer=None, name="unknown", dir=None):
@@ -70,7 +70,7 @@ def loopbackTest():
     for sample in misses:
         param, r = weapons.analyze_image(sample, debug=True)
         misses_hist.append(r)
-    weapons.show_learned_weapon_image(misses_hist, 'Misses', save='misses.png')
+    weapons.show_learned_icon_image(misses_hist, 'Misses', save='misses.png')
 
     # file にリスト書き出し
     f = open('weapons.html', 'w')
@@ -87,7 +87,7 @@ def loopbackTest():
     f.close()
     return s
 
-weapons = IkaGlyphRecoginizer()
+weapons = WeaponRecoginizer()
 
 learnImageGroup(weapons, "14式竹筒銃・甲", dir="14式竹筒銃・甲")
 learnImageGroup(weapons, "14式竹筒銃・乙", dir="14式竹筒銃・乙")
@@ -113,6 +113,7 @@ learnImageGroup(weapons, "シャープマーカーネオ", dir="シャープマ�
 learnImageGroup(weapons, "スクイックリンα", dir="スクイックリンA")
 learnImageGroup(weapons, "スクイックリンβ", dir="スクイックリンB")
 learnImageGroup(weapons, "スクリュースロッシャー", dir="スクリュースロッシャー")
+learnImageGroup(weapons, "スクリュースロッシャーネオ", dir="スクリュースロッシャーネオ")
 learnImageGroup(weapons, "スプラシューター", dir="スプラシューター")
 learnImageGroup(weapons, "スプラシューターコラボ", dir="スプラシューターコラボ")
 learnImageGroup(weapons, "スプラスコープ", dir="スプラスコープ")
@@ -140,6 +141,7 @@ learnImageGroup(weapons, "ヒーローシューターレプリカ", dir="ヒー�
 learnImageGroup(weapons, "ヒーローチャージャーレプリカ", dir="ヒーローチャージャーレプリカ")
 learnImageGroup(weapons, "ヒーローローラーレプリカ", dir="ヒーローローラーレプリカ")
 learnImageGroup(weapons, "ヒッセン", dir="ヒッセン")
+learnImageGroup(weapons, "ヒッセン・ヒュー", dir="ヒッセン・ヒュー")
 learnImageGroup(weapons, "プライムシューター", dir="プライムシューター")
 learnImageGroup(weapons, "プライムシューターコラボ", dir="プライムシューターコラボ")
 learnImageGroup(weapons, "プロモデラーMG", dir="プロモデラーMG銀")
@@ -147,11 +149,13 @@ learnImageGroup(weapons, "プロモデラーRG", dir="プロモデラーRG金")
 learnImageGroup(weapons, "ボールドマーカー", dir="ボールドマーカー")
 learnImageGroup(weapons, "ボールドマーカーネオ", dir="ボールドマーカーネオ")
 learnImageGroup(weapons, "ホクサイ", dir="ホクサイ")
+learnImageGroup(weapons, "ホクサイ・ヒュー", dir="ホクサイ・ヒュー")
 learnImageGroup(weapons, "ホットブラスター", dir="ホットブラスター")
 learnImageGroup(weapons, "ホットブラスターカスタム", dir="ホットブラスターカスタム")
 learnImageGroup(weapons, "もみじシューター", dir="もみじシューター")
 learnImageGroup(weapons, "ラピッドブラスター", dir="ラピッドブラスター")
 learnImageGroup(weapons, "Rブラスターエリート", dir="Rブラスターエリート")
+learnImageGroup(weapons, "Rブラスターエリートデコ", dir="Rブラスターエリートデコ")
 learnImageGroup(weapons, "ラピッドブラスターデコ", dir="ラピッドブラスターデコ")
 learnImageGroup(weapons, "リッター3K", dir="リッター3K")
 learnImageGroup(weapons, "リッター3Kカスタム", dir="リッター3Kカスタム")
@@ -160,9 +164,9 @@ learnImageGroup(weapons, "ロングブラスターカスタム", dir="ロング�
 learnImageGroup(weapons, "わかばシューター", dir="わかばシューター")
 
 weapons.knn_train_from_group()
-weapons.save_model_to_file('data/weapons.knn.data')
+weapons.save_model_to_file()
 weapons.knn_reset()
-weapons.load_model_from_file('data/weapons.knn.data')
+weapons.load_model_from_file()
 weapons.knn_train()
 if 1:
     s = loopbackTest()

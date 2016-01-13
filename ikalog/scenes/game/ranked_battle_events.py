@@ -48,14 +48,14 @@ class GameRankedBattleEvents(StatefulScene):
         self._masks_active = {}
 
     def on_game_start(self, context):
-        rule = IkaUtils.rule2text(context['game']['rule'])
-        if rule == 'ガチエリア':
+        rule_id = IkaUtils.rule2id(context['game']['rule'])
+        if rule_id == 'area':
             self._masks_active = self._masks_splatzone.copy()
             self._masks_active.update(self._masks_ranked)
-        elif rule == 'ガチホコバトル':
+        elif rule_id == 'hoko':
             self._masks_active = self._masks_rainmaker.copy()
             self._masks_active.update(self._masks_ranked)
-        elif rule == 'ガチヤグラ':
+        elif rule_id == 'yagura':
             self._masks_active = self._masks_towercontrol.copy()
             self._masks_active.update(self._masks_ranked)
         else:
@@ -110,11 +110,6 @@ class GameRankedBattleEvents(StatefulScene):
 
     def _state_default(self, context):
         if 0:
-            rule = IkaUtils.rule2text(context['game']['rule'])
-            if rule != 'ガチエリア':
-                return False
-
-        if 0:
             if self.is_another_scene_matched(context, 'GameTimerIcon'):
                 return False
 
@@ -139,7 +134,7 @@ class GameRankedBattleEvents(StatefulScene):
     def _load_splatzone_masks(self, debug=False):
         mask_we_got = IkaMatcher(
             452, 177, 361, 39,
-            img_file='masks/ja_splatzone_we_got.png',
+            img_file='splatzone_we_got.png',
             threshold=0.9,
             orig_threshold=0.1,
             label='splatzone/we_got',
@@ -150,7 +145,7 @@ class GameRankedBattleEvents(StatefulScene):
 
         mask_we_lost = IkaMatcher(
             432, 176, 404, 40,
-            img_file='masks/ja_splatzone_we_lost.png',
+            img_file='splatzone_we_lost.png',
             threshold=0.9,
             orig_threshold=0.1,
             label='splatzone/we_lost',
@@ -161,7 +156,7 @@ class GameRankedBattleEvents(StatefulScene):
 
         mask_they_got = IkaMatcher(
             452, 177, 361, 39,
-            img_file='masks/ja_splatzone_they_got.png',
+            img_file='splatzone_they_got.png',
             threshold=0.9,
             orig_threshold=0.1,
             label='splatzone/they_got',
@@ -172,7 +167,7 @@ class GameRankedBattleEvents(StatefulScene):
 
         mask_they_lost = IkaMatcher(
             432, 176, 404, 40,
-            img_file='masks/ja_splatzone_they_lost.png',
+            img_file='splatzone_they_lost.png',
             threshold=0.9,
             orig_threshold=0.1,
             label='splatzone/they_lost',
@@ -191,7 +186,7 @@ class GameRankedBattleEvents(StatefulScene):
     def _load_rainmaker_masks(self, debug=False):
         mask_we_got = IkaMatcher(
             452, 177, 361, 39,
-            img_file='masks/ja_rainmaker_we_got.png',
+            img_file='rainmaker_we_got.png',
             threshold=0.9,
             orig_threshold=0.1,
             label='rainmaker/we_got',
@@ -202,7 +197,7 @@ class GameRankedBattleEvents(StatefulScene):
 
         mask_we_lost = IkaMatcher(
             432, 176, 404, 40,
-            img_file='masks/ja_rainmaker_we_lost.png',
+            img_file='rainmaker_we_lost.png',
             threshold=0.9,
             orig_threshold=0.1,
             label='rainmaker/we_lost',
@@ -213,7 +208,7 @@ class GameRankedBattleEvents(StatefulScene):
 
         mask_they_got = IkaMatcher(
             452, 177, 361, 39,
-            img_file='masks/ja_rainmaker_they_got.png',
+            img_file='rainmaker_they_got.png',
             threshold=0.9,
             orig_threshold=0.1,
             label='rainmaker/they_got',
@@ -224,7 +219,7 @@ class GameRankedBattleEvents(StatefulScene):
 
         mask_they_lost = IkaMatcher(
             432, 176, 404, 40,
-            img_file='masks/ja_rainmaker_they_lost.png',
+            img_file='rainmaker_they_lost.png',
             threshold=0.9,
             orig_threshold=0.1,
             label='rainmaker/they_lost',
@@ -243,7 +238,7 @@ class GameRankedBattleEvents(StatefulScene):
     def _load_towercontrol_masks(self, debug=False):
         mask_we_took = IkaMatcher(
             452, 177, 361, 39,
-            img_file='masks/ja_towercontrol_we_took.png',
+            img_file='towercontrol_we_took.png',
             threshold=0.9,
             orig_threshold=0.1,
             label='towercontrol/we_took',
@@ -254,7 +249,7 @@ class GameRankedBattleEvents(StatefulScene):
 
         mask_we_lost = IkaMatcher(
             432, 176, 404, 40,
-            img_file='masks/ja_towercontrol_we_lost.png',
+            img_file='towercontrol_we_lost.png',
             threshold=0.9,
             orig_threshold=0.1,
             label='towercontrol/we_lost',
@@ -265,7 +260,7 @@ class GameRankedBattleEvents(StatefulScene):
 
         mask_they_took = IkaMatcher(
             452, 177, 361, 39,
-            img_file='masks/ja_towercontrol_they_took.png',
+            img_file='towercontrol_they_took.png',
             threshold=0.9,
             orig_threshold=0.1,
             label='towercontrol/they_took',
@@ -276,7 +271,7 @@ class GameRankedBattleEvents(StatefulScene):
 
         mask_they_lost = IkaMatcher(
             432, 176, 404, 40,
-            img_file='masks/ja_towercontrol_they_lost.png',
+            img_file='towercontrol_they_lost.png',
             threshold=0.9,
             orig_threshold=0.1,
             label='towercontrol/they_lost',
@@ -300,7 +295,7 @@ class GameRankedBattleEvents(StatefulScene):
 
         self.mask_we_lead = IkaMatcher(
             473, 173, 322, 40,
-            img_file='masks/ja_ranked_we_lead.png',
+            img_file='ranked_we_lead.png',
             threshold=0.9,
             orig_threshold=0.1,
             label='splatzone/we_lead',
@@ -311,7 +306,7 @@ class GameRankedBattleEvents(StatefulScene):
 
         self.mask_they_lead = IkaMatcher(
             473, 173, 322, 40,
-            img_file='masks/ja_ranked_they_lead.png',
+            img_file='ranked_they_lead.png',
             threshold=0.9,
             orig_threshold=0.1,
             label='splatzone/they_lead',

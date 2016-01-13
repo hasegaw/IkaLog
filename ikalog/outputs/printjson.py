@@ -17,13 +17,15 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import os
+
 from datetime import datetime
-import time
 import json
+import os
+import time
 
 from ikalog.utils import *
 
+_ = Localization.gettext_translation('json', fallback=True).gettext
 
 # Needed in GUI mode
 try:
@@ -82,14 +84,14 @@ class JSON(object):
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, 'JSON')
+        self.page = notebook.InsertPage(0, self.panel, _('JSON'))
         self.layout = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.layout)
         self.checkEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, u'JSONファイルへ戦績を出力する')
+            self.panel, wx.ID_ANY, _('Enable JSON Log'))
         self.editJsonFilename = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'JSON保存先ファイル'))
+        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Log Filename')))
         self.layout.Add(self.editJsonFilename, flag=wx.EXPAND)
 
         self.layout.Add(self.checkEnable)
