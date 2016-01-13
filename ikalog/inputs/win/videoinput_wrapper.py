@@ -19,7 +19,7 @@
 #
 
 import ctypes
-from ctypes import c_char_p, c_int
+from ctypes import c_char_p, c_double, c_int
 import numpy as np
 import os
 import time
@@ -113,14 +113,14 @@ class VideoInputWrapper(object):
         return self.dll.VI_GetFrameWidth(index)
 
     def init_device(self, index, settings=None, flags=None, width=None, height=None, connection=None):
-        if flags or width or height:
-            settings = np.array([flags, width, height], dtype=np.intc)
-
-        # FIXME: parameters
+        settings = np.array([flags, width, height], dtype=np.intc)
         return self.dll.VI_InitDevice(index, settings) == 0
 
     def set_blocking(self, enable):
         self.dll.VI_SetBlocking(enable)
+
+    def set_framerate(self, index, framerate):
+        self.dll.VI_SetFramerate(index, framerate)
 
     def has_new_frame(self, index):
         return self.dll.VI_HasNewFrame(index)
@@ -176,6 +176,9 @@ class VideoInputWrapper(object):
         self.dll.VI_SetBlocking.argtypes = [c_int]
         self.dll.VI_SetBlocking.restype = None
 
+        self.dll.VI_SetFramerate.argtypes = [c_int, c_double]
+        self.dll.VI_SetFramerate.restype = None
+
         self.dll.VI_GetFrameHeight.argtypes = [c_int]
         self.dll.VI_GetFrameHeight.restype = c_int
 
@@ -194,6 +197,8 @@ class VideoInputWrapper(object):
             c_int
         ]
         self.dll.VI_GetPixels.restype = c_int
+
+
 
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, '__instance__'):

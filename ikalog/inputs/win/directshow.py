@@ -44,7 +44,7 @@ class DirectShow(object):
 
     def read_raw(self):
         if self._device_id is None:
-            print('not initalized')
+            IkaUtils.dprint('%s: The deviec is not initialized.' % self)
             return None
 
         self.lock.acquire()
@@ -93,13 +93,13 @@ class DirectShow(object):
     def set_resolution(self, width, height):
         pass  # To Be implemented
 
-    def init_capture(self, device_id, width=1280, height=720):
-        print('init_capture enter')
+    def init_capture(self, device_id, width=1280, height=720, framerate=59.94):
         self.lock.acquire()
         try:
             if self._device_id is not None:
                 raise Exception('Need to deinit the device')
 
+            self._videoinput_wrapper.set_framerate(device_id, framerate)
             retval = self._videoinput_wrapper.init_device(
                 device_id,
                 flags=self._videoinput_wrapper.DS_RESOLUTION,
