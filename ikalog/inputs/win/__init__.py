@@ -18,10 +18,5 @@
 #  limitations under the License.
 #
 
-from .cvcapture import CVCapture
-from .cvfile import CVFile
-from .cvgst import CVgst
-from .screencapture import ScreenCapture
-from .osx import *
-from .consolidated_input import ConsolidatedInput
-from .win import DirectShow
+from .directshow import DirectShow
+from .videoinput_wrapper import VideoInputWrapper
