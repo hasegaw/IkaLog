@@ -18,5 +18,6 @@
 #  limitations under the License.
 #
 
+from .screencapture import ScreenCapture
 from .directshow import DirectShow
 from .videoinput_wrapper import VideoInputWrapper
