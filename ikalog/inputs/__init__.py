@@ -18,9 +18,9 @@
 #  limitations under the License.
 #
 
-from .cvcapture import CVCapture
-from .cvfile import CVFile
-from .cvgst import CVgst
+from .opencv_videocapture import CVCapture
+from .opencv_file import CVFile
+from .opencv_gstreamer import GStreamer
 from .osx import *
 from .consolidated_input import ConsolidatedInput
 from .win import DirectShow

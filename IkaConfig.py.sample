@@ -48,8 +48,8 @@ class IkaConfig:
         # パターン5: OpenCV の GStreamerパイプラインからの読み込み機能を利用する
         # OpenCV が GStreamer に対応していること
         # 例. Blackmagic Design社のキャプチャデバイスのHDMIポートから720p 59.94fpsで取得する場合
-        #source = inputs.CVgst()
-        #source.start_gst("decklinksrc connection=hdmi mode=720p5994 device-number=0 ! videoconvert ! appsink")
+        #source = inputs.GStreamer()
+        #source.start_gstreamer("decklinksrc connection=hdmi mode=720p5994 device-number=0 ! videoconvert ! appsink")
         # 例. テストパターンを表示する場合
         #source = inputs.CVgst()
         #source.start_gst("videotestsrc ! videoconvert ! appsink")

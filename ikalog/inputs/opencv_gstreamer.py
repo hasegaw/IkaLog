@@ -25,7 +25,7 @@ import cv2
 from ikalog.utils import *
 
 
-class CVgst(object):
+class GStreamer(object):
     cap = None
     out_width = 1280
     out_height = 720
@@ -92,7 +92,7 @@ class CVgst(object):
         finally:
             self.lock.release()
 
-    def start_gst(self, source):
+    def start_gstreamer(self, source):
         self.init_capture(source)
 
         # ToDo: タイミング情報がとれるかをテストする
@@ -103,8 +103,8 @@ class CVgst(object):
 if __name__ == "__main__":
     import sys
 
-    obj = CVgst()
-    obj.start_gst("videotestsrc pattern = smpte ! videoconvert ! appsink")
+    obj = GStreamer()
+    obj.start_gstreamer("videotestsrc pattern = smpte ! videoconvert ! appsink")
     obj.need_resize = True
 
     k = 0
