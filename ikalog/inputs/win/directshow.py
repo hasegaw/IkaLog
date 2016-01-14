@@ -26,6 +26,7 @@ import cv2
 from ikalog.utils import *
 from ikalog.inputs.win.videoinput_wrapper import VideoInputWrapper
 
+
 class DirectShow(object):
     out_width = 1280
     out_height = 720
@@ -44,7 +45,6 @@ class DirectShow(object):
 
     def read_raw(self):
         if self._device_id is None:
-            IkaUtils.dprint('%s: The device is not initialized.' % self)
             return None
 
         self.lock.acquire()
@@ -98,8 +98,8 @@ class DirectShow(object):
                 raise Exception('Need to deinit the device')
 
             formats = [
-                { 'width': width, 'height': height, 'framerate': None },
-                { 'width': width, 'height': height, 'framerate': framerate },
+                {'width': width, 'height': height, 'framerate': None},
+                {'width': width, 'height': height, 'framerate': framerate},
             ]
 
             for fmt in formats:
@@ -107,7 +107,7 @@ class DirectShow(object):
                     vi.set_framerate(device_id, fmt['framerate'])
 
                 retval = vi.init_device(
-                     device_id,
+                    device_id,
                     flags=self._videoinput_wrapper.DS_RESOLUTION,
                     width=fmt['width'],
                     height=fmt['height'],
@@ -117,7 +117,8 @@ class DirectShow(object):
                     self._source_height = vi.get_frame_height(device_id)
 
                     success = \
-                        (width == self._source_width) and (height == self._source_height)
+                        (width == self._source_width) and (
+                            height == self._source_height)
 
                     if success:
                         self._device_id = device_id
@@ -127,8 +128,10 @@ class DirectShow(object):
             # end of for loop
 
             if self._device_id is None:
-                IkaUtils.dprint('%s: Failed to init the capture device %d' %
-                    (self, device_id))
+                IkaUtils.dprint(
+                    '%s: Failed to init the capture device %d' %
+                    (self, device_id)
+                )
         finally:
             self.lock.release()
 
@@ -140,10 +143,6 @@ class DirectShow(object):
         except:
             IkaUtils.dprint('%s: Looking up device name %s' %
                             (self, source_name))
-            try:
-                source_name = source_name.encode('utf-8')
-            except:
-                pass
 
             try:
                 source = self.enumerate_input_sources().index(source_name)

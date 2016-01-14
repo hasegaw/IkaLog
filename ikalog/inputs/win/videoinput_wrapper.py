@@ -102,7 +102,7 @@ class VideoInputWrapper(object):
         device_list = []
 
         for n in range(num_devices):
-            device_list.append(self.get_device_name(n))
+            device_list.append(self.get_device_name(n).decode('utf-8'))
 
         return device_list
 

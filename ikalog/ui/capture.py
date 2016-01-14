@@ -26,6 +26,7 @@ import wx
 t = gettext.translation('IkaUI', 'locale', fallback=True)
 _ = t.gettext
 
+
 class VideoCapture(object):
 
     # アマレコTV のキャプチャデバイス名
@@ -36,12 +37,11 @@ class VideoCapture(object):
     deinterlace = False
     File = ''
 
-
     def read(self):
         if self.capture is None:
             return None, None
 
-        r =  self.capture.read()
+        r = self.capture.read()
         return r
 
     def start_recorded_file(self, file):
@@ -52,17 +52,32 @@ class VideoCapture(object):
         self.capture.init_capture(file)
         self.fps = self.capture.cap.get(5)
 
-
     def enumerate_devices(self):
-        return inputs.CVCapture().enumerate_input_sources()
+        if IkaUtils.isWindows():
+            from ikalog.inputs.win.videoinput_wrapper import VideoInputWrapper
+            return VideoInputWrapper().get_device_list()
+
+        else:
+            return [
+                'IkaLog does not support camera enumeration on this platform.',
+                'IkaLog does not support camera enumeration on this platform.',
+                'IkaLog does not support camera enumeration on this platform.',
+            ]
 
     def initialize_input(self):
-        if self.source == 'camera':
-            if 0: #IkaUtils.isOSX():
-                self.capture = inputs.AVFoundationCapture()
-            else:
+
+        print('----------------')
+        print(self.source, self.source_device)
+        if self.source == 'dshow_capture':
+            self.capture = inputs.DirectShow()
+            self.capture.start_camera(self.source_device)
+
+        elif self.source == 'opencv_capture':
+            if IkaUtils.isWindows():
                 self.capture = inputs.CVCapture()
                 self.capture.start_camera(self.source_device)
+            else:  # FIXME
+                self.capture = inputs.AVFoundationCapture()
 
         elif self.source == 'screen':
             self.capture = inputs.ScreenCapture()
@@ -79,21 +94,25 @@ class VideoCapture(object):
         # ToDo reset context['engine']['msec']
         success = True
 
+        print(self.capture)
         return success
 
     def apply_ui(self):
         self.source = ''
-        for control in [self.radioAmarecTV, self.radioCamera, self.radioScreen, self.radioFile]:
+        for control in [self.radioAmarecTV, self.radio_dshow_capture, self.radio_opencv_capture, self.radioScreen, self.radioFile]:
             if control.GetValue():
                 self.source = {
                     self.radioAmarecTV: 'amarec',
-                    self.radioCamera: 'camera',
+                    self.radio_dshow_capture: 'dshow_capture',
+                    self.radio_opencv_capture: 'opencv_capture',
                     self.radioFile: 'file',
                     self.radioScreen: 'screen',
                 }[control]
 
-        self.source_device = self.listCameras.GetItems(
-        )[self.listCameras.GetSelection()]
+        self.source_device = \
+            self.listCameras.GetItems()[self.listCameras.GetSelection()]
+
+        print('source_device = ', self.source_device)
         self.File = self.editFile.GetValue()
         self.deinterlace = self.checkDeinterlace.GetValue()
 
@@ -101,9 +120,9 @@ class VideoCapture(object):
         # 場合にメッセージを出す
         if not self.initialize_input():
             r = wx.MessageDialog(None,
-                _('Failed to intialize the capture source. Review your configuration'),
-                _('Eroor'),
-                 wx.OK | wx.ICON_ERROR).ShowModal()
+                                 _('Failed to intialize the capture source. Review your configuration'),
+                                 _('Eroor'),
+                                 wx.OK | wx.ICON_ERROR).ShowModal()
             IkaUtils.dprint(
                 "%s: failed to activate input source >>>>" % (self))
         else:
@@ -113,8 +132,14 @@ class VideoCapture(object):
         if self.source == 'amarec':
             self.radioAmarecTV.SetValue(True)
 
-        if self.source == 'camera':
-            self.radioCamera.SetValue(True)
+        if self.source == 'dshow_capture':
+            self.radio_dshow_capture.SetValue(True)
+
+        if self.source == 'opencv_capture':
+            self.radio_opencv_capture.SetValue(True)
+
+        if self.source == 'camera':  # Legacy
+            self.radio_opencv_capture.SetValue(True)
 
         if self.source == 'screen':
             self.radioScreen.SetValue(True)
@@ -149,8 +174,10 @@ class VideoCapture(object):
 
         self.source = ''
         try:
-            if conf['Source'] in ['camera', 'file', 'amarec', 'screen']:
+            if conf['Source'] in ['dshow_captyre', 'opencv_capture', 'camera', 'file', 'amarec', 'screen']:
                 self.source = conf['Source']
+                if conf['Source'] == 'camera':  # Legacy
+                    self.source = 'opencv_capture'
         except:
             pass
 
@@ -207,8 +234,14 @@ class VideoCapture(object):
         self.radioAmarecTV = wx.RadioButton(
             self.panel, wx.ID_ANY, _('Capture through AmarecTV'))
 
-        self.radioCamera = wx.RadioButton(
-            self.panel, wx.ID_ANY, _('Realtime Capture from HDMI grabber'))
+        self.radio_dshow_capture = wx.RadioButton(
+            self.panel, wx.ID_ANY,
+            _('HDMI Video input (DirectShow, recommended)')
+        )
+        self.radio_opencv_capture = wx.RadioButton(
+            self.panel, wx.ID_ANY,
+            _('HDMI Video input (OpenCV driver)')
+        )
 
         self.radioScreen = wx.RadioButton(
             self.panel, wx.ID_ANY, _('Realtime Capture from desktop'))
@@ -230,7 +263,8 @@ class VideoCapture(object):
         self.layout.Add(wx.StaticText(
             self.panel, wx.ID_ANY, _('Select Input source:')))
         self.layout.Add(self.radioAmarecTV)
-        self.layout.Add(self.radioCamera)
+        self.layout.Add(self.radio_dshow_capture)
+        self.layout.Add(self.radio_opencv_capture)
         self.layout.Add(self.listCameras, flag=wx.EXPAND)
         self.layout.Add(self.buttonReloadDevices)
         self.layout.Add(self.radioScreen)
@@ -246,10 +280,11 @@ class VideoCapture(object):
             self.radioAmarecTV.SetValue(True)
 
         else:
-            self.radioCamera.SetValue(True)
+            self.radio_dshow_capture.Disable()
             self.radioAmarecTV.Disable()
             self.radioScreen.Disable()
             self.buttonCalibrateDesktop.Disable()
+            self.radio_opencv_capture.SetValue(True)
 
         self.buttonReloadDevices.Bind(
             wx.EVT_BUTTON, self.on_reload_devices_button_click)

@@ -110,6 +110,9 @@ class CVCapture(object):
         return InputSourceEnumerator().enumerate()
 
     def read_raw(self):
+        if self.cap is None:
+            return None
+
         self.lock.acquire()
         try:
             ret, frame = self.cap.read()
@@ -199,36 +202,29 @@ class CVCapture(object):
         finally:
             self.lock.release()
 
-    def is_windows(self):
-        try:
-            os.uname()
-        except AttributeError:
-            return True
-
-        return False
-
     def start_camera(self, source_name):
-
         try:
             source = int(source_name)
-        except:
+        except ValueError:
             IkaUtils.dprint('%s: Looking up device name %s' %
                             (self, source_name))
-            try:
-                source_name = source_name.encode('utf-8')
-            except:
-                pass
+            source = None
 
-            try:
-                source = self.enumerate_input_sources().index(source_name)
-            except:
-                IkaUtils.dprint("%s: Input '%s' not found" %
-                                (self, source_name))
-                return False
+            if IkaUtils.isWindows():
+                from ikalog.inputs.win.videoinput_wrapper import VideoInputWrapper
+                devices_list = VideoInputWrapper().get_device_list()
+                try:
+                    source = devices_list.index(source_name)
+                except ValueError:
+                    pass
+
+        if source is None:
+            IkaUtils.dprint("%s: Input '%s' not found" % (self, source_name))
+            return None
 
         IkaUtils.dprint('%s: initalizing capture device %s' % (self, source))
         self.realtime = True
-        if self.is_windows():
+        if IkaUtils.isWindows():
             self.init_capture(700 + source)
         else:
             self.init_capture(0 + source)

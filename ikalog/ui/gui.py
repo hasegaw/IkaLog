@@ -42,7 +42,7 @@ class IkaLogGUI(object):
     def on_options_apply_click(self, sender):
         self.engine.call_plugins('on_config_apply', debug=True)
         self.engine.call_plugins('on_config_save_to_context', debug=True)
-        self.save_current_config(engine.context)
+        self.save_current_config(self.engine.context)
 
     def on_options_reset_click(self, sender):
         self.engine.call_plugins('on_config_load_from_context', debug=True)
@@ -61,7 +61,7 @@ class IkaLogGUI(object):
 
         self.engine.call_plugins('on_config_reset', debug=True)
         self.engine.call_plugins('on_config_save_to_context', debug=True)
-        self.save_current_config(engine.context)
+        self.save_current_config(self.engine.context)
 
     # 現在の設定値をYAMLファイルからインポート
     #
