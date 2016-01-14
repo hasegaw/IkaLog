@@ -35,11 +35,7 @@ class IkaUtils(object):
 
     @staticmethod
     def isWindows():
-        try:
-            os.uname()
-        except AttributeError:
-            return True
-        return False
+        return platform.system() == 'Windows'
 
     @staticmethod
     def isOSX():
