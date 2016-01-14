@@ -174,7 +174,7 @@ class VideoCapture(object):
 
         self.source = ''
         try:
-            if conf['Source'] in ['dshow_captyre', 'opencv_capture', 'camera', 'file', 'amarec', 'screen']:
+            if conf['Source'] in ['dshow_capture', 'opencv_capture', 'camera', 'file', 'amarec', 'screen']:
                 self.source = conf['Source']
                 if conf['Source'] == 'camera':  # Legacy
                     self.source = 'opencv_capture'
