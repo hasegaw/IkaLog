@@ -31,9 +31,13 @@ class GameDead(StatefulScene):
     def recoginize_and_vote_death_reason(self, context):
         if self.deadly_weapon_recoginizer is None:
             return False
-        # ja coordinates:    [218:218 + 51, 452:452 + 410]
-        # en_NA coordinates: [263:263 + 51, 432:432 + 410]
-        img_weapon = context['engine']['frame'][218:218 + 51, 452:452 + 410]
+
+        lang = os.environ.get('IKALOG_LANG', 'ja')
+        if lang == "ja":
+            img_weapon = context['engine']['frame'][218:218 + 51, 452:452 + 410]
+        else: # en_NA
+            img_weapon = context['engine']['frame'][263:263 + 51, 432:432 + 410]
+
         img_weapon_gray = cv2.cvtColor(img_weapon, cv2.COLOR_BGR2GRAY)
         ret, img_weapon_b = cv2.threshold(
             img_weapon_gray, 220, 255, cv2.THRESH_BINARY)
