@@ -29,20 +29,24 @@ class TestSceneLobbyVideos(unittest.TestCase):
         if not (0 <= self.event_tickets[event_name]):
             self.errors.append('Too many events triggered: %s' % event_name)
 
-    def _test_engine(self, mp4_filename):
-        from ikalog.inputs.cvcapture import CVCapture
+    def _test_engine(self, mp4_filename,game_lang=None):
+        from ikalog.utils import Localization
+        if game_lang:
+            Localization.set_game_languages(game_lang)
+
+        from ikalog.inputs import CVFile
         from ikalog.engine import IkaEngine
         from ikalog.outputs.preview import Screen
         from ikalog.outputs.debug import DebugLog
 
         self.errors = []
-        source = CVCapture()
-        source.start_recorded_file(mp4_filename)
+        source = CVFile()
+        source.start_video_file(mp4_filename)
         source.need_resize = True
         outputPlugins = [
             self,
             Screen(0, size=(640, 360)),
-            DebugLog(dir='./debug/', screenshot=True),
+            # DebugLog(dir='./debug/', screenshot=True),
         ]
 
         self.engine = IkaEngine()
@@ -52,7 +56,10 @@ class TestSceneLobbyVideos(unittest.TestCase):
         self.engine.pause(False)
 
         print('Engine started')
-        self.engine.run()
+        try:
+            self.engine.run()
+        except EOFError:
+            pass
         print('Engine stopped')
 
         # 期待されたイベントが全て発生しているか確認
@@ -81,7 +88,7 @@ class TestSceneLobbyVideos(unittest.TestCase):
         }
 
         engine = self._test_engine(
-            'test_data/movies/lobby/lobby_tag_2_matching_to_matched.mp4')
+            'test_data/movies/ja/lobby/lobby_tag_2_matching_to_matched.mp4')
 
         assert engine.context['lobby']['type'] == 'tag'
         assert engine.context['lobby']['state'] == 'matched'
@@ -97,7 +104,9 @@ class TestSceneLobbyVideos(unittest.TestCase):
             'on_frame_read': None,
         }
         engine = self._test_engine(
-            'test_data/movies/lobby/lobby_tag_2_matched.mp4')
+            'test_data/movies/ja/lobby/lobby_tag_2_matched.mp4',
+           game_lang='ja',
+        )
 
         assert engine.context['lobby']['type'] == 'tag'
         assert engine.context['lobby']['state'] == 'matched'
@@ -114,7 +123,9 @@ class TestSceneLobbyVideos(unittest.TestCase):
         }
 
         engine = self._test_engine(
-            'test_data/movies/lobby/lobby_tag_4_matched.mp4')
+            'test_data/movies/ja/lobby/lobby_tag_4_matched.mp4',
+           game_lang='ja',
+        )
 
         assert engine.context['lobby']['type'] == 'tag'
         assert engine.context['lobby']['state'] == 'matched'
@@ -132,7 +143,9 @@ class TestSceneLobbyVideos(unittest.TestCase):
         }
 
         engine = self._test_engine(
-            'test_data/movies/lobby/lobby_public_matching_to_matched.mp4')
+            'test_data/movies/ja/lobby/lobby_public_matching_to_matched.mp4',
+           game_lang='ja',
+        )
 
         assert engine.context['lobby']['type'] == 'public'
         assert engine.context['lobby']['state'] == 'matched'
@@ -149,7 +162,9 @@ class TestSceneLobbyVideos(unittest.TestCase):
         }
 
         engine = self._test_engine(
-            'test_data/movies/lobby/lobby_fes_matching_to_matched.mp4')
+            'test_data/movies/ja/lobby/lobby_fes_matching_to_matched.mp4',
+           game_lang='ja',
+        )
 
         assert engine.context['lobby']['type'] == 'festa'
         assert engine.context['lobby']['state'] == 'matched'
