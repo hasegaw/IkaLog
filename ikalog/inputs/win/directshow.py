@@ -44,7 +44,7 @@ class DirectShow(object):
 
     def read_raw(self):
         if self._device_id is None:
-            IkaUtils.dprint('%s: The deviec is not initialized.' % self)
+            IkaUtils.dprint('%s: The device is not initialized.' % self)
             return None
 
         self.lock.acquire()
@@ -90,30 +90,45 @@ class DirectShow(object):
         else:
             return frame, t
 
-    def set_resolution(self, width, height):
-        pass  # To Be implemented
-
     def init_capture(self, device_id, width=1280, height=720, framerate=59.94):
+        vi = self._videoinput_wrapper
         self.lock.acquire()
         try:
             if self._device_id is not None:
                 raise Exception('Need to deinit the device')
 
-            self._videoinput_wrapper.set_framerate(device_id, framerate)
-            retval = self._videoinput_wrapper.init_device(
-                device_id,
-                flags=self._videoinput_wrapper.DS_RESOLUTION,
-                width=width,
-                height=height,
-            )
+            formats = [
+                { 'width': width, 'height': height, 'framerate': None },
+                { 'width': width, 'height': height, 'framerate': framerate },
+            ]
 
-            if retval:
-                self._device_id = device_id
-                self._source_width = self._videoinput_wrapper.get_frame_width(
-                    device_id)
-                self._source_height = self._videoinput_wrapper.get_frame_height(
-                    device_id)
-                # FIXME: self.set_resolution(width, height)
+            for fmt in formats:
+                if fmt['framerate']:
+                    vi.set_framerate(device_id, fmt['framerate'])
+
+                retval = vi.init_device(
+                     device_id,
+                    flags=self._videoinput_wrapper.DS_RESOLUTION,
+                    width=fmt['width'],
+                    height=fmt['height'],
+                )
+                if retval:
+                    self._source_width = vi.get_frame_width(device_id)
+                    self._source_height = vi.get_frame_height(device_id)
+
+                    success = \
+                        (width == self._source_width) and (height == self._source_height)
+
+                    if success:
+                        self._device_id = device_id
+                        break
+
+                    vi.deinit_device(device_id)
+            # end of for loop
+
+            if self._device_id is None:
+                IkaUtils.dprint('%s: Failed to init the capture device %d' %
+                    (self, device_id))
         finally:
             self.lock.release()
 

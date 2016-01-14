@@ -116,6 +116,9 @@ class VideoInputWrapper(object):
         settings = np.array([flags, width, height], dtype=np.intc)
         return self.dll.VI_InitDevice(index, settings) == 0
 
+    def deinit_device(self, index):
+        self.dll.VI_DeinitDevice(index)
+
     def set_blocking(self, enable):
         self.dll.VI_SetBlocking(enable)
 
@@ -172,6 +175,9 @@ class VideoInputWrapper(object):
             np.ctypeslib.ndpointer(dtype=np.intc, flags='C_CONTIGUOUS'),
         ]
         self.dll.VI_InitDevice.restype = c_int
+
+        self.dll.VI_DeinitDevice.argtypes = [c_int]
+        self.dll.VI_DeinitDevice.restype = None
 
         self.dll.VI_SetBlocking.argtypes = [c_int]
         self.dll.VI_SetBlocking.restype = None
