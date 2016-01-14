@@ -84,7 +84,7 @@ class Localization(object):
         if lang is not None:
             return Localization.expand_languages(lang)
 
-        lang = os.environ.get('IKALOG_LANG', 'ja')
+        lang = os.environ.get('LANG', 'en')
         return Localization.expand_languages(lang)
 
     @staticmethod
