@@ -123,9 +123,14 @@ class WarpFilterModel(object):
 
         super(WarpFilterModel, self).__init__()
 
-        model_filename = os.path.join(
-            IkaUtils.baseDirectory(), 'data', 'webcam_calibration.model')
-        # print(model_filename)
+        for lang in Localization.get_game_languages():
+            model_filename = os.path.join(
+                IkaUtils.baseDirectory(),
+                'data',
+                'webcam_calibration.%s.model' % lang
+            )
+            if os.path.exists(model_filename):
+                break
 
         self.detector = cv2.AKAZE_create()
         self.norm = cv2.NORM_HAMMING
@@ -148,8 +153,13 @@ class WarpFilterModel(object):
             print(self.calibration_image_keypoints)
             print(self.calibration_image_descriptors)
 
+            model_filename = os.path.join(
+                IkaUtils.baseDirectory(),
+                'data',
+                'webcam_calibration.%s.model' % Localization.get_game_languages()[0]
+            )
             self.saveModelToFile(model_filename)
-            IkaUtils.dprint('%s: Created model data')
+            IkaUtils.dprint('%s: Created model %s' % (self, model_filename))
 
         self.trained = True
 
