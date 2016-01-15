@@ -19,6 +19,7 @@
 #  limitations under the License.
 #
 
+import gettext
 import os
 import sys
 import time
@@ -27,8 +28,9 @@ import cv2
 import numpy as np
 
 from ikalog.inputs.filters import WarpFilter
-from ikalog.utils import IkaUtils
+from ikalog.utils import IkaUtils, Localization
 
+_ = Localization.gettext_translation('screencapture', fallback=True).gettext
 
 class ScreenCapture(object):
     ''' ScreenCapture input plugin
@@ -86,14 +88,12 @@ class IkaConfig:
 
         elif acceptable:
             msg = '\n'.join([
-                'キャリブレーションできましたが、期待する画面サイズと異なります (%d x %d)' % (w, h),
-                'IkaLog への入力サイズは 1280 x 720 もしくは 1920 x 1080 です。',
-                '各種認識が正常に動作しない可能性があります。', '',
-                '再度キャリブレーションすると改善する場合があります。',
-                '',
+                _('Calibration succeeded!'),
+                _('Due to the input resultion (%d x %d) some recognition may fail unexpectedly.') % (w, h),
+                _('IkaLog expects 1280 x 720, or 1920 x 1080 as input resolution.'),
             ])
             try:
-                r = wx.MessageDialog(None, msg, 'Warining',
+                r = wx.MessageDialog(None, msg, _('Warning'),
                                      wx.OK | wx.ICON_ERROR).ShowModal()
             except:
                 IkaUtils.dprint(msg)
@@ -110,16 +110,15 @@ class IkaConfig:
         )
         if r:
             self._warp_filter.enable()
-            IkaUtils.dprint('キャリブレーション成功')
+            IkaUtils.dprint(_('Calibration succeeded!'))
             return True
         else:
             msg = '\n'.join([
-                'WiiU の画面が検知できませんでした',
-                '入力サイズは 1280 x 720 もしくは 1920 x 1080 です。',
-                'キャリブレーションを中断します。'
+                _('Calibration failed! Cannot detect WiiU display.'),
+                _('IkaLog expects 1280 x 720, or 1920 x 1080 as input resolution.'),
             ])
             try:
-                r = wx.MessageDialog(None, msg, 'Warining',
+                r = wx.MessageDialog(None, msg, _('Warning'),
                                      wx.OK | wx.ICON_ERROR).ShowModal()
             except:
                 IkaUtils.dprint(msg)
