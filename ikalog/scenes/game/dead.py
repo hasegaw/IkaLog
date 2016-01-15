@@ -27,16 +27,26 @@ from ikalog.utils.character_recoginizer import *
 
 
 class GameDead(StatefulScene):
+    choordinates = {
+        'ja': { 'top': 218, 'left': 452 },
+        'en': { 'top': 263, 'left': 432 },
+    }
 
     def recoginize_and_vote_death_reason(self, context):
         if self.deadly_weapon_recoginizer is None:
             return False
 
-        lang = os.environ.get('IKALOG_LANG', 'ja')
-        if lang == "ja":
-            img_weapon = context['engine']['frame'][218:218 + 51, 452:452 + 410]
-        else: # en_NA
-            img_weapon = context['engine']['frame'][263:263 + 51, 432:432 + 410]
+        lang_short = Localization.get_game_languages()[0][0:2]
+
+        try:
+            c = self.choordinates[lang_short]
+        except KeyError:
+            c = self.choordinates['en']
+
+        img_weapon = context['engine']['frame'][
+            c['top']:c['top'] + 51,
+            c['left']:c['left'] + 410
+        ]
 
         img_weapon_gray = cv2.cvtColor(img_weapon, cv2.COLOR_BGR2GRAY)
         ret, img_weapon_b = cv2.threshold(
