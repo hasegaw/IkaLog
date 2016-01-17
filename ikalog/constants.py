@@ -122,7 +122,7 @@ weapons = {
     'barrelspinner': {'ja': 'バレルスピナー', 'en': 'Heavy Splatling'},
     'barrelspinner_deco': {'ja': 'バレルスピナーデコ', 'en': 'Heavy Splatling Deco'},
     'hydra': {'ja': 'ハイドラント', 'en': 'Hydra Splatling'},
-    # 'hydra_custom': {'ja': 'ハイドラントカスタム', 'en': 'Custom Hydra Splatling'},
+    'hydra_custom': {'ja': 'ハイドラントカスタム', 'en': 'Custom Hydra Splatling'},
     'splatspinner': {'ja': 'スプラスピナー', 'en': 'Mini Splatling'},
     'splatspinner_collabo': {'ja': 'スプラスピナーコラボ', 'en': 'Zink Mini Splatling'},
 }

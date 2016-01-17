@@ -131,6 +131,7 @@ learnImageGroup(weapons, "デュアルスイーパーカスタム", dir="デュ�
 learnImageGroup(weapons, "ノヴァブラスター", dir="ノヴァブラスター")
 learnImageGroup(weapons, "ノヴァブラスターネオ", dir="ノヴァブラスターネオ")
 learnImageGroup(weapons, "ハイドラント", dir="ハイドラント")
+learnImageGroup(weapons, "ハイドラントカスタム", dir="ハイドラントカスタム")
 learnImageGroup(weapons, "バケットスロッシャー", dir="バケットスロッシャー")
 learnImageGroup(weapons, "バケットスロッシャーデコ", dir="バケットスロッシャーデコ")
 learnImageGroup(weapons, "パブロ", dir="パブロ")
