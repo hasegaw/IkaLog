@@ -288,20 +288,20 @@ class ResultDetail(StatefulScene):
 
         return (me_score_normalized > 1)
 
-    def guess_fes_title(self, img_fes_title):
-        img_fes_title_hsv = cv2.cvtColor(img_fes_title, cv2.COLOR_BGR2HSV)
-        yellow = cv2.inRange(img_fes_title_hsv[:, :, 0], 32 - 2, 32 + 2)
-        yellow2 = cv2.inRange(img_fes_title_hsv[:, :, 2], 240, 255)
-        img_fes_title_mask = np.minimum(yellow, yellow2)
-        is_fes = np.sum(img_fes_title_mask) > img_fes_title_mask.shape[
-            0] * img_fes_title_mask.shape[1] * 16
+    def guess_fest_title_ja(self, img_fest_title):
+        img_fest_title_hsv = cv2.cvtColor(img_fest_title, cv2.COLOR_BGR2HSV)
+        yellow = cv2.inRange(img_fest_title_hsv[:, :, 0], 32 - 2, 32 + 2)
+        yellow2 = cv2.inRange(img_fest_title_hsv[:, :, 2], 240, 255)
+        img_fest_title_mask = np.minimum(yellow, yellow2)
+        is_fes = np.sum(img_fest_title_mask) > img_fest_title_mask.shape[
+            0] * img_fest_title_mask.shape[1] * 16
 
         # 文字と判断したところを 1 にして縦に足し算
 
-        img_fes_title_hist = np.sum(
-            img_fes_title_mask / 255, axis=0)  # 列毎の検出dot数
-        a = np.array(range(len(img_fes_title_hist)), dtype=np.int32)
-        b = np.extract(img_fes_title_hist > 0, a)
+        img_fest_title_hist = np.sum(
+            img_fest_title_mask / 255, axis=0)  # 列毎の検出dot数
+        a = np.array(range(len(img_fest_title_hist)), dtype=np.int32)
+        b = np.extract(img_fest_title_hist > 0, a)
         x1 = np.amin(b)
         x2 = np.amax(b)
 
@@ -309,27 +309,27 @@ class ResultDetail(StatefulScene):
             return None, None, None
 
         # 最小枠で crop
-        img_fes_title_new = img_fes_title[:, x1:x2]
+        img_fest_title_new = img_fest_title[:, x1:x2]
 
         # ボーイ/ガールは経験上横幅 56 ドット
         gender_x1 = x2 - 36
         gender_x2 = x2
-        img_fes_gender = img_fes_title_mask[:, gender_x1:gender_x2]
+        img_fest_gender = img_fest_title_mask[:, gender_x1:gender_x2]
         # ふつうの/まことの/スーパー/カリスマ/えいえん
-        img_fes_level = img_fes_title_mask[:, 0:52]
+        img_fest_level = img_fest_title_mask[:, 0:52]
 
         try:
-            if self.fes_gender_recoginizer:
-                gender = self.fes_gender_recoginizer.match(
-                    cv2.cvtColor(img_fes_gender, cv2.COLOR_GRAY2BGR))
+            if self.fest_gender_recoginizer:
+                gender = self.fest_gender_recoginizer.match(
+                    cv2.cvtColor(img_fest_gender, cv2.COLOR_GRAY2BGR))
         except:
             IkaUtils.dprint(traceback.format_exc())
             gender = None
 
         try:
-            if self.fes_level_recoginizer:
-                level = self.fes_level_recoginizer.match(
-                    cv2.cvtColor(img_fes_level, cv2.COLOR_GRAY2BGR))
+            if self.fest_level_recoginizer:
+                level = self.fest_level_recoginizer.match(
+                    cv2.cvtColor(img_fest_level, cv2.COLOR_GRAY2BGR))
         except:
             IkaUtils.dprint(traceback.format_exc())
             level = None
@@ -337,6 +337,42 @@ class ResultDetail(StatefulScene):
         team = None
 
         return gender, level, team
+
+    def guess_fest_title_en_NA(self, img_fest_title):
+        IkaUtils.dprint(
+            '%s: Fest recoginiton in this language is not implemented'
+            % self
+        )
+        return None, None, None
+
+    def guess_fest_title_en_UK(self, img_fest_title):
+        IkaUtils.dprint(
+            '%s: Fest recoginiton in this language is not implemented'
+            % self
+        )
+        return None, None, None
+
+    def guess_fest_title(self, img_fest_title):
+        guess_fest_title_funcs = {
+            'ja':    self.guess_fest_title_ja,
+            'en_NA': self.guess_fest_title_en_NA,
+            'en_UK': self.guess_fest_title_en_UK,
+        }
+
+        func = None
+        for lang in Localization.get_game_languages():
+            func = guess_fest_title_funcs.get(lang, None)
+            if func is not None:
+                break
+
+        if func is None:
+            IkaUtils.dprint(
+                '%s: Fest recoginiton in this language is not implemented'
+                % self
+            )
+            return None
+
+        return func(img_fest_title)
 
     def analyze_team_colors(self, context, img):
         # スクリーンショットからチームカラーを推測
@@ -422,8 +458,9 @@ class ResultDetail(StatefulScene):
             0] * img_fes_title_mask.shape[1] * 16
 
         if is_fes:
-            fes_gender, fes_level, fes_team = self.guess_fes_title(
-                img_fes_title)
+            fes_gender, fes_level, fes_team = self.guess_fest_title(
+                img_fes_title
+            )
 
         # フェス中ではなく、 p の表示があれば(avg = 55.0) ナワバリ。なければガチバトル
         isRankedBattle = (not is_fes) and (
@@ -746,8 +783,10 @@ class ResultDetail(StatefulScene):
         self._white_filter = matcher.MM_WHITE()
         self.udemae_recoginizer = UdemaeRecoginizer()
         self.number_recoginizer = NumberRecoginizer()
-        self.fes_gender_recoginizer = character_recoginizer.FesGenderRecoginizer()
-        self.fes_level_recoginizer = character_recoginizer.FesLevelRecoginizer()
+
+        # for SplatFest (ja)
+        self.fest_gender_recoginizer = character_recoginizer.FesGenderRecoginizer()
+        self.fest_level_recoginizer = character_recoginizer.FesLevelRecoginizer()
 
         self.load_akaze_model()
         self._client_local = APIClient(local_mode=True)
