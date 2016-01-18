@@ -38,3 +38,5 @@ from .gearpower_training import GearpowerTraining
 from .websocket_server import WebSocketServer
 from .boyomi import Boyomi
 from .mikumikumouth import MikuMikuMouth
+
+from .osx.say import Say
