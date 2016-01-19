@@ -49,6 +49,9 @@ class GameDead(StatefulScene):
         ]
 
         img_weapon_gray = cv2.cvtColor(img_weapon, cv2.COLOR_BGR2GRAY)
+        img_weapon_hsv = cv2.cvtColor(img_weapon, cv2.COLOR_BGR2HSV)
+
+        img_weapon_gray[img_weapon_hsv[:, :, 1] > 32] = 0
         ret, img_weapon_b = cv2.threshold(
             img_weapon_gray, 220, 255, cv2.THRESH_BINARY)
 
