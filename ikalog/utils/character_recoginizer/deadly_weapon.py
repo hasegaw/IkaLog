@@ -91,10 +91,16 @@ class DeadlyWeaponRecoginizer(CharacterRecoginizer):
             r = super(DeadlyWeaponRecoginizer, self).match1(img_normalized)
         except:
             print(img.shape)
-            return 'Error'
+            return 'unknown'
 
-        name = self.id2name(r - ord('0'))
-        return name
+        index = r - ord('0')
+        try:
+            return self.id2name(index)
+
+        except IndexError:
+            IkaUtils.dprint('%s: FIXME: match1() returned invalid index (%s)' % (self, index))
+            IkaUtils.dprint('%s: id2name_table (len %d) == %s' % (self, len(self.name2id_table), self.name2id_table))
+            return 'unknown'
 
     def _find_png_files(self, dir):
         list = []
