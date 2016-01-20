@@ -638,6 +638,15 @@ class StatInk(object):
             self.last_dead_event['reason'] = reason
             self.last_dead_event = None
 
+    def on_game_inkling_state_update(self, context):
+        if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
+            states = context['game']['inkling_state']
+            self._add_event(context, {
+                'type': 'alive_inklings',
+                'my_team': states[0],
+                'his_team': states[1],
+            })
+
     def on_game_paint_score_update(self, context):
         score = context['game'].get('paint_score', 0)
         if (score > 0 and 'msec' in context['engine']) and (self.time_start_at_msec is not None):
