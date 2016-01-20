@@ -370,7 +370,7 @@ class ResultDetail(StatefulScene):
                 '%s: Fest recoginiton in this language is not implemented'
                 % self
             )
-            return None
+            return None, None, None
 
         return func(img_fest_title)
 
