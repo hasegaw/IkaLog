@@ -112,6 +112,7 @@ class IkaEngine:
             'dead': False,
             'death_reasons': {},
 
+            'inkling_state': [None, None],
             'livesTrack': [],
             'towerTrack': [],
         }
@@ -257,6 +258,7 @@ class IkaEngine:
             scenes.PaintScoreTracker(self),
             scenes.ObjectiveTracker(self),
             scenes.SplatzoneTracker(self),
+            scenes.InklingsTracker(self),
 
             scenes.ResultDetail(self),
             scenes.ResultUdemae(self),
