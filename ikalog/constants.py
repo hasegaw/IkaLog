@@ -33,7 +33,7 @@ stages = {
     'masaba':   {'ja': 'マサバ海峡大橋',      'en': 'Hammerhead Bridge', },
     'mongara':  {'ja': 'モンガラキャンプ場',  'en': 'Camp Triggerfish', },
     'mozuku':   {'ja':  'モズク農園',         'en': 'Kelp Dome', },
-    'negitoro': {'ja': 'ネギトロ炭鉱',        'en': 'Bulefin Depot', },
+    'negitoro': {'ja': 'ネギトロ炭鉱',        'en': 'Bluefin Depot', },
     'shionome': {'ja': 'シオノメ油田',        'en': 'Saltspray Rig', },
     'shottsuru': {'ja': 'ショッツル鉱山',     'en': 'Piranha Pit'},
     'tachiuo':  {'ja':  'タチウオパーキング', 'en':  'Moray Towers', },
