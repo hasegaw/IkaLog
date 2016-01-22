@@ -18,9 +18,12 @@
 #  limitations under the License.
 #
 import sys
+import threading
+import traceback
 
 import cv2
 
+from ikalog.api import APIClient
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 from ikalog.utils.character_recoginizer import *
@@ -28,8 +31,8 @@ from ikalog.utils.character_recoginizer import *
 
 class GameDead(StatefulScene):
     choordinates = {
-        'ja': { 'top': 218, 'left': 452 },
-        'en': { 'top': 263, 'left': 432 },
+        'ja': {'top': 218, 'left': 452},
+        'en': {'top': 263, 'left': 432},
     }
 
     def recoginize_and_vote_death_reason(self, context):
@@ -58,7 +61,7 @@ class GameDead(StatefulScene):
         # (覚) 学習用に保存しておくのはこのデータ。 Change to 1 for training.
         if 0:  # (self.time_last_write + 5000 < context['engine']['msec']):
             import time
-            filename = os.path.join( # training/ directory must already exist
+            filename = os.path.join(  # training/ directory must already exist
                 'training', '_deadly_weapons.%s.png' % time.time())
             cv2.imwrite(filename, img_weapon_b)
             self.time_last_write = context['engine']['msec']
@@ -68,38 +71,36 @@ class GameDead(StatefulScene):
             return
 
         img_weapon_b_bgr = cv2.cvtColor(img_weapon_b, cv2.COLOR_GRAY2BGR)
-        weapon_id = self.deadly_weapon_recoginizer.match(img_weapon_b_bgr)
+        self.deadly_weapon_images.append(img_weapon_b_bgr)
 
-        # 投票する(あとでまとめて開票)
-        votes = self._cause_of_death_votes
-        votes[weapon_id] = votes.get(weapon_id, 0) + 1
+    def recognize_cause_of_death(self, context):
+        deadly_weapon_images = self.deadly_weapon_images
+        self.deadly_weapon_images = []
+        IkaUtils.dprint('%s: deadly_weapon recognition started.' % self)
+        try:
+            response = self._client.recoginize_deadly_weapons(
+                deadly_weapon_images)
+            if response['status'] == 'ok':
+                weapon_id = response['deadly_weapon']
+                context['game']['last_death_reason'] = weapon_id
+                context['game']['death_reasons'][weapon_id] = \
+                    context['game']['death_reasons'].get(weapon_id, 0) + 1
 
-    def count_death_reason_votes(self, context):
-        votes = self._cause_of_death_votes
-        if len(votes) == 0:
-            return None
-        print('votes=%s' % votes)
+                self._call_plugins_later('on_game_death_reason_identified')
+            else:
+                IkaUtils.dprint('%s: Server returned an error.' % self)
 
-        most_possible_id = None
-        most_possible_count = 0
-        for weapon_id in votes.keys():
-            weapon_count = votes[weapon_id]
-            if most_possible_count < weapon_count:
-                most_possible_id = weapon_id
-                most_possible_count = weapon_count
+        except:
+            IkaUtils.dprint(
+                '%s: Exception occured in deadly_weapon recognition.' % self)
+            IkaUtils.dprint(traceback.format_exc())
 
-        if (most_possible_count == 0) or (most_possible_id is None):
-            return None
-
-        context['game']['last_death_reason'] = most_possible_id
-        context['game']['death_reasons'][most_possible_id] = \
-            context['game']['death_reasons'].get(most_possible_id, 0) + 1
-
-        return most_possible_id
+        IkaUtils.dprint('%s: deadly_weapon recognition finished.' % self)
 
     def reset(self):
         super(GameDead, self).reset()
 
+        self.deadly_weapon_images = []
         self._last_event_msec = - 100 * 1000
         self._cause_of_death_votes = {}
 
@@ -141,10 +142,7 @@ class GameDead(StatefulScene):
 
         # それ以上マッチングしなかった場合 -> シーンを抜けている
         if not self.matched_in(context, 5 * 1000, attr='_last_event_msec'):
-            self.count_death_reason_votes(context)
-
-            if 'last_death_reason' in context['game']:
-                self._call_plugins('on_game_death_reason_identified')
+            self.recognize_cause_of_death(context)
 
             self._call_plugins('on_game_respawn')
 
@@ -152,6 +150,7 @@ class GameDead(StatefulScene):
         self._switch_state(self._state_default)
         context['game']['dead'] = False
         self._cause_of_death_votes = {}
+        self.deadly_weapon_images = []
 
         return False
 
@@ -177,6 +176,9 @@ class GameDead(StatefulScene):
             self.deadly_weapon_recoginizer = DeadlyWeaponRecoginizer()
         except:
             self.deadly_weapon_recoginizer = None
+
+        self._client = APIClient(local_mode=True)
+        # self._client = APIClient(local_mode=False, base_uri='http://localhost:8000')
 
 if __name__ == "__main__":
     GameDead.main_func()

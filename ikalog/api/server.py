@@ -25,6 +25,7 @@ import logging
 
 import ikalog.constants
 from ikalog.utils import *
+from ikalog.utils.character_recoginizer import DeadlyWeaponRecoginizer
 
 import cv2
 import numpy as np
@@ -38,6 +39,58 @@ weapons.knn_train()
 
 
 class APIServer(object):
+
+    def _unpack_deadly_weapons_image(self, payload):
+        h = payload['sample_height']
+        w = payload['sample_width']
+        lang = payload['game_language']
+        img_bytes = payload['samples']
+        samples1 = cv2.imdecode(np.fromstring(img_bytes, dtype='uint8'), 1)
+        num_samples = int(samples1.shape[0] / h)
+
+        last_image = None
+        y = 0
+
+        images = []
+
+        deadly_weapon_recoginizer = DeadlyWeaponRecoginizer()
+
+        votes = {}
+        for i in range(num_samples):
+            image = samples1[y: y + h, :]
+            if last_image is None:
+                last_image = np.array(image, dtype=np.int16)
+                current_image = image
+            else:
+                diff_image = np.array(image, dtype=np.int16)
+                current_image = abs(last_image - diff_image)
+
+            current_image1 = np.array(current_image, dtype=np.uint8)
+            current_image3 = cv2.cvtColor(current_image1, cv2.COLOR_BGR2GRAY)
+            id = deadly_weapon_recoginizer.match(current_image1)
+
+            votes[id] = votes.get(id, 0) + 1
+            # cv2.imshow('aaa', current_image1)
+            # cv2.waitKey(100)
+
+            y = y + h
+
+        best_result = (None, 0)
+        for weapon_id in votes.keys():
+            if votes[weapon_id] > best_result[1]:
+                best_result = (id, votes[weapon_id])
+        response_payload = {
+            'status': 'ok',
+            'deadly_weapon': best_result[0],
+            'score': best_result[1],
+            'total': num_samples,
+        }
+
+        return response_payload
+
+    def recoginize_deadly_weapons(self, payload):
+        response_payload = self._unpack_deadly_weapons_image(payload)
+        return response_payload
 
     def recoginize_weapons(self, payload):
         weapons_list = []
@@ -64,12 +117,18 @@ class APIServer(object):
     def process_request(self, path, payload):
         handler = {
             '/api/v1/recoginizer/weapon': self.recoginize_weapons,
+            '/api/v1/recoginizer/deadly_weapon': self.recoginize_deadly_weapons,
         }.get(path, None)
 
         if handler is None:
             raise Exception('Invalid API Path %s' % path)
 
-        return handler(payload)
+        response_payload = handler(payload)
+
+        if hasattr(self, 'callback_func'):
+            self.callback_func(path, payload, response_payload)
+
+        return response_payload
 
 
 class HTTPRequestHandler(SimpleHTTPRequestHandler):
