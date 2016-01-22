@@ -262,8 +262,8 @@ class Commentator(object):
             return sub_weapons[reason]['ja']
         if reason in special_weapons:
             return special_weapons[reason]['ja']
-        if reason in hoko_attacks:
-            return hoko_attacks[reason]['ja']
+        if reason in hurtable_objects:
+            return hurtable_objects[reason]['ja']
         return self.custom_read['unknown']
 
     def on_game_finish(self, context):
