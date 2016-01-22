@@ -63,6 +63,10 @@ class GameDead(StatefulScene):
             cv2.imwrite(filename, img_weapon_b)
             self.time_last_write = context['engine']['msec']
 
+        # Workaround for languages that deadly_weapons is not trained
+        if not Localization.get_game_languages()[0] in ['ja', 'en_NA']:
+            return
+
         img_weapon_b_bgr = cv2.cvtColor(img_weapon_b, cv2.COLOR_GRAY2BGR)
         weapon_id = self.deadly_weapon_recoginizer.match(img_weapon_b_bgr)
 

@@ -157,10 +157,12 @@ special_weapons = {
 
 deadly_special_weapons = ['daioika', 'megaphone', 'supershot', 'tornado', ]
 
-hoko_attacks = {
+hurtable_objects = {
     'hoko_shot': {'ja': 'ガチホコショット', 'en': 'Rainmaker Shot', },
     'hoko_barrier': {'ja': 'ガチホコバリア', 'en': 'Rainmaker Shield', },
     'hoko_inksplode': {'ja': 'ガチホコ爆発', 'en': 'Rainmaker Inksplode', },
+
+    'propeller': {'ja': 'プロペラから飛び散ったインク', 'en': 'Ink from a propeller' },
 }
 
 oob_reasons = {
