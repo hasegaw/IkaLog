@@ -139,7 +139,13 @@ class GameDead(StatefulScene):
 
         # それ以上マッチングしなかった場合 -> シーンを抜けている
         if not self.matched_in(context, 5 * 1000, attr='_last_event_msec'):
-            self.recognize_cause_of_death(context)
+            # Remote recognition service may take time, the recogniton is
+            # performed in another thread.
+            worker = threading.Thread(
+                target=self.recognize_cause_of_death,
+                args=(context, )
+            )
+            worker.start()
 
             self._call_plugins('on_game_respawn')
 
