@@ -125,15 +125,22 @@ class DeadlyWeaponRecoginizer(CharacterRecoginizer):
         self.responses = l[1]
         self.name2id_table = l[2]
 
-    def __new__(cls, *args, **kwargs):
+    __instances__ = {}
 
-        if not hasattr(cls, '__instance__'):
-            cls.__instance__ = super(
-                DeadlyWeaponRecoginizer, cls).__new__(cls, *args, **kwargs)
+    def __new__(cls, game_language):
 
-        return cls.__instance__
+        if game_language in cls.__instances__.keys():
+            return cls.__instances__[game_language]
 
-    def __init__(self):
+        if not hasattr(cls, '__instances__'):
+            cls.__instances__ = {}
+
+        cls.__instances__[game_language] = super(
+            DeadlyWeaponRecoginizer, cls).__new__(cls)
+
+        return cls.__instances__[game_language]
+
+    def __init__(self, game_language):
         if hasattr(self, 'trained') and self.trained:
             return
 
@@ -144,14 +151,7 @@ class DeadlyWeaponRecoginizer(CharacterRecoginizer):
         self.x_cutter = self  # 変則的だがカッターとして自分を使う
         self.sample_height = 16
 
-        lang = Localization.get_game_languages()[0]
-        for lang_ in Localization.get_game_languages():
-            model_name = 'data/deadly_weapons.%s.model' % lang_
-            if os.path.isfile(model_name):
-                lang = lang_
-                break
-
-        model_name = 'data/deadly_weapons.%s.model' % lang
+        model_name = 'data/deadly_weapons.%s.model' % game_language
 
         if os.path.isfile(model_name):
             self.load_model_from_file(model_name)

@@ -26,7 +26,7 @@ import numpy as np
 import umsgpack
 
 from ikalog.api import APIServer
-from ikalog.utils import Localization
+from ikalog.utils import Localization, IkaUtils
 
 
 class APIClient(object):
@@ -42,17 +42,25 @@ class APIClient(object):
         mp_payload = ''.join(map(chr, umsgpack.packb(payload)))
 
         try:
-            pool = urllib3.PoolManager()
+            pool = urllib3.PoolManager(timeout=3.0)
             req = pool.urlopen(
                 'POST',
                 url_api,
                 headers=http_headers,
                 body=mp_payload,
             )
-        except urllib3.exceptions.MaxRetryError:
-            raise Exception('API Error: Failed to connect to API endpoint.')
+            return json.loads(req.data.decode('utf-8'))
 
-        return json.loads(req.data.decode('utf-8'))
+        except urllib3.exceptions.MaxRetryError:
+            fallback = self._fallback  # or .... or ...
+
+            if fallback:
+                IkaUtils.dprint(
+                    '%s: Remote API Error. Falling back to local mode' % self)
+                return self._local_request_func(path, payload)
+
+        raise Exception(
+            'API Error: Failed to connect to API endpoint. (No fallback)')
 
     def recoginize_weapons(self, weapons_list):
         payload = []
@@ -141,16 +149,16 @@ class APIClient(object):
 
         return response
 
-    def __init__(self, base_uri=None, local_mode=False):
+    def __init__(self, base_uri=None, local_mode=False, fallback=True):
+        self._server = APIServer()
+
         if local_mode:
             self._request_func = self._local_request_func
-            self._server = APIServer()
         else:
             assert base_uri is not None
             self._request_func = self._http_request_func
             self.base_uri = base_uri
-
-        pass
+            self._fallback = fallback
 
 if __name__ == "__main__":
 
