@@ -36,9 +36,6 @@ class GameDead(StatefulScene):
     }
 
     def recoginize_and_vote_death_reason(self, context):
-        if self.deadly_weapon_recoginizer is None:
-            return False
-
         lang_short = Localization.get_game_languages()[0][0:2]
 
         try:
@@ -171,11 +168,6 @@ class GameDead(StatefulScene):
             label='dead',
             debug=debug,
         )
-
-        try:
-            self.deadly_weapon_recoginizer = DeadlyWeaponRecoginizer()
-        except:
-            self.deadly_weapon_recoginizer = None
 
         self._client = APIClient(local_mode=True)
         # self._client = APIClient(local_mode=False, base_uri='http://localhost:8000')
