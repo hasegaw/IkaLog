@@ -15,4 +15,8 @@ Installation guides for OS X and Windows:
 
 py2exe 済みの配布物ではなくレポジトリ上のコードを動かしたりしたい場合は
 下記ファイルの内容を確認してください。
-  <https://github.com/hasegaw/IkaLog/blob/master/INSTALL>
+  <https://github.com/hasegaw/IkaLog/blob/master/INSTALL_JA>
+
+In case you want to run this code instead of using py2exe pre-built release, 
+see the file below.
+  <https://github.com/hasegaw/IkaLog/blob/master/INSTALL_EN>
