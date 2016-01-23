@@ -115,7 +115,7 @@ class ResultDetail(StatefulScene):
 
     def rebuild_model(self, dest_filename, src_filename=None, img=None, normalizer_func=None):
         if img is None:
-            img = cv2.imread(src_filename, 0)
+            img = imread(src_filename, 0)
 
         assert img is not None
 
@@ -145,7 +145,7 @@ class ResultDetail(StatefulScene):
                 '%s: Failed to load akaze model. trying to rebuild...' % self)
             self.rebuild_model(
                 model_filename,
-                img=cv2.imread('data/result_detail_features.png'),
+                img=imread('data/result_detail_features.png'),
                 normalizer_func=self.result_detail_normalizer
             )
             self.load_model_from_file(model_filename)
@@ -777,7 +777,7 @@ class ResultDetail(StatefulScene):
 
         if not os.path.exists(mask_file):
             mask_file = os.path.join(base_dir, 'masks', 'result_detail.png')
-        winlose = cv2.imread(mask_file)
+        winlose = imread(mask_file)
         self.winlose_gray = cv2.cvtColor(winlose, cv2.COLOR_BGR2GRAY)
 
         self._white_filter = matcher.MM_WHITE()

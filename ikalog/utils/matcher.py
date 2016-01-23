@@ -19,6 +19,7 @@
 #
 
 import traceback
+from ikalog.utils import imread
 from ikalog.utils.ikautils import *
 from ikalog.utils.localization import Localization
 
@@ -292,12 +293,12 @@ class IkaMatcher(object):
 
         if not img_file is None:
             img_file2 = self._find_image_file(img_file)
-            img = cv2.imread(img_file2)
+            img = imread(img_file2)
 
             if img is None:
                 IkaUtils.dprint(
                     '%s is not available. Retrying with %s' % (img_file2, img_file))
-                img = cv2.imread(img_file)
+                img = imread(img_file)
 
         if img is None:
             raise Exception('Could not load mask image %s (%s)' %

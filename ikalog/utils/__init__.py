@@ -19,6 +19,8 @@
 #
 from __future__ import print_function
 
+from .image_loader import imread
+
 from .ikautils import IkaUtils
 from .matcher import IkaMatcher
 from .certifi import Certifi
