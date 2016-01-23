@@ -59,20 +59,15 @@ class APIServer(object):
         for i in range(num_samples):
             image = samples1[y: y + h, :]
             if last_image is None:
-                last_image = np.array(image, dtype=np.int16)
+                last_image = np.array(image, dtype=np.uint8)
                 current_image = image
             else:
-                diff_image = np.array(image, dtype=np.int16)
+                diff_image = image
                 current_image = abs(last_image - diff_image)
 
-            current_image1 = np.array(current_image, dtype=np.uint8)
-            current_image3 = cv2.cvtColor(current_image1, cv2.COLOR_BGR2GRAY)
-            id = deadly_weapon_recoginizer.match(current_image1)
+            id = deadly_weapon_recoginizer.match(current_image)
 
             votes[id] = votes.get(id, 0) + 1
-            # cv2.imshow('aaa', current_image1)
-            # cv2.waitKey(100)
-
             y = y + h
 
         best_result = (None, 0)
