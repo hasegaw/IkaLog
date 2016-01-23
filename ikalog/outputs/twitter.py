@@ -328,7 +328,7 @@ class Twitter(object):
             self.panel, wx.ID_ANY, _('Attach a screenshot'))
         self.checkTweetMyScore = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Include my score'))
-        self.checkTweetKd = wx.CheckBox(self.panel, wx.ID_ANY, _('Include my K/D raito'))
+        self.checkTweetKd = wx.CheckBox(self.panel, wx.ID_ANY, _('Include my K/D ratio'))
         self.checkTweetUdemae = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Include my rank in ranked mode'))
         self.checkUseReply = wx.CheckBox(
