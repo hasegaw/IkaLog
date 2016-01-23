@@ -98,7 +98,7 @@ class Localization(object):
                 'locale'
             )
 
-        return gettext.translation(domain, localdir, fallback=True)
+        return gettext.translation(domain, localdir, languages, fallback=True)
 
     @staticmethod
     def print_language_settings():
