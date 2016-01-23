@@ -58,7 +58,7 @@ msgid "Include my score"
 msgstr "ナワバリスコアを投稿する"
 
 #: ikalog/outputs/twitter.py:340
-msgid "Include my K/D raito"
+msgid "Include my K/D ratio"
 msgstr "K/Dレートを投稿する"
 
 #: ikalog/outputs/twitter.py:342
