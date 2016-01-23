@@ -55,14 +55,18 @@ class VideoCapture(object):
     def enumerate_devices(self):
         if IkaUtils.isWindows():
             from ikalog.inputs.win.videoinput_wrapper import VideoInputWrapper
-            return VideoInputWrapper().get_device_list()
+            cameras = VideoInputWrapper().get_device_list()
 
         else:
-            return [
+            cameras = [
                 'IkaLog does not support camera enumeration on this platform.',
                 'IkaLog does not support camera enumeration on this platform.',
                 'IkaLog does not support camera enumeration on this platform.',
             ]
+
+        if len(cameras) == 0:
+            cameras = [ _('No input devices found!') ]
+        return cameras
 
     def initialize_input(self):
 
