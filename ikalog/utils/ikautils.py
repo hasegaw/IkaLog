@@ -30,6 +30,7 @@ from PIL import Image
 
 from ikalog.constants import stages, rules, gear_abilities
 from ikalog.utils.localization import Localization
+from ikalog.utils import imread
 
 class IkaUtils(object):
 
@@ -223,7 +224,7 @@ class IkaUtils(object):
 
     @staticmethod
     def loadMask(file, left, top, width, height):
-        mask = cv2.imread(file)
+        mask = imread(file)
         if mask is None:
             print("マスクデータ %s のロードに失敗しました")
             # raise a exception
