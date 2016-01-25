@@ -21,7 +21,7 @@
 #  IkaLog Constants
 
 stages = {
-    # 'anchovy': {'ja': 'アンチョビットゲームズ', 'en': 'Ancho-V Games'},
+    'anchovy': {'ja': 'アンチョビットゲームズ', 'en': 'Ancho-V Games'},
     'arowana':  {'ja': 'アロワナモール',      'en': 'Arowana Mall'},
     'bbass':    {'ja': 'Bバスパーク',         'en': 'Blackbelly Skatepark'},
     'dekaline': {'ja': 'デカライン高架下',    'en': 'Urchin Underpass'},
@@ -33,7 +33,7 @@ stages = {
     'masaba':   {'ja': 'マサバ海峡大橋',      'en': 'Hammerhead Bridge', },
     'mongara':  {'ja': 'モンガラキャンプ場',  'en': 'Camp Triggerfish', },
     'mozuku':   {'ja':  'モズク農園',         'en': 'Kelp Dome', },
-    'negitoro': {'ja': 'ネギトロ炭鉱',        'en': 'Bulefin Depot', },
+    'negitoro': {'ja': 'ネギトロ炭鉱',        'en': 'Bluefin Depot', },
     'shionome': {'ja': 'シオノメ油田',        'en': 'Saltspray Rig', },
     'shottsuru': {'ja': 'ショッツル鉱山',     'en': 'Piranha Pit'},
     'tachiuo':  {'ja':  'タチウオパーキング', 'en':  'Moray Towers', },
@@ -157,10 +157,12 @@ special_weapons = {
 
 deadly_special_weapons = ['daioika', 'megaphone', 'supershot', 'tornado', ]
 
-hoko_attacks = {
+hurtable_objects = {
     'hoko_shot': {'ja': 'ガチホコショット', 'en': 'Rainmaker Shot', },
     'hoko_barrier': {'ja': 'ガチホコバリア', 'en': 'Rainmaker Shield', },
     'hoko_inksplode': {'ja': 'ガチホコ爆発', 'en': 'Rainmaker Inksplode', },
+
+    'propeller': {'ja': 'プロペラから飛び散ったインク', 'en': 'Ink from a propeller' },
 }
 
 oob_reasons = {
