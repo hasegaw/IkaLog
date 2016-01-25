@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
@@ -17,28 +18,20 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import os
 
-from ikalog.utils import Localization, IkaUtils
-Localization.print_language_settings()
-
-import signal
-from ikalog.engine import *
-from IkaConfig import *
-from ikalog.utils import *
+import cv2
+import numpy as np
+from PIL import Image
 
 
-def signal_handler(num, frame):
-    IkaUtils.dprint('IkaLog: got signal %d' % num)
-    if num == 2:
-        engine.stop()
+def imread(filename):
+    if not os.path.exists(filename):
+        return None
 
-signal.signal(signal.SIGINT, signal_handler)
+    f = open(filename, 'rb')
+    img_bytes = f.read()
+    f.close()
 
-capture, OutputPlugins = IkaConfig().config()
-engine = IkaEngine()
-engine.pause(False)
-engine.set_capture(capture)
-engine.set_plugins(OutputPlugins)
-engine.close_session_at_eof = True
-engine.run()
-IkaUtils.dprint('bye!')
+    img = cv2.imdecode(np.fromstring(img_bytes, dtype='uint8'), 1)
+    return img
