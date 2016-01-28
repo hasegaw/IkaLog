@@ -234,7 +234,7 @@ class VideoCapture(object):
         is_windows = IkaUtils.isWindows()
 
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, 'Input')
+        self.page = notebook.InsertPage(0, self.panel, _('Video Input'))
 
         cameras = self.enumerate_devices()
 
