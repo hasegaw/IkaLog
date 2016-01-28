@@ -364,9 +364,6 @@ class Twitter(object):
         self.layout.Add(self.checkTweetMyScore)
         self.layout.Add(self.checkTweetKd)
         self.layout.Add(self.checkTweetUdemae)
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Additional Message')))
-
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Consumer Key to use')))
         self.layout.Add(layout)
 
         self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Consumer Key')))
