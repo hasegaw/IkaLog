@@ -18,12 +18,13 @@
 #  limitations under the License.
 #
 
-from subprocess import Popen, PIPE
+import platform
 import re
+from subprocess import Popen, PIPE
 
-def __get_ikalog_version():
+def __get_ikalog_revision():
     try:
-        commit_id = Popen(["git", "rev-parse", "--short", "HEAD"], stdout=PIPE).communicate()[0].decode('utf-8')
+        commit_id = Popen(['git', 'rev-parse', '--short', 'HEAD'], stdout=PIPE).communicate()[0].decode('utf-8')
         version = re.sub(r'\s+', r'', commit_id)
         if version == '':
             return 'unknown'
@@ -31,4 +32,10 @@ def __get_ikalog_version():
     except:
         return 'unknown'
 
+def __get_ikalog_version():
+    return '%s (%s)' % (__get_ikalog_revision(), platform.system())
+
 IKALOG_VERSION =  __get_ikalog_version()
+
+if __name__ == '__main__':
+    print(IKALOG_VERSION)
