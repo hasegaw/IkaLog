@@ -79,16 +79,17 @@ class IkaEngine:
 
     def read_next_frame(self, skip_frames=0):
         for i in range(skip_frames):
-            frame, t = self.capture.read()
-        frame, t = self.capture.read()
+            frame = self.capture.read_frame()
+        frame = self.capture.read_frame()
 
         while frame is None:
             self.call_plugins('on_frame_read_failed')
             if self._stop:
                 return None, None
             cv2.waitKey(1000)
-            frame, t = self.capture.read()
+            frame = self.capture.read_frame()
 
+        t = self.capture.get_current_timestamp()
         self.context['engine']['msec'] = t
         self.context['engine']['frame'] = frame
 
@@ -150,6 +151,8 @@ class IkaEngine:
             print('%s: entering %s' % (self, scene.__class__.__name__))
             while r and (not self._stop):
                 frame, t = self.read_next_frame()
+                if frame is None:
+                    continue
                 context['engine']['frame'] = frame
                 scene.new_frame(context)
                 r = scene.match(context)
@@ -167,11 +170,7 @@ class IkaEngine:
     def process_frame(self):
         context = self.context
 
-        skip_frames = 0
-        if (self.capture.from_file and self.capture.fps > 28):
-            skip_frames = int(self.capture.fps * 0.1)
-
-        frame, t = self.read_next_frame(skip_frames=skip_frames)
+        frame, t = self.read_next_frame()
 
         if frame is None:
             return False

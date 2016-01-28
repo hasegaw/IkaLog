@@ -18,43 +18,28 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-
-import gettext
 import os
-import sys
+import ctypes
 import time
+import threading
 
 import cv2
 import numpy as np
 
+from ikalog.utils import *
+from ikalog.inputs import VideoInput
 from ikalog.inputs.filters import WarpFilter
-from ikalog.utils import IkaUtils, Localization
 
 _ = Localization.gettext_translation('screencapture', fallback=True).gettext
 
-class ScreenCapture(object):
-    ''' ScreenCapture input plugin
-    This plugin depends on python-pillow ( https://pillow.readthedocs.org/ ).
-    This plugin now supports only IkaLog.py.
-    You can use this plugin if you modify IkaConfig.py
-    ```
-from ikalog.inputs.screencapture import ScreenCapture
 
-class IkaConfig:
-    def config(self):
-        source = ScreenCapture()
-    ```
-    '''
-    from_file = False
+class ScreenCapture(VideoInput):
 
-    _out_width = 1280
-    _out_height = 720
+    cap_optimal_input_resolution = False
 
     # FIXME: Filter classes refer these variables.
     out_width = 1280
     out_height = 720
-
-    _launch = 0
 
     # on_valide_warp
     # Handler being called by warp calibration process.
@@ -69,7 +54,7 @@ class IkaConfig:
     def on_validate_warp(self, points):
         w = int(points[1][0] - points[0][0])
         h = int(points[2][1] - points[1][1])
-        print('on_validate_warp: ', w, h)
+        IkaUtils.dprint('on_validate_warp: ', w, h)
 
         acceptable_geoms = [[720, 1280], [1080, 1920]]
 
@@ -89,19 +74,21 @@ class IkaConfig:
         elif acceptable:
             msg = '\n'.join([
                 _('Calibration succeeded!'),
-                _('Due to the input resultion (%d x %d) some recognition may fail unexpectedly.') % (w, h),
+                _('Due to the input resultion (%d x %d) some recognition may fail unexpectedly.') % (
+                    w, h),
                 _('IkaLog expects 1280 x 720, or 1920 x 1080 as input resolution.'),
             ])
-            try:
-                r = wx.MessageDialog(None, msg, _('Warning'),
-                                     wx.OK | wx.ICON_ERROR).ShowModal()
-            except:
-                IkaUtils.dprint(msg)
+            IkaUtils.dprint(msg)
         else:
             return False
 
         self.last_capture_geom = (h, w)
         return True
+
+    def reset(self):
+        self._warp_filter = WarpFilter(self)
+        self._calibration_requested = False
+        super(ScreenCapture, self).reset()
 
     def auto_calibrate(self, img):
         r = self._warp_filter.calibrateWarp(
@@ -117,14 +104,10 @@ class IkaConfig:
                 _('Calibration failed! Cannot detect WiiU display.'),
                 _('IkaLog expects 1280 x 720, or 1920 x 1080 as input resolution.'),
             ])
-            try:
-                r = wx.MessageDialog(None, msg, _('Warning'),
-                                     wx.OK | wx.ICON_ERROR).ShowModal()
-            except:
-                IkaUtils.dprint(msg)
+            IkaUtils.dprint(msg)
             return False
 
-    def read_raw(self):
+    def capture_screen(self):
         from PIL import ImageGrab
 
         try:
@@ -134,75 +117,48 @@ class IkaConfig:
             IkaUtils.dprint('%s: Failed to grab desktop image' % self)
             return None
 
-        img = np.asarray(img)
-        return img
+        return cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)
 
-    def read(self):
-        img = self.read_raw()
-
-        if img is None:
-            return None, None
+    def _read_frame_func(self):
+        img = self.capture_screen()
 
         if self._calibration_requested:
             self._calibration_requested = False
-            img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-            self.auto_calibrate(img_bgr)
+            self.auto_calibrate(img)
 
         img = self._warp_filter.execute(img)
 
-        img = cv2.resize(img, (self._out_width, self._out_height))
-
-        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        t = self._time() - self._launch
-        return (img, t)
+        return img
 
     def on_key_press(self, context, key):
         if (key == ord('c') or key == ord('C')):
             # 次回キャリブレーションを行う
             self._calibration_requested = True
 
-    def _time(self):
-        return int(time.time() * 1000)
+    def _is_active_func(self):
+        return True
 
-    def _check_import(self):
-        try:
-            from PIL import ImageGrab
-        except:
-            sys.exit(
-                "モジュール python-pillow がロードできませんでした。\n" +
-                "インストールするには以下のコマンドを利用してください。\n" +
-                "pip install Pillow"
-            )
+    def _initialize_driver_func(self):
+        pass
 
-    def reset(self):
-        self._warp_filter = WarpFilter(self)
+    def _cleanup_driver_func(self):
+        pass
 
-    def __init__(self, bbox=None):
-        '''
-        bbox -- bbox Crop bounding box as (x, y, w, h)
-        '''
-        self._check_import()
-        self.last_input_geom = None
+    def _select_device_by_index_func(self, source):
+        IkaUtils.dprint(
+            '%s: Does not support _select_device_by_index_func()' % self)
 
-        self._launch = self._time()
-
-        self._warp_filter = WarpFilter(self)
-        self._calibration_requested = False
-        if bbox is not None:
-            self._warp_filter.set_bbox(
-                bbox[0], bbox[1], bbox[2], bbox[3],
-            )
-            self._warp_filter.enable()
-
-        IkaUtils.dprint('%s: initalizing screen capture' % (self))
+    def _select_device_by_name_func(self, source):
+        IkaUtils.dprint(
+            '%s: Does not support _select_device_by_name_func()' % self)
 
 if __name__ == "__main__":
     obj = ScreenCapture()
 
     k = 0
     while k != 27:
-        frame, t = obj.read()
-        cv2.imshow(obj.__class__.__name__, frame)
-        print(t)
+        frame = obj.read_frame()
+        if frame is not None:
+            cv2.imshow(obj.__class__.__name__, frame)
         k = cv2.waitKey(1)
         obj.on_key_press(None, k)

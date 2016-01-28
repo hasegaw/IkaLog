@@ -25,72 +25,43 @@ import cv2
 
 from ikalog.utils import *
 from ikalog.inputs.win.videoinput_wrapper import VideoInputWrapper
+from ikalog.inputs import VideoInput
 
 
-class DirectShow(object):
-    out_width = 1280
-    out_height = 720
-    from_file = False
-    need_resize = False
-    need_deinterlace = False
-    realtime = True
-    offset = (0, 0)
+class DirectShow(VideoInput):
 
-    _systime_launch = int(time.time() * 1000)
-
-    lock = threading.Lock()
-
-    def enumerate_input_sources(self):
+    def _enumerate_sources_func(self):
         return self._videoinput_wrapper.get_device_list()
 
     def read_raw(self):
         if self._device_id is None:
             return None
 
-        self.lock.acquire()
-        try:
-            frame = self._videoinput_wrapper.get_pixels(
-                self._device_id,
-                parameters=(self._videoinput_wrapper.VI_BGR +
-                            self._videoinput_wrapper.VI_VERTICAL_FLIP)
+        frame = self._videoinput_wrapper.get_pixels(
+            self._device_id,
+            parameters=(
+                self._videoinput_wrapper.VI_BGR +
+                self._videoinput_wrapper.VI_VERTICAL_FLIP
             )
-        finally:
-            self.lock.release()
+        )
 
         return frame
 
-    def read(self):
+    def _read_frame_func(self):
         frame = self.read_raw()
+        return frame
 
-        if frame is None:
-            # next frame is not ready.
-            return None, None
+    def _initialize_driver_func(self):
+        pass
 
-        t = int(time.time() * 1000) - self._systime_launch
-        return frame, t
+    def _cleanup_driver_func(self):
+        pass
 
-        res720p = (frame.shape[0] == 720) and (frame.shape[1] == 1280)
-        res1080p = (frame.shape[0] == 1080) and (frame.shape[1] == 1920)
+    def _is_active_func(self):
+        return (self._device_id is not None)
 
-        if not (res720p or res1080p):
-            if not self._warned_resolution:
-                params = (frame.shape[1], frame.shape[0])
-                IkaUtils.dprint(
-                    '解像度が不正です(%d, %d)。使用可能解像度: 1280x720 もしくは 1920x1080' % params)
-                self._warned_resolution = True
-            return None, None
-
-        if t < self.last_t:
-            IkaUtils.dprint(
-                'FIXME: time position data rewinded. t=%s last_t=%s' % (t, self.last_t))
-        self.last_t = t
-
-        if self.need_resize:
-            return cv2.resize(frame, (self.out_width, self.out_height)), t
-        else:
-            return frame, t
-
-    def init_capture(self, device_id, width=1280, height=720, framerate=59.94):
+    def _select_device_by_index_func(self, source, width=1280, height=720, framerate=59.94):
+        device_id = int(source)
         vi = self._videoinput_wrapper
         self.lock.acquire()
         try:
@@ -120,7 +91,7 @@ class DirectShow(object):
                         (width == self._source_width) and (
                             height == self._source_height)
 
-                    if success:
+                    if success or (not self.cap_optimal_input_resolution):
                         self._device_id = device_id
                         break
 
@@ -135,48 +106,39 @@ class DirectShow(object):
         finally:
             self.lock.release()
 
-        self.last_t = 0
+    def _select_device_by_name_func(self, source):
+        IkaUtils.dprint('%s: Select device by name "%s"' % (self, source))
 
-    def start_camera(self, source_name):
         try:
-            source = int(source_name)
-        except:
-            IkaUtils.dprint('%s: Looking up device name %s' %
-                            (self, source_name))
+            index = self.enumerate_sources().index(source)
+        except ValueError:
+            IkaUtils.dprint('%s: Input "%s" not found' % (self, source))
+            return False
 
-            try:
-                source = self.enumerate_input_sources().index(source_name)
-            except:
-                IkaUtils.dprint("%s: Input '%s' not found" %
-                                (self, source_name))
-                return False
-
-        IkaUtils.dprint('%s: initalizing capture device %s' % (self, source))
-        self.realtime = True
-        self.init_capture(source)
+        IkaUtils.dprint('%s: "%s" -> %d' % (self, source, index))
+        self._select_device_by_index_func(index)
 
     def __init__(self):
+        self.strict_check = False
         self._device_id = None
-        self.last_t = 0
         self._warned_resolution = False
-
         self._videoinput_wrapper = VideoInputWrapper()
+        super(DirectShow, self).__init__()
 
 if __name__ == "__main__":
     obj = DirectShow()
 
-    list = obj.enumerate_input_sources()
+    list = obj.enumerate_sources()
     for n in range(len(list)):
-        print("%d: %s" % (n, list[n]))
+        IkaUtils.dprint("%d: %s" % (n, list[n]))
 
     dev = input("Please input number (or name) of capture device: ")
 
-    obj.start_camera(dev)
+    obj.select_source(dev)
 
     k = 0
     while k != 27:
-        frame, t = obj.read()
-        # print(frame, t)
+        frame = obj.read_frame()
         if frame is not None:
             cv2.imshow(obj.__class__.__name__, frame)
-        k = cv2.waitKey(1)
+        cv2.waitKey(1)

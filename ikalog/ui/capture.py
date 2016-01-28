@@ -37,12 +37,17 @@ class VideoCapture(object):
     deinterlace = False
     File = ''
 
-    def read(self):
+    def read_frame(self):
         if self.capture is None:
             return None, None
 
-        r = self.capture.read()
+        r = self.capture.read_frame()
         return r
+
+    def get_current_timestamp(self):
+        if self.capture is None:
+            return None
+        return self.capture.get_current_timestamp()
 
     def start_recorded_file(self, file):
         IkaUtils.dprint(
@@ -74,31 +79,31 @@ class VideoCapture(object):
         print(self.source, self.source_device)
         if self.source == 'dshow_capture':
             self.capture = inputs.DirectShow()
-            self.capture.start_camera(self.source_device)
+            self.capture.select_source(name=self.source_device)
 
         elif self.source == 'opencv_capture':
-            if IkaUtils.isWindows():
-                self.capture = inputs.CVCapture()
-                self.capture.start_camera(self.source_device)
-            else:  # FIXME
-                self.capture = inputs.AVFoundationCapture()
+            self.capture = inputs.CVCapture()
+            self.capture.select_source(name=self.source_device)
 
         elif self.source == 'screen':
             self.capture = inputs.ScreenCapture()
-            self.capture.calibrate()
+            img = self.capture.capture_screen()
+            if img is not None:
+                self.capture.auto_calibrate(img)
 
         elif self.source == 'amarec':
-            self.capture = inputs.CVCapture()
-            self.capture.start_camera(self.DEV_AMAREC)
+            self.capture = inputs.DirectShow()
+            self.capture.select_source(name=self.DEV_AMAREC)
 
         elif self.source == 'file':
             self.capture = inputs.CVFile()
-            self.start_recorded_file(self.File)
+            self.start_recorded_file(name=self.File)
 
         # ToDo reset context['engine']['msec']
-        success = True
+        success = (self.capture is not None)
+        if success:
+            self.capture.set_frame_rate(10)
 
-        print(self.capture)
         return success
 
     def apply_ui(self):
@@ -217,7 +222,7 @@ class VideoCapture(object):
 
     def on_calibrate_screen_button_click(self, event=None):
         if (self.capture is not None) and self.capture.__class__.__name__ == 'ScreenCapture':
-            img = self.capture.read_raw()
+            img = self.capture.capture_screen()
             if img is not None:
                 self.capture.auto_calibrate(img)
 

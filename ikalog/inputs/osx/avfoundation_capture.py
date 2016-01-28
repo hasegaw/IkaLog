@@ -29,6 +29,7 @@ import numpy as np
 from numpy.ctypeslib import ndpointer
 
 from ikalog.utils import *
+from ikalog.inputs import VideoInput
 
 
 class AVFoundationCaptureDevice(object):
@@ -64,7 +65,8 @@ class AVFoundationCaptureDevice(object):
         self.dll.setupAVCapture.restype = None
         self.dll.stopAVCapture.argtypes = None
         self.dll.stopAVCapture.restype = None
-        self.dll.readFrame.argtypes = [ ndpointer(ctypes.c_uint8, flags="C_CONTIGUOUS")]
+        self.dll.readFrame.argtypes = [
+            ndpointer(ctypes.c_uint8, flags="C_CONTIGUOUS")]
         self.dll.readFrame.restype = None
         self.dll.selectCaptureDevice.argtypes = [ctypes.c_int]
         self.dll.selectCaptureDevice.restype = None
@@ -74,106 +76,71 @@ class AVFoundationCaptureDevice(object):
         self._init_library()
         self.dll.setupAVCapture()
 
-class AVFoundationCapture(object):
-    cap = None
-    out_width = 1280
-    out_height = 720
-    need_resize = False
-    need_deinterlace = False
-    realtime = True
-    offset = (0, 0)
 
-    _systime_launch = int(time.time() * 1000)
+class AVFoundationCapture(VideoInput):
 
-    lock = threading.Lock()
+    def _read_frame_func(self):
 
-    def read(self):
-        if self.cap is None:
-            return None, None
-
-        self.lock.acquire()
         ret, frame = self.cap.read()
+        if not ret:
+            return None
+
+        return frame
+
+    def _cleanup_driver_func(self):
+        self.lock.acquire()
+        if not self.cap is None:
+            self.cap = None
+            sleep(0.1)
         self.lock.release()
 
-        if not ret:
-            return None, None
-
-        if self.need_deinterlace:
-            for y in range(frame.shape[0])[1::2]:
-                frame[y, :] = frame[y - 1, :]
-
-        if not (self.offset[0] == 0 and self.offset[1] == 0):
-            ox = self.offset[0]
-            oy = self.offset[1]
-
-            sx1 = max(-ox, 0)
-            sy1 = max(-oy, 0)
-
-            dx1 = max(ox, 0)
-            dy1 = max(oy, 0)
-
-            w = min(self.out_width - dx1, self.out_width - sx1)
-            h = min(self.out_height - dy1, self.out_height - sy1)
-
-            frame[dy1:dy1 + h, dx1:dx1 + w] = frame[sy1:sy1 + h, sx1:sx1 + w]
-
-        t = None
-        t = int(time.time() * 1000) - self._systime_launch
-
-        if self.need_resize:
-            return cv2.resize(frame, (self.out_width, self.out_height)), t
-        else:
-            return frame, t
-
-    def init_capture(self):
+    def _initialize_driver_func(self):
+        IkaUtils.dprint('%s: initializing class' % self)
         self.lock.acquire()
         if not self.cap is None:
             self.cap = None
             sleep(0.1)
 
         self.cap = AVFoundationCaptureDevice()
+
+        time.sleep(3)
+
         self.lock.release()
 
-    def select_device(self, source_name):
-        source = source_name # FIXME
+    def _is_active_func(self):
+        return True
+
+    def _select_device_by_index_func(self, source):
         IkaUtils.dprint('%s: initializing capture device %s' % (self, source))
 
         # initialize target capture device
-        frame, t = self.read()
+        frame = self.read_frame()
         cv2.imshow(self.__class__.__name__, frame)
         cv2.waitKey(3000)
 
-        self.cap.select_device(source_name)
+        self.cap.select_device(source)
+        self.last_tick = self.get_tick()
 
-    def start_camera_impl(self):
-        self.init_capture()
-        self.realtime = True
-        self.from_file = False
+    def _select_device_by_name_func(self, source):
+        IkaUtils.dprint(
+            '%s: Doesn''t support _select_device_by_name_func()' % self)
 
-        # initialize target capture device
-        frame, t = self.read()
-        cv2.imshow(self.__class__.__name__, frame)
-        cv2.waitKey(3000)
-
-    def start_camera(self, source_name):
-        self.start_camera_impl()
-        self.select_device(source_name)
-
-    def restart_input(self):
-        self.start_camera()
+    def __init__(self):
+        self.cap = None
+        super(AVFoundationCapture, self).__init__()
 
 if __name__ == "__main__":
-    obj = AVFoundationCapture()
 
-    obj.start_camera_impl()
+    obj = AVFoundationCapture()
     dev = input("Please input number of capture device: ")
-    obj.select_device(dev)
+    cv2.imshow(obj.__class__.__name__, np.zeros((240, 320), dtype=np.uint8))
+    obj.select_source(dev)
 
     k = 0
     while k != 27:
-        frame, t = obj.read()
+        frame = obj.read_frame()
         image = cv2.resize(frame, (1280, 720))
-        cv2.imshow(obj.__class__.__name__, image)
+        cv2.imshow(AVFoundationCapture.__name__, image)
         k = cv2.waitKey(1)
 
         if k == ord('s'):

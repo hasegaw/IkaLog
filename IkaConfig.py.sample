@@ -27,39 +27,49 @@ class IkaConfig:
     def config(self):
         # 使いたい入力を設定
 
-        # パターン1: Windows 上でキャプチャデバイスを利用
-        # source = inputs.CVCapture()
-        # source.start_camera(0)
+        # パターン1: Windows 上でキャプチャデバイスを利用(DirectShow)
+        # source = inputs.DirectShow()
+        # source.select_device(THE_DEVICE_ID)
 
-        # パターン2: Windows 上でスクリーンキャプチャを利用
+        # パターン2: OpenCV VideoCapture 経由でキャプチャデバイスを利用
+        # source = inputs.CVCapture()
+        # source.select_device(THE_DEVICE_ID)
+
+        # パターン3: Windows 上でスクリーンキャプチャを利用
         # 起動時は全画面を取り込み。 C キー押下で画面内にある WiiU 画面を検出
         # source = inputs.ScreenCapture()
 
-        # パターン3: Mac 上で AVFoundation を介してキャプチャデバイスを利用
+        # パターン4: Mac 上で AVFoundation を介してキャプチャデバイスを利用
         # 現在 UltraStudio Mini Recorder のみ動作確認
         # source = inputs.AVFoundationCapture()
-        # source.start_camera(0)    # デバイス名は環境による
+        # source.select_device(THE_DEVICE_ID)
 
-        # パターン4: OpenCV のビデオファイル読み込み機能を利用する
+        # パターン5: OpenCV のビデオファイル読み込み機能を利用する
         # OpenCV が FFMPEG に対応していること
-        source = inputs.CVFile()
-        source.start_video_file('video.avi')
+        # source = inputs.CVFile()
+        # source.start_video_file(name='video.avi')
+        # source.set_frame_rate(10)
 
-        # パターン5: OpenCV の GStreamerパイプラインからの読み込み機能を利用する
-        # OpenCV が GStreamer に対応していること
-        # 例. Blackmagic Design社のキャプチャデバイスのHDMIポートから720p 59.94fpsで取得する場合
-        #source = inputs.GStreamer()
-        #source.start_gstreamer("decklinksrc connection=hdmi mode=720p5994 device-number=0 ! videoconvert ! appsink")
-        # 例. テストパターンを表示する場合
-        #source = inputs.CVgst()
-        #source.start_gst("videotestsrc ! videoconvert ! appsink")
-        # 他のsrcを利用する場合も ! videoconvert ! appsink は必須
-
-        source.need_resize = True                    # 720p でない場合はリサイズさせる
+        # パターン6: OpenCV の GStreamerパイプラインからの読み込み機能を利用する
+        # ・OpenCV が GStreamer に対応していること
+        # ・パイプラインは '$YOUR_STREAM_SOURCE ! videoconvert ! appsink'
+        #
+        # 例) Blackmagic Design社のキャプチャデバイスのHDMIポートから720p 59.94fpsで取得する場合
+        # source = inputs.GStreamer()
+        # source.select_source(name='decklinksrc connection=hdmi mode=720p5994 device-number=0 ! videoconvert ! appsink')
+        #
+        # 例) テストパターンを表示
+        source = inputs.GStreamer()
+        source.select_source(name='videotestsrc ! videoconvert ! appsink')
 
         # 一部のHDMIキャプチャはHDMIソースのピクセルがずれている。
         # 必要に応じてキャプチャのオフセットを(x, y) 指定
-        # source.offset = (2, 0)            # サンコー HDMVC4UC(左に2ドットずれ)
+        #
+        # source.set_offset = ((2, 0))            # サンコー HDMVC4UC(左に2ドットずれ)
+
+        # 処理するフレームレート数を制限する場合は下記の設定を行う
+        # 経験上 10 フレーム/秒も処理できれば十分
+        # source.set_frame_rate(10)
 
         # 使いたいプラグインを適宜設定
         OutputPlugins = [
@@ -92,8 +102,8 @@ class IkaConfig:
             outputs.Screenshot('./screenshots/'),
 
             # Slack: Slack 連携
-            #   url="http://...."   Slack の Inconming Web Hook URL
-            #   username="botname"  Slack 上に出す bot 名
+            #   url='http://....'   Slack の Inconming Web Hook URL
+            #   username='botname'  Slack 上に出す bot 名
             # outputs.Slack(url='https://hooks.slack.com/services/(incoming hook endpoint)'),
 
             # StatInk: stat.ink (スプラトゥーンプレイ実績投稿サイト)
@@ -138,6 +148,6 @@ class IkaConfig:
 
         return [source, OutputPlugins]
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     obj = IkaConfig()
     print(obj.config())
