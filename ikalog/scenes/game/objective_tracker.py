@@ -120,7 +120,7 @@ class ObjectiveTracker(Scene):
         return True
 
     def _init_scene(self):
-        self.ui_tower_mask = cv2.imread('masks/ui_tower.png')
+        self.ui_tower_mask = imread('masks/ui_tower.png')
         self.ui_tower_mask = self.ui_tower_mask[
             self.tower_line_top:self.tower_line_top + self.tower_line_height, self.tower_left:self.tower_left + self.tower_width]
         self._last_update_msec = -100 * 1000

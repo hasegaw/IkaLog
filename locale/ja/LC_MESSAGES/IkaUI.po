@@ -28,6 +28,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
+msgid "Video Input"
+msgstr "ビデオ入力"
 
 #: IkaUI.py:55
 msgid "IkaLog preferences will be reset to default. Continue?"
@@ -89,9 +91,11 @@ msgstr "エラー"
 msgid "Capture through AmarecTV"
 msgstr "アマレコLive 経由でキャプチャ"
 
-#: ikalog/ui/capture.py:211
-msgid "Realtime Capture from HDMI grabber"
-msgstr "HDMI(or D4)キャプチャでリアルタイムキャプチャ"
+msgid "HDMI Video input (DirectShow, recommended)"
+msgstr "HDMI(or D4)ビデオキャプチャ (DirecShow, 推奨)"
+
+msgid "HDMI Video input (OpenCV driver)"
+msgstr "HDMI(or D4)ビデオキャプチャ (OpenCV)"
 
 #: ikalog/ui/capture.py:214
 msgid "Realtime Capture from desktop"

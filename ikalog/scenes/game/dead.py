@@ -112,6 +112,9 @@ class GameDead(StatefulScene):
         if frame is None:
             return False
 
+        #if not matched and self.matched_in(context, 1000):
+        #    return False
+
         matched = self.mask_dead.match(context['engine']['frame'])
 
         if matched:

@@ -29,7 +29,7 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 #: ikalog/outputs/videorecorder.py:106
-msgid "Recorder"
+msgid "Video Recorder"
 msgstr "ビデオ自動録画"
 
 #: ikalog/outputs/videorecorder.py:110

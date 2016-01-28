@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
@@ -17,12 +18,20 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import os
 
-from .input import VideoInput
-from .opencv_videocapture import CVCapture
-from .opencv_file import CVFile
-from .opencv_gstreamer import GStreamer
-from .osx import *
-from .consolidated_input import ConsolidatedInput
-from .win import DirectShow
-from .win import ScreenCapture
+import cv2
+import numpy as np
+from PIL import Image
+
+
+def imread(filename):
+    if not os.path.exists(filename):
+        return None
+
+    f = open(filename, 'rb')
+    img_bytes = f.read()
+    f.close()
+
+    img = cv2.imdecode(np.fromstring(img_bytes, dtype='uint8'), 1)
+    return img

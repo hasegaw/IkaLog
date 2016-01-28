@@ -23,93 +23,44 @@ import threading
 
 import cv2
 from ikalog.utils import *
+from ikalog.inputs import CVFile
 
 
-class GStreamer(object):
-    cap = None
-    out_width = 1280
-    out_height = 720
-    from_file = False
-    need_resize = False
-    need_deinterlace = False
-    realtime = False
-    offset = (0, 0)
+class GStreamer(CVFile):
 
-    _systime_launch = int(time.time() * 1000)
+    def _select_device_by_index_func(self, source):
+        raise Exception('%s does not support selecting device by index.')
 
-    lock = threading.Lock()
-
-    def read_raw(self):
+    def _select_device_by_name_func(self, source):
         self.lock.acquire()
         try:
-            ret, frame = self.cap.read()
+            if self.is_active():
+                self.video_capture.release()
+
+            self.reset()
+            self.video_capture = cv2.VideoCapture(source)
+
         finally:
             self.lock.release()
 
-        if not ret:
-            return None
-
-        # self.last_raw_size = frame.shape[0:1]
-        return frame
-
-    def read(self):
-        frame = self.read_raw()
-
-        if frame is None:
-            raise EOFError
-
-        t = None
-        if not self.realtime:
-            try:
-                t = self.cap.get(cv2.CAP_PROP_POS_MSEC)
-            except:
-                pass
-            if t is None:
-                IkaUtils.dprint('Cannot get video position...')
-                self.realtime = True
-
-        if self.realtime:
-            t = int(time.time() * 1000) - self._systime_launch
-
-        if t < self.last_t:
-            IkaUtils.dprint(
-                'FIXME: time position data rewinded. t=%x last_t=%x' % (t, self.last_t))
-        self.last_t = t
-
-        if self.need_resize:
-            return cv2.resize(frame, (self.out_width, self.out_height)), t
-        else:
-            return frame, t
-
-    def init_capture(self, source):
-        self.lock.acquire()
-        try:
-            if not self.cap is None:
-                self.cap.release()
-
-            self.cap = cv2.VideoCapture(source)
-            self.last_t = 0
-        finally:
-            self.lock.release()
-
-    def start_gstreamer(self, source):
-        self.init_capture(source)
-
-        # ToDo: タイミング情報がとれるかをテストする
+        return self.is_active()
 
     def __init__(self):
-        self.last_t = 0
+        self.video_capture = None
+        super(GStreamer, self).__init__()
+
 
 if __name__ == "__main__":
     import sys
 
     obj = GStreamer()
-    obj.start_gstreamer("videotestsrc pattern = smpte ! videoconvert ! appsink")
-    obj.need_resize = True
+    obj.select_source(
+        name='videotestsrc pattern = smpte ! videoconvert ! appsink'
+    )
 
     k = 0
     while k != 27:
-        for i in range(100):
-            frame, t = obj.read()
-        cv2.imshow(obj.__class__.__name__, frame)
-        k = cv2.waitKey(1)
+        frame = obj.read_frame()
+        if frame is not None:
+            cv2.imshow(obj.__class__.__name__, frame)
+        cv2.waitKey(1)
