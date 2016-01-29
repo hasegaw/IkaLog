@@ -42,7 +42,7 @@ class IkaConfig:
         # パターン4: Mac 上で AVFoundation を介してキャプチャデバイスを利用
         # 現在 UltraStudio Mini Recorder のみ動作確認
         # source = inputs.AVFoundationCapture()
-        # source.select_device(THE_DEVICE_ID)
+        # source.select_source(THE_DEVICE_ID)
 
         # パターン5: OpenCV のビデオファイル読み込み機能を利用する
         # OpenCV が FFMPEG に対応していること
