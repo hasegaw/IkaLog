@@ -29,7 +29,7 @@ import cv2
 import urllib3
 import umsgpack
 
-from ikalog.constants import fes_rank_titles, stages, weapons
+from ikalog.constants import fes_rank_titles, stages, weapons, special_weapons
 from ikalog.version import IKALOG_VERSION
 from ikalog.utils import *
 
@@ -53,6 +53,7 @@ class StatInk(object):
         self.show_response_enabled = self.checkShowResponseEnable.GetValue()
         self.track_inklings_enabled = self.checkTrackInklingStateEnable.GetValue()
         self.track_special_gauge_enabled = self.checkTrackSpecialGaugeEnable.GetValue()
+        self.track_special_weapon_enabled = self.checkTrackSpecialWeaponEnable.GetValue()
         self.track_objective_enabled = self.checkTrackObjectiveEnable.GetValue()
         self.track_splatzone_enabled = self.checkTrackSplatzoneEnable.GetValue()
         self.api_key = self.editApiKey.GetValue()
@@ -62,6 +63,7 @@ class StatInk(object):
         self.checkShowResponseEnable.SetValue(self.show_response_enabled)
         self.checkTrackInklingStateEnable.SetValue(self.track_inklings_enabled)
         self.checkTrackSpecialGaugeEnable.SetValue(self.track_special_gauge_enabled)
+        self.checkTrackSpecialWeaponEnable.SetValue(self.track_special_weapon_enabled)
         self.checkTrackObjectiveEnable.SetValue(self.track_objective_enabled)
         self.checkTrackSplatzoneEnable.SetValue(self.track_splatzone_enabled)
 
@@ -75,6 +77,7 @@ class StatInk(object):
         self.show_response_enabled = False
         self.track_inklings_enabled = False
         self.track_special_gauge_enabled = False
+        self.track_special_weapon_enabled = False
         self.track_objective_enabled = False
         self.track_splatzone_enabled = False
         self.api_key = None
@@ -90,6 +93,7 @@ class StatInk(object):
         self.show_response_enabled = conf.get('ShowResponse', False)
         self.track_inklings_enabled = conf.get('InklingState', False)
         self.track_special_gauge_enabled = conf.get('TrackSpecialGauge', False)
+        self.track_special_weapon_enabled = conf.get('TrackSpecialWeapon', False)
         self.track_objective_enabled = conf.get('TrackObjective', False)
         self.track_splatzone_enabled = conf.get('TrackSplatzone', False)
         self.api_key = conf.get('APIKEY', '')
@@ -103,6 +107,7 @@ class StatInk(object):
             'ShowResponse': self.show_response_enabled,
             'InklingState': self.track_inklings_enabled,
             'TrackSpecialGauge': self.track_special_gauge_enabled,
+            'TrackSpecialWeapon': self.track_special_weapon_enabled,
             'TrackObjective': self.track_objective_enabled,
             'TrackSplatzone': self.track_splatzone_enabled,
             'APIKEY': self.api_key,
@@ -121,7 +126,9 @@ class StatInk(object):
         self.checkShowResponseEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Show stat.ink response in console'))
         self.checkTrackSpecialGaugeEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, _('Include Special guage (experimental)'))
+            self.panel, wx.ID_ANY, _('Include Special gauge (experimental)'))
+        self.checkTrackSpecialWeaponEnable = wx.CheckBox(
+            self.panel, wx.ID_ANY, _('Include Special Weapons (experimental)'))
         self.checkTrackObjectiveEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Include position data of tracked objectives (experimental)'))
         self.checkTrackSplatzoneEnable = wx.CheckBox(
@@ -134,6 +141,7 @@ class StatInk(object):
         self.layout.Add(self.checkShowResponseEnable)
         self.layout.Add(self.checkTrackInklingStateEnable)
         self.layout.Add(self.checkTrackSpecialGaugeEnable)
+        self.layout.Add(self.checkTrackSpecialWeaponEnable)
         self.layout.Add(self.checkTrackObjectiveEnable)
         self.layout.Add(self.checkTrackSplatzoneEnable)
         self.layout.Add(wx.StaticText(
@@ -705,6 +713,23 @@ class StatInk(object):
                 })
                 self.time_last_special_gauge_msec = event_msec
 
+    def on_game_special_weapon(self, context):
+        if not self.track_special_weapon_enabled:
+            return
+
+        special_weapon = context['game'].get('special_weapon', None)
+        if not (special_weapon in special_weapons.keys()):
+            IkaUtils.dprint('%s: special_weapon %s is invalid.' % (self, special_weapon))
+            return
+
+        if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
+            event_msec = context['engine']['msec'] - self.time_start_at_msec
+            self._add_event(context, {
+                'type': 'special_weapon',
+                'special_weapon': special_weapon,
+                'me': False, # Not supported yet
+            })
+
     def on_game_objective_position_update(self, context):
         if not self.track_objective_enabled:
             return
@@ -774,7 +799,7 @@ class StatInk(object):
     def on_game_ranked_they_lead(self, context):
         self._add_ranked_battle_event(context, 'they_lead')
 
-    def __init__(self, api_key=None, track_objective=False, track_splatzone=False, track_inklings=False, track_special_gauge=False, debug=False, dry_run=False, url='https://stat.ink'):
+    def __init__(self, api_key=None, track_objective=False, track_splatzone=False, track_inklings=False, track_special_gauge=False, track_special_weapon=False, debug=False, dry_run=False, url='https://stat.ink'):
         self.enabled = not (api_key is None)
         self.api_key = api_key
         self.dry_run = dry_run
@@ -796,6 +821,7 @@ class StatInk(object):
         self.show_response_enabled = debug
         self.track_inklings_enabled = track_inklings
         self.track_special_gauge_enabled = track_special_gauge
+        self.track_special_weapon_enabled = track_special_weapon
         self.track_objective_enabled = track_objective
         self.track_splatzone_enabled = track_splatzone
 

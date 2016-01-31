@@ -110,6 +110,7 @@ class IkaConfig:
             #   api_key  APIキー。 https://stat.ink/ に登録し取得してください
             #   dry_run  Trueの場合 stat.ink に送信しない(テストモード)
             #   track_special_gauge スペシャルゲージの時系列情報を送信する
+            #   track_special_weapon スペシャル発動の時系列情報を送信する
             #   track_splatzone  ガチエリアの時系列情報を送信する
             #   track_objective  ヤグラ／ホコの時系列情報を送信する
             #   track_inklings   インクリング生死の時系列情報を送信する
@@ -118,6 +119,7 @@ class IkaConfig:
             #     api_key='YOUR_API_KEY_HERE',
             #     dry_run=False,
             #     track_special_gauge=False,
+            #     track_special_weapon=False,
             #     track_splatzone=False,
             #     track_objective=False,
             #     track_inklings=False,

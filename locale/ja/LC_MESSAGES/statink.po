@@ -46,9 +46,11 @@ msgstr "投稿内容にガチエリアのカウント情報を含める（experi
 msgid "Include inkling status (experimental)"
 msgstr "投稿内容にインクリングの生死状況を含める (experimental)"
 
-msgid "Include Special guage (experimental)"
+msgid "Include Special gauge (experimental)"
 msgstr "投稿内容にスペシャルの溜まり具合を含める (experimental)"
 
+msgid "Include Special weapons (experimental)"
+msgstr "投稿内容にスペシャル発動を含める (experimental)"
 #: ikalog/outputs/statink.py:117
 msgid "Show stat.ink response in console"
 msgstr "stat.ink からの応答メッセージをコンソールに表示"
