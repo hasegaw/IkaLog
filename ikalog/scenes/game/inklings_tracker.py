@@ -25,15 +25,29 @@ import numpy as np
 from ikalog.scenes.scene import Scene
 from ikalog.utils import *
 
-
 class InklingsTracker(Scene):
+    meter_left = 399
+    meter_top = 55
+    meter_width = 485
+    meter_height = 1
 
-    def lives(self, context):
-        if not context['engine']['inGame']:
-            return None, None
+    def reset(self):
+        super(InklingsTracker, self).reset()
+        self.last_state = ''
 
-        img = context['engine']['frame'][self.meter_top:self.meter_top +
-                                         self.meter_height, self.meter_left:self.meter_left + self.meter_width]
+    def match_no_cache(self, context):
+        if self.is_another_scene_matched(context, 'GameTimerIcon') == False:
+            return False
+
+        frame = context['engine']['frame']
+
+        if frame is None:
+            return False
+
+        img = frame[
+            self.meter_top:self.meter_top + self.meter_height,
+            self.meter_left:self.meter_left + self.meter_width
+        ]
         img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         img2 = cv2.resize(img, (self.meter_width, 100))
         # for i in range(2):
@@ -64,85 +78,97 @@ class InklingsTracker(Scene):
         team1 = []
         team2 = []
 
-        # 左チーム
-        x = vs_xPos - 20
-        x2 = x
-        direction = -3
-        for i in range(4):
-            while img_gray3[0, x] < 128:
-                x2 = x
-                x = x + direction
-
-            while img_gray3[0, x] > 128:
-                x = x + direction
-
-            x1 = x
-            # プレイヤー画像は x1:x2 の間にある
-            squid_xPos = int((x1 + x2) / 2)
-            #print(x1, squid_xPos, x2)
-            team1.append(squid_xPos)
-
-        # 右チーム
-        x = vs_xPos + 20
-        x1 = x
-        direction = 3
-        for i in range(4):
-            while img_gray3[0, x] < 128:
-                x1 = x
-                x = x + direction
-
-            while img_gray3[0, x] > 128:
-                x = x + direction
-
+        try:
+            # 左チーム
+            x = vs_xPos - 20
             x2 = x
-            # プレイヤー画像は x1:x2 の間にある
-            squid_xPos = int((x1 + x2) / 2)
-            #print(x1, squid_xPos, x2)
-            team2.append(squid_xPos)
+            direction = -3
+            for i in range(4):
+                while img_gray3[0, x] < 128:
+                    x2 = x
+                    x = x + direction
+
+                while img_gray3[0, x] > 128:
+                    x = x + direction
+
+                x1 = x
+                # プレイヤー画像は x1:x2 の間にある
+                squid_xPos = int((x1 + x2) / 2)
+                #print(x1, squid_xPos, x2)
+                team1.append(squid_xPos)
+
+            # 右チーム
+            x = vs_xPos + 20
+            x1 = x
+            direction = 3
+            for i in range(4):
+                while img_gray3[0, x] < 128:
+                    x1 = x
+                    x = x + direction
+
+                while img_gray3[0, x] > 128:
+                    x = x + direction
+
+                x2 = x
+                # プレイヤー画像は x1:x2 の間にある
+                squid_xPos = int((x1 + x2) / 2)
+                #print(x1, squid_xPos, x2)
+                team2.append(squid_xPos)
+        except IndexError:
+            return False
 
         team1 = np.sort(team1)
         team2 = np.sort(team2)
 
         # 目の部分が白かったら True なマスクをつくる
-        img_eye = context['engine']['frame'][
-            44:50, self.meter_left:self.meter_left + self.meter_width]
+        img_eye = frame[
+            44:50,
+            self.meter_left:self.meter_left + self.meter_width
+        ]
         img_eye_hsv = cv2.cvtColor(img_eye, cv2.COLOR_BGR2HSV)
         eye_white_mask_s = cv2.inRange(img_eye_hsv[:, :, 1], 0, 48)
         eye_white_mask_v = cv2.inRange(img_eye_hsv[:, :, 2], 200, 256)
         eye_white_mask = np.minimum(eye_white_mask_s, eye_white_mask_v)
-        a = []
         team1_color = None
         team2_color = None
+        a = []
+        b = []
 
         for i in team1:
             eye_score = np.sum(eye_white_mask[:, i - 4: i + 4]) / 255
-            alive = eye_score > 1
+            alive = bool(eye_score > 1)
             a.append(alive)
 
             if alive:
                 team1_color = img[0, i]  # BGR
                 team1_color_hsv = img_hsv[0, i]
 
-            cv2.rectangle(context['engine']['frame'], (self.meter_left +
-                                                       i - 4,  44), (self.meter_left + i + 4, 50), (255, 255, 255), 1)
+            cv2.rectangle(
+                frame,
+                (self.meter_left + i - 4,  44),
+                (self.meter_left + i + 4, 50),
+                (255, 255, 255),
+                1
+            )
 
-        b = []
         for i in team2:
             eye_score = np.sum(eye_white_mask[:, i - 4: i + 4]) / 255
-            alive = eye_score > 1
+            alive = bool(eye_score > 1)
             b.append(alive)
 
             if alive:
                 team2_color = img[0, i]  # BGR
                 team2_color_hsv = img_hsv[0, i]
 
-            cv2.rectangle(context['engine']['frame'], (self.meter_left +
-                                                       i - 4,  44), (self.meter_left + i + 4, 50), (255, 255, 255), 1)
-        # print("色: 味方 %d 敵 %d" % (team1_color, team2_color))
-        # print("味方 %s 敵 %s" % (a,b))
-        # cv2.imshow('yagura_gray', img_gray2)
-        # cv2.imshow('yagura_gray2', img_gray3)
-        # cv2.imshow('eyes', eye_white_mask)
+            cv2.rectangle(
+                frame,
+                (self.meter_left + i - 4,  44),
+                (self.meter_left + i + 4, 50),
+                (255, 255, 255),
+                1
+            )
+
+        context['game']['inkling_state'] = [a, b]
 
         hasTeamColor = ('team_color_bgr' in context['game'])
 
@@ -155,47 +181,30 @@ class InklingsTracker(Scene):
                 team1_color_hsv,
                 team2_color_hsv
             ]
+            self._call_plugins('on_game_team_color')
 
-            callPlugins = context['engine']['service']['callPlugins']
-            callPlugins('on_game_team_color')
+        state = self._state_to_string(a) + ' ' + self._state_to_string(b)
+        if state != self.last_state:
+            self.last_state = state
+            # self.dump(context)
+            self._call_plugins('on_game_inkling_state_update')
 
-        return (a, b)
+        return True
 
-    def matchPaintScore(self, context):
-        x_list = [938, 988, 1032, 1079]
+    def _analyze(self, context):
+        pass
 
-        paint_score = 0
-        for x in x_list:
-            # Extract a digit.
-            img = context['engine']['frame'][33:33 + 41, x:x + 37, :]
+    def dump(self, context):
+        print('inkling state: %s vs %s' % (
+            self._state_to_string(context['game']['inkling_state'][0]),
+            self._state_to_string(context['game']['inkling_state'][1])
+        ))
 
-            # Check if the colr distribution in in expected range.
-            img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            hist = cv2.calcHist([img_gray], [0], None, [5], [0, 256])
-            try:
-                black_raito = hist[0] / np.sum(hist)
-                black_white_raito = (hist[0] + hist[4]) / np.sum(hist)
-            except ZeroDivisionError:
-                score = 0
-
-            if (black_raito < 0.5) or (0.8 < black_raito) or \
-                    (black_white_raito < 0.8):
-                # Seems not to be a white character on black background.
-                return None
-
-            # Recoginize a digit.
-            digit = self.number_recoginizer.match_digits(
-                img,
-                num_digits=(1, 1),
-                char_width=(11, 40),
-                char_height=(28, 33),
-            )
-
-            if digit is None:
-                return None
-
-            paint_score = (paint_score * 10) + digit
-
-        # Set latest paint_score to the context.
-        context['game']['paint_score'] = \
-            max(context['game'].get('paint_score', 0), paint_score)
+    def _state_to_string(self, states):
+        ret = ''
+        for i in range(4):
+            if i < len(states):
+                ret = ret + ('1' if states[i] else '0')
+            else:
+                ret = ret + '_'
+        return ret

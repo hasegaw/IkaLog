@@ -60,6 +60,9 @@ class DebugLog(object):
         s = "weapon = %s" % (context['game']['last_death_reason'])
         self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
 
+    def on_game_inkling_state_update(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
     def on_game_go_sign(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
