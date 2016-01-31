@@ -499,6 +499,7 @@ class StatInk(object):
         }
 
         IkaUtils.dprint('%s: POST %s' % (self, url_statink_v1_battle))
+        time_post_start = time.time()
 
         pool = urllib3.PoolManager(
             cert_reqs = 'CERT_REQUIRED', # Force certificate check
@@ -514,7 +515,6 @@ class StatInk(object):
             # Handle incorrect certificate error.
             IkaUtils.dprint('%s: SSLError, value: %s' % (self, e.value))
 
-        IkaUtils.dprint('%s: POST Done.' % self)
 
         statink_reponse = json.loads(req.data.decode('utf-8'))
         error = 'error' in statink_reponse
@@ -525,6 +525,14 @@ class StatInk(object):
             IkaUtils.dprint('%s: == Response begin ==' % self)
             print(req.data.decode('utf-8'))
             IkaUtils.dprint('%s: == Response end ===' % self)
+
+        IkaUtils.dprint(
+            '%s: POST Done. %d bytes in %f second(s).' % (
+                self,
+                len(mp_payload),
+                int((time.time() - time_post_start) * 10) /10,
+            )
+        )
 
     def post_payload(self, payload, api_key=None):
         if self.dry_run == True:
