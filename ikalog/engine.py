@@ -251,6 +251,7 @@ class IkaEngine:
             scenes.GameOutOfBound(self),
             scenes.GameFinish(self),
             scenes.GameSpecialGauge(self),
+            scenes.GameSpecialWeapon(self),
             scenes.ResultJudge(self),
 
             scenes.GameRankedBattleEvents(self),
