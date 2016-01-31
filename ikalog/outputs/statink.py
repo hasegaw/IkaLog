@@ -500,13 +500,11 @@ class StatInk(object):
         mp_payload_bytes = umsgpack.packb(payload)
         mp_payload = ''.join(map(chr, mp_payload_bytes))
 
-        url_statink_v1_battle = 'https://stat.ink/api/v1/battle'
-
         http_headers = {
             'Content-Type': 'application/x-msgpack',
         }
 
-        IkaUtils.dprint('%s: POST %s' % (self, url_statink_v1_battle))
+        IkaUtils.dprint('%s: POST %s' % (self, self.url_statink_v1_battle))
         time_post_start = time.time()
 
         pool = urllib3.PoolManager(
@@ -515,7 +513,7 @@ class StatInk(object):
         )
 
         try:
-            req = pool.urlopen('POST', url_statink_v1_battle,
+            req = pool.urlopen('POST', self.url_statink_v1_battle,
                                headers=http_headers,
                                body=mp_payload,
                                )
@@ -753,7 +751,7 @@ class StatInk(object):
     def on_game_ranked_they_lead(self, context):
         self._add_ranked_battle_event(context, 'they_lead')
 
-    def __init__(self, api_key=None, track_objective=False, track_splatzone=False, track_inklings=False, debug=False, dry_run=False):
+    def __init__(self, api_key=None, track_objective=False, track_splatzone=False, track_inklings=False, debug=False, dry_run=False, url='https://stat.ink'):
         self.enabled = not (api_key is None)
         self.api_key = api_key
         self.dry_run = dry_run
@@ -775,6 +773,8 @@ class StatInk(object):
         self.track_objective_enabled = track_objective
         self.track_splatzone_enabled = track_splatzone
         self.track_inklings_enabled = track_inklings
+
+        self.url_statink_v1_battle = '%s/api/v1/battle' % url
 
 if __name__ == "__main__":
     # main として呼ばれた場合
