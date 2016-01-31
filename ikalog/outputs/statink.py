@@ -467,6 +467,7 @@ class StatInk(object):
 
         payload['agent'] = 'IkaLog'
         payload['agent_version'] = IKALOG_VERSION
+        payload['IKALOG_LANG'] = Localization.get_game_languages()[0]
 
         for field in payload.keys():
             if payload[field] is None:
