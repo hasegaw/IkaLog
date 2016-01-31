@@ -111,6 +111,7 @@ class IkaConfig:
             #   dry_run  Trueの場合 stat.ink に送信しない(テストモード)
             #   track_splatzone  ガチエリアの時系列情報を送信する
             #   track_objective  ヤグラ／ホコの時系列情報を送信する
+            #   track_inklings   インクリング生死の時系列情報を送信する
 
             # outputs.StatInk(
             #     api_key='YOUR_API_KEY_HERE',

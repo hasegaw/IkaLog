@@ -53,6 +53,7 @@ class StatInk(object):
         self.show_response_enabled = self.checkShowResponseEnable.GetValue()
         self.track_objective_enabled = self.checkTrackObjectiveEnable.GetValue()
         self.track_splatzone_enabled = self.checkTrackSplatzoneEnable.GetValue()
+        self.track_inklings_enabled = self.checkInklingStateEnable.GetValue()
         self.api_key = self.editApiKey.GetValue()
 
     def refresh_ui(self):
@@ -60,6 +61,7 @@ class StatInk(object):
         self.checkShowResponseEnable.SetValue(self.show_response_enabled)
         self.checkTrackObjectiveEnable.SetValue(self.track_objective_enabled)
         self.checkTrackSplatzoneEnable.SetValue(self.track_splatzone_enabled)
+        self.checkInklingStateEnable.GetValue.SetValue(self.track_inklings_enabled)
 
         if not self.api_key is None:
             self.editApiKey.SetValue(self.api_key)
@@ -71,6 +73,7 @@ class StatInk(object):
         self.show_response_enabled = False
         self.track_objective_enabled = False
         self.track_splatzone_enabled = False
+        self.track_inklings_enabled = False
         self.api_key = None
 
     def on_config_load_from_context(self, context):
@@ -84,6 +87,7 @@ class StatInk(object):
         self.show_response_enabled = conf.get('ShowResponse', False)
         self.track_objective_enabled = conf.get('TrackObjective', False)
         self.track_splatzone_enabled = conf.get('TrackSplatzone', False)
+        self.track_inklings_enabled = conf.get('InklingState', False)
         self.api_key = conf.get('APIKEY', '')
 
         self.refresh_ui()
@@ -95,6 +99,7 @@ class StatInk(object):
             'ShowResponse': self.show_response_enabled,
             'TrackObjective': self.track_objective_enabled,
             'TrackSplatzone': self.track_splatzone_enabled,
+            'InklingState': self.track_inklings_enabled,
             'APIKEY': self.api_key,
         }
 
@@ -112,6 +117,8 @@ class StatInk(object):
             self.panel, wx.ID_ANY, _('Include position data of tracked objectives (experimental)'))
         self.checkTrackSplatzoneEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Include Splat Zone counters (experimental)'))
+        self.checkTrackInklingStateEnable = wx.CheckBox(
+            self.panel, wx.ID_ANY, _('Include inkling status (experimental)'))
         self.checkShowResponseEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Show stat.ink response in console'))
         self.editApiKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
@@ -120,6 +127,7 @@ class StatInk(object):
         self.layout.Add(self.checkShowResponseEnable)
         self.layout.Add(self.checkTrackObjectiveEnable)
         self.layout.Add(self.checkTrackSplatzoneEnable)
+        self.layout.Add(self.checkTrackInklingStateEnable)
         self.layout.Add(wx.StaticText(
             self.panel, wx.ID_ANY, _('API Key')))
         self.layout.Add(self.editApiKey, flag=wx.EXPAND)
@@ -647,6 +655,15 @@ class StatInk(object):
             self.last_dead_event = None
 
     def on_game_inkling_state_update(self, context):
+        if not self.track_inklings_enabled:
+            return
+
+        # Unforunately we don't have inkling state detection code that
+        # works with private game.
+        lobby_type = context['lobby'].get('type', None)
+        if lobby_type == 'private':
+            return
+
         if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
             states = context['game']['inkling_state']
             self._add_event(context, {
@@ -736,7 +753,7 @@ class StatInk(object):
     def on_game_ranked_they_lead(self, context):
         self._add_ranked_battle_event(context, 'they_lead')
 
-    def __init__(self, api_key=None, track_objective=False, track_splatzone=False, debug=False, dry_run=False):
+    def __init__(self, api_key=None, track_objective=False, track_splatzone=False, track_inklings=False, debug=False, dry_run=False):
         self.enabled = not (api_key is None)
         self.api_key = api_key
         self.dry_run = dry_run
@@ -757,6 +774,7 @@ class StatInk(object):
         self.show_response_enabled = debug
         self.track_objective_enabled = track_objective
         self.track_splatzone_enabled = track_splatzone
+        self.track_inklings_enabled = track_inklings
 
 if __name__ == "__main__":
     # main として呼ばれた場合

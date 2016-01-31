@@ -43,6 +43,9 @@ msgstr "投稿内容にヤグラ／ホコの位置情報を含める（experimen
 msgid "Include Splat Zone counters (experimental)"
 msgstr "投稿内容にガチエリアのカウント情報を含める（experimental)"
 
+msgid "Include inkling status (experimental)"
+msgstr "投稿内容にインクリングの生死状況を含める (experimental)"
+
 #: ikalog/outputs/statink.py:117
 msgid "Show stat.ink response in console"
 msgstr "stat.ink からの応答メッセージをコンソールに表示"
