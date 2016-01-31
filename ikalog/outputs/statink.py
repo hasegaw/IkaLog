@@ -51,17 +51,19 @@ class StatInk(object):
     def apply_ui(self):
         self.enabled = self.checkEnable.GetValue()
         self.show_response_enabled = self.checkShowResponseEnable.GetValue()
+        self.track_inklings_enabled = self.checkTrackInklingStateEnable.GetValue()
+        self.track_special_gauge_enabled = self.checkTrackSpecialGaugeEnable.GetValue()
         self.track_objective_enabled = self.checkTrackObjectiveEnable.GetValue()
         self.track_splatzone_enabled = self.checkTrackSplatzoneEnable.GetValue()
-        self.track_inklings_enabled = self.checkInklingStateEnable.GetValue()
         self.api_key = self.editApiKey.GetValue()
 
     def refresh_ui(self):
         self.checkEnable.SetValue(self.enabled)
         self.checkShowResponseEnable.SetValue(self.show_response_enabled)
+        self.checkTrackInklingStateEnable.SetValue(self.track_inklings_enabled)
+        self.checkTrackSpecialGaugeEnable.SetValue(self.track_special_gauge_enabled)
         self.checkTrackObjectiveEnable.SetValue(self.track_objective_enabled)
         self.checkTrackSplatzoneEnable.SetValue(self.track_splatzone_enabled)
-        self.checkInklingStateEnable.GetValue.SetValue(self.track_inklings_enabled)
 
         if not self.api_key is None:
             self.editApiKey.SetValue(self.api_key)
@@ -71,9 +73,10 @@ class StatInk(object):
     def on_config_reset(self, context=None):
         self.enabled = False
         self.show_response_enabled = False
+        self.track_inklings_enabled = False
+        self.track_special_gauge_enabled = False
         self.track_objective_enabled = False
         self.track_splatzone_enabled = False
-        self.track_inklings_enabled = False
         self.api_key = None
 
     def on_config_load_from_context(self, context):
@@ -85,9 +88,10 @@ class StatInk(object):
 
         self.enabled = conf.get('Enable', False)
         self.show_response_enabled = conf.get('ShowResponse', False)
+        self.track_inklings_enabled = conf.get('InklingState', False)
+        self.track_special_gauge_enabled = conf.get('TrackSpecialGauge', False)
         self.track_objective_enabled = conf.get('TrackObjective', False)
         self.track_splatzone_enabled = conf.get('TrackSplatzone', False)
-        self.track_inklings_enabled = conf.get('InklingState', False)
         self.api_key = conf.get('APIKEY', '')
 
         self.refresh_ui()
@@ -97,9 +101,10 @@ class StatInk(object):
         context['config']['stat.ink'] = {
             'Enable': self.enabled,
             'ShowResponse': self.show_response_enabled,
+            'InklingState': self.track_inklings_enabled,
+            'TrackSpecialGauge': self.track_special_gauge_enabled,
             'TrackObjective': self.track_objective_enabled,
             'TrackSplatzone': self.track_splatzone_enabled,
-            'InklingState': self.track_inklings_enabled,
             'APIKEY': self.api_key,
         }
 
@@ -113,21 +118,24 @@ class StatInk(object):
         self.panel.SetSizer(self.layout)
         self.checkEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Post game results to stat.ink'))
+        self.checkShowResponseEnable = wx.CheckBox(
+            self.panel, wx.ID_ANY, _('Show stat.ink response in console'))
+        self.checkTrackSpecialGaugeEnable = wx.CheckBox(
+            self.panel, wx.ID_ANY, _('Include Special guage (experimental)'))
         self.checkTrackObjectiveEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Include position data of tracked objectives (experimental)'))
         self.checkTrackSplatzoneEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Include Splat Zone counters (experimental)'))
         self.checkTrackInklingStateEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Include inkling status (experimental)'))
-        self.checkShowResponseEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, _('Show stat.ink response in console'))
         self.editApiKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
         self.layout.Add(self.checkEnable)
         self.layout.Add(self.checkShowResponseEnable)
+        self.layout.Add(self.checkTrackInklingStateEnable)
+        self.layout.Add(self.checkTrackSpecialGaugeEnable)
         self.layout.Add(self.checkTrackObjectiveEnable)
         self.layout.Add(self.checkTrackSplatzoneEnable)
-        self.layout.Add(self.checkTrackInklingStateEnable)
         self.layout.Add(wx.StaticText(
             self.panel, wx.ID_ANY, _('API Key')))
         self.layout.Add(self.editApiKey, flag=wx.EXPAND)
@@ -682,6 +690,21 @@ class StatInk(object):
                 })
                 self.time_last_score_msec = event_msec
 
+    def on_game_special_gauge_update(self, context):
+        if not self.track_special_gauge_enabled:
+            return
+
+        score = context['game'].get('special_gauge', 0)
+        if (score > 0 and 'msec' in context['engine']) and (self.time_start_at_msec is not None):
+            event_msec = context['engine']['msec'] - self.time_start_at_msec
+            # 前回のスコアイベントから 200ms 経っていない場合は処理しない
+            if (self.time_last_special_gauge_msec is None) or (event_msec - self.time_last_special_gauge_msec >= 200):
+                self._add_event(context, {
+                    'type': 'special%',
+                    'point': score,
+                })
+                self.time_last_special_gauge_msec = event_msec
+
     def on_game_objective_position_update(self, context):
         if not self.track_objective_enabled:
             return
@@ -751,7 +774,7 @@ class StatInk(object):
     def on_game_ranked_they_lead(self, context):
         self._add_ranked_battle_event(context, 'they_lead')
 
-    def __init__(self, api_key=None, track_objective=False, track_splatzone=False, track_inklings=False, debug=False, dry_run=False, url='https://stat.ink'):
+    def __init__(self, api_key=None, track_objective=False, track_splatzone=False, track_inklings=False, track_special_gauge=False, debug=False, dry_run=False, url='https://stat.ink'):
         self.enabled = not (api_key is None)
         self.api_key = api_key
         self.dry_run = dry_run
@@ -762,6 +785,7 @@ class StatInk(object):
 
         self.events = []
         self.time_last_score_msec = None
+        self.time_last_special_gauge_msec = None
         self.time_last_objective_msec = None
         self.last_dead_event = None
 
@@ -770,9 +794,10 @@ class StatInk(object):
 
         self.debug_writePayloadToFile = False
         self.show_response_enabled = debug
+        self.track_inklings_enabled = track_inklings
+        self.track_special_gauge_enabled = track_special_gauge
         self.track_objective_enabled = track_objective
         self.track_splatzone_enabled = track_splatzone
-        self.track_inklings_enabled = track_inklings
 
         self.url_statink_v1_battle = '%s/api/v1/battle' % url
 
