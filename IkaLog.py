@@ -27,6 +27,8 @@ from IkaConfig import *
 from ikalog.utils import *
 
 
+engine = IkaEngine()
+
 def signal_handler(num, frame):
     IkaUtils.dprint('IkaLog: got signal %d' % num)
     if num == 2:
@@ -35,7 +37,6 @@ def signal_handler(num, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 capture, OutputPlugins = IkaConfig().config()
-engine = IkaEngine()
 engine.pause(False)
 engine.set_capture(capture)
 engine.set_plugins(OutputPlugins)
