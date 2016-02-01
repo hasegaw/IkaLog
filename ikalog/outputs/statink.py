@@ -673,18 +673,11 @@ class StatInk(object):
         if not self.track_inklings_enabled:
             return
 
-        # Unforunately we don't have inkling state detection code that
-        # works with private game.
-        lobby_type = context['lobby'].get('type', None)
-        if lobby_type == 'private':
-            return
-
         if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
-            states = context['game']['inkling_state']
             self._add_event(context, {
                 'type': 'alive_inklings',
-                'my_team': states[0],
-                'his_team': states[1],
+                'my_team': context['game']['inkling_state'][0],
+                'his_team': context['game']['inkling_state'][1],
             })
 
     def on_game_paint_score_update(self, context):
