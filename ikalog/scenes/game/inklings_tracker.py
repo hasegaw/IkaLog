@@ -320,3 +320,7 @@ class InklingsTracker(StatefulScene):
             else:
                 ret = ret + '_'
         return ret
+
+    def _init_scene(self, debug=False):
+        self.my_team = [False, False, False, False]
+        self.counter_team = [False, False, False, False]
