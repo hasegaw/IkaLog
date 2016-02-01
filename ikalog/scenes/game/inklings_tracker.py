@@ -22,174 +22,286 @@ import sys
 import cv2
 import numpy as np
 
-from ikalog.scenes.scene import Scene
+from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 
-class InklingsTracker(Scene):
-    meter_left = 399
-    meter_top = 55
-    meter_width = 485
-    meter_height = 1
+
+class InklingsTracker(StatefulScene):
+
+    meter_center = 640
+    meter_width_half = 210
+    meter_x1 = meter_center - meter_width_half
+    meter_x2 = meter_center + meter_width_half
 
     def reset(self):
         super(InklingsTracker, self).reset()
         self.last_state = ''
 
-    def match_no_cache(self, context):
+    ##
+    # _get_vs_xpos(self, context)
+    #
+    # Find the "vs" character betweeen our team's inklinks and the other's.
+    #
+    # Returns x_pos value (offset from self.meter_x1), if succeeded ins
+    # detecteding the position.
+    # Otherwise False. Detection may fail in some scenes
+    # (e.g. at the beginning of the game, and low-quality input)
+    #
+    def _get_vs_xpos(self, context):
+        frame = context['engine']['frame']
+
+        img = frame[24 + 38: 24 + 40, self.meter_x1: self.meter_x2]
+        img_w = matcher.MM_WHITE(
+            sat=(0, 8), visibility=(248, 256)).evaluate(img)
+
+        img_vs_hist = np.sum(img_w, axis=0)
+        img_vs_x = np.extract(img_vs_hist > 128, np.arange(1024))
+
+        if len(img_vs_x) == 0:
+            return None
+
+        vs_x_min = np.amin(img_vs_x)
+        vs_x_max = np.amax(img_vs_x)
+        vs_x = int((vs_x_min + vs_x_max) / 2)
+        return vs_x
+
+    ##
+    # _find_active_inklings
+    #
+    # Find active inklings on the frame.
+    # @param self    The object.
+    # @param context The context.
+    # @param x1      Absolute x value to start discovery.
+    # @param x2      Absolute x value to finish discovery.
+    #
+    # This function looks for eye of the inklings (with white pixels).
+    #
+    # To reduce false-positive detection, it also checks the pixel
+    # of the squid. Since it's body should be colored (not white or black),
+    # it ignores eye pixels without colored body pixels.
+    #
+    # team
+    def _find_inklings(self, context, x1, x2, team=[False, False, False, False]):
+        assert x1 < x2
+        assert context['engine']['frame'] is not None
+
+        frame = context['engine']['frame']
+        team = team.copy()
+
+        # Manipulate histgram array of inkling eyes.
+        img_eye = matcher.MM_WHITE().evaluate(
+            frame[24 + 16: 24 + 30, self.meter_x1: self.meter_x2]
+        )
+        img_eye_hist = np.sum(img_eye, axis=0)
+
+        # Manipulate histgram array of inkling bodies.
+        img_fg_b = matcher.MM_WHITE(sat=(40, 255), visibility=(60, 255)).evaluate(
+            frame[24 + 31: 24 + 36, self.meter_x1:self.meter_x2]
+        )
+        img_fg_hist = np.sum(img_fg_b / 255, axis=0)
+
+        # Mask false-positive values in img_eye_hist.
+        img_eye_hist[img_fg_hist < 4] = 0
+
+        if 0:
+            cv2.line(frame, (self.meter_x1 + x1, 0),
+                     (self.meter_x1 + x1, 50), (0, 0, 0), 2)
+            cv2.line(frame, (self.meter_x1 + x2, 0),
+                     (self.meter_x1 + x2, 50), (0, 0, 0), 2)
+
+        # Search the inkling bodies.
+        x = x1
+        direction = 3
+        while x < x2:
+            x = x + direction
+
+            x_base = x
+            add_sample = False
+            # Forward until inkling's eyes found.
+            while True:
+                if not (x < x2):
+                    break
+
+                on_eye = img_eye_hist[x] > 128
+                if on_eye:
+                    # Found.
+                    add_sample = True
+                    break
+
+                x_base = x
+                x = x + direction
+
+            # Forward until linkling's eyes lost.
+            while True:
+                if not (x < x2):
+                    break
+
+                on_eye = img_eye_hist[x] > 128
+                if not on_eye:
+                    break
+
+                x = x + direction
+
+            # If we found one, the inkling is between base_x and x.
+            # Convert the value to relative position in the team,
+            # and mark the corresponding inkling.
+            #
+            #              /  \  /  \  /  \  /  \
+            #              |oo|  |oo|  |oo|  |oo|
+            # inkling_x2: 0    25    50    75    100
+            # team[x]   :   [0]   [1]   [2]   [3]
+            #
+            # FIXME: Inkling color detection is dropped.
+            #
+            if add_sample:
+                inkling_x = int((x_base + x) / 2)
+                inkling_x2 = int(((inkling_x - x1) / (x2 - x1)) * 100)
+                if (inkling_x2 < 25):
+                    if (team[0] is not None):
+                        team[0] = True
+                elif (inkling_x2 < 50):
+                    if (team[1] is not None):
+                        team[1] = True
+                elif (inkling_x2 < 75):
+                    if (team[2] is not None):
+                        team[2] = True
+                elif (inkling_x2 < 95):
+                    if (team[3] is not None):
+                        team[3] = True
+
+            if 0:
+                print(x_base, x)
+                cv2.line(frame, (400 + x_base, 0),
+                         (400 + x_base, 50), (0, 0, 255), 3)
+                cv2.line(frame, (400 + inkling_x, 0),
+                         (400 + inkling_x, 50), (0, 255, 0), 3)
+        # The loop is over. Now team should have active inklings list.
+        #   [ True, True, True, False ] ... 3 inklings are active.
+        return team
+
+    ##
+    # _state_default
+    #
+    # In default state, this scene detects alive inklings and update
+    # context['game']['inkling_state'].
+    #
+    # The format of context['game']['inkling_state'] is:
+    #    [[team1a, team1b, team1c, team1d], [team2a, team2b, team2c, team2d ]]
+    #
+    # Each teamXx can be one of the values below.
+    #    True:  The inkling is active, and alive.
+    #    False: The inkling is actibe, but not alive
+    #           (or disconnected from the game).
+    #    None:  The inkling is inactive.
+    #
+    # This needs self.(my_|counter_) team fields intialized.
+    #
+    def _state_default(self, context):
         if self.is_another_scene_matched(context, 'GameTimerIcon') == False:
             return False
 
         frame = context['engine']['frame']
-
         if frame is None:
             return False
 
-        img = frame[
-            self.meter_top:self.meter_top + self.meter_height,
-            self.meter_left:self.meter_left + self.meter_width
-        ]
-        img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        img2 = cv2.resize(img, (self.meter_width, 100))
-        # for i in range(2):
-        #     img2[20:40,:, i] = cv2.resize(img_hsv[:,:,0], (self.meter_width, 20))
-        #     img2[40:60,:, i] = cv2.resize(img_hsv[:,:,1], (self.meter_width, 20))
-        #     img2[60:80,:, i] = cv2.resize(img_hsv[:,:,2], (self.meter_width, 20))
-        #
-        # cv2.imshow('yagura',     img2)
-        # cv2.imshow('yagura_hsv', cv2.resize(img_hsv, (self.meter_width, 100)))
-
-        # VS 文字の位置（白）を検出する (s が低く v が高い)
-        white_mask_s = cv2.inRange(img_hsv[:, :, 1], 0, 8)
-        white_mask_v = cv2.inRange(img_hsv[:, :, 2], 248, 256)
-        white_mask = np.minimum(white_mask_s, white_mask_v)
-
-        x_list = np.arange(self.meter_width)
-        vs_x = np.extract(white_mask > 128, x_list)
-
-        vs_xPos = np.average(vs_x)  # VS があるX座標の中心がわかった
-
-        # print(vs_xPos)
-
-        # 明るい白以外を検出する (グレー画像から)
-        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        img_gray2 = cv2.resize(img_gray, (self.meter_width, 20))
-        img_gray3 = cv2.inRange(img_gray2, 48, 256)
-
-        team1 = []
-        team2 = []
-
-        try:
-            # 左チーム
-            x = vs_xPos - 20
-            x2 = x
-            direction = -3
-            for i in range(4):
-                while img_gray3[0, x] < 128:
-                    x2 = x
-                    x = x + direction
-
-                while img_gray3[0, x] > 128:
-                    x = x + direction
-
-                x1 = x
-                # プレイヤー画像は x1:x2 の間にある
-                squid_xPos = int((x1 + x2) / 2)
-                #print(x1, squid_xPos, x2)
-                team1.append(squid_xPos)
-
-            # 右チーム
-            x = vs_xPos + 20
-            x1 = x
-            direction = 3
-            for i in range(4):
-                while img_gray3[0, x] < 128:
-                    x1 = x
-                    x = x + direction
-
-                while img_gray3[0, x] > 128:
-                    x = x + direction
-
-                x2 = x
-                # プレイヤー画像は x1:x2 の間にある
-                squid_xPos = int((x1 + x2) / 2)
-                #print(x1, squid_xPos, x2)
-                team2.append(squid_xPos)
-        except IndexError:
+        vs_xpos = self._get_vs_xpos(context)
+        if vs_xpos is None:
             return False
 
-        team1 = np.sort(team1)
-        team2 = np.sort(team2)
+        my_team = self._find_inklings(
+            context, 0, vs_xpos - 35, self.my_team)
+        counter_team = self._find_inklings(
+            context, vs_xpos + 35, self.meter_width_half * 2, self.counter_team)
 
-        # 目の部分が白かったら True なマスクをつくる
-        img_eye = frame[
-            44:50,
-            self.meter_left:self.meter_left + self.meter_width
+        context['game']['inkling_state4'] = [my_team, counter_team]
+        context['game']['inkling_state'] = [
+            [e for e in my_team if e is not None],
+            [e for e in counter_team if e is not None],
         ]
-        img_eye_hsv = cv2.cvtColor(img_eye, cv2.COLOR_BGR2HSV)
-        eye_white_mask_s = cv2.inRange(img_eye_hsv[:, :, 1], 0, 48)
-        eye_white_mask_v = cv2.inRange(img_eye_hsv[:, :, 2], 200, 256)
-        eye_white_mask = np.minimum(eye_white_mask_s, eye_white_mask_v)
-        team1_color = None
-        team2_color = None
-        a = []
-        b = []
 
-        for i in team1:
-            eye_score = np.sum(eye_white_mask[:, i - 4: i + 4]) / 255
-            alive = bool(eye_score > 1)
-            a.append(alive)
+        self._call_plugins('on_game_inkling_state_update')
 
-            if alive:
-                team1_color = img[0, i]  # BGR
-                team1_color_hsv = img_hsv[0, i]
-
-            cv2.rectangle(
-                frame,
-                (self.meter_left + i - 4,  44),
-                (self.meter_left + i + 4, 50),
-                (255, 255, 255),
-                1
-            )
-
-        for i in team2:
-            eye_score = np.sum(eye_white_mask[:, i - 4: i + 4]) / 255
-            alive = bool(eye_score > 1)
-            b.append(alive)
-
-            if alive:
-                team2_color = img[0, i]  # BGR
-                team2_color_hsv = img_hsv[0, i]
-
-            cv2.rectangle(
-                frame,
-                (self.meter_left + i - 4,  44),
-                (self.meter_left + i + 4, 50),
-                (255, 255, 255),
-                1
-            )
-
-        context['game']['inkling_state'] = [a, b]
-
-        hasTeamColor = ('team_color_bgr' in context['game'])
-
-        if (not team1_color is None) and (not team2_color is None) and not hasTeamColor:
-            context['game']['team_color_bgr'] = [
-                team1_color,
-                team2_color
-            ]
-            context['game']['team_color_hsv'] = [
-                team1_color_hsv,
-                team2_color_hsv
-            ]
-            self._call_plugins('on_game_team_color')
-
-        state = self._state_to_string(a) + ' ' + self._state_to_string(b)
-        if state != self.last_state:
-            self.last_state = state
-            # self.dump(context)
-            self._call_plugins('on_game_inkling_state_update')
+        if 0:
+            print(my_team, counter_team)
+        if 0:
+            cv2.line(frame, (self.meter_x1, 24 + 10),
+                     (self.meter_x2, 24 + 10), (0, 0, 255), 1)
+            cv2.line(frame, (self.meter_x1, 24 + 20),
+                     (self.meter_x2, 24 + 20), (255, 0, 255), 1)
+            cv2.line(frame, (self.meter_x1, 24 + 30),
+                     (self.meter_x2, 24 + 30), (255, 0, 255), 1)
+            cv2.line(frame, (self.meter_x1, 24 + 31),
+                     (self.meter_x2, 24 + 31), (0, 0, 255), 1)
+            cv2.imshow('frame', frame)
+            cv2.waitKey(100)
 
         return True
+
+    ##
+    # _state_start
+    #
+    # This state will be activated at start the beginning of the game.
+    # Purpose of this state is, to figure out which inklings are active.
+    #
+    # In public and ranked battles, we can assume all of the 8 inklings
+    # are active. In 3-squad and private battles, some of the inklings
+    # can be inactive.
+    #
+    # At the beginning of the game, all of the active inklings are alive.
+    # This scene detects the active inklings and the fields:
+    #     self.my_team
+    #     self.counter_team
+    #
+    # If all of inklinkgs are active, the field should be:
+    #     [ False, False, False, False ]
+    # If our squad only has 3 inklings:
+    #     [ False, False, False, None ]
+    #
+    # One the fields are set, this scene will switch to _state_default.
+    #
+    def _state_start(self, context):
+        if self.is_another_scene_matched(context, 'GameTimerIcon') == False:
+            return False
+
+        frame = context['engine']['frame']
+        if frame is None:
+            return False
+
+        vs_xpos = self._get_vs_xpos(context)
+        if vs_xpos is None:
+            return False
+
+        my_team = self._find_inklings(context, 0, vs_xpos - 35)
+        counter_team = self._find_inklings(
+            context, vs_xpos + 35, self.meter_width_half * 2)
+        print(my_team, counter_team)
+
+        for i in range(len(my_team)):
+            my_team[i] = {True: False, False: None}[my_team[i]]
+
+        for i in range(len(counter_team)):
+            counter_team[i] = {True: False, False: None}[counter_team[i]]
+
+        self.my_team = my_team
+        self.counter_team = counter_team
+        print('team detected', my_team, counter_team)
+
+        context['game']['inkling_state_at_start'] = [my_team, counter_team]
+        self._switch_state(self._state_default)
+
+        return True
+
+    def _swtich_to_state_start(self, context):
+        self.my_team = [False, False, False, False]
+        self.counter_team = [False, False, False, False]
+
+        return self._switch_state(self._state_start)
+
+    def on_game_start(self, context):
+        self._swtich_to_state_start(context)
+
+    def on_game_go_sign(self, context):
+        self._swtich_to_state_start(context)
 
     def _analyze(self, context):
         pass
