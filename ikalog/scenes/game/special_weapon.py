@@ -125,10 +125,10 @@ class GameSpecialWeapon(StatefulScene):
         img_sp_text = white_filter.evaluate(img_special_bgr[:, 0:150])
 
         special = self.find_best_match(img_special_bgr, self.masks)
+        if self.write_samples:
+            cv2.imwrite('training/_special_%s.png' %
+                        time.time(), 255 - img_sp_text)
         if special is None:
-            if self.write_samples:
-                cv2.imwrite('training/_special_%s.png' %
-                            time.time(), 255 - img_sp_text)
             return False
 
         context['game']['special_weapon'] = special._id
@@ -152,10 +152,12 @@ class GameSpecialWeapon(StatefulScene):
         if img_last_special is None:
             return False
 
-        if self._match_phase1(context, img_special, img_last_special):
-            return True
+        special = self.find_best_match(img_special_bgr, self.masks)
+        if special is not None:
+            if context['game']['special_weapon'] == special._id:
+                return True
 
-        if self.matched_in(context, 200):
+        if self.matched_in(context, 150):
             return False
 
         self._switch_state(self._state_default)
@@ -170,6 +172,8 @@ class GameSpecialWeapon(StatefulScene):
         pass
 
     def _init_scene(self, debug=False):
+        self.my_team = []
+        self.counter_team = []
         #
         # To gather mask data, enable this.
         #
