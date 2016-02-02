@@ -47,7 +47,7 @@ class IkaConfig:
         # パターン5: OpenCV のビデオファイル読み込み機能を利用する
         # OpenCV が FFMPEG に対応していること
         # source = inputs.CVFile()
-        # source.start_video_file(name='video.avi')
+        # source.select_source(name='video.avi')
         # source.set_frame_rate(10)
 
         # パターン6: OpenCV の GStreamerパイプラインからの読み込み機能を利用する
