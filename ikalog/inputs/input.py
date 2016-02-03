@@ -145,11 +145,13 @@ class VideoInput(object):
         return next_tick
 
     def _skip_frame_recorded(self):
+
         if self.frame_skip_rt:
             tick = self.get_tick()
-
-        if self.fps_requested is not None:
+        elif self.fps_requested is not None:
             tick = self.get_current_timestamp() + (1000 / self.fps_requested)
+        else:
+            return
 
         video_msec = self.get_current_timestamp()
         skip = video_msec < tick
