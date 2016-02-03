@@ -62,8 +62,10 @@ class StatInk(object):
         self.checkEnable.SetValue(self.enabled)
         self.checkShowResponseEnable.SetValue(self.show_response_enabled)
         self.checkTrackInklingStateEnable.SetValue(self.track_inklings_enabled)
-        self.checkTrackSpecialGaugeEnable.SetValue(self.track_special_gauge_enabled)
-        self.checkTrackSpecialWeaponEnable.SetValue(self.track_special_weapon_enabled)
+        self.checkTrackSpecialGaugeEnable.SetValue(
+            self.track_special_gauge_enabled)
+        self.checkTrackSpecialWeaponEnable.SetValue(
+            self.track_special_weapon_enabled)
         self.checkTrackObjectiveEnable.SetValue(self.track_objective_enabled)
         self.checkTrackSplatzoneEnable.SetValue(self.track_splatzone_enabled)
 
@@ -93,7 +95,8 @@ class StatInk(object):
         self.show_response_enabled = conf.get('ShowResponse', False)
         self.track_inklings_enabled = conf.get('InklingState', False)
         self.track_special_gauge_enabled = conf.get('TrackSpecialGauge', False)
-        self.track_special_weapon_enabled = conf.get('TrackSpecialWeapon', False)
+        self.track_special_weapon_enabled = conf.get(
+            'TrackSpecialWeapon', False)
         self.track_objective_enabled = conf.get('TrackObjective', False)
         self.track_splatzone_enabled = conf.get('TrackSplatzone', False)
         self.api_key = conf.get('APIKEY', '')
@@ -525,8 +528,8 @@ class StatInk(object):
         time_post_start = time.time()
 
         pool = urllib3.PoolManager(
-            cert_reqs = 'CERT_REQUIRED', # Force certificate check
-            ca_certs = Certifi.where(),  # Path to the Certifi bundle.
+            cert_reqs='CERT_REQUIRED',  # Force certificate check
+            ca_certs=Certifi.where(),  # Path to the Certifi bundle.
         )
 
         try:
@@ -537,7 +540,6 @@ class StatInk(object):
         except urllib3.exceptions.SSLError as e:
             # Handle incorrect certificate error.
             IkaUtils.dprint('%s: SSLError, value: %s' % (self, e.value))
-
 
         statink_reponse = json.loads(req.data.decode('utf-8'))
         error = 'error' in statink_reponse
@@ -553,7 +555,7 @@ class StatInk(object):
             '%s: POST Done. %d bytes in %f second(s).' % (
                 self,
                 len(mp_payload),
-                int((time.time() - time_post_start) * 10) /10,
+                int((time.time() - time_post_start) * 10) / 10,
             )
         )
 
@@ -707,13 +709,25 @@ class StatInk(object):
                 })
                 self.time_last_special_gauge_msec = event_msec
 
+    def on_game_special_gauge_charged(self, context):
+        if not self.track_special_gauge_enabled:
+            return
+
+        if (self.time_start_at_msec is not None):
+            event_msec = context['engine']['msec'] - self.time_start_at_msec
+            self._add_event(context, {
+                'type': 'special_charged',
+            })
+            print(self.events)
+
     def on_game_special_weapon(self, context):
         if not self.track_special_weapon_enabled:
             return
 
         special_weapon = context['game'].get('special_weapon', None)
         if not (special_weapon in special_weapons.keys()):
-            IkaUtils.dprint('%s: special_weapon %s is invalid.' % (self, special_weapon))
+            IkaUtils.dprint('%s: special_weapon %s is invalid.' %
+                            (self, special_weapon))
             return
 
         if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
@@ -721,7 +735,7 @@ class StatInk(object):
             self._add_event(context, {
                 'type': 'special_weapon',
                 'special_weapon': special_weapon,
-                'me': False, # Not supported yet
+                'me': False,  # Not supported yet
             })
 
     def on_game_objective_position_update(self, context):
