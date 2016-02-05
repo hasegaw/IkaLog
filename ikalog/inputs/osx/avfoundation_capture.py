@@ -34,8 +34,16 @@ from ikalog.inputs import VideoInput
 
 class AVFoundationCaptureDevice(object):
 
+    def get_source_list(self):
+        num_devices = self.dll.get_source_count()
+        sources = []
+        for i in range(num_devices):
+            source_name = self.dll.get_source_name(i).decode('utf-8')
+            sources.append(source_name)
+        return sources
+
     def read(self):
-        self.dll.readFrame(self.dest_buffer)
+        self.dll.read_frame(self.dest_buffer)
         # ToDo: Error check.
 
         frame = self.dest_buffer[:, :, 0:3]
@@ -46,13 +54,13 @@ class AVFoundationCaptureDevice(object):
     def select_device(self, device_num):
         try:
             n = int(device_num)
-            self.dll.selectCaptureDevice(n)
+            self.dll.select_capture_source(n)
         except:
             pass
 
     def __del__hoge__(self):
         if hasattr(self, 'dll'):
-            self.dll.stopAVCapture()
+            self.dll.deinitalize()
 
     def _init_library(self):
         self.dest_buffer = np.zeros((720, 1280, 4), np.uint8)
@@ -61,23 +69,30 @@ class AVFoundationCaptureDevice(object):
         ctypes.cdll.LoadLibrary(libavf_dll)
 
         self.dll = ctypes.CDLL(libavf_dll)
-        self.dll.setupAVCapture.argtypes = None
-        self.dll.setupAVCapture.restype = None
-        self.dll.stopAVCapture.argtypes = None
-        self.dll.stopAVCapture.restype = None
-        self.dll.readFrame.argtypes = [
+        self.dll.initialize.argtypes = None
+        self.dll.initialize.restype = None
+        self.dll.deinitialize.argtypes = None
+        self.dll.deinitialize.restype = None
+        self.dll.read_frame.argtypes = [
             ndpointer(ctypes.c_uint8, flags="C_CONTIGUOUS")]
-        self.dll.readFrame.restype = None
-        self.dll.selectCaptureDevice.argtypes = [ctypes.c_int]
-        self.dll.selectCaptureDevice.restype = None
+        self.dll.read_frame.restype = None
+        self.dll.select_capture_source.argtypes = [ctypes.c_int]
+        self.dll.select_capture_source.restype = None
+        self.dll.get_source_count.argtypes = None
+        self.dll.get_source_count.restype = ctypes.c_int
+        self.dll.get_source_name.argtypes = [ctypes.c_int]
+        self.dll.get_source_name.restype = ctypes.c_char_p
 
     def __init__(self):
         self.dll = None
         self._init_library()
-        self.dll.setupAVCapture()
+        self.dll.initialize()
 
 
 class AVFoundationCapture(VideoInput):
+
+    def _enumerate_sources_func(self):
+        return self.cap.get_source_list()
 
     def _read_frame_func(self):
 
@@ -132,6 +147,9 @@ class AVFoundationCapture(VideoInput):
 if __name__ == "__main__":
 
     obj = AVFoundationCapture()
+    list = obj.enumerate_sources()
+    for n in range(len(list)):
+        IkaUtils.dprint("%d: %s" % (n, list[n]))
     dev = input("Please input number of capture device: ")
     cv2.imshow(obj.__class__.__name__, np.zeros((240, 320), dtype=np.uint8))
     obj.select_source(dev)
