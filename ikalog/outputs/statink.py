@@ -718,7 +718,6 @@ class StatInk(object):
             self._add_event(context, {
                 'type': 'special_charged',
             })
-            print(self.events)
 
     def on_game_special_weapon(self, context):
         if not self.track_special_weapon_enabled:
