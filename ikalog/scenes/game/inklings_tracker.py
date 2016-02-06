@@ -207,6 +207,8 @@ class InklingsTracker(StatefulScene):
     #
     def _state_default(self, context):
         if self.is_another_scene_matched(context, 'GameTimerIcon') == False:
+            if not self.matched_in(context, 20 * 1000):
+                self._switch_state(self._state_start)
             return False
 
         frame = context['engine']['frame']
