@@ -61,7 +61,8 @@ class DebugLog(object):
         self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
 
     def on_game_inkling_state_update(self, context):
-        self.write_debug_log(sys._getframe().f_code.co_name, context)
+        self.write_debug_log(sys._getframe().f_code.co_name, context,
+         text=str(context['game']['inkling_state']))
 
     def on_game_go_sign(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
