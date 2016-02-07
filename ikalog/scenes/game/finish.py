@@ -33,21 +33,24 @@ class GameFinish(Scene):
         self._last_event_msec = - 100 * 1000
 
     def match_no_cache(self, context):
+        if self.matched_in(context, 60 * 1000, attr='_last_event_msec'):
+            return False
+
         if self.is_another_scene_matched(context, 'GameTimerIcon'):
+            return False
+
+        if not self.find_scene_object('GameTimerIcon').matched_in(context, 10 * 1000):
             return False
 
         frame = context['engine']['frame']
 
-        matched = self.mask_finish.match(frame)
-
-        if not matched:
+        if not self.mask_finish.match(frame):
             return False
 
-        if not self.matched_in(context, 60 * 1000, attr='_last_event_msec'):
-            self._call_plugins('on_game_finish')
-            self._last_event_msec = context['engine']['msec']
+        self._call_plugins('on_game_finish')
+        self._last_event_msec = context['engine']['msec']
 
-        return matched
+        return True
 
     def _analyze(self, context):
         pass
