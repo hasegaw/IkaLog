@@ -277,7 +277,7 @@ class IkaEngine:
             scenes.Blank(self),
         ]
 
-    def __init__(self, enable_profile=False):
+    def __init__(self, enable_profile=True):
         self._initialize_scenes()
 
         self.output_plugins = [self]

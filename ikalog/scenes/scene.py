@@ -127,7 +127,11 @@ class Scene(object):
         if scene is None:
             return None
 
-        return (scene.match(context) != False)
+        self._prof_exit()
+        r = (scene.match(context) != False)
+        self._prof_enter()
+
+        return r
 
     def find_scene_object(self, scene_name):
         if (self.engine is None):
