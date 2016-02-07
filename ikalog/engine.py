@@ -226,7 +226,7 @@ class IkaEngine:
                     if self.session_close_wdt is not None:
                         self.dprint('Closing current session at EOF')
                         self.session_close()
-                raise
+                self._stop = True
 
         cv2.destroyAllWindows()
 
