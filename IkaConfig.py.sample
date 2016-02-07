@@ -29,11 +29,11 @@ class IkaConfig:
 
         # パターン1: Windows 上でキャプチャデバイスを利用(DirectShow)
         # source = inputs.DirectShow()
-        # source.select_device(THE_DEVICE_ID)
+        # source.select_source(THE_DEVICE_ID)
 
         # パターン2: OpenCV VideoCapture 経由でキャプチャデバイスを利用
         # source = inputs.CVCapture()
-        # source.select_device(THE_DEVICE_ID)
+        # source.select_source(THE_DEVICE_ID)
 
         # パターン3: Windows 上でスクリーンキャプチャを利用
         # 起動時は全画面を取り込み。 C キー押下で画面内にある WiiU 画面を検出
@@ -42,7 +42,7 @@ class IkaConfig:
         # パターン4: Mac 上で AVFoundation を介してキャプチャデバイスを利用
         # 現在 UltraStudio Mini Recorder のみ動作確認
         # source = inputs.AVFoundationCapture()
-        # source.select_device(THE_DEVICE_ID)
+        # source.select_source(THE_DEVICE_ID)
 
         # パターン5: OpenCV のビデオファイル読み込み機能を利用する
         # OpenCV が FFMPEG に対応していること
