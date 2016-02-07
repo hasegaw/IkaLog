@@ -41,3 +41,5 @@ from .result_festa import ResultFesta
 
 from .lobby import Lobby
 from .plaza_user_stat import PlazaUserStat
+
+from .blank import Blank

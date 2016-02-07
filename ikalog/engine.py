@@ -273,6 +273,8 @@ class IkaEngine:
             scenes.ResultGears(self),
             scenes.ResultFesta(self),
             scenes.Lobby(self),
+
+            scenes.Blank(self),
         ]
 
     def __init__(self, enable_profile=False):

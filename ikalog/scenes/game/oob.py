@@ -44,24 +44,19 @@ class GameOutOfBound(Scene):
         if not self.find_scene_object('GameTimerIcon').matched_in(context, 1.5 * 1000):
             return False
 
-        frame = context['engine']['frame']
 
-        total = np.sum(frame)
-        # print('oob score=', total)
+        if self.is_another_scene_matched(context, 'Blank') != True:
+            return False
 
-        match = total < (1280 * 720 * 3 * 16)
-        if match:
-            most_possible_id = 'oob'
+        most_possible_id = 'oob'
 
-            context['game']['last_death_reason'] = most_possible_id
-            context['game']['death_reasons'][most_possible_id] = \
-                context['game']['death_reasons'].get(most_possible_id, 0) + 1
+        context['game']['last_death_reason'] = most_possible_id
+        context['game']['death_reasons'][most_possible_id] = \
+            context['game']['death_reasons'].get(most_possible_id, 0) + 1
 
-            self._call_plugins('on_game_dead')
-            self._call_plugins('on_game_death_reason_identified')
-            return True
-
-        return False
+        self._call_plugins('on_game_dead')
+        self._call_plugins('on_game_death_reason_identified')
+        return True
 
     def _analyze(self, context):
         pass
@@ -70,4 +65,4 @@ class GameOutOfBound(Scene):
         pass
 
 if __name__ == "__main__":
-    GameGoSign.main_func()
+    raise Exception('This scene cannot be run standalone.')
