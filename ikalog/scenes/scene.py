@@ -18,7 +18,10 @@
 #  limitations under the License.
 #
 
+import time
+
 import cv2
+
 from ikalog.utils import *
 
 
@@ -86,13 +89,29 @@ class Scene(object):
     def match_no_cache(self, context):
         raise Exception('%s: _match_no_cache must be overrided' % self)
 
+    def _prof_enter(self):
+        self._prof_time_enter = time.time()
+        # FIXME: Scene profile includes plugin calls
+
+    def _prof_exit(self):
+        if self._prof_time_enter is None:
+            IkaUtils.dprint(
+                '%s: _prof_time_enter is None at _prof_exit(). Fix me.' % self)
+            return
+        duration = time.time() - self._prof_time_enter
+        self._prof_time_took = self._prof_time_took + duration
+        self._prof_time_enter = None
+
     def match(self, context):
+        self._prof_enter()
+
         if (self._matched is None):
             self._matched = self.match_no_cache(context)
 
             if self._matched:
                 self._set_matched(context)
 
+        self._prof_exit()
         return self._matched
 
     def _init_scene(self):
@@ -135,5 +154,8 @@ class Scene(object):
             self._call_plugins = self._call_plugins_nop
             self._call_plugins_later = self._call_plugins_nop
         self._init_scene()
+
+        self._prof_time_enter = False
+        self._prof_time_took = 0.0
 
         self.reset()
