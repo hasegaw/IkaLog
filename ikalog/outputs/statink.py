@@ -563,6 +563,7 @@ class StatInk(object):
         if self.dry_run == True:
             IkaUtils.dprint(
                 '%s: Dry-run mode, skipping POST to stat.ink.' % self)
+            return
 
         if api_key is None:
             api_key = self.api_key
