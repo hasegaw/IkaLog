@@ -75,6 +75,21 @@ import numpy as np
 from ikalog.inputs.filters import Filter, WarpFilterModel
 from ikalog.utils import *
 
+
+class WarpCalibrationException(Exception):
+    pass
+
+
+class WarpCalibrationNotFound(WarpCalibrationException):
+    pass
+
+
+class WarpCalibrationUnacceptableSize(WarpCalibrationException):
+
+    def __init__(self, shape):
+        self.shape = shape
+
+
 class WarpFilter(Filter):
 
     def filter_matches(self, kp1, kp2, matches, ratio=0.75):
@@ -129,15 +144,15 @@ class WarpFilter(Filter):
             H, status = None, None
             print('%d matches found, not enough for homography estimation' % len(p1))
             self.calibration_requested = False
-            return False
+            raise WarpCalibrationNotFound()
 
         if H is None:
             # Should never reach there...
             self.calibration_requested = False
-            return False
+            raise WarpCalibrationNotFound()
 
         if len(status) < 1000:
-            return False
+            raise WarpCalibrationNotFound()
 
         calibration_image_height, calibration_image_width = self.calibration_image_size
 
@@ -156,7 +171,9 @@ class WarpFilter(Filter):
 
         if validation_func is not None:
             if not validation_func(pts1):
-                return False
+                w = int(pts1[1][0] - pts1[0][0])
+                h = int(pts1[2][1] - pts1[1][1])
+                raise WarpCalibrationUnacceptableSize((w, h))
 
         self.M = cv2.getPerspectiveTransform(pts1, self.pts2)
         return True
