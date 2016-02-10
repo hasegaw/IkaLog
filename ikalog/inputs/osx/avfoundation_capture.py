@@ -118,8 +118,6 @@ class AVFoundationCapture(VideoInput):
 
         self.cap = AVFoundationCaptureDevice()
 
-        time.sleep(3)
-
         self.lock.release()
 
     def _is_active_func(self):
@@ -130,7 +128,7 @@ class AVFoundationCapture(VideoInput):
 
         # initialize target capture device
         frame = self.read_frame()
-        cv2.imshow(self.__class__.__name__, frame)
+        cv2.imshow(self.__class__.__name__, np.zeros((240, 320), dtype=np.uint8))
         cv2.waitKey(3000)
 
         self.cap.select_device(source)
@@ -143,6 +141,9 @@ class AVFoundationCapture(VideoInput):
     def __init__(self):
         self.cap = None
         super(AVFoundationCapture, self).__init__()
+        frame = self.read_frame()
+        cv2.imshow(self.__class__.__name__, np.zeros((240, 320), dtype=np.uint8))
+        cv2.waitKey(3000)
 
 if __name__ == "__main__":
 
@@ -151,7 +152,6 @@ if __name__ == "__main__":
     for n in range(len(list)):
         IkaUtils.dprint("%d: %s" % (n, list[n]))
     dev = input("Please input number of capture device: ")
-    cv2.imshow(obj.__class__.__name__, np.zeros((240, 320), dtype=np.uint8))
     obj.select_source(dev)
 
     k = 0
