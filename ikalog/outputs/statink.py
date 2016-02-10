@@ -211,11 +211,11 @@ class StatInk(object):
                 elif f_type == 'str_lower':
                     dest[f_statink] = str(src[f_ikalog]).lower()
 
-    def _add_event(self, context, event_data=None):
+    def _add_event(self, context, event_data=None, time_delta=0.0):
         assert event_data is not None
         if (not 'at'in event_data) and (self.time_start_at_msec is not None):
             offset_msec = context['engine']['msec'] - self.time_start_at_msec
-            event_data['at'] = int(offset_msec / 100) / 10
+            event_data['at'] = int(offset_msec / 100) / 10 + time_delta
         else:
             IkaUtils.dprint('%s: Event %s not logged due to no timing information.' % (
                 self, event_data['type']))
@@ -663,7 +663,7 @@ class StatInk(object):
 
     def on_game_dead(self, context):
         self.last_dead_event = {'type': 'dead'}
-        self._add_event(context, self.last_dead_event)
+        self._add_event(context, self.last_dead_event, time_delta=-2.0)
 
     def on_game_death_reason_identified(self, context):
         # 死因が特定されたら最後の死亡イベントに追加する
