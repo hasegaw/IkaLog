@@ -735,7 +735,7 @@ class StatInk(object):
             self._add_event(context, {
                 'type': 'special_weapon',
                 'special_weapon': special_weapon,
-                'me': False,  # Not supported yet
+                'me': context['game'].get('special_weapon_is_mine', False),
             })
 
     def on_game_objective_position_update(self, context):
