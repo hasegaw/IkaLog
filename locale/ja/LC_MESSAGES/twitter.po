@@ -87,7 +87,7 @@ msgstr "つぶやきテスト（先に Apply を押してね）"
 
 #: ikalog/outputs/twitter.py:376 ikalog/outputs/twitter.py:391
 msgid "Additional Message"
-msgstr ""
+msgstr "ツイートに付加するメッセージ"
 
 #: ikalog/outputs/twitter.py:378
 msgid "Consumer Key to use"

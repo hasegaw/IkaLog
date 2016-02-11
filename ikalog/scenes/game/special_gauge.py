@@ -52,9 +52,22 @@ class GameSpecialGauge(Scene):
         pixels = np.sum(img_masked) / 255
         value = int(pixels / self._gauge_pixels * 100)
         last_value = context['game'].get('special_gauge', None)
+        last_charged = context['game'].get('special_gauge_charged', False)
+
+        charged = False
+        if value > 95:
+            img_white = matcher.MM_WHITE().evaluate(frame[34:34+102, 1117:1117+102, :])
+            img_white_masked = np.minimum(img_white, self._mask_gauge[:, :, 0])
+            white_score = np.sum(img_white_masked / 255)
+            charged = (white_score > 0)
+
         if value != last_value:
             context['game']['special_gauge'] = value
             self._call_plugins('on_game_special_gauge_update')
+
+        if (not last_charged) and (charged):
+            self._call_plugins('on_game_special_gauge_charged')
+        context['game']['special_gauge_charged'] = charged
 
         return False
 

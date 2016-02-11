@@ -25,11 +25,13 @@ from .game.dead import GameDead
 from .game.finish import GameFinish
 from .game.timer_icon import GameTimerIcon
 from .game.oob import GameOutOfBound
+from .game.special_weapon import GameSpecialWeapon
 from .game.special_gauge import GameSpecialGauge
 from .game.paint_score_tracker import PaintScoreTracker
 from .game.objective_tracker import ObjectiveTracker
 from .game.splatzone_tracker import SplatzoneTracker
 from .game.ranked_battle_events import GameRankedBattleEvents
+from .game.inklings_tracker import InklingsTracker
 
 from .result_detail import ResultDetail
 from .result_judge import ResultJudge

@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 
+from .input import VideoInput
 from .opencv_videocapture import CVCapture
 from .opencv_file import CVFile
 from .opencv_gstreamer import GStreamer

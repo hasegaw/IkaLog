@@ -23,86 +23,96 @@ import threading
 
 import cv2
 from ikalog.utils import *
+from ikalog.inputs import VideoInput
 
 
-class CVFile(object):
-    cap = None
-    out_width = 1280
-    out_height = 720
-    from_file = True
-    need_resize = False
-    need_deinterlace = False
-    realtime = False
-    offset = (0, 0)
+class CVFile(VideoInput):
 
-    _systime_launch = int(time.time() * 1000)
+    cap_recorded_video = True
 
-    lock = threading.Lock()
+    def _initialize_driver_func(self):
+        # OpenCV File doesn't need pre-initialization.
+        self._cleanup_driver_func()
 
-    def read_raw(self):
+    def _cleanup_driver_func(self):
         self.lock.acquire()
         try:
-            ret, frame = self.cap.read()
+            if self.video_capture is not None:
+                self.video_capture.release()
+            self.reset()
         finally:
             self.lock.release()
 
-        if not ret:
-            return None
+    def _is_active_func(self):
+        return \
+            hasattr(self, 'video_capture') and \
+            (self.video_capture is not None)
 
-        # self.last_raw_size = frame.shape[0:1]
+    def _select_device_by_index_func(self, source):
+        raise Exception(
+            '%s does not support selecting device by index.' % self)
+
+    def _select_device_by_name_func(self, source):
+        self.lock.acquire()
+        try:
+            if self.is_active():
+                self.video_capture.release()
+
+            self.reset()
+            # FIXME: Does it work with non-ascii path?
+            self.video_capture = cv2.VideoCapture(source)
+            if not self.video_capture.isOpened:
+                self.video_capture = None
+            self.reset_tick()
+
+        finally:
+            self.lock.release()
+
+        return self.is_active()
+
+    def _next_frame_func(self):
+        pass
+
+    def _get_current_timestamp_func(self):
+        video_msec = self.video_capture.get(cv2.CAP_PROP_POS_MSEC)
+
+        if video_msec is None:
+            return self.get_tick()
+
+        return video_msec
+
+    def _read_frame_func(self):
+        ret, frame = self.video_capture.read()
+        if not ret:
+            raise EOFError()
+
+        if self.frame_skip_rt:
+            systime_msec = self.get_tick()
+            video_msec = self.video_capture.get(cv2.CAP_PROP_POS_MSEC)
+            assert systime_msec >= 0
+
+            skip = video_msec < systime_msec
+            while skip:
+                ret, frame_ = self.video_capture.read()
+
+                if not ret:
+                    break
+
+                frame = frame_
+                video_msec = self.video_capture.get(cv2.CAP_PROP_POS_MSEC)
+                skip = video_msec < systime_msec
+
         return frame
 
-    def read(self):
-        frame = self.read_raw()
-
-        if frame is None:
-            raise EOFError
-
-        t = None
-        if not self.realtime:
-            try:
-                t = self.cap.get(cv2.CAP_PROP_POS_MSEC)
-            except:
-                pass
-            if t is None:
-                IkaUtils.dprint('Cannot get video position...')
-                self.realtime = True
-
-        if self.realtime:
-            t = int(time.time() * 1000) - self._systime_launch
-
-        if t < self.last_t:
-            IkaUtils.dprint(
-                'FIXME: time position data rewinded. t=%x last_t=%x' % (t, self.last_t))
-        self.last_t = t
-
-        if self.need_resize:
-            return cv2.resize(frame, (self.out_width, self.out_height)), t
-        else:
-            return frame, t
-
-    def init_capture(self, source):
-        self.lock.acquire()
-        try:
-            if not self.cap is None:
-                self.cap.release()
-
-            self.cap = cv2.VideoCapture(source)
-            self.last_t = 0
-        finally:
-            self.lock.release()
-
-    def start_video_file(self, source):
-        if not os.path.exists(source):
-            raise Exception("Could movie file %s doesn''t exist." % source)
-
-        self.init_capture(source)
-
-        self.fps = self.cap.get(cv2.CAP_PROP_FPS)
-        # ToDo: タイミング情報がとれるかをテストする
-
     def __init__(self):
-        self.last_t = 0
+        self.video_capture = None
+        super(CVFile, self).__init__()
+
+    # backward compatibility
+    def start_video_file(self, source):
+        IkaUtils.dprint(
+            '%s: start_video_file() is deprcated. Use select_source(name="filename.mp4")' % self)
+        self.select_source(name=source)
 
 if __name__ == "__main__":
     import sys
@@ -110,11 +120,12 @@ if __name__ == "__main__":
     f = sys.argv[1]
 
     obj = CVFile()
-    obj.start_video_file(f)
+    obj.select_source(name=f)
+    obj.set_frame_rate(realtime=True)
 
     k = 0
     while k != 27:
-        for i in range(100):
-            frame, t = obj.read()
-        cv2.imshow(obj.__class__.__name__, frame)
-        k = cv2.waitKey(1)
+        frame = obj.read_frame()
+        if frame is not None:
+            cv2.imshow(obj.__class__.__name__, frame)
+        cv2.waitKey(1)

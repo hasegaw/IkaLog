@@ -20,12 +20,14 @@
 
 import gettext
 import os
-import threading
+import sys
+import time
+import traceback
 
 import wx
-import yaml
 
-from ikalog.utils import *
+from ikalog.utils import IkaUtils, Localization
+
 Localization.print_language_settings()
 
 # from ikalog.engine import *
@@ -35,7 +37,8 @@ from ikalog.ui import VideoCapture, IkaLogGUI
 
 _ = Localization.gettext_translation('IkaUI', fallback=True).gettext
 
-if __name__ == "__main__":
+
+def IkaUI_main():
     IkaUtils.dprint(_('Hello!'))
 
     application = wx.App()
@@ -102,3 +105,15 @@ if __name__ == "__main__":
     application.MainLoop()
 
     IkaUtils.dprint(_('Bye!'))
+
+if __name__ == '__main__':
+    try:
+        IkaUI_main()
+    except:
+        IkaUtils.dprint('\n\nIkaUI got an exception and crashed >>>>')
+        IkaUtils.dprint(traceback.format_exc())
+        IkaUtils.dprint('<<<<')
+
+        if hasattr(sys, 'frozen'):
+            while(True):
+                time.sleep(1)
