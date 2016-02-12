@@ -37,6 +37,10 @@ weapons = WeaponRecoginizer()
 weapons.load_model_from_file()
 weapons.knn_train()
 
+abilities = GearPowerRecoginizer()
+abilities.load_model_from_file()
+abilities.knn_train()
+
 
 class APIServer(object):
 
@@ -126,8 +130,25 @@ class APIServer(object):
 
         return response_payload
 
+    def recoginize_abilities(self, payload):
+        abilities_list = []
+        for img_bytes in payload:
+            img = cv2.imdecode(np.fromstring(img_bytes, dtype='uint8'), 1)
+            assert img is not None
+            result, distance = abilities.match(img)
+
+            abilities_list.append({'ability': result, 'distance': distance})
+
+        response_payload = {
+            'status': 'ok',
+            'abilities': abilities_list,
+        }
+
+        return response_payload
+
     def process_request(self, path, payload):
         handler = {
+            '/api/v1/recoginizer/ability': self.recoginize_abilities,
             '/api/v1/recoginizer/weapon': self.recoginize_weapons,
             '/api/v1/recoginizer/deadly_weapon': self.recoginize_deadly_weapons,
         }.get(path, None)

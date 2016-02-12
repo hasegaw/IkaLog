@@ -85,6 +85,29 @@ class APIClient(object):
 
         return ret
 
+    def recoginize_abilities(self, abilities_list):
+        payload = []
+
+        for img_ability in abilities_list:
+            result, img_ability_png = cv2.imencode('.png', img_ability)
+            payload.append(img_ability_png.tostring())
+
+        response = self._request_func(
+            '/api/v1/recoginizer/ability',
+            payload,
+        )
+
+        # Validate the response.
+        assert response is not None, 'NO API Response.'
+        assert response.get('status', None) == 'ok', 'API Error.'
+
+        # Decode the response.
+        ret = []
+        for entry in response['abilities']:
+            ret.append(entry.get('ability', None))
+
+        return ret
+
     def pack_deadly_weapons_image(self, deadly_weapons_list):
         h = deadly_weapons_list[0].shape[0]
         w = deadly_weapons_list[0].shape[1]
