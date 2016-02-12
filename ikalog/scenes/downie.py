@@ -24,8 +24,10 @@ import time
 import cv2
 import numpy as np
 
+from ikalog.api import APIClient
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
+
 
 class Downie(StatefulScene):
 
@@ -36,19 +38,23 @@ class Downie(StatefulScene):
     def _detect_gear_ability(self, context):
         img_subs = []
         for x in (718, 792, 864):
-            img_sub = np.array(context['engine']['frame'][389: 389 + 53, x:x+55, :])
+            img_sub = np.array(context['engine']['frame'][
+                               389: 389 + 53, x:x + 55, :])
             img_subs.append(img_sub)
 
-
-        context['game']['downy'] = { 'sub_abilities' : [] }
-
+        context['game']['downie'] = {'sub_abilities': []}
+        abilitiy_images = []
+        # FIXME: run in another thread, since API client may take several
+        # seconds
         for img_sub in img_subs:
             img_sub = cv2.resize(img_sub, (52, 50))
             cv2.imwrite('gacha_%s.png' % time.time(), img_sub)
-            result, distance = self.gearpower_recoginizer.match(img_sub)
+            abilitiy_images.append(img_sub)
 
-            context['game']['downy']['sub_abilities'].append(result)
-        self._call_plugins('on_inkpolis_slot_done')
+        # FIXME: Exception handling
+        context['game']['downie']['sub_abilities'] = \
+            self._client_local.recoginize_abilities(abilitiy_images)
+        self._call_plugins('on_inkopolis_slot_done')
 
     def _state_default(self, context):
         frame = context['engine']['frame']
@@ -63,7 +69,7 @@ class Downie(StatefulScene):
             return False
 
         if self.matched_in(context, 5000, attr='_last_slot_start_msec'):
-           return False
+            return False
 
         self._last_slot_stat_msec = context['engine']['msec']
         self._last_sub_images = None
@@ -72,10 +78,13 @@ class Downie(StatefulScene):
         self._switch_state(self._state_slot_running)
 
     def _state_slot_running(self, context):
-        img_sub1 = np.array(context['engine']['frame'][378: 378 + 70, 703:703 + 70, :], dtype=np.int16)
-        img_sub2 = np.array(context['engine']['frame'][378: 378 + 70, 783:783 + 70, :], dtype=np.int16)
-        img_sub3 = np.array(context['engine']['frame'][378: 378 + 70, 863:863 + 70, :], dtype=np.int16)
-        img_subs = [ img_sub1, img_sub2, img_sub3 ]
+        img_sub1 = np.array(context['engine']['frame'][
+                            378: 378 + 70, 703:703 + 70, :], dtype=np.int16)
+        img_sub2 = np.array(context['engine']['frame'][
+                            378: 378 + 70, 783:783 + 70, :], dtype=np.int16)
+        img_sub3 = np.array(context['engine']['frame'][
+                            378: 378 + 70, 863:863 + 70, :], dtype=np.int16)
+        img_subs = [img_sub1, img_sub2, img_sub3]
 
         if self._last_sub_images_msec is None:
             self._last_sub_images = img_subs
@@ -95,7 +104,6 @@ class Downie(StatefulScene):
             cv2.imwrite('gacha_done.png', context['engine']['frame'])
             self._detect_gear_ability(context)
 
-
             self._last_slot_stat_msec = context['engine']['msec']
             self._switch_state(self._state_default)
 
@@ -103,7 +111,6 @@ class Downie(StatefulScene):
             self._last_sub_images_msec = context['engine']['msec']
 
         self._last_sub_images = img_subs
-
 
     def dump(self, context):
         pass
@@ -142,10 +149,7 @@ class Downie(StatefulScene):
             debug=debug,
         )
 
-        self.gearpower_recoginizer = GearPowerRecoginizer()
-        self.gearpower_recoginizer.load_model_from_file()
-        self.gearpower_recoginizer.knn_train()
-
+        self._client_local = APIClient(local_mode=True)
 
 if __name__ == "__main__":
     Downie.main_func()
