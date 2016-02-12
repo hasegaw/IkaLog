@@ -88,3 +88,14 @@ class Say(object):
         else:
             weapon_text = weapons.get(reason, {}).get('en', reason)
             self._say('%(weapon)s' % {'weapon': weapon_text})
+
+    def on_game_special_weapon(self, context):
+        special_weapon = context['game']['special_weapon']
+        special_weapon_text = special_weapons.get(special_weapon, {}).get('en', special_weapon)
+
+        if context['game']['special_weapon_is_mine']:
+            special_weapon_text = 'my %s' % special_weapon_text
+        else:
+            special_weapon_text = 'team %s' % special_weapon_text
+
+        self._say('%(special_weapon)s' % {'special_weapon': special_weapon_text})

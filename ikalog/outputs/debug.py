@@ -62,7 +62,7 @@ class DebugLog(object):
 
     def on_game_inkling_state_update(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context,
-         text=str(context['game']['inkling_state']))
+                             text=str(context['game']['inkling_state']))
 
     def on_game_go_sign(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
@@ -147,13 +147,13 @@ class DebugLog(object):
         if 0:
             s = 'paint_score: %s' % context['game'].get('paint_score', 0)
             self.write_debug_log(sys._getframe().f_code.co_name, context,
-                text=s)
+                                 text=s)
 
     def on_game_objective_position_update(self, context):
         if 0:
             s = 'pos: %s' % context['game']['tower'].get('pos', 0)
             self.write_debug_log(sys._getframe().f_code.co_name, context,
-                text=s)
+                                 text=s)
 
     def on_game_splatzone_counter_update(self, context):
         if 0:
@@ -161,16 +161,17 @@ class DebugLog(object):
                 context['game']['splatzone_my_team_counter']['value'],
                 context['game']['splatzone_my_team_counter']['injury_value'],
                 context['game']['splatzone_counter_team_counter']['value'],
-                context['game']['splatzone_counter_team_counter']['injury_value'],
+                context['game']['splatzone_counter_team_counter'][
+                    'injury_value'],
             )
             self.write_debug_log(sys._getframe().f_code.co_name, context,
-                text=s)
+                                 text=s)
 
     def on_game_special_gauge_update(self, context):
         if 0:
             s = 'special: %spct' % (context['game']['special_gauge'])
             self.write_debug_log(sys._getframe().f_code.co_name, context,
-                text=s)
+                                 text=s)
 
     # Result Scenes
 
@@ -209,6 +210,12 @@ class DebugLog(object):
 
     def on_game_session_end(self, context):
         s = "death_reasons = %s" % (context['game']['death_reasons'])
+        self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
+
+    # Inkopolis
+
+    def on_inkopolis_slot_done(self, context):
+        s = "result = %s" % (context['game']['downy']['sub_abilities'])
         self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
 
     # UI support

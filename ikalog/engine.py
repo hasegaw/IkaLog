@@ -260,7 +260,6 @@ class IkaEngine:
             scenes.GameFinish(self),
             scenes.GameSpecialGauge(self),
             scenes.GameSpecialWeapon(self),
-            scenes.ResultJudge(self),
 
             scenes.GameRankedBattleEvents(self),
             scenes.PaintScoreTracker(self),
@@ -268,11 +267,14 @@ class IkaEngine:
             scenes.SplatzoneTracker(self),
             scenes.InklingsTracker(self),
 
+            scenes.ResultJudge(self),
             scenes.ResultDetail(self),
             scenes.ResultUdemae(self),
             scenes.ResultGears(self),
             scenes.ResultFesta(self),
+
             scenes.Lobby(self),
+            scenes.Downie(self),
 
             scenes.Blank(self),
         ]
