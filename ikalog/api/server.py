@@ -19,12 +19,13 @@
 #
 
 from http.server import HTTPServer, SimpleHTTPRequestHandler
-import cgi
 import json
 import logging
+import time
 
 import ikalog.constants
 from ikalog.utils import *
+from ikalog.utils.character_recoginizer import DeadlyWeaponRecoginizer
 
 import cv2
 import numpy as np
@@ -38,6 +39,70 @@ weapons.knn_train()
 
 
 class APIServer(object):
+
+    def _decode_deadly_weapons_image(self, payload):
+        h = payload['sample_height']
+        w = payload['sample_width']
+        img_bytes = payload['samples']
+        samples1 = cv2.imdecode(np.fromstring(img_bytes, dtype='uint8'), 1)
+        num_samples = int(samples1.shape[0] / h)
+
+        last_image = None
+        y = 0
+
+        votes = {}
+        for i in range(num_samples):
+            image = samples1[y: y + h, :]
+            if last_image is None:
+                last_image = np.array(image, dtype=np.uint8)
+                current_image = image
+            else:
+                diff_image = image
+                current_image = abs(last_image - diff_image)
+                samples1[y:y + h, :] = current_image
+
+            y = y + h
+        return samples1
+
+    def _unpack_deadly_weapons_image(self, payload):
+        image1 = self._decode_deadly_weapons_image(payload)
+        h = payload['sample_height']
+        num_samples = int(image1.shape[0] / h)
+
+        y = 0
+
+        images = []
+
+        for i in range(num_samples):
+            images.append(image1[y: y + h, :])
+            y = y + h
+
+        return images
+
+    def recoginize_deadly_weapons(self, payload):
+        h = payload['sample_height']
+        images = self._unpack_deadly_weapons_image(payload)
+        lang = payload['game_language']
+        deadly_weapon_recoginizer = DeadlyWeaponRecoginizer(lang)
+
+        votes = {}
+        for image in images:
+            weapon_id = deadly_weapon_recoginizer.match(image)
+            votes[weapon_id] = votes.get(weapon_id, 0) + 1
+
+        best_result = (None, 0)
+        for weapon_id in votes.keys():
+            if votes[weapon_id] > best_result[1]:
+                best_result = (weapon_id, votes[weapon_id])
+
+        response_payload = {
+            'status': 'ok',
+            'deadly_weapon': best_result[0],
+            'score': best_result[1],
+            'total': len(images),
+        }
+
+        return response_payload
 
     def recoginize_weapons(self, payload):
         weapons_list = []
@@ -64,12 +129,18 @@ class APIServer(object):
     def process_request(self, path, payload):
         handler = {
             '/api/v1/recoginizer/weapon': self.recoginize_weapons,
+            '/api/v1/recoginizer/deadly_weapon': self.recoginize_deadly_weapons,
         }.get(path, None)
 
         if handler is None:
-            raise Exception('Invalid API Path %s' % path)
+            return {'status': 'error', 'description': 'Invalid API Path %s' % path}
 
-        return handler(payload)
+        try:
+            response_payload = handler(payload)
+        except:
+            return {'status': 'error', 'description': 'Exception', 'detail': traceback.format_exc()}
+
+        return response_payload
 
 
 class HTTPRequestHandler(SimpleHTTPRequestHandler):
@@ -92,14 +163,15 @@ class HTTPRequestHandler(SimpleHTTPRequestHandler):
         payload = umsgpack.unpackb(data)
 
         # FixMe: catch expcetion.
-        response = self._server.process_request(
-            self.path,
-            payload)
+        response = self.api_server.process_request(self.path, payload)
 
         self._send_response_json(response)
 
+        if hasattr(self, 'callback_func'):
+            self.callback_func(self.path, payload, response)
+
     def __init__(self, *args, **kwargs):
-        self._server = APIServer()
+        self.api_server = APIServer()
         super(HTTPRequestHandler, self).__init__(*args, **kwargs)
 
 if __name__ == "__main__":

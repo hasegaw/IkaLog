@@ -26,6 +26,7 @@ import numpy as np
 import umsgpack
 
 from ikalog.api import APIServer
+from ikalog.utils import Localization, IkaUtils
 
 
 class APIClient(object):
@@ -41,17 +42,25 @@ class APIClient(object):
         mp_payload = ''.join(map(chr, umsgpack.packb(payload)))
 
         try:
-            pool = urllib3.PoolManager()
+            pool = urllib3.PoolManager(timeout=3.0)
             req = pool.urlopen(
                 'POST',
                 url_api,
                 headers=http_headers,
                 body=mp_payload,
             )
-        except urllib3.exceptions.MaxRetryError:
-            raise Exception('API Error: Failed to connect to API endpoint.')
+            return json.loads(req.data.decode('utf-8'))
 
-        return json.loads(req.data.decode('utf-8'))
+        except urllib3.exceptions.MaxRetryError:
+            fallback = self._fallback  # or .... or ...
+
+            if fallback:
+                IkaUtils.dprint(
+                    '%s: Remote API Error. Falling back to local mode' % self)
+                return self._local_request_func(path, payload)
+
+        raise Exception(
+            'API Error: Failed to connect to API endpoint. (No fallback)')
 
     def recoginize_weapons(self, weapons_list):
         payload = []
@@ -76,16 +85,80 @@ class APIClient(object):
 
         return ret
 
-    def __init__(self, base_uri=None, local_mode=False):
+    def pack_deadly_weapons_image(self, deadly_weapons_list):
+        h = deadly_weapons_list[0].shape[0]
+        w = deadly_weapons_list[0].shape[1]
+        print('%s: %d samples, dimension = %s' %
+              (self, len(deadly_weapons_list), (w, h)))
+
+        out_orig_image = np.zeros(
+            (h * len(deadly_weapons_list), w), dtype=np.uint8)
+        out_image = np.zeros((h * len(deadly_weapons_list), w), dtype=np.uint8)
+        out_decode_image = np.zeros(
+            (h * len(deadly_weapons_list), w, 3), dtype=np.uint8)
+
+        last_image = None
+        y = 0
+        for image in deadly_weapons_list:
+            if len(image.shape) == 3:
+                image = image[:, :, 0]
+
+            if last_image is None:
+                last_image = image
+                current_image = image
+                diff_image = image
+            else:
+                current_image = image
+                diff_image = abs(last_image - current_image)
+
+            out_image[y: y + h, :] = diff_image
+            out_orig_image[y: y + h, :] = current_image
+
+            decoded_image = abs(last_image - out_image[y:y + h, :])
+            out_decode_image[y: y + h, :, 0] = decoded_image
+            out_decode_image[y: y + h, :, 1] = current_image
+
+            y = y + h
+        if 0:
+            cv2.imshow('out', out_image)
+            cv2.imshow('decoded', out_decode_image)
+            # cv2.imshow('check', abs(out_decode_image - out_orig_image))
+            cv2.waitKey()
+
+        return out_image
+
+    def recoginize_deadly_weapons(self, deadly_weapons_list):
+        if len(deadly_weapons_list) == 0:
+            return None
+        images = self.pack_deadly_weapons_image(deadly_weapons_list)
+
+        payload = {
+            'game_language': Localization.get_game_languages()[0],
+            'sample_height': deadly_weapons_list[0].shape[0],
+            'sample_width': deadly_weapons_list[0].shape[1],
+            'samples': cv2.imencode('.png', images)[1].tostring()
+        }
+
+        response = self._request_func(
+            '/api/v1/recoginizer/deadly_weapon',
+            payload,
+        )
+
+        if response.get('status', None) != 'ok':
+            return {'status': 'error'}
+
+        return response
+
+    def __init__(self, base_uri=None, local_mode=False, fallback=True):
+        self._server = APIServer()
+
         if local_mode:
             self._request_func = self._local_request_func
-            self._server = APIServer()
         else:
             assert base_uri is not None
             self._request_func = self._http_request_func
             self.base_uri = base_uri
-
-        pass
+            self._fallback = fallback
 
 if __name__ == "__main__":
 
