@@ -214,8 +214,12 @@ class DebugLog(object):
 
     # Inkopolis
 
-    def on_inkopolis_slot_done(self, context):
-        s = "result = %s" % (context['game']['downie']['sub_abilities'])
+    def on_inkopolis_lottery_done(self, context):
+        s = "\n  brand: %s\n  level: %d\n  new sub abilities: %s" % (
+            context['game']['downie']['brand'],
+            context['game']['downie']['level'],
+            context['game']['downie']['sub_abilities']
+        )
         self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
 
     # UI support
