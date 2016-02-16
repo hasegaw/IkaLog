@@ -49,7 +49,7 @@ msgstr "投稿内容にインクリングの生死状況を含める (experiment
 msgid "Include Special gauge (experimental)"
 msgstr "投稿内容にスペシャルの溜まり具合を含める (experimental)"
 
-msgid "Include Special weapons (experimental)"
+msgid "Include Special Weapons (experimental)"
 msgstr "投稿内容にスペシャル発動を含める (experimental)"
 #: ikalog/outputs/statink.py:117
 msgid "Show stat.ink response in console"
