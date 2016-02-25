@@ -178,7 +178,7 @@ class Downie(StatefulScene):
         if self.matched_in(context, 5000, attr='_last_lottery_start_msec'):
             return False
 
-        if 'downie' in context:
+        if not 'downie' in context:
             context['game']['downie'] = {}
 
         context['game']['downie'] = {
