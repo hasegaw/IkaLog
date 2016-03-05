@@ -529,7 +529,8 @@ class StatInk(object):
 
         pool = urllib3.PoolManager(
             cert_reqs='CERT_REQUIRED',  # Force certificate check
-            ca_certs=Certifi.where(),  # Path to the Certifi bundle.
+            ca_certs=Certifi.where(),   # Path to the Certifi bundle.
+            timeout=120.0,              # Timeout (in sec)
         )
 
         try:
