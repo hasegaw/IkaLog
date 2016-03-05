@@ -24,6 +24,7 @@ import pprint
 import threading
 import time
 import traceback
+import uuid
 
 import cv2
 import urllib3
@@ -231,7 +232,9 @@ class StatInk(object):
         })
 
     def composite_payload(self, context):
-        payload = {}
+        payload = {
+            'uuid': uuid.uuid1().hex,
+        }
 
         # Lobby
 
