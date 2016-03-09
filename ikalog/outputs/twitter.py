@@ -453,7 +453,7 @@ class Twitter(object):
 
         result = IkaUtils.getWinLoseText(
             context['game']['won'], win_text=_('won'),
-            lose_text=_('lose'),
+            lose_text=_('lost'),
             unknown_text=_('played'))
 
         t = datetime.now().strftime("%Y/%m/%d %H:%M")
