@@ -224,6 +224,13 @@ class IkaMatcher(object):
                 cv2.imshow('img_fg: %s' % label, img_fg)
             if img_added is not None:
                 cv2.imshow('result: %s' % label, img_added)
+
+        if match and (self._call_plugins is not None):
+            self._call_plugins('on_mark_rect_in_preview', [
+                (self.left, self.top),
+                (self.left + self.width, self.top + self.height)
+            ])
+
         return (match, raito, orig_raito)
 
     def match(self, img, debug=None):
@@ -273,7 +280,7 @@ class IkaMatcher(object):
     # @prram pre_threshold_value  Threshold target frame with this level before matching.
     # @param debug                If true, show debug information.
     # @param label                Label (text data) to distingish this mask.
-    def __init__(self, left, top, width, height, img=None, img_file=None, threshold=0.9, fg_method=None, bg_method=None, orig_threshold=0.7, debug=False, label=None):
+    def __init__(self, left, top, width, height, img=None, img_file=None, threshold=0.9, fg_method=None, bg_method=None, orig_threshold=0.7, debug=False, label=None, call_plugins=None):
         self.top = top
         self.left = left
         self.width = width
@@ -282,6 +289,7 @@ class IkaMatcher(object):
         self.orig_threshold = orig_threshold
         self.debug = debug
         self.label = label
+        self._call_plugins = call_plugins
 
         self.fg_method = fg_method
         if self.fg_method is None:
