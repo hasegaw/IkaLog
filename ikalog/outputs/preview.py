@@ -30,11 +30,14 @@ class Screen(object):
 
     last_update = 0
 
-    def on_frame_read(self, context):
-        cv2.imshow('IkaLog', cv2.resize(
-            context['engine']['frame'], self.video_size))
+    def on_show_preview(self, context):
 
-    def on_frame_next(self, context):
+        img_resized = cv2.resize(
+            context['engine']['preview'],
+            self.video_size
+        )
+        cv2.imshow('IkaLog', img_resized)
+
         r = None
         if (self.wait_ms == 0):
             now = time.time()
