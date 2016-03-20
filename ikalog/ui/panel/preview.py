@@ -34,10 +34,10 @@ class PreviewPanel(wx.Panel):
 
     def on_show_preview(self, context):
         self.lock.acquire()
-        self.latest_frame = cv2.resize(
-            context['engine']['frame_modified'],
-            (640, 360)
-        )
+
+        img = context['engine'].get('preview', context['engine']['frame'])
+        self.latest_frame = cv2.resize(img, (640, 360))
+
         self.refresh_at_next = True
         self.lock.release()
 

@@ -31,11 +31,9 @@ class Screen(object):
     last_update = 0
 
     def on_show_preview(self, context):
+        img = context['engine'].get('preview', context['engine']['frame'])
+        img_resized = cv2.resize(img, self.video_size)
 
-        img_resized = cv2.resize(
-            context['engine']['preview'],
-            self.video_size
-        )
         cv2.imshow('IkaLog', img_resized)
 
         r = None
