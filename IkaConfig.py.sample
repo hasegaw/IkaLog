@@ -144,16 +144,19 @@ class IkaConfig:
             #     tweet_udemae = True
             # ),
 
+            # WebSocket サーバ
+            outputs.WebSocketServer(enabled=True),
+
             # 不具合調査向け。
             # イベントトリガをコンソールに出力。イベントトリガ時のスクリーンショット保存
-            outputs.DebugLog(dir='./screenshots/', screenshot=False),
+            # outputs.DebugLog(dir='./screenshots/', screenshot=False),
 
             # 不具合調査向け。
             # ウインドウに対して v キー押下でデバッグ録画を開始する
-            outputs.DebugVideoWriter(dir='./debug_videos/'),
+            # outputs.DebugVideoWriter(dir='./debug_videos/'),
 
-            # WebSocket サーバ
-            outputs.WebSocketServer(enabled=True),
+            # PreviewDetected: 認識した画像をプレビュー上でマークする
+            # outputs.PreviewDetected(),
 
             # 入力ソース
             source,
