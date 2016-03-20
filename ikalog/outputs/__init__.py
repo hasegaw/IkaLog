@@ -28,6 +28,7 @@ from .hue import Hue
 from .ikadenwa import Ikadenwa
 from .printjson import JSON
 from .preview import Screen
+from .preview_detected import PreviewDetected
 from .screenshot import Screenshot
 from .slack import Slack
 from .statink import StatInk
