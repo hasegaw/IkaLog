@@ -146,6 +146,7 @@ class ResultFesta(StatefulScene):
             fg_method=matcher.MM_NOT_BLACK(),
             bg_method=matcher.MM_BLACK(),
             label='result_splatfesta/fes_point',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -158,6 +159,7 @@ class ResultFesta(StatefulScene):
                 hue=(31 - 5, 31 + 5), visibility=(230, 255)),
             bg_method=matcher.MM_BLACK(),
             label='result_splatfesta/fes_newtitle',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 

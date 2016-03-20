@@ -173,6 +173,7 @@ class GameDead(StatefulScene):
             bg_method=matcher.MM_WHITE(sat=(0, 255), visibility=(0, 48)),
             fg_method=matcher.MM_WHITE(visibility=(192, 255)),
             label='dead',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 

@@ -69,6 +69,7 @@ class GameGoSign(Scene):
             label='Go!',
             bg_method=matcher.MM_WHITE(sat=(32, 255), visibility=(0, 210)),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 

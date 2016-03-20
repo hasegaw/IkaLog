@@ -195,6 +195,7 @@ class ResultGears(StatefulScene):
             bg_method=matcher.MM_BLACK(visibility=(0, 64)),
             fg_method=matcher.MM_WHITE(),
             label='result_gaers/okane',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -207,6 +208,7 @@ class ResultGears(StatefulScene):
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(40 - 5, 40 + 5), visibility=(200, 255)),
             label='result_gaers/level',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -218,6 +220,7 @@ class ResultGears(StatefulScene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='result_gaers/gears',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 

@@ -173,6 +173,7 @@ class ResultUdemae(StatefulScene):
                 hue=(11 - 5, 11 + 5), visibility=(200, 255)),
             bg_method=matcher.MM_BLACK(visibility=(0, 64)),
             label='result_udemae/Udemae',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
