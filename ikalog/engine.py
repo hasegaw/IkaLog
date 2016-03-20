@@ -20,6 +20,7 @@
 
 from __future__ import print_function
 
+import copy
 import cv2
 import sys
 import time
@@ -96,6 +97,7 @@ class IkaEngine:
         t = self.capture.get_current_timestamp()
         self.context['engine']['msec'] = t
         self.context['engine']['frame'] = frame
+        self.context['engine']['preview'] = copy.deepcopy(frame)
 
         self.call_plugins('on_debug_read_next_frame')
 
@@ -193,6 +195,9 @@ class IkaEngine:
                 self.session_close()
 
         key = None
+
+        self.call_plugins('on_draw_preview')
+        self.call_plugins('on_show_preview')
 
         # FixMe: Since on_frame_next and on_key_press has non-standard arguments,
         # self.call_plugins() doesn't work for those.
