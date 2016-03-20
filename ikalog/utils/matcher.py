@@ -226,7 +226,7 @@ class IkaMatcher(object):
                 cv2.imshow('result: %s' % label, img_added)
 
         if match and (self._call_plugins is not None):
-            self._call_plugins('on_mark_rect_in_preview', [
+            self._call_plugins('on_mark_rect_in_preview', params=[
                 (self.left, self.top),
                 (self.left + self.width, self.top + self.height)
             ])
