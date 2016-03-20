@@ -117,9 +117,10 @@ class Scene(object):
     def _init_scene(self):
         pass
 
-    def _call_plugins_nop(self, event_name):
-        IkaUtils.dprint('%s: Tried to call plugin hook %s'
-                        % (self, event_name))
+    def _call_plugins_nop(self, event_name, params=None, debug=False):
+        IkaUtils.dprint(
+            '%s: Tried to call plugin hook %s' % (self, event_name)
+        )
 
     def is_another_scene_matched(self, context, scene_name):
         scene = self.find_scene_object(scene_name)
