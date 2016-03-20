@@ -91,7 +91,6 @@ class GameSpecialWeapon(StatefulScene):
         img_s_hist = cv2.calcHist(img_s[:, :], [0], None, [5], [0, 256])
         img_s_hist_black = float(np.amax(img_s_hist[0:1]))
         img_s_hist_non_black = float(np.amax(img_s_hist[3:4]))
-        print(img_s_hist)
         return img_s_hist_black < img_s_hist_non_black
 
     def _state_default(self, context):
@@ -205,6 +204,7 @@ class GameSpecialWeapon(StatefulScene):
                     bg_method=matcher.MM_NOT_WHITE(),
                     fg_method=matcher.MM_WHITE(),
                     label='special/%s' % special_weapon,
+                    call_plugins=self._call_plugins,
                     debug=debug,
                 )
                 mask._id = special_weapon
