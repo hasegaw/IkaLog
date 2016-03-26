@@ -24,7 +24,7 @@ from ikalog.utils import IkaUtils
 
 class IkaConfig:
 
-    def config(self):
+    def config(self, args):
         # 使いたい入力を設定
 
         # パターン1: Windows 上でキャプチャデバイスを利用(DirectShow)
@@ -46,7 +46,9 @@ class IkaConfig:
 
         # パターン5: OpenCV のビデオファイル読み込み機能を利用する
         # OpenCV が FFMPEG に対応していること
+        # 直接ファイルを指定するか、コマンドラインから --input_file で指定可能
         # source = inputs.CVFile()
+        # source.select_source(name=args.input_file)
         # source.select_source(name='video.avi')
         # source.set_frame_rate(10)
 

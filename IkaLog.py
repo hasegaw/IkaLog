@@ -21,6 +21,7 @@
 from ikalog.utils import Localization, IkaUtils
 Localization.print_language_settings()
 
+import argparse
 import signal
 from ikalog.engine import *
 from IkaConfig import *
@@ -34,9 +35,17 @@ def signal_handler(num, frame):
     if num == 2:
         engine.stop()
 
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input_file', '-f', dest='input_file', type=str)
+    return parser.parse_args()
+
+
 signal.signal(signal.SIGINT, signal_handler)
 
-capture, OutputPlugins = IkaConfig().config()
+args = get_args()
+capture, OutputPlugins = IkaConfig().config(args)
+
 engine.pause(False)
 engine.set_capture(capture)
 engine.set_plugins(OutputPlugins)
