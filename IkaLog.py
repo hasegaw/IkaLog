@@ -38,7 +38,9 @@ def signal_handler(num, frame):
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--input_file', '-f', dest='input_file', type=str)
-    return parser.parse_args()
+    parser.add_argument('--output_description', '--desc',
+                        dest='output_description', type=str)
+    return vars(parser.parse_args())
 
 
 signal.signal(signal.SIGINT, signal_handler)

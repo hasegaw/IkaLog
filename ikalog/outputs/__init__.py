@@ -23,6 +23,7 @@ from .csv import CSV
 from .alive_squids_csv import AliveSquidsCSV
 from .debug import DebugLog
 from .debug_video_writer import DebugVideoWriter
+from .description import Description
 from .fluentd import Fluentd
 from .hue import Hue
 from .ikadenwa import Ikadenwa

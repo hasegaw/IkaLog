@@ -26,6 +26,7 @@ class IkaConfig:
 
     def config(self, args):
         # 使いたい入力を設定
+        source = None
 
         # パターン1: Windows 上でキャプチャデバイスを利用(DirectShow)
         # source = inputs.DirectShow()
@@ -48,9 +49,13 @@ class IkaConfig:
         # OpenCV が FFMPEG に対応していること
         # 直接ファイルを指定するか、コマンドラインから --input_file で指定可能
         # source = inputs.CVFile()
-        # source.select_source(name=args.input_file)
         # source.select_source(name='video.avi')
         # source.set_frame_rate(10)
+
+        if args.get('input_file'):
+            source = inputs.CVFile()
+            source.select_source(name=args['input_file'])
+            source.set_frame_rate(10)
 
         # パターン6: OpenCV の GStreamerパイプラインからの読み込み機能を利用する
         # ・OpenCV が GStreamer に対応していること
@@ -61,8 +66,9 @@ class IkaConfig:
         # source.select_source(name='decklinksrc connection=hdmi mode=720p5994 device-number=0 ! videoconvert ! appsink')
         #
         # 例) テストパターンを表示
-        source = inputs.GStreamer()
-        source.select_source(name='videotestsrc ! videoconvert ! appsink')
+        if not source:
+            source = inputs.GStreamer()
+            source.select_source(name='videotestsrc ! videoconvert ! appsink')
 
         # 一部のHDMIキャプチャはHDMIソースのピクセルがずれている。
         # 必要に応じてキャプチャのオフセットを(x, y) 指定
@@ -154,8 +160,18 @@ class IkaConfig:
             source,
         ]
 
+        # Video description for YouTube. It is expected to be used with
+        # input.CVFile. Multiple matches in a video is not tested.
+        #
+        # YouTube 用、動画の概要。input.CVFile と組み合わせた使用を想定。
+        # ビデオ内に複数のゲームがある場合には未検証。
+        if args.get('output_description'):
+            OutputPlugins.append(
+                outputs.Description(args['output_description']))
+
         return [source, OutputPlugins]
 
 if __name__ == '__main__':
     obj = IkaConfig()
-    print(obj.config())
+    args = {}
+    print(obj.config(args))
