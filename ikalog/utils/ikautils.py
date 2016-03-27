@@ -85,6 +85,18 @@ class IkaUtils(object):
         return "%s%s" % (prefix, playerEntry['gender'])
 
     @staticmethod
+    def extend_languages(languages=None):
+        if languages is None:
+            languages = Localization.get_languages()
+
+        if not isinstance(languages, list):
+            languages = [languages]
+
+        # fallback list
+        languages.extend(['en', 'ja'])
+        return languages
+
+    @staticmethod
     def map2id(map, unknown='?'):
         if map is None:
             return unknown
@@ -100,16 +112,7 @@ class IkaUtils(object):
         if stages.get(map_id, None) is None:
             return unknown
 
-        if languages is None:
-            languages = Localization.get_languages()
-
-        if not isinstance(languages, list):
-            languages = [languages]
-
-        # fallback list
-        languages.extend(['en', 'ja'])
-
-        for lang in languages:
+        for lang in IkaUtils.extend_languages(languages):
             map_text = stages[map_id].get(lang, None)
             if map_text is not None:
                 return map_text
@@ -133,16 +136,7 @@ class IkaUtils(object):
         if rules.get(rule_id, None) is None:
             return unknown
 
-        if languages is None:
-            languages = Localization.get_languages()
-
-        if not isinstance(languages, list):
-            languages = [languages]
-
-        # fallback list
-        languages.extend(['en', 'ja'])
-
-        for lang in languages:
+        for lang in IkaUtils.extend_languages(languages):
             rule_text = rules[rule_id].get(lang, None)
             if rule_text is not None:
                 return rule_text
@@ -166,16 +160,7 @@ class IkaUtils(object):
         if gear_abilities.get(gear_ability_id, None) is None:
             return unknown
 
-        if languages is None:
-            languages = Localization.get_languages()
-
-        if not isinstance(languages, list):
-            languages = [languages]
-
-        # fallback list
-        languages.extend(['en', 'ja'])
-
-        for lang in languages:
+        for lang in IkaUtils.extend_languages(languages):
             gear_ability_text = gear_abilities[gear_ability_id].get(lang, None)
             if gear_ability_text is not None:
                 return gear_ability_text
