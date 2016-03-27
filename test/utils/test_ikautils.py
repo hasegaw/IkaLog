@@ -140,5 +140,61 @@ class TestIkaUtils(unittest.TestCase):
                                                     unknown='<:='))
 
 
+    def test_death_reason2text(self):
+        ### Weapons
+        reason = 'hokusai'
+
+        # English
+        self.assertEqual('Octobrush',
+                         IkaUtils.death_reason2text(reason, languages='en'))
+
+        # Japanese
+        self.assertEqual('ホクサイ',
+                         IkaUtils.death_reason2text(reason, languages='ja'))
+
+        # Fallback to English
+        self.assertEqual('Octobrush',
+                         IkaUtils.death_reason2text(reason, languages='??'))
+
+        # Multiple languages
+        self.assertEqual('ホクサイ',
+                         IkaUtils.death_reason2text(reason,
+                                                    languages=['ja', 'en']))
+
+        ### Sub weapons
+        reason = 'trap'
+        self.assertEqual('Ink Mine',
+                         IkaUtils.death_reason2text(reason, languages='en'))
+        self.assertEqual('トラップ',
+                         IkaUtils.death_reason2text(reason, languages='ja'))
+
+        ### Special weapons
+        reason = 'daioika'
+        self.assertEqual('Kraken',
+                         IkaUtils.death_reason2text(reason, languages='en'))
+        self.assertEqual('ダイオウイカ',
+                         IkaUtils.death_reason2text(reason, languages='ja'))
+
+        ### Hurtable objects
+        reason = 'hoko_shot'
+        self.assertEqual('Rainmaker Shot',
+                         IkaUtils.death_reason2text(reason, languages='en'))
+        self.assertEqual('ガチホコショット',
+                         IkaUtils.death_reason2text(reason, languages='ja'))
+
+        ### OOB reasons
+        reason = 'oob'
+        self.assertEqual('Out of Bounds',
+                         IkaUtils.death_reason2text(reason, languages='en'))
+        self.assertEqual('場外',
+                         IkaUtils.death_reason2text(reason, languages='ja'))
+
+        ### Unkonwn
+        unknown_reason = 'unknown'
+        self.assertEqual('?', IkaUtils.death_reason2text(unknown_reason))
+        self.assertEqual('<:=',
+                         IkaUtils.death_reason2text(unknown_reason,
+                                                    unknown='<:='))
+
 if __name__ == '__main__':
     unittest.main()

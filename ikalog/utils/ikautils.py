@@ -29,6 +29,8 @@ import numpy as np
 from PIL import Image
 
 from ikalog.constants import stages, rules, gear_abilities
+# Constants for death_reason2text
+from ikalog.constants import hurtable_objects, oob_reasons, special_weapons, sub_weapons, weapons
 from ikalog.utils.localization import Localization
 from ikalog.utils import imread
 
@@ -167,6 +169,26 @@ class IkaUtils(object):
 
         # Should not reach here
         return gear_ability_id
+
+    @staticmethod
+    def death_reason2text(reason, unknown='?', languages=None):
+        reason_dict = {}
+        if reason in weapons:
+            reason_dict = weapons[reason]
+        if reason in sub_weapons:
+            reason_dict = sub_weapons[reason]
+        if reason in special_weapons:
+            reason_dict = special_weapons[reason]
+        if reason in oob_reasons:
+            reason_dict = oob_reasons[reason]
+        if reason in hurtable_objects:
+            reason_dict = hurtable_objects[reason]
+
+        for lang in IkaUtils.extend_languages(languages):
+            if lang in reason_dict:
+                return reason_dict[lang]
+
+        return unknown
 
     @staticmethod
     def cropImageGray(img, left, top, width, height):

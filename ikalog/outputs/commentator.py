@@ -256,15 +256,8 @@ class Commentator(object):
     def _death_reason_label(self, reason):
         if reason in self.custom_read:
             return self.custom_read[reason]
-        if reason in weapons:
-            return weapons[reason]['ja']
-        if reason in sub_weapons:
-            return sub_weapons[reason]['ja']
-        if reason in special_weapons:
-            return special_weapons[reason]['ja']
-        if reason in hurtable_objects:
-            return hurtable_objects[reason]['ja']
-        return self.custom_read['unknown']
+        return IkaUtils.death_reason2text(
+            reason, self.custom_read['unknown'], 'ja')
 
     def on_game_finish(self, context):
         self._read_event('finish')
