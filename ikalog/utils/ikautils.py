@@ -147,23 +147,15 @@ class IkaUtils(object):
         return rule_id
 
     @staticmethod
-    def gear_ability2id(gear_ability, unknown='?'):
+    def gear_ability2text(gear_ability, unknown='?', languages=None):
         if gear_ability is None:
             return unknown
-        return gear_ability.id_
 
-    @staticmethod
-    def gear_ability2text(gear_ability, unknown='?', languages=None):
-        gear_ability_id = IkaUtils.gear_ability2id(gear_ability, unknown=None)
-
-        if gear_ability_id is None:
-            return unknown
-
-        if gear_abilities.get(gear_ability_id, None) is None:
+        if gear_abilities.get(gear_ability, None) is None:
             return unknown
 
         for lang in IkaUtils.extend_languages(languages):
-            gear_ability_text = gear_abilities[gear_ability_id].get(lang, None)
+            gear_ability_text = gear_abilities[gear_ability].get(lang, None)
             if gear_ability_text is not None:
                 return gear_ability_text
 

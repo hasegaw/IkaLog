@@ -113,30 +113,30 @@ class TestIkaUtils(unittest.TestCase):
 
 
     def test_gear_ability2text(self):
-        gear_mock = IkaMatcherMock('ninja_squid')
+        gear = 'ninja_squid'
 
         # English
         self.assertEqual('Ninja Squid',
-                         IkaUtils.gear_ability2text(gear_mock, languages='en'))
+                         IkaUtils.gear_ability2text(gear, languages='en'))
 
         # Japanese
         self.assertEqual('イカニンジャ',
-                         IkaUtils.gear_ability2text(gear_mock, languages='ja'))
+                         IkaUtils.gear_ability2text(gear, languages='ja'))
 
         # Fallback to English
         self.assertEqual('Ninja Squid',
-                         IkaUtils.gear_ability2text(gear_mock, languages='??'))
+                         IkaUtils.gear_ability2text(gear, languages='??'))
 
         # Multiple languages
         self.assertEqual('イカニンジャ',
-                         IkaUtils.gear_ability2text(gear_mock,
+                         IkaUtils.gear_ability2text(gear,
                                                     languages=['ja', 'en']))
 
         # Unkonwn
-        unknown_gear_mock = IkaMatcherMock('unknown')
-        self.assertEqual('?', IkaUtils.gear_ability2text(unknown_gear_mock))
+        unknown_gear = 'unknown'
+        self.assertEqual('?', IkaUtils.gear_ability2text(unknown_gear))
         self.assertEqual('<:=',
-                         IkaUtils.gear_ability2text(unknown_gear_mock,
+                         IkaUtils.gear_ability2text(unknown_gear,
                                                     unknown='<:='))
 
 
