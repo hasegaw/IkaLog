@@ -131,7 +131,7 @@ msgstr "参加しました"
 
 #: ikalog/outputs/twitter.py:475
 msgid "Just %(result)s %(rule)s at %(stage)s"
-msgstr "%(stage)sで%(rule)sに%(result)s"
+msgstr "%(stage)sでの%(rule)sで%(result)s"
 
 #: ikalog/outputs/twitter.py:487
 msgid " Rank: %s"
