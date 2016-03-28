@@ -81,8 +81,8 @@ class InklingsTracker(StatefulScene):
     #
     # team
     def _find_inklings(self, context, x1, x2, team=[False, False, False, False]):
-        assert x1 < x2
-        assert context['engine']['frame'] is not None
+        if (context['engine']['frame'] is None) or not (x1 < x2):
+            return team
 
         frame = context['engine']['frame']
         team = team.copy()
@@ -131,14 +131,9 @@ class InklingsTracker(StatefulScene):
                 x = x + direction
 
             # Forward until linkling's eyes lost.
-            while True:
-                if not (x < x2):
-                    break
-
+            on_eye = True
+            while (x < x2) and (not on_eye):
                 on_eye = img_eye_hist[x] > 128
-                if not on_eye:
-                    break
-
                 x = x + direction
 
             # If we found one, the inkling is between base_x and x.

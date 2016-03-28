@@ -49,7 +49,7 @@ class FesLevelRecoginizer(CharacterRecoginizer):
 
         return {
             '0': {'ja': 'ふつうの', 'boy': 'Fanboy',   'girl': 'Fangirl', },
-            '1': {'ja': 'まことの', 'boy': 'Friend',   'girl': 'Friend', },
+            '1': {'ja': 'まことの', 'boy': 'Fiend',   'girl': 'Fiend', },
             '2': {'ja': 'スーパー', 'boy': 'Defender', 'girl': 'Defender', },
             '3': {'ja': 'カリスマ', 'boy': 'Champion', 'girl': 'Champion', },
             '4': {'ja': 'えいえんの', 'boy': 'King',   'girl': 'Queen'},

@@ -22,36 +22,33 @@ import time
 
 import cv2
 
-# IkaOutput_Screen: IkaLog Output Plugin for Screen (video)
-#
+
+class PreviewDetected(object):
+
+    def on_frame_read(self, context):
+        self.rects = [ ]
+
+    def on_mark_rect_in_preview(self, context, rect=None):
+        if rect is not None:
+            self.rects.append(rect)
+
+    def on_draw_preview(self, context):
+        if not ('preview' in context['engine']):
+            return
 
 
-class Screen(object):
-
-    last_update = 0
-
-    def on_show_preview(self, context):
-        img = context['engine'].get('preview', context['engine']['frame'])
-        img_resized = cv2.resize(img, self.video_size)
-
-        cv2.imshow('IkaLog', img_resized)
-
-        r = None
-        if (self.wait_ms == 0):
-            now = time.time()
-            if (now - self.last_update) > 2:
-                r = cv2.waitKey(1)
-                self.last_update = now
-        else:
-            r = cv2.waitKey(self.wait_ms)
-
-        return r
+        for rect in self.rects:
+            cv2.rectangle(
+                context['engine']['preview'],
+                rect[0], rect[1],
+                color=(255, 255, 255),
+                thickness=4
+            )
 
     ##
     # Constructor
     # @param self         The Object Pointer.
     #
     def __init__(self, wait_ms=1, size=(1280, 720)):
-        self.wait_ms = wait_ms
-        self.video_size = size
-        pass
+        print('helllo')
+        self.rects = []

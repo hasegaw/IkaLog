@@ -51,6 +51,7 @@ class GameTimerIcon(Scene):
             bg_method=matcher.MM_BLACK(visibility=(0, 32)),
             fg_method=matcher.MM_WHITE(visibility=(160, 256)),
             label='timer_icon',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 

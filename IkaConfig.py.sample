@@ -79,6 +79,11 @@ class IkaConfig:
         # 経験上 10 フレーム/秒も処理できれば十分
         # source.set_frame_rate(10)
 
+        # stat.inkに対してYoutubeのURLを設定する
+        # STAT_INK_VIDEO_ID = None
+        # if len(sys.argv) > 1:
+        #     STAT_INK_VIDEO_ID = sys.argv[1]
+
         # 使いたいプラグインを適宜設定
         OutputPlugins = [
 
@@ -122,6 +127,7 @@ class IkaConfig:
             #   track_splatzone  ガチエリアの時系列情報を送信する
             #   track_objective  ヤグラ／ホコの時系列情報を送信する
             #   track_inklings   インクリング生死の時系列情報を送信する
+            #   video_id         関連ページとするYoutubeのvideoid
 
             # outputs.StatInk(
             #     api_key='YOUR_API_KEY_HERE',
@@ -131,6 +137,7 @@ class IkaConfig:
             #     track_splatzone=False,
             #     track_objective=False,
             #     track_inklings=False,
+            #     video_id=STAT_INK_VIDEO_ID,
             # ),
 
             # Twitter: Twitter 連携
@@ -145,16 +152,19 @@ class IkaConfig:
             #     tweet_udemae = True
             # ),
 
+            # WebSocket サーバ
+            outputs.WebSocketServer(enabled=True),
+
             # 不具合調査向け。
             # イベントトリガをコンソールに出力。イベントトリガ時のスクリーンショット保存
-            outputs.DebugLog(dir='./screenshots/', screenshot=False),
+            # outputs.DebugLog(dir='./screenshots/', screenshot=False),
 
             # 不具合調査向け。
             # ウインドウに対して v キー押下でデバッグ録画を開始する
-            outputs.DebugVideoWriter(dir='./debug_videos/'),
+            # outputs.DebugVideoWriter(dir='./debug_videos/'),
 
-            # WebSocket サーバ
-            outputs.WebSocketServer(enabled=True),
+            # PreviewDetected: 認識した画像をプレビュー上でマークする
+            # outputs.PreviewDetected(),
 
             # 入力ソース
             source,

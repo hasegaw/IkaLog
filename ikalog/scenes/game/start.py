@@ -181,6 +181,7 @@ class GameStart(StatefulScene):
                 bg_method=matcher.MM_NOT_WHITE(),
                 fg_method=matcher.MM_WHITE(),
                 label='stage:%s' % stage_id,
+                call_plugins=self._call_plugins,
                 debug=debug,
             )
             self.stage_matchers.append(stage)
@@ -195,6 +196,7 @@ class GameStart(StatefulScene):
                 bg_method=matcher.MM_NOT_WHITE(),
                 fg_method=matcher.MM_WHITE(),
                 label='rule:%s' % rule_id,
+                call_plugins=self._call_plugins,
                 debug=debug,
             )
             setattr(rule, 'id_', rule_id)

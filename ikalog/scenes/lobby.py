@@ -216,6 +216,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Pub/Rule',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -227,6 +228,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Pub/Stage',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -238,6 +240,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Tag/Rule',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -249,6 +252,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Tag/Stage',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -261,6 +265,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Matching',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -274,6 +279,7 @@ class Lobby(Scene):
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='Matched',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -288,6 +294,7 @@ class Lobby(Scene):
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='TagMatched',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -301,6 +308,7 @@ class Lobby(Scene):
                 hue=(150, 180), visibility=(0, 255)),
             fg_method=matcher.MM_WHITE(),
             label='TagMatching',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -313,6 +321,7 @@ class Lobby(Scene):
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='FestaMatched',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -324,6 +333,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='lobby/private/matched/rule',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -335,6 +345,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='lobby/private/matched/stage',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -346,6 +357,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='lobby/private/matching/alpha',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -357,6 +369,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='lobby/private/matching/alpha',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -368,6 +381,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='lobby/private/matched/stage',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -379,6 +393,7 @@ class Lobby(Scene):
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='lobby/private/matched/a',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -390,6 +405,7 @@ class Lobby(Scene):
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='lobby/private/match/b',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 

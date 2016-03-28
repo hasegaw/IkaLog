@@ -765,6 +765,7 @@ class ResultDetail(StatefulScene):
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='result_detail:WIN',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 

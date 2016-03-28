@@ -91,7 +91,6 @@ class GameSpecialWeapon(StatefulScene):
         img_s_hist = cv2.calcHist(img_s[:, :], [0], None, [5], [0, 256])
         img_s_hist_black = float(np.amax(img_s_hist[0:1]))
         img_s_hist_non_black = float(np.amax(img_s_hist[3:4]))
-        print(img_s_hist)
         return img_s_hist_black < img_s_hist_non_black
 
     def _state_default(self, context):
@@ -102,6 +101,7 @@ class GameSpecialWeapon(StatefulScene):
         if frame is None:
             return False
 
+        # FIXME: this code works with the first special weapon only
         img_special_bgr = frame[260:260 + 24, 1006:1006 + 210, :]
         img_special = np.array(img_special_bgr)
         img_last_special = self.img_last_special
@@ -140,6 +140,7 @@ class GameSpecialWeapon(StatefulScene):
         if self.write_samples:
             cv2.imwrite('training/_special_%s.png' %
                         time.time(), 255 - img_sp_text)
+
         if special is None:
             return False
 
@@ -159,6 +160,7 @@ class GameSpecialWeapon(StatefulScene):
         if frame is None:
             return False
 
+        # FIXME
         img_special_bgr = frame[260:260 + 24, 1006:1006 + 210, :]
         img_special = np.array(img_special_bgr)
         img_last_special = self.img_last_special
@@ -168,6 +170,11 @@ class GameSpecialWeapon(StatefulScene):
 
         special = self.find_best_match(img_special_bgr, self.masks)
         if special is not None:
+            self._call_plugins(
+                'on_mark_rect_in_preview',
+                [(1006, 260), (1006 + 210, 260 + 24)]
+            )
+
             if context['game']['special_weapon'] == special._id:
                 return True
 
@@ -205,6 +212,7 @@ class GameSpecialWeapon(StatefulScene):
                     bg_method=matcher.MM_NOT_WHITE(),
                     fg_method=matcher.MM_WHITE(),
                     label='special/%s' % special_weapon,
+                    call_plugins=self._call_plugins,
                     debug=debug,
                 )
                 mask._id = special_weapon

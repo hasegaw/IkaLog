@@ -49,8 +49,11 @@ class GameKill(Scene):
             y = killed_y[n]
             box = img_thresh[y:y + 30, :]
             r = self.mask_killed.match(box)
-
             if r:
+                self._call_plugins(
+                    'on_mark_rect_in_preview',
+                    [ (502, y), (778, y + 30) ]
+                )
                 list.append(n)
         return len(list)
 

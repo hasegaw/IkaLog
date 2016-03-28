@@ -109,6 +109,7 @@ class ResultJudge(Scene):
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='result_judge/win',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -120,6 +121,7 @@ class ResultJudge(Scene):
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='result_judge/win_ko',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -131,6 +133,7 @@ class ResultJudge(Scene):
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='result_judge/lose',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -142,6 +145,7 @@ class ResultJudge(Scene):
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='result_judge/lose_ko',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
