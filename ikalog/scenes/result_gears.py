@@ -23,9 +23,42 @@ import cv2
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.constants import gear_abilities
 from ikalog.utils import *
+from ikalog.inputs.filters import OffsetFilter
 
 
 class ResultGears(StatefulScene):
+
+    def auto_offset(self, context):
+        # 画面のオフセットを自動検出して image を返す
+
+        filter = OffsetFilter(self)
+        filter.enable()
+
+        # filter が必要とするので...
+        self.out_width = 1280
+        self.out_height = 720
+
+        best_match = (context['engine']['frame'], 0.0, 0, 0)
+        offset_list = [0, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+
+        for ox in offset_list:
+            for oy in offset_list:
+                filter.offset = (ox, oy)
+                img = filter.execute(context['engine']['frame'])
+
+                score = self.mask_gears_msg.match_score(img)
+                if not score[0]:
+                    continue
+
+                if best_match[1] < score[1]:
+                    best_match = (img, score[1], ox, oy)
+
+        if best_match[2] != 0 or best_match[3] != 0:
+            IkaUtils.dprint('%s: Offset detected. (%d, %d)' %
+                            (self, best_match[2], best_match[3]))
+
+        return best_match[0]
+
 
     def reset(self):
         super(ResultGears, self).reset()
@@ -87,7 +120,8 @@ class ResultGears(StatefulScene):
         x_list = [613, 613 + 209, 613 + 209 * 2]
         for n in range(3):
             x = x_list[n]
-            img_gear = context['engine']['frame'][457:457 + 233, x: x + 204]
+            frame = self.auto_offset(context)
+            img_gear = frame[457:457 + 233, x: x + 204]
 
             gear = {}
             gear['img_name'] = img_gear[9:9 + 25, 3:3 + 194]
