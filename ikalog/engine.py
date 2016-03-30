@@ -271,6 +271,7 @@ class IkaEngine:
             scenes.GameSpecialWeapon(self),
 
             scenes.GameRankedBattleEvents(self),
+            scenes.GameCommunication(self),
             scenes.PaintScoreTracker(self),
             scenes.ObjectiveTracker(self),
             scenes.SplatzoneTracker(self),

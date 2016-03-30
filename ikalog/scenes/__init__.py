@@ -32,6 +32,7 @@ from .game.objective_tracker import ObjectiveTracker
 from .game.splatzone_tracker import SplatzoneTracker
 from .game.ranked_battle_events import GameRankedBattleEvents
 from .game.inklings_tracker import InklingsTracker
+from .game.communication import GameCommunication
 
 from .result_detail import ResultDetail
 from .result_judge import ResultJudge

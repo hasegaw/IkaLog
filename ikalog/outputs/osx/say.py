@@ -81,6 +81,12 @@ class Say(object):
     def on_game_dead(self, context):
         self._say('You were splatted!')
 
+    def on_game_booyah(self, context):
+        self._say('We made it!')
+
+    def on_game_comeon(self, context):
+        self._say('Come on!')
+
     def on_game_death_reason_identified(self, context):
         reason = context['game']['last_death_reason']
         if reason in oob_reasons:

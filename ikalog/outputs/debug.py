@@ -56,6 +56,12 @@ class DebugLog(object):
     def on_game_dead(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
+    def on_game_booyah(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_comeon(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
     def on_game_death_reason_identified(self, context):
         s = "weapon = %s" % (context['game']['last_death_reason'])
         self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
