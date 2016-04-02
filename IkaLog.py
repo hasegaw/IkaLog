@@ -40,13 +40,25 @@ def get_args():
     parser.add_argument('--input_file', '-f', dest='input_file', type=str)
     parser.add_argument('--output_description', '--desc',
                         dest='output_description', type=str)
+    parser.add_argument('--time', '-t', dest='time', type=str)
+    parser.add_argument('--time_msec', dest='time_msec', type=int)
+
     return vars(parser.parse_args())
+
+def time_to_msec(time):
+    minute, sec = time.split(':')
+    return (int(minute) * 60 + int(sec)) * 1000
 
 
 signal.signal(signal.SIGINT, signal_handler)
 
 args = get_args()
 capture, OutputPlugins = IkaConfig().config(args)
+
+if isinstance(capture, inputs.CVFile):
+    pos_msec = args.get('time_msec') or time_to_msec(args.get('time') or '0:0')
+    if pos_msec:
+        capture.video_capture.set(cv2.CAP_PROP_POS_MSEC, pos_msec)
 
 engine.pause(False)
 engine.set_capture(capture)
