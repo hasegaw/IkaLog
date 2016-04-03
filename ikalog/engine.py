@@ -152,6 +152,12 @@ class IkaEngine:
         self.call_plugins('on_game_session_end')
         self.reset()
 
+    def session_abort(self):
+        self.session_close_wdt = None
+
+        self.call_plugins('on_game_session_abort')
+        self.reset()
+
     def process_scene(self, scene):
         context = self.context
 
@@ -237,6 +243,7 @@ class IkaEngine:
                     if self.session_close_wdt is not None:
                         self.dprint('Closing current session at EOF')
                         self.session_close()
+                self.session_abort()
                 self._stop = True
         cv2.destroyAllWindows()
 
