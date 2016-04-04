@@ -66,9 +66,8 @@ class ResultJudge(Scene):
         context['game']['judge'] = 'win' if match_win else 'lose'
 
         if not self.matched_in(context, 30 * 1000, attr='_last_event_msec'):
-            print('trigger event')
-            context['game']['image_judge'] = copy.deepcopy(
-                context['engine']['frame'])
+            context['game']['image_judge'] = \
+                copy.deepcopy(context['engine']['frame'])
             self._analyze(context)
             self._call_plugins('on_result_judge')
             self._last_event_msec = context['engine']['msec']
