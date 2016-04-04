@@ -215,6 +215,9 @@ class DebugLog(object):
     def on_game_session_abort(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
+    def on_game_lost_sync(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
     # Inkopolis
 
     def on_inkopolis_lottery_done(self, context):
