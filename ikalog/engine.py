@@ -49,6 +49,9 @@ class IkaEngine:
         if self.session_close_wdt is not None:
             self.session_close_wdt = context['engine']['msec'] + (1 * 1000)
 
+    def on_game_lost_sync(self, context):
+        self.session_abort()
+
     def dprint(self, text):
         print(text, file=sys.stderr)
 
