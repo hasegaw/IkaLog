@@ -706,6 +706,18 @@ class StatInk(object):
                 })
                 self.time_last_score_msec = event_msec
 
+    def on_game_booyah(self, context):
+        if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
+            self._add_event(context, {
+                'type': 'booyah',
+            })
+
+    def on_game_comeon(self, context):
+        if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
+            self._add_event(context, {
+                'type': 'comeon',
+            })
+
     def on_game_special_gauge_update(self, context):
         if not self.track_special_gauge_enabled:
             return
