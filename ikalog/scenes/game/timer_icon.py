@@ -35,6 +35,10 @@ class GameTimerIcon(Scene):
         # The match finished.
         self._last_matched_msec = None
 
+    def on_result_judge(self, context):
+        # Judge screen detected.
+        self._last_matched_msec = None
+
     def match_no_cache(self, context):
         frame = context['engine']['frame']
 
@@ -47,7 +51,7 @@ class GameTimerIcon(Scene):
         lost = \
             (not matched) and \
             (self._last_matched_msec is not None) and \
-            (not self.matched_in(context, 10 * 1000))
+            (not self.matched_in(context, 15 * 1000))
 
         if lost:
             self._call_plugins('on_game_lost_sync')
