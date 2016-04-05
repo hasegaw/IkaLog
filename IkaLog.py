@@ -42,6 +42,7 @@ def get_args():
                         dest='output_description', type=str)
     parser.add_argument('--time', '-t', dest='time', type=str)
     parser.add_argument('--time_msec', dest='time_msec', type=int)
+    parser.add_argument('--video_id', dest='video_id', type=str)
 
     return vars(parser.parse_args())
 

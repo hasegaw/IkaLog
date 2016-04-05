@@ -79,11 +79,6 @@ class IkaConfig:
         # 経験上 10 フレーム/秒も処理できれば十分
         # source.set_frame_rate(10)
 
-        # stat.inkに対してYoutubeのURLを設定する
-        # STAT_INK_VIDEO_ID = None
-        # if len(sys.argv) > 1:
-        #     STAT_INK_VIDEO_ID = sys.argv[1]
-
         # 使いたいプラグインを適宜設定
         OutputPlugins = [
 
@@ -127,7 +122,7 @@ class IkaConfig:
             #   track_splatzone  ガチエリアの時系列情報を送信する
             #   track_objective  ヤグラ／ホコの時系列情報を送信する
             #   track_inklings   インクリング生死の時系列情報を送信する
-            #   video_id         関連ページとするYoutubeのvideoid
+            #   video_id         関連ページとするYoutubeのvideoid コマンドラインから --video_id で指定可能
 
             # outputs.StatInk(
             #     api_key='YOUR_API_KEY_HERE',
@@ -137,7 +132,7 @@ class IkaConfig:
             #     track_splatzone=False,
             #     track_objective=False,
             #     track_inklings=False,
-            #     video_id=STAT_INK_VIDEO_ID,
+            #     video_id=args['video_id'],
             # ),
 
             # Twitter: Twitter 連携
