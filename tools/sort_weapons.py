@@ -18,7 +18,6 @@
 #  limitations under the License.
 #
 
-import cv2
 import os
 import sys
 
@@ -31,21 +30,5 @@ weapons = WeaponRecoginizer()
 weapons.load_model_from_file()
 weapons.knn_train()
 
-results = {}
-for root, dirs, files in os.walk(base_dir):
-    l = []
-    for file in files:
-        if file.endswith(".png"):
-            filename = os.path.join(root, file)
-            img = cv2.imread(filename)
-            answer, distance = weapons.match(img)
-            if not (answer in results):
-                results[answer] = []
-
-            results[answer].append( { 'filename': filename, 'distance': distance } )
-
-for weapon in sorted(results):
-    print("<h3>%s (%d)</h1>" % (weapon, len(results[weapon])))
-
-    for e in results[weapon]:
-        print("<!-- %s %s --><img src=%s>" % (weapon, e['distance'], e['filename']))
+weapons.test_samples_from_directory(base_dir)
+weapons.dump_test_results_html(short=True)

@@ -28,8 +28,8 @@ from ikalog.utils.character_recoginizer import *
 
 class GameDead(StatefulScene):
     choordinates = {
-        'ja': { 'top': 218, 'left': 452 },
-        'en': { 'top': 263, 'left': 432 },
+        'ja': {'top': 218, 'left': 452},
+        'en': {'top': 263, 'left': 432},
     }
 
     def recoginize_and_vote_death_reason(self, context):
@@ -58,7 +58,7 @@ class GameDead(StatefulScene):
         # (覚) 学習用に保存しておくのはこのデータ。 Change to 1 for training.
         if 0:  # (self.time_last_write + 5000 < context['engine']['msec']):
             import time
-            filename = os.path.join( # training/ directory must already exist
+            filename = os.path.join(  # training/ directory must already exist
                 'training', '_deadly_weapons.%s.png' % time.time())
             cv2.imwrite(filename, img_weapon_b)
             self.time_last_write = context['engine']['msec']
@@ -68,7 +68,7 @@ class GameDead(StatefulScene):
             return
 
         img_weapon_b_bgr = cv2.cvtColor(img_weapon_b, cv2.COLOR_GRAY2BGR)
-        weapon_id = self.deadly_weapon_recoginizer.match(img_weapon_b_bgr)
+        weapon_id = self.deadly_weapon_recoginizer.predict(img_weapon_b_bgr)
 
         # 投票する(あとでまとめて開票)
         votes = self._cause_of_death_votes
@@ -112,7 +112,7 @@ class GameDead(StatefulScene):
         if frame is None:
             return False
 
-        #if not matched and self.matched_in(context, 1000):
+        # if not matched and self.matched_in(context, 1000):
         #    return False
 
         matched = self.mask_dead.match(context['engine']['frame'])

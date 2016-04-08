@@ -18,6 +18,8 @@
 #  limitations under the License.
 #
 import sys
+import traceback
+
 import cv2
 
 from ikalog.scenes.stateful_scene import StatefulScene
@@ -58,7 +60,6 @@ class ResultGears(StatefulScene):
                             (self, best_match[2], best_match[3]))
 
         return best_match[0]
-
 
     def reset(self):
         super(ResultGears, self).reset()
@@ -141,10 +142,12 @@ class ResultGears(StatefulScene):
                 elif field.startswith('img_'):
                     if self.gearpower_recoginizer and self.gearpower_recoginizer.trained:
                         try:
-                            result, distance = self.gearpower_recoginizer.match(gear[field])
-                            gearstr[field.replace('img_','')] = result
+                            result, distance = self.gearpower_recoginizer.predict(gear[
+                                                                                  field])
+                            gearstr[field.replace('img_', '')] = result
                         except:
-                            IkaUtils.dprint('Exception occured in gearpower recoginization.')
+                            IkaUtils.dprint(
+                                'Exception occured in gearpower recoginization.')
                             IkaUtils.dprint(traceback.format_exc())
             gear.update(gearstr)
             gears.append(gear)
@@ -166,7 +169,8 @@ class ResultGears(StatefulScene):
                 if field.startswith('img_'):
                     print('  gear %d : %s : %s' % (n, field, '(image)'))
                 else:
-                    ability = gear_abilities.get(gear[field], { 'ja': None})['ja']
+                    ability = gear_abilities.get(
+                        gear[field], {'ja': None})['ja']
                     ability = ability.encode().decode("unicode-escape").encode("latin1").decode("utf-8")
                     # Mac gives Japanese text, Windows gives escape sequences
                     print('  gear %d : %s : %s' % (n, field, ability))
