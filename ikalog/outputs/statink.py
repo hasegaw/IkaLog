@@ -235,17 +235,13 @@ class StatInk(object):
         })
 
     def composite_agent_variables(self, context):
-        variables = []
+        variables = {}
 
-        variables.append([
-                'input_class',
-                context['engine'].get('input_class', 'unknown'),
-            ])
+        variables['input_class'] = \
+            context['engine'].get('input_class', 'unknown')
 
-        variables.append([
-                'game_language',
-                Localization.get_game_languages()[0],
-            ])
+        variables['primary_language'] = \
+            Localization.get_game_languages()[0]
 
         return variables
 
