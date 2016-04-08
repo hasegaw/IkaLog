@@ -135,13 +135,13 @@ class Scene(object):
         return r
 
     def find_scene_object(self, scene_name):
-        if (self.engine is None):
+        if (self._engine is None):
             return None
 
-        if not (hasattr(self.engine, 'find_scene_object')):
+        if not (hasattr(self._engine, 'find_scene_object')):
             return None
 
-        return self.engine.find_scene_object(scene_name)
+        return self._engine.find_scene_object(scene_name)
 
     def dump(self, context):
         print(context['file'])
@@ -149,7 +149,7 @@ class Scene(object):
         print('')
 
     def __init__(self, engine, debug=False):
-        self.engine = engine
+        self._engine = engine
         self.exclusive_scene = False
 
         if (engine is not None) and hasattr(engine, 'call_plugins'):
