@@ -68,7 +68,7 @@ class GameDead(StatefulScene):
             return
 
         img_weapon_b_bgr = cv2.cvtColor(img_weapon_b, cv2.COLOR_GRAY2BGR)
-        weapon_id = self.deadly_weapon_recoginizer.predict(img_weapon_b_bgr)
+        weapon_id = self.deadly_weapon_recoginizer.match(img_weapon_b_bgr)
 
         # 投票する(あとでまとめて開票)
         votes = self._cause_of_death_votes
