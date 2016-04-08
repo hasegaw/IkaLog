@@ -299,7 +299,7 @@ class IkaEngine:
             scenes.ResultFesta(self),
 
             scenes.Lobby(self),
-            scenes.Downie(self),
+#            scenes.Downie(self),
 
             scenes.Blank(self),
         ]
