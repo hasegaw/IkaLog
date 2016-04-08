@@ -265,6 +265,7 @@ class IkaEngine:
 
     def set_capture(self, capture):
         self.capture = capture
+        self.context['engine']['input_class'] = self.capture.__class__.__name__
 
     def set_plugins(self, plugins):
         self.output_plugins = [self]
