@@ -19,19 +19,17 @@
 #  limitations under the License.
 #
 
-import cv2
-import numpy as np
 import os
 import pickle
 
+import cv2
+import numpy as np
+
 
 class IconRecoginizer(object):
-    # Models
-    groups = []
 
-    def down_sample(self, src, w, h):
-        sy = src.shape[0]
-        sx = src.shape[1]
+    def down_sample_2d(self, src, w, h):
+        sy, sx = src.shape[0:2]
 
         out_img = np.zeros((h, w), np.uint8)
         for x in range(w):
@@ -66,24 +64,16 @@ class IconRecoginizer(object):
     # @param img    the source image
     # @return (img,out_img)  the result
     def normalize_icon_image(self, img):
-        if self.normalizer_crop:
-            img = self.normalizer_crop(img)
-
-        out_img = img.copy()
-
         h, w = img.shape[0:2]
 
         laplacian_threshold = 60
-        img_laplacian = cv2.Laplacian(out_img, cv2.CV_64F)
+        img_laplacian = cv2.Laplacian(img, cv2.CV_64F)
         img_laplacian_abs = cv2.convertScaleAbs(img_laplacian)
-        img_laplacian_gray = cv2.cvtColor(
-            img_laplacian_abs, cv2.COLOR_BGR2GRAY)
-        ret, img_laplacian_mask = cv2.threshold(
-            img_laplacian_gray, laplacian_threshold, 255, 0)
-        img_contours, contours, hierarchy = cv2.findContours(
-            img_laplacian_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
-        out_img = img_laplacian_mask
-        out_img = self.down_sample(out_img, 12, 12)
+        img_laplacian_gray = \
+            cv2.cvtColor(img_laplacian_abs, cv2.COLOR_BGR2GRAY)
+        ret, img_laplacian_mask = \
+            cv2.threshold(img_laplacian_gray, laplacian_threshold, 255, 0)
+        out_img = self.down_sample_2d(img_laplacian_mask, 12, 12)
 
         if False:
             cv2.imshow('orig', cv2.resize(img, (160, 160)))
@@ -105,13 +95,17 @@ class IconRecoginizer(object):
             img,  # ununsed
         ]
 
-    # Analyze a image.
-    #
-    def analyze_image(self, img, blocks_x=3, blocks_y=3, debug=False):
-        imgs = self.normalize_icon_image(img)
-        param = {'hist': imgs[0]}
-        dimg = imgs[1]
-        return param, dimg
+    # Define feature extraction algorithm.
+    def extract_features_func(self, img, debug=False):
+        return np.array(self.normalize_icon_image(img)[0])
+
+    # Extract features
+    def extract_features(self, img, debug=True):
+        features = self.extract_features_func(img)
+
+        if len(features.shape) > 1:
+            features = features.reshape((1, -1))
+        return features
 
     def show_learned_icon_image(self, l, name='hoge', save=None):
         if len(l) != 0:
@@ -131,11 +125,14 @@ class IconRecoginizer(object):
             if save:
                 cv2.imwrite(save, dest)
 
+    # index <-> id conversion
+
     def name2id(self, name):
         try:
             return self.icon_names.index(name)
-        except:
+        except ValueError:
             self.icon_names.append(name)
+
         return self.icon_names.index(name)
 
     def id2name(self, id):
@@ -147,44 +144,36 @@ class IconRecoginizer(object):
         self.model = cv2.ml.KNearest_create()
         self.trained = False
 
-    def match(self, img):
+    def predict(self, img):
         if not self.trained:
             return None, None
 
-        param, dimg = self.analyze_image(img, debug=True)
-        sample = param['hist']
-        sample_f = np.array(sample, np.float32).reshape(
-            (1, len(sample) * len(sample[0])))
-
-        k = 3
-        retval, results, neigh_resp, dists = self.model.findNearest(
-            sample_f, k)
+        features = np.array(self.extract_features(img), dtype=np.float32)
+        retval, results, neigh_resp, dists = \
+            self.model.findNearest(features.reshape((1, -1)), self._k)
 
         id = int(results.ravel())
         name = self.id2name(id)
         return name, dists[0][0]
 
-    def add_sample1(self, name, sample):
+    def add_sample1(self, name, features):
         id = self.name2id(name)
-        print('sample_name %s id %d' % (name, id))
-        sample_f = np.array(sample, np.float32).reshape(
-            (1, len(sample) * len(sample[0])))
 
         if self.samples is None:
             # すべてのデータは同じ次元であると仮定する
-            self.samples = np.empty((0, len(sample) * len(sample[0])))
+            dims = features.reshape((-1)).shape[0]
+            self.samples = np.empty((0, dims))
             self.responses = []
-        # 追加
-        self.samples = np.append(self.samples, sample_f, 0)
+
+        self.samples = np.append(self.samples, features.reshape((1, -1)), 0)
         self.responses.append(id)
 
     def knn_train_from_group(self):
         # 各グループからトレーニング対象を読み込む
         for group in self.groups:
             print('Group %s' % group['name'])
-            for sample_tuple in group['learn_samples']:
-                sample_data = sample_tuple[1]['hist']
-                self.add_sample1(group['name'], sample_data)
+            for sample in group['learn_samples']:
+                self.add_sample1(group['name'], sample['features'])
 
     def knn_train(self):
         # 終わったら
@@ -193,8 +182,8 @@ class IconRecoginizer(object):
         responses = responses.reshape((responses.size, 1))
 
         self.model.train(samples, cv2.ml.ROW_SAMPLE, responses)
-        print('%s: KNN Trained (%d samples)' % \
-            (self, len(responses)) )
+        print('%s: KNN Trained (%d samples)' %
+              (self, len(responses)))
         self.trained = True
 
     def learn_image_group(self, name=None, dir=None):
@@ -205,7 +194,6 @@ class IconRecoginizer(object):
         }
 
         l = []
-        l_hist = []
         samples = []
         for root, dirs, files in os.walk(dir):
             for file in sorted(files):
@@ -213,21 +201,58 @@ class IconRecoginizer(object):
                     f = os.path.join(root, file)
                     img = cv2.imread(f)
                     samples.append(img)
-                    param, dimg = self.analyze_image(img, debug=True)
-                    sample_tuple = (img, param, dimg, f)
-                    group_info['images'].append(sample_tuple)
+                    features = self.extract_features(img)
+                    sample = {'img': img, 'features': features, 'src_path': f}
+                    group_info['images'].append(sample)
 
 #                    if len(group_info['images']) > 50:
 #                        return
 
         # とりあえず最初のいくつかを学習
-        for sample_tuple in group_info['images'][1:100]:
-            group_info['learn_samples'].append(sample_tuple)
+        for sample in group_info['images'][1:100]:
+            group_info['learn_samples'].append(sample)
 
         print('  読み込み画像数', len(group_info['images']))
         self.groups.append(group_info)
 
         return group_info
+
+    def test_samples_from_directory(self, base_dir):
+        self.test_results = {}
+        for root, dirs, files in os.walk(base_dir):
+            l = []
+            for file in files:
+                if file.endswith(".png"):
+                    filename = os.path.join(root, file)
+                    img = cv2.imread(filename)
+                    answer, distance = self.predict(img)
+                    if not (answer in self.test_results):
+                        self.test_results[answer] = []
+
+                    r = {'filename': filename, 'distance': distance}
+                    self.test_results[answer].append(r)
+
+    def dump_test_results_html(self, short=False):
+
+        for key in sorted(self.test_results):
+            distances = []
+            hidden = 0
+            for e in self.test_results[key]:
+                distances.append(e['distance'])
+            var = np.var(distances)
+
+            print("<h3>%s (%d) var=%d</h1>" %
+                  (key, len(self.test_results[key]), var))
+
+            for e in self.test_results[key]:
+                if (not short) or (e['distance'] > var):
+                    print("<!-- %s %s --><img src=%s>" %
+                          (key, e['distance'], e['filename']))
+                else:
+                    hidden = hidden + 1
+
+            if hidden > 0:
+                print('<p>(%d samples hidden)</p>' % hidden)
 
     def save_model_to_file(self, file):
         f = open(file, 'wb')
@@ -242,9 +267,8 @@ class IconRecoginizer(object):
         self.responses = l[1]
         self.icon_names = l[2]
 
-    def __init__(self):
+    def __init__(self, k=3):
         self.icon_names = []
         self.knn_reset()
         self.groups = []
-
-        self.normalizer_crop = None
+        self._k = k

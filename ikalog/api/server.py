@@ -91,7 +91,7 @@ class APIServer(object):
 
         votes = {}
         for image in images:
-            weapon_id = deadly_weapon_recoginizer.match(image)
+            weapon_id = deadly_weapon_recoginizer.predict(image)
             votes[weapon_id] = votes.get(weapon_id, 0) + 1
 
         best_result = (None, 0)
@@ -113,7 +113,7 @@ class APIServer(object):
         for img_bytes in payload:
             img = cv2.imdecode(np.fromstring(img_bytes, dtype='uint8'), 1)
             assert img is not None
-            result, distance = weapons.match(img)
+            result, distance = weapons.predict(img)
 
             # FIXME: 現状返ってくる key が日本語表記なので id に変換
             weapon_id = None
@@ -135,7 +135,7 @@ class APIServer(object):
         for img_bytes in payload:
             img = cv2.imdecode(np.fromstring(img_bytes, dtype='uint8'), 1)
             assert img is not None
-            result, distance = abilities.match(img)
+            result, distance = abilities.predict(img)
 
             abilities_list.append({'ability': result, 'distance': distance})
 

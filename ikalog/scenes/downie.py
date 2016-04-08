@@ -48,7 +48,7 @@ class Downie(StatefulScene):
             gear_brands_knn = GearBrandRecoginizer()
             gear_brands_knn.load_model_from_file()
             gear_brands_knn.knn_train()
-            result, distance = gear_brands_knn.match(gear_brand_image)
+            result, distance = gear_brands_knn.predict(gear_brand_image)
             return result
         except:
             return None

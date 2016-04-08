@@ -44,9 +44,8 @@ def loopbackTest():
     sort_zumi = {}
 
     for weapon in weapons.groups:
-        for sample_tuple in weapon['images']:
-            sample = sample_tuple[0]
-            answer, distance = weapons.match(sample)  # = img
+        for sample in weapon['images']:
+            answer, distance = weapons.predict(sample['img'])
 
             total = total + 1
             if (weapon['name'] == answer):
@@ -58,7 +57,7 @@ def loopbackTest():
 
             if not answer in sort_zumi:
                 sort_zumi[answer] = []
-            sort_zumi[answer].append((distance, sample_tuple[3]))
+            sort_zumi[answer].append((distance, sample['src_path']))
 
             #print("%s: %s 結果: %s<br>" % (msg, weapon['name'], r['name']))
 
@@ -67,7 +66,7 @@ def loopbackTest():
 
     # miss list 表示
     misses_hist = []
-    for sample in misses:
+    for sample in []:  # misses:
         param, r = weapons.analyze_image(sample, debug=True)
         misses_hist.append(r)
     weapons.show_learned_icon_image(misses_hist, 'Misses', save='misses.png')
@@ -172,38 +171,4 @@ weapons.knn_train()
 if 1:
     s = loopbackTest()
     print(s)
-
-if __name__ == "__main__":
-    from ikalog.scenes.result_detail import *
-    from ikalog.utils import *
-    result_detail = ResultDetail()
-    result_detail.weapons = weapons
-    sort_zumi = {}
-    for file in sys.argv[2:]:
-        context = {
-            'engine': {
-                'frame': cv2.imread(file),
-            },
-            'game': {
-                'map': {'name': 'ハコフグ倉庫', },
-                'rule': {'name': 'ガチエリア'},
-            },
-        }
-        print('file ', file, context['engine']['frame'].shape)
-
-        # 各プレイヤーの状況を分析
-        result_detail.analyze(context)
-        srcname, ext = os.path.splitext(os.path.basename(file))
-
-        for n in range(len(context['game']['players'])):
-            player = context['game']['players'][n]
-            if 'weapon' in player:
-                img_dir = os.path.join(
-                    'test_result', 'weapons', player['weapon'])
-                img_file = os.path.join(img_dir, '%s.%d.png' % (srcname, n))
-                print(img_file)
-                try:
-                    os.makedirs(img_dir)
-                except:
-                    pass
-                cv2.imwrite(img_file, player['img_weapon'])
+    sys.exit()
