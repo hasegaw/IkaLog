@@ -42,6 +42,12 @@ class IkaEngine:
     def _profile_dump(self):
         self._profile_dump_scenes()
 
+    def enable_profile(self):
+        self._enable_profile = True
+
+    def disble_profile(self):
+        self._enable_profile = False
+
     def on_game_individual_result(self, context):
         self.session_close_wdt = context['engine']['msec'] + (20 * 1000)
 
@@ -293,12 +299,12 @@ class IkaEngine:
             scenes.ResultFesta(self),
 
             scenes.Lobby(self),
-            scenes.Downie(self),
+#            scenes.Downie(self),
 
             scenes.Blank(self),
         ]
 
-    def __init__(self, enable_profile=True):
+    def __init__(self, enable_profile=False):
         self._initialize_scenes()
 
         self.output_plugins = [self]
