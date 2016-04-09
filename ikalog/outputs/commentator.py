@@ -93,6 +93,9 @@ class CommentatorDictionary(object):
         'session_end': [
             {'text': 'おつかれさまでした', 'emotion': 'byebye'},
         ],
+        'session_abort': [
+            {'text': 'ゲームを見失いました', 'emotion': 'byebye'},
+        ],
         'ranked_we_lead': [
             {'text': 'カウントリードした', 'emotion': 'hakushu'},
             {'text': 'このまま行けば勝てるぞ', 'emotion': 'wktk'},
@@ -281,6 +284,9 @@ class Commentator(object):
 
     def on_game_session_end(self, context):
         self._read_event('session_end')
+
+    def on_game_session_abort(self, context):
+        self._read_event('session_abort')
 
     def on_game_ranked_we_lead(self, context):
         self._read_event('ranked_we_lead')

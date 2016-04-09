@@ -252,8 +252,11 @@ class IkaEngine:
                     if self.session_close_wdt is not None:
                         self.dprint('Closing current session at EOF')
                         self.session_close()
-                self.session_abort()
+                    else:
+                        self.session_abort()
+
                 self._stop = True
+
         cv2.destroyAllWindows()
 
     def run(self):
@@ -265,6 +268,7 @@ class IkaEngine:
 
     def set_capture(self, capture):
         self.capture = capture
+        self.context['engine']['input_class'] = self.capture.__class__.__name__
 
     def set_plugins(self, plugins):
         self.output_plugins = [self]

@@ -234,6 +234,17 @@ class StatInk(object):
             'value': event_sub_type,
         })
 
+    def composite_agent_variables(self, context):
+        variables = {}
+
+        variables['input_class'] = \
+            context['engine'].get('input_class', 'unknown')
+
+        variables['primary_language'] = \
+            Localization.get_game_languages()[0]
+
+        return variables
+
     def composite_payload(self, context):
         payload = {
             'uuid': uuid.uuid1().hex,
@@ -480,7 +491,8 @@ class StatInk(object):
 
         payload['agent'] = 'IkaLog'
         payload['agent_version'] = IKALOG_VERSION
-        payload['IKALOG_LANG'] = Localization.get_game_languages()[0]
+
+        payload['agent_variables'] = self.composite_agent_variables(context)
 
         for field in payload.keys():
             if payload[field] is None:
