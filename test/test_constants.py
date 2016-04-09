@@ -112,7 +112,7 @@ class TestConstants(unittest.TestCase):
         death_reasons.extend(self._load_constants_module().deadly_sub_weapons)
         death_reasons.extend(
             self._load_constants_module().deadly_special_weapons)
-        death_reasons.extend(['hoko_shot', 'hoko_barrier', 'hoko_inksplode'])
+        death_reasons.extend(['hoko_shot', 'hoko_barrier', 'hoko_inksplode', 'propeller'])
 
         error_list = []
         # 順方向
