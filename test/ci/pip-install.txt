@@ -7,4 +7,6 @@ Pillow
 tornado
 numpy
 py
+pyyaml
+certifi
 pytest
