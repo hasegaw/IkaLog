@@ -279,8 +279,12 @@ class Twitter(object):
 
         oauth_session = OAuth1Session(
             self._preset_ck, client_secret=self._preset_cs, callback_uri='oob')
-        step1 = oauth_session.fetch_request_token(request_token_url)
-        auth_web_url = oauth_session.authorization_url(authorization_url)
+        step1 = oauth_session.fetch_request_token(
+            request_token_url, verify=self._get_cert_path()
+        )
+        auth_web_url = oauth_session.authorization_url(
+            authorization_url, verify=self._get_cert_path()
+        )
 
         msg = _('Access the URL below to get authenticated at Twitter.')
 
@@ -302,8 +306,10 @@ class Twitter(object):
             return
 
         oauth_session.params['oauth_verifier'] = pin
-        r = oauth_session.get('%s?oauth_token=%s' %
-                              (access_token_url, step1['oauth_token']))
+        r = oauth_session.get(
+            '%s?oauth_token=%s' %(access_token_url, step1['oauth_token']),
+            verify=self._get_cert_path()
+        )
 
         d = oauth_session.parse_authorization_response('?' + r.text)
         AT = d['oauth_token']
