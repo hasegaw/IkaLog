@@ -77,14 +77,16 @@ class TestConstants(unittest.TestCase):
     def test_statink_weapons_lookup_by_statink_key(self):
         statink_weapons = self._get_statink_v1_weapons()
         weapons = self._load_constants_module().weapons
+        upcoming_weapons = self._load_constants_module().upcoming_weapons
 
         error_list = []
         for statink_weapon in statink_weapons:
             statink_key = statink_weapon['key']
 
             found = (statink_key in weapons)
-            if not found:
-                error_list.append('IkaLog does not have key %s' % statink_key)
+            if not found: 
+                if not (statink_key in upcoming_weapons):
+                    error_list.append('IkaLog does not have key %s' % statink_key)
 
         assert len(error_list) == 0, '\n'.join(error_list)
 

@@ -229,6 +229,14 @@ gear_brands = {
     'zink':       {'ja': 'アイロニック', 'en': 'Zink', },
 }
 
+#
+
+upcoming_weapons = [
+    'sshooter_wasabi', 'prime_berry', 'squiclean_g', 'pablo_permanent'
+]
+
+#
+
 for ability in gear_abilities.keys():
     gear_abilities[ability]['id'] = ability
 
