@@ -128,7 +128,7 @@ class Lobby(Scene):
             if matched:
                 match_count = match_count + 1
 
-        if match_count > 1:
+        if match_count != 1:
             return False
 
         # フェスの場合
