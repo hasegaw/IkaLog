@@ -50,5 +50,4 @@ class PreviewDetected(object):
     # @param self         The Object Pointer.
     #
     def __init__(self, wait_ms=1, size=(1280, 720)):
-        print('helllo')
         self.rects = []
