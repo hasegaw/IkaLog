@@ -222,8 +222,6 @@ class ResultGears(StatefulScene):
         self.udemae_recoginizer = UdemaeRecoginizer()
         self.number_recoginizer = NumberRecoginizer()
         self.gearpower_recoginizer = GearPowerRecoginizer()
-        self.gearpower_recoginizer.load_model_from_file()
-        self.gearpower_recoginizer.knn_train()
 
         self.mask_okane_msg = IkaMatcher(
             866, 48, 99, 41,
