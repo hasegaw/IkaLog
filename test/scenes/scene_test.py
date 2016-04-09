@@ -24,6 +24,19 @@ import cv2
 
 class SceneTestCase(unittest.TestCase):
 
+    def _noop(self, context):
+        pass
+
+    def _create_context(self):
+        context = {
+            'engine': { 'msec': 0,
+                'service': { 'callPlugins': self._noop} },
+            'game': {},
+            'scenes': {},
+            'lobby': {},
+        }
+        return context
+
     @classmethod
     def _load_screenshot(cls, filename, scene = None):
         if scene is None:
@@ -31,8 +44,11 @@ class SceneTestCase(unittest.TestCase):
 
         assert scene is not None
 
-        filepath = os.path.join('test_data', 'screenshots',
-            scene, filename)
+        filepath = os.path.join('test', 'data', filename)
+        if not os.path.exists(filepath):
+            filepath = \
+                os.path.join('test_data', 'screenshots', scene, filename)
+
         img = cv2.imread(filepath)
         assert img is not None, 'Failed to read screenshot %s' % filepath
         return img

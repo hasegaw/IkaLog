@@ -1,0 +1,10 @@
+slackweb
+fluent-logger
+requests-oauthlib
+urllib3
+u-msgpack-python
+Pillow
+tornado
+numpy
+py
+pytest

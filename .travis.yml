@@ -1,0 +1,15 @@
+language: python
+python:
+ - "3.4"
+
+before_install:
+ - sudo apt-get update
+ - sudo apt-get install build-essential cmake git libgtk2.0-dev pkg-config libdc1394-22 libdc1394-22-dev libjpeg-dev libpng12-dev libtiff4-dev libjasper-dev libavcodec-dev libavformat-dev libswscale-dev libxine-dev libv4l-dev libtbb-dev libqt4-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev libblas-dev libatlas-dev libatlas-base-dev x264 v4l-utils unzip wget
+
+install:
+ - pip install --pre -r test/ci/pip-install.txt
+ - bash -x test/ci/opencv3_setup.sh
+
+script:
+ - bash -x test/ci/download.sh
+ - bash -x test/ci/run_tests.sh
