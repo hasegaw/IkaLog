@@ -390,6 +390,12 @@ class Twitter(object):
             wx.EVT_BUTTON, self.on_ika_log_auth_button_click)
         self.buttonTest.Bind(wx.EVT_BUTTON, self.on_test_button_click)
 
+    def _get_cert_path(self):
+        path = Certifi.where()
+        if path is None:
+            return False
+        return path
+
     ##
     # Post a tweet
     # @param self    The object pointer.
@@ -409,7 +415,7 @@ class Twitter(object):
 
         twitter = OAuth1Session(
             CK, CS, self.access_token, self.access_token_secret)
-        return  twitter.post(self.url, params=params)
+        return twitter.post(self.url, params=params, verify=self._get_cert_path())
 
     ##
     # Post a screenshot to Twitter
@@ -432,8 +438,13 @@ class Twitter(object):
 
         from requests_oauthlib import OAuth1Session
         twitter = OAuth1Session(
-            CK, CS, self.access_token, self.access_token_secret)
-        req = twitter.post(self.url_media, files=files)
+            CK, CS, self.access_token, self.access_token_secret
+        )
+        req = twitter.post(
+            self.url_media,
+            files=files,
+            verify=self._get_cert_path()
+        )
 
         if req.status_code == 200:
             return json.loads(req.text)['media_id']
