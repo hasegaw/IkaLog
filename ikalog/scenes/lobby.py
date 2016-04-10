@@ -261,7 +261,7 @@ class Lobby(Scene):
             826, 37, 280, 34,
             img_file='lobby_public_matching.png',
             threshold=0.90,
-            orig_threshold=0.15,
+            orig_threshold=0.30,
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Matching',
@@ -274,7 +274,7 @@ class Lobby(Scene):
             826, 37, 280, 34,
             img_file='lobby_public_matched.png',
             threshold=0.90,
-            orig_threshold=0.15,
+            orig_threshold=0.30,
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
@@ -389,7 +389,7 @@ class Lobby(Scene):
             737, 36, 240, 30,
             img_file='lobby_private_matched.png',
             threshold=0.80,
-            orig_threshold=0.15,
+            orig_threshold=0.30,
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='lobby/private/matched/a',
@@ -401,7 +401,7 @@ class Lobby(Scene):
             737, 380, 240, 30,
             img_file='lobby_private_matched.png',
             threshold=0.80,
-            orig_threshold=0.15,
+            orig_threshold=0.30,
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='lobby/private/match/b',
