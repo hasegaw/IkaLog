@@ -65,10 +65,6 @@ class TestImageFilters(unittest.TestCase):
         img2 = MM_COLOR_BY_HUE(hue=(120 - 5, 120 + 5),
                                visibility=(0, 255))(img1)
 
-        cv2.imshow('a', img1)
-        cv2.imshow('b', img2)
-        cv2.waitKey()
-
         img_diff = np.array(img1[:, :, 0], dtype=int) - \
             np.array(img2, dtype=int)
         assert np.max(np.abs(img_diff)) == 0
