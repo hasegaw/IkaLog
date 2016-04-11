@@ -65,7 +65,7 @@ class Downie(StatefulScene):
 
     def _detect_gear_level(self, gear_level_image):
         img_level = matcher.MM_COLOR_BY_HUE(
-            hue=(30 - 5, 30 + 5), visibility=(200, 255)).evaluate(gear_level_image)
+            hue=(30 - 5, 30 + 5), visibility=(200, 255))(gear_level_image)
         cv2.imshow('level', img_level)
         img_level_hist = np.sum(img_level / 255, axis=0)
         img_level_x = np.extract(img_level_hist > 3, np.arange(1024))

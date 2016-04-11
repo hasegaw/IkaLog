@@ -65,7 +65,7 @@ class Lobby(Scene):
             for n in range(len(top_list)):
                 top = top_list[n]
                 img_ready = frame[top:top + 41, 1118:1118 + 51]
-                img_ready_yellow = filter_yellow.evaluate(img_ready)
+                img_ready_yellow = filter_yellow(img_ready)
 
                 # vチェックが付いていれば平均600ぐらい、
                 # vチェックが付いていなければ真っ黒(0)ぐらいのはず

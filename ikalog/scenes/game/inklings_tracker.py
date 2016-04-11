@@ -51,7 +51,7 @@ class InklingsTracker(StatefulScene):
 
         img = frame[24 + 38: 24 + 40, self.meter_x1: self.meter_x2]
         img_w = matcher.MM_WHITE(
-            sat=(0, 8), visibility=(248, 256)).evaluate(img)
+            sat=(0, 8), visibility=(248, 256))(img)
 
         img_vs_hist = np.sum(img_w, axis=0)
         img_vs_x = np.extract(img_vs_hist > 128, np.arange(1024))
@@ -88,13 +88,13 @@ class InklingsTracker(StatefulScene):
         team = team.copy()
 
         # Manipulate histgram array of inkling eyes.
-        img_eye = matcher.MM_WHITE().evaluate(
+        img_eye = matcher.MM_WHITE()(
             frame[24 + 16: 24 + 30, self.meter_x1: self.meter_x2]
         )
         img_eye_hist = np.sum(img_eye, axis=0)
 
         # Manipulate histgram array of inkling bodies.
-        img_fg_b = matcher.MM_WHITE(sat=(40, 255), visibility=(60, 255)).evaluate(
+        img_fg_b = matcher.MM_WHITE(sat=(40, 255), visibility=(60, 255))(
             frame[24 + 31: 24 + 36, self.meter_x1:self.meter_x2]
         )
         img_fg_hist = np.sum(img_fg_b / 255, axis=0)

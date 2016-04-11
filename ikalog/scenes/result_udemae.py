@@ -109,8 +109,8 @@ class ResultUdemae(StatefulScene):
         filter_yellow = matcher.MM_COLOR_BY_HUE(
             hue=(31 - 5, 31 + 5), visibility=(230, 255))
 
-        img_udemae_white = filter_white.evaluate(img_udemae)
-        img_udemae_yellow = filter_yellow.evaluate(img_udemae)
+        img_udemae_white = filter_white(img_udemae)
+        img_udemae_yellow = filter_yellow(img_udemae)
 
         # 文字色が白より黄色ならウデマエアップ(ダウン)
         score_white = np.sum(img_udemae_white)
