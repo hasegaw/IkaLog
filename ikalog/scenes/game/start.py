@@ -47,6 +47,7 @@ class GameStart(StatefulScene):
         self.rule_votes = []
 
         self._last_event_msec = - 100 * 1000
+        self._last_run_msec = - 100 * 1000
 
     def find_best_match(self, frame, matchers_list):
         most_possible = (0, None)
@@ -96,10 +97,16 @@ class GameStart(StatefulScene):
         if (timer_icon is not None) and timer_icon.matched_in(context, 3000):
             return False
 
+
         frame = context['engine']['frame']
 
         if frame is None:
             return False
+
+        if self.matched_in(context, 1500, attr='_last_run_msec'):
+            return False
+        else:
+            self._last_run_msec = context['engine']['msec']
 
         stage = self.find_best_match(frame, self.stage_matchers)
         rule = self.find_best_match(frame, self.rule_matchers)
