@@ -86,7 +86,7 @@ class GameSpecialWeapon(StatefulScene):
         img = img_special_bgr[:, :150]
 
         img_s = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 2]
-        img_s[matcher.MM_WHITE().evaluate(img) > 127] = 127
+        img_s[matcher.MM_WHITE()(img) > 127] = 127
 
         img_s_hist = cv2.calcHist(img_s[:, :], [0], None, [5], [0, 256])
         img_s_hist_black = float(np.amax(img_s_hist[0:1]))
@@ -134,7 +134,7 @@ class GameSpecialWeapon(StatefulScene):
         # Phase 4
         # Forground text
         white_filter = matcher.MM_WHITE()
-        img_sp_text = white_filter.evaluate(img_special_bgr[:, 0:150])
+        img_sp_text = white_filter(img_special_bgr[:, 0:150])
 
         special = self.find_best_match(img_special_bgr, self.masks)
         if self.write_samples:
