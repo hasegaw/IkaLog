@@ -22,4 +22,4 @@ if [ -e ${BASEDIR}/env.sh ]; then
     . ${BASEDIR}/env.sh
 fi
 
-exec py.test test/
+exec py.test --verbose test/
