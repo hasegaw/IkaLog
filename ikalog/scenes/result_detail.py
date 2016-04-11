@@ -50,8 +50,8 @@ class ResultDetail(StatefulScene):
         # 特徴画像の生成
         white_filter = matcher.MM_WHITE()
         dark_filter = matcher.MM_DARK(visibility=(0, 16))
-        img_w = white_filter.evaluate(img)
-        img_dark = 255 - dark_filter.evaluate(img)
+        img_w = white_filter(img)
+        img_dark = 255 - dark_filter(img)
 
         img_features = img_dark + img_w
         img_features[:, 1000:1280] = \
@@ -655,7 +655,7 @@ class ResultDetail(StatefulScene):
             img_diff = abs(img_current_h_i16 - self._last_frame)
             img_diff_u8 = np.array(img_diff, np.uint8)
 
-            img_white = self._white_filter.evaluate(img_current_bgr)
+            img_white = self._white_filter(img_current_bgr)
             img_diff_u8[img_white < 128] = 0
             img_diff_u8[img_diff_u8 < 16] = 0
             img_diff_u8[img_diff_u8 > 1] = 255
