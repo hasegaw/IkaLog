@@ -279,6 +279,25 @@ class WebSocketServer(object):
             'event': 'on_game_session_end',
         })
 
+    # stat.ink
+    def on_output_statink_submission_done(self, context, params):
+        self._send_message({
+            'event': 'on_output_statink_submission_done',
+            'response': params,
+        })
+
+    def on_output_statink_submission_dryrun(self, context, params):
+        self._send_message({
+            'event': 'on_output_statink_submission_dryrun',
+            'response': params,
+        })
+
+    def on_output_statink_submission_error(self, context, params):
+        self._send_message({
+            'event': 'on_output_statink_submission_error',
+            'response': params,
+        })
+
     def worker_func(self, websocket_server):
         print(websocket_server)
         self.application = tornado.web.Application([
