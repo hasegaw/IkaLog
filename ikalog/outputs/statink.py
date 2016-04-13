@@ -47,6 +47,10 @@ except:
 # IkaLog Output Plugin for Stat.ink
 
 
+def call_plugins_mock(event_name, params=None, debug=False):
+    pass
+
+
 class StatInk(object):
 
     def apply_ui(self):
@@ -535,7 +539,9 @@ class StatInk(object):
             IkaUtils.dprint('%s: Failed to write msgpack file' % self)
             IkaUtils.dprint(traceback.format_exc())
 
-    def _post_payload_worker(self, payload):
+    def _post_payload_worker(self, context, payload):
+        # This function runs on worker thread.
+
         if self.dry_run == 'server':
             payload['test'] = 'dry_run'
 
@@ -564,11 +570,6 @@ class StatInk(object):
             # Handle incorrect certificate error.
             IkaUtils.dprint('%s: SSLError, value: %s' % (self, e.value))
 
-        statink_reponse = json.loads(req.data.decode('utf-8'))
-        error = 'error' in statink_reponse
-        if error:
-            IkaUtils.dprint('%s: API Error occured')
-
         if self.show_response_enabled or error:
             IkaUtils.dprint('%s: == Response begin ==' % self)
             print(req.data.decode('utf-8'))
@@ -582,7 +583,44 @@ class StatInk(object):
             )
         )
 
-    def post_payload(self, payload, api_key=None):
+        error = False
+        try:
+            statink_response = json.loads(req.data.decode('utf-8'))
+            error = 'error' in statink_response
+            if error:
+                IkaUtils.dprint('%s: API Error occured')
+        except:
+            error = True
+            IkaUtils.dprint('%s: Stat.ink return non-JSON response')
+            statink_response = {
+                'error': 'Not a JSON response',
+            }
+
+        # try:
+        call_plugins_func = \
+            context['engine']['service']['call_plugins_later']
+        # except:
+        #    call_plugins_func = call_plugins_mock
+
+        if error:
+            call_plugins_func(
+                'on_output_statink_submission_error',
+                params=statink_response
+            )
+
+        elif statink_response.get('id', 0) == 0:
+            call_plugins_func(
+                'on_output_statink_submission_dryrun',
+                params=statink_response
+            )
+
+        else:
+            call_plugins_func(
+                'on_output_statink_submission_done',
+                params=statink_response
+            )
+
+    def post_payload(self, context, payload, api_key=None):
         if self.dry_run == True:
             IkaUtils.dprint(
                 '%s: Dry-run mode, skipping POST to stat.ink.' % self)
@@ -601,7 +639,7 @@ class StatInk(object):
         payload['apikey'] = api_key
 
         thread = threading.Thread(
-            target=self._post_payload_worker, args=(payload,))
+            target=self._post_payload_worker, args=(context, payload))
         thread.start()
 
     def print_payload(self, payload):
@@ -679,7 +717,7 @@ class StatInk(object):
         if self.debug_writePayloadToFile:
             self.write_payload_to_file(payload)
 
-        self.post_payload(payload)
+        self.post_payload(context, payload)
 
     def on_game_killed(self, context):
         self._add_event(context, {'type': 'killed'})
