@@ -162,7 +162,7 @@ hurtable_objects = {
     'hoko_barrier': {'ja': 'ガチホコバリア', 'en': 'Rainmaker Shield', },
     'hoko_inksplode': {'ja': 'ガチホコ爆発', 'en': 'Rainmaker Inksplode', },
 
-    'propeller': {'ja': 'プロペラから飛び散ったインク', 'en': 'Ink from a propeller' },
+    'propeller': {'ja': 'プロペラから飛び散ったインク', 'en': 'Ink from a propeller'},
 }
 
 oob_reasons = {
@@ -178,6 +178,7 @@ udemae_strings = [
 fes_rank_titles = [
     'fanboy', 'fiend', 'defender', 'champion', 'king'
 ]
+
 
 gear_abilities = {
     'bomb_range_up': {'ja': 'ボム飛距離アップ', 'en': 'Bomb Range Up'},
@@ -208,5 +209,28 @@ gear_abilities = {
     'tenacity': {'ja':  '逆境', 'en': 'Tenacity'}
 }
 
+gear_brands = {
+    'amiibo':     {'ja': 'amiibo', 'en': 'amiibo', },
+    'cuttlegear': {'ja': 'アタリメイド', 'en': 'Cuttlegear', },
+    'famitsu':    {'ja': 'ファミ通', 'en': 'Famitsu', },
+    'firefin':    {'ja': 'ホッコリー', 'en': 'Firefin', },
+    'forge':      {'ja': 'Forge', 'en': 'Forge', },
+    'inkline':    {'ja': 'Inkline', 'en': 'Inkline', },
+    'kog':        {'ja': 'KOG', 'en': 'KOG', },
+    'krakon':     {'ja': 'クラーゲス', 'en': 'Krak-On', },
+    'rockenberg': {'ja': 'ロッケンベルグ', 'en': 'Rockenberg', },
+    'skalop':     {'ja': 'ホタックス', 'en': 'Skalop', },
+    'splashmob':  {'ja': 'ジモン', 'en': 'Splash Mob', },
+    'squidforce': {'ja': 'バトロイカ', 'en': 'Squidforce', },
+    'squidgirl':  {'ja': '侵略！イカ娘', 'en': 'SQUID GIRL', },
+    'takoroka':   {'ja': 'ヤコ', 'en': 'Takoroka', },
+    'tentatek':   {'ja': 'アロメ', 'en': 'Tentatek', },
+    'zekko':      {'ja': 'エゾッコ', 'en': 'Zekko', },
+    'zink':       {'ja': 'アイロニック', 'en': 'Zink', },
+}
+
 for ability in gear_abilities.keys():
     gear_abilities[ability]['id'] = ability
+
+for brand in gear_brands.keys():
+    gear_brands[brand]['id'] = brand

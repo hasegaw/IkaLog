@@ -35,7 +35,6 @@ class InklingsTracker(StatefulScene):
 
     def reset(self):
         super(InklingsTracker, self).reset()
-        self.last_state = ''
 
     ##
     # _get_vs_xpos(self, context)
@@ -179,6 +178,16 @@ class InklingsTracker(StatefulScene):
         #   [ True, True, True, False ] ... 3 inklings are active.
         return team
 
+    def _list2bitmap(self, list1, list2):
+        l = list1.copy()
+        l.extend(list2)
+
+        bitmap = 0
+        for i in range(len(l)):
+            bitmap = bitmap + bitmap + (1 if l[i] else 0)
+
+        return bitmap
+
     ##
     # _state_default
     #
@@ -198,6 +207,8 @@ class InklingsTracker(StatefulScene):
     #
     def _state_default(self, context):
         if self.is_another_scene_matched(context, 'GameTimerIcon') == False:
+            if not self.matched_in(context, 20 * 1000):
+                self._switch_state(self._state_start)
             return False
 
         frame = context['engine']['frame']
@@ -219,7 +230,10 @@ class InklingsTracker(StatefulScene):
             [e for e in counter_team if e is not None],
         ]
 
-        self._call_plugins('on_game_inkling_state_update')
+        bitmap = self._list2bitmap(my_team, counter_team)
+        if self._last_bitmap != bitmap:
+            self._call_plugins('on_game_inkling_state_update')
+            self._last_bitmap = bitmap
 
         if 0:
             print(my_team, counter_team)
@@ -274,7 +288,6 @@ class InklingsTracker(StatefulScene):
         my_team = self._find_inklings(context, 0, vs_xpos - 35)
         counter_team = self._find_inklings(
             context, vs_xpos + 35, self.meter_width_half * 2)
-        print(my_team, counter_team)
 
         for i in range(len(my_team)):
             my_team[i] = {True: False, False: None}[my_team[i]]
@@ -284,7 +297,7 @@ class InklingsTracker(StatefulScene):
 
         self.my_team = my_team
         self.counter_team = counter_team
-        print('team detected', my_team, counter_team)
+        self._last_bitmap = None
 
         context['game']['inkling_state_at_start'] = [my_team, counter_team]
         self._switch_state(self._state_default)
@@ -312,15 +325,7 @@ class InklingsTracker(StatefulScene):
             self._state_to_string(context['game']['inkling_state'][1])
         ))
 
-    def _state_to_string(self, states):
-        ret = ''
-        for i in range(4):
-            if i < len(states):
-                ret = ret + ('1' if states[i] else '0')
-            else:
-                ret = ret + '_'
-        return ret
-
     def _init_scene(self, debug=False):
         self.my_team = [False, False, False, False]
         self.counter_team = [False, False, False, False]
+        self._last_bitmap = None

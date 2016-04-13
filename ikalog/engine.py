@@ -34,8 +34,12 @@ from . import scenes
 
 class IkaEngine:
 
-    #    def on_game_start(self, context):
-    #        self.scn_tower_tracker.reset(context)
+    def _profile_dump_scenes(self):
+        for scene in self.scenes:
+            print('%4.3fs %s' % (scene._prof_time_took, scene))
+
+    def _profile_dump(self):
+        self._profile_dump_scenes()
 
     def on_game_individual_result(self, context):
         self.session_close_wdt = context['engine']['msec'] + (20 * 1000)
@@ -161,7 +165,6 @@ class IkaEngine:
                     scene.analyze(context)
             print('%s: escaping %s' % (self, scene.__class__.__name__))
 
-
     def find_scene_object(self, scene_class_name):
         for scene in self.scenes:
             if scene.__class__.__name__ == scene_class_name:
@@ -211,8 +214,7 @@ class IkaEngine:
         while len(self._event_queue) > 0:
             self.call_plugins(self._event_queue.pop(0))
 
-    def run(self):
-        # Main loop.
+    def _main_loop(self):
         while not self._stop:
             if self._pause:
                 time.sleep(0.5)
@@ -226,9 +228,15 @@ class IkaEngine:
                     if self.session_close_wdt is not None:
                         self.dprint('Closing current session at EOF')
                         self.session_close()
-                raise
-
+                self._stop = True
         cv2.destroyAllWindows()
+
+    def run(self):
+        try:
+            self._main_loop()
+        finally:
+            if self._enable_profile:
+                self._profile_dump()
 
     def set_capture(self, capture):
         self.capture = capture
@@ -252,7 +260,6 @@ class IkaEngine:
             scenes.GameFinish(self),
             scenes.GameSpecialGauge(self),
             scenes.GameSpecialWeapon(self),
-            scenes.ResultJudge(self),
 
             scenes.GameRankedBattleEvents(self),
             scenes.PaintScoreTracker(self),
@@ -260,14 +267,19 @@ class IkaEngine:
             scenes.SplatzoneTracker(self),
             scenes.InklingsTracker(self),
 
+            scenes.ResultJudge(self),
             scenes.ResultDetail(self),
             scenes.ResultUdemae(self),
             scenes.ResultGears(self),
             scenes.ResultFesta(self),
+
             scenes.Lobby(self),
+            scenes.Downie(self),
+
+            scenes.Blank(self),
         ]
 
-    def __init__(self):
+    def __init__(self, enable_profile=True):
         self._initialize_scenes()
 
         self.output_plugins = [self]
@@ -278,5 +290,6 @@ class IkaEngine:
         self._event_queue = []
 
         self.close_session_at_eof = False
+        self._enable_profile = enable_profile
 
         self.create_context()

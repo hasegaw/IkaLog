@@ -24,5 +24,5 @@ from .warp_model import WarpFilterModel
 
 from .deinterlace import DeinterlaceFilter
 from .offset import OffsetFilter
-from .warp import WarpFilter
+from .warp import WarpFilter, WarpCalibrationNotFound, WarpCalibrationUnacceptableSize
 from .white_balance import WhiteBalanceFilter

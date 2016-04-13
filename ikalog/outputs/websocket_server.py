@@ -47,6 +47,7 @@ _ = Localization.gettext_translation('websocket_server', fallback=True).gettext
 
 websockets = []
 
+
 class IndexHandler(tornado.web.RequestHandler):
 
     @tornado.web.asynchronous
@@ -87,6 +88,8 @@ class WebSocketServer(object):
             IkaUtils.dprint('  Sending a message to %s' % s)
             s.write_message(d_json)
 
+    # In-game basic events
+
     def on_game_killed(self, context):
         self._send_message({
             'event': 'on_game_killed'
@@ -120,20 +123,6 @@ class WebSocketServer(object):
             'event': 'on_game_team_color',
             'my_team_color_hsv': context['game']['team_color_hsv'][0].tolist()[0],
             'counter_team_color_hsv': context['game']['team_color_hsv'][1].tolist()[0],
-        })
-
-    def on_lobby_matching(self, context):
-        self._send_message({
-            'event': 'on_lobby_matching',
-            'lobby_state': context['lobby'].get('state', None),
-            'lobby_type': context['lobby'].get('type', None),
-        })
-
-    def on_lobby_matched(self, context):
-        self._send_message({
-            'event': 'on_lobby_matched',
-            'lobby_state': context['lobby'].get('state', None),
-            'lobby_type': context['lobby'].get('type', None),
         })
 
     def on_game_finish(self, context):
@@ -256,6 +245,34 @@ class WebSocketServer(object):
         self._send_message({
             'event': 'on_result_gears',
         })
+
+    # Lobby events
+
+    def on_lobby_matching(self, context):
+        self._send_message({
+            'event': 'on_lobby_matching',
+            'lobby_state': context['lobby'].get('state', None),
+            'lobby_type': context['lobby'].get('type', None),
+        })
+
+    def on_lobby_matched(self, context):
+        self._send_message({
+            'event': 'on_lobby_matched',
+            'lobby_state': context['lobby'].get('state', None),
+            'lobby_type': context['lobby'].get('type', None),
+        })
+
+    # Inkpolis events
+
+    def on_inkopolis_lottery_done(self, context):
+        self._send_message({
+            'event': 'on_inkopolis_lottery',
+            'gear_brand': context['game']['downie']['brand'],
+            'gear_level': context['game']['downie']['level'],
+            'sub_abilities': context['game']['downie']['sub_abilities'],
+        })
+
+    # Session close
 
     def on_game_session_end(self, context):
         self._send_message({

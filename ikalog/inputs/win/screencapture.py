@@ -28,7 +28,7 @@ import numpy as np
 
 from ikalog.utils import *
 from ikalog.inputs import VideoInput
-from ikalog.inputs.filters import WarpFilter
+from ikalog.inputs.filters import WarpFilter, WarpCalibrationNotFound, WarpCalibrationUnacceptableSize
 
 _ = Localization.gettext_translation('screencapture', fallback=True).gettext
 
@@ -54,7 +54,6 @@ class ScreenCapture(VideoInput):
     def on_validate_warp(self, points):
         w = int(points[1][0] - points[0][0])
         h = int(points[2][1] - points[1][1])
-        IkaUtils.dprint('on_validate_warp: ', w, h)
 
         acceptable_geoms = [[720, 1280], [1080, 1920]]
 
@@ -73,7 +72,6 @@ class ScreenCapture(VideoInput):
 
         elif acceptable:
             msg = '\n'.join([
-                _('Calibration succeeded!'),
                 _('Due to the input resultion (%d x %d) some recognition may fail unexpectedly.') % (
                     w, h),
                 _('IkaLog expects 1280 x 720, or 1920 x 1080 as input resolution.'),
@@ -91,21 +89,42 @@ class ScreenCapture(VideoInput):
         super(ScreenCapture, self).reset()
 
     def auto_calibrate(self, img):
-        r = self._warp_filter.calibrateWarp(
-            img,
-            validation_func=self.on_validate_warp
-        )
-        if r:
-            self._warp_filter.enable()
-            IkaUtils.dprint(_('Calibration succeeded!'))
-            return True
-        else:
+        try:
+            r = self._warp_filter.calibrateWarp(
+                img,
+                validation_func=self.on_validate_warp
+            )
+
+        except WarpCalibrationUnacceptableSize as e:
+            (w, h) = e.shape
             msg = '\n'.join([
-                _('Calibration failed! Cannot detect WiiU display.'),
+                _('Current image size (%d x %d) cannot be accepted.') % (w, h),
                 _('IkaLog expects 1280 x 720, or 1920 x 1080 as input resolution.'),
+                _('Calibration Failed!'),
             ])
             IkaUtils.dprint(msg)
             return False
+
+        except WarpCalibrationNotFound:
+            msg = '\n'.join([
+                _('Could not find any WiiU image from the desktop.'),
+                _('IkaLog expects 1280 x 720, or 1920 x 1080 as input resolution.'),
+                _('Calibration Failed!'),
+            ])
+            IkaUtils.dprint(msg)
+            return False
+
+        if not r:
+            msg = '\n'.join([
+                _('No description provided. (could be a bug)'),
+                _('Calibration Failed!'),
+            ])
+            return False
+            IkaUtils.dprint(msg)
+
+        self._warp_filter.enable()
+        IkaUtils.dprint(_('Calibration succeeded!'))
+        return True
 
     def capture_screen(self):
         from PIL import ImageGrab

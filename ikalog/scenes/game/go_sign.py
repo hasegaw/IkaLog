@@ -34,25 +34,25 @@ class GameGoSign(Scene):
         self._last_event_msec = - 100 * 1000
 
     def match_no_cache(self, context):
-        if not self.is_another_scene_matched(context, 'GameTimerIcon'):
+        if self.matched_in(context, 60 * 1000, attr='_last_event_msec'):
             return False
 
-        frame = context['engine']['frame']
-
-        matched = self.mask_go_sign.match(frame)
-
-        if not matched:
+        if not self.is_another_scene_matched(context, 'GameTimerIcon'):
             return False
 
         if not self.matched_in(context, 60 * 1000, attr='_last_game_start_msec'):
             return False
 
-        if not self.matched_in(context, 60 * 1000, attr='_last_event_msec'):
-            self._call_plugins('on_game_go_sign')
-            self._last_event_msec = context['engine']['msec']
-            self._last_game_start_msec = -100 * 1000
+        frame = context['engine']['frame']
 
-        return matched
+        if not self.mask_go_sign.match(frame):
+            return False
+
+        self._call_plugins('on_game_go_sign')
+        self._last_event_msec = context['engine']['msec']
+        self._last_game_start_msec = -100 * 1000
+        return True
+
 
     def _analyze(self, context):
         pass

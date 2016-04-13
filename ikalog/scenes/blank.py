@@ -27,12 +27,18 @@ from ikalog.utils import *
 from ikalog.scenes.scene import Scene
 
 
-class GameOutOfBound(Scene):
+class Blank(Scene):
 
     def reset(self):
-        super(GameOutOfBound, self).reset()
+        super(Blank, self).reset()
 
         self._last_event_msec = - 100 * 1000
+
+
+    def _is_black(self, img):
+        maxval = img.shape[0] * img.shape[1] * img.shape[2]
+        score  = np.sum(img)
+        return score < maxval * 16
 
     def match_no_cache(self, context):
         if self.matched_in(context, 5 * 1000):
@@ -41,22 +47,13 @@ class GameOutOfBound(Scene):
         if self.is_another_scene_matched(context, 'GameTimerIcon'):
             return False
 
-        if not self.find_scene_object('GameTimerIcon').matched_in(context, 1.5 * 1000):
-            return False
+        frame = context['engine']['frame']
 
+        matched = \
+            self._is_black(frame[230:230 + 350, :, :]) and \
+            self._is_black(frame[230 + 150:, :frame.shape[1] - 190, :])
 
-        if self.is_another_scene_matched(context, 'Blank') != True:
-            return False
-
-        most_possible_id = 'oob'
-
-        context['game']['last_death_reason'] = most_possible_id
-        context['game']['death_reasons'][most_possible_id] = \
-            context['game']['death_reasons'].get(most_possible_id, 0) + 1
-
-        self._call_plugins('on_game_dead')
-        self._call_plugins('on_game_death_reason_identified')
-        return True
+        return matched
 
     def _analyze(self, context):
         pass
@@ -65,4 +62,4 @@ class GameOutOfBound(Scene):
         pass
 
 if __name__ == "__main__":
-    raise Exception('This scene cannot be run standalone.')
+    Blank.main_func()

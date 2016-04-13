@@ -82,6 +82,18 @@ class GameSpecialWeapon(StatefulScene):
         matched = bool(np.average(img_special_diff) < 90)
         return matched
 
+    def _is_my_special_weapon(self, context, img_special_bgr):
+        img = img_special_bgr[:, :150]
+
+        img_s = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 2]
+        img_s[matcher.MM_WHITE().evaluate(img) > 127] = 127
+
+        img_s_hist = cv2.calcHist(img_s[:, :], [0], None, [5], [0, 256])
+        img_s_hist_black = float(np.amax(img_s_hist[0:1]))
+        img_s_hist_non_black = float(np.amax(img_s_hist[3:4]))
+        print(img_s_hist)
+        return img_s_hist_black < img_s_hist_non_black
+
     def _state_default(self, context):
         if not self.is_another_scene_matched(context, 'GameTimerIcon'):
             return False
@@ -132,6 +144,8 @@ class GameSpecialWeapon(StatefulScene):
             return False
 
         context['game']['special_weapon'] = special._id
+        context['game']['special_weapon_is_mine'] = \
+            self._is_my_special_weapon(context, img_special_bgr)
         self._call_plugins('on_game_special_weapon')
 
         self._switch_state(self._state_tracking)

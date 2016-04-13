@@ -97,7 +97,7 @@ class VideoCapture(object):
 
         elif self.source == 'file':
             self.capture = inputs.CVFile()
-            self.start_recorded_file(name=self.File)
+            self.capture.select_source(name=self.File)
 
         # ToDo reset context['engine']['msec']
         success = (self.capture is not None)
