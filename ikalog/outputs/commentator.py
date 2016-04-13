@@ -191,6 +191,7 @@ class Commentator(object):
         'squiclean_b': 'スクイックリンベータ',
         'squiclean_g': 'スクイックリンガンマ',
         'rapid_elite': 'ラピッドブラスターエリート',
+        'rapid_elite_deco': 'ラピッドブラスターエリートデコ',
         'unknown': '未知の武器',
     }
 
