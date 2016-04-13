@@ -140,6 +140,7 @@ class GameRankedBattleEvents(StatefulScene):
             label='splatzone/we_got',
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -151,6 +152,7 @@ class GameRankedBattleEvents(StatefulScene):
             label='splatzone/we_lost',
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -162,6 +164,7 @@ class GameRankedBattleEvents(StatefulScene):
             label='splatzone/they_got',
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -173,6 +176,7 @@ class GameRankedBattleEvents(StatefulScene):
             label='splatzone/they_lost',
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -192,6 +196,7 @@ class GameRankedBattleEvents(StatefulScene):
             label='rainmaker/we_got',
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -203,6 +208,7 @@ class GameRankedBattleEvents(StatefulScene):
             label='rainmaker/we_lost',
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -214,6 +220,7 @@ class GameRankedBattleEvents(StatefulScene):
             label='rainmaker/they_got',
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -225,6 +232,7 @@ class GameRankedBattleEvents(StatefulScene):
             label='rainmaker/they_lost',
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -244,6 +252,7 @@ class GameRankedBattleEvents(StatefulScene):
             label='towercontrol/we_took',
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -255,6 +264,7 @@ class GameRankedBattleEvents(StatefulScene):
             label='towercontrol/we_lost',
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -266,6 +276,7 @@ class GameRankedBattleEvents(StatefulScene):
             label='towercontrol/they_took',
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -277,6 +288,7 @@ class GameRankedBattleEvents(StatefulScene):
             label='towercontrol/they_lost',
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -301,6 +313,7 @@ class GameRankedBattleEvents(StatefulScene):
             label='splatzone/we_lead',
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -312,6 +325,7 @@ class GameRankedBattleEvents(StatefulScene):
             label='splatzone/they_lead',
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 

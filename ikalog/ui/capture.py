@@ -39,7 +39,7 @@ class VideoCapture(object):
 
     def read_frame(self):
         if self.capture is None:
-            return None, None
+            return None
 
         r = self.capture.read_frame()
         return r

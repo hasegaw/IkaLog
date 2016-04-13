@@ -20,6 +20,7 @@
 
 from __future__ import print_function
 
+import copy
 import cv2
 import sys
 import time
@@ -41,6 +42,12 @@ class IkaEngine:
     def _profile_dump(self):
         self._profile_dump_scenes()
 
+    def enable_profile(self):
+        self._enable_profile = True
+
+    def disble_profile(self):
+        self._enable_profile = False
+
     def on_game_individual_result(self, context):
         self.session_close_wdt = context['engine']['msec'] + (20 * 1000)
 
@@ -48,10 +55,13 @@ class IkaEngine:
         if self.session_close_wdt is not None:
             self.session_close_wdt = context['engine']['msec'] + (1 * 1000)
 
+    def on_game_lost_sync(self, context):
+        self.session_abort()
+
     def dprint(self, text):
         print(text, file=sys.stderr)
 
-    def call_plugins(self, event_name, debug=False):
+    def call_plugins(self, event_name, params=None, debug=False):
         if debug:
             self.dprint('call plug-in hook (%s):' % event_name)
 
@@ -60,7 +70,10 @@ class IkaEngine:
                 if debug:
                     self.dprint('Call  %s' % op.__class__.__name__)
                 try:
-                    getattr(op, event_name)(self.context)
+                    if params is None:
+                        getattr(op, event_name)(self.context)
+                    else:
+                        getattr(op, event_name)(self.context, params)
                 except:
                     self.dprint('%s.%s() raised a exception >>>>' %
                                 (op.__class__.__name__, event_name))
@@ -78,8 +91,8 @@ class IkaEngine:
                     self.dprint(traceback.format_exc())
                     self.dprint('<<<<<')
 
-    def call_plugins_later(self, event_name, debug=False):
-        self._event_queue.append(event_name)
+    def call_plugins_later(self, event_name, params=None, debug=False):
+        self._event_queue.append((event_name, params))
 
     def read_next_frame(self, skip_frames=0):
         for i in range(skip_frames):
@@ -96,6 +109,7 @@ class IkaEngine:
         t = self.capture.get_current_timestamp()
         self.context['engine']['msec'] = t
         self.context['engine']['frame'] = frame
+        self.context['engine']['preview'] = copy.deepcopy(frame)
 
         self.call_plugins('on_debug_read_next_frame')
 
@@ -147,6 +161,12 @@ class IkaEngine:
         self.call_plugins('on_game_session_end')
         self.reset()
 
+    def session_abort(self):
+        self.session_close_wdt = None
+
+        self.call_plugins('on_game_session_abort')
+        self.reset()
+
     def process_scene(self, scene):
         context = self.context
 
@@ -194,6 +214,9 @@ class IkaEngine:
 
         key = None
 
+        self.call_plugins('on_draw_preview')
+        self.call_plugins('on_show_preview')
+
         # FixMe: Since on_frame_next and on_key_press has non-standard arguments,
         # self.call_plugins() doesn't work for those.
 
@@ -212,7 +235,8 @@ class IkaEngine:
                     pass
 
         while len(self._event_queue) > 0:
-            self.call_plugins(self._event_queue.pop(0))
+            event = self._event_queue.pop(0)
+            self.call_plugins(event_name=event[0], params=event[1])
 
     def _main_loop(self):
         while not self._stop:
@@ -228,7 +252,11 @@ class IkaEngine:
                     if self.session_close_wdt is not None:
                         self.dprint('Closing current session at EOF')
                         self.session_close()
+                    else:
+                        self.session_abort()
+
                 self._stop = True
+
         cv2.destroyAllWindows()
 
     def run(self):
@@ -240,6 +268,7 @@ class IkaEngine:
 
     def set_capture(self, capture):
         self.capture = capture
+        self.context['engine']['input_class'] = self.capture.__class__.__name__
 
     def set_plugins(self, plugins):
         self.output_plugins = [self]
@@ -274,12 +303,12 @@ class IkaEngine:
             scenes.ResultFesta(self),
 
             scenes.Lobby(self),
-            scenes.Downie(self),
+#            scenes.Downie(self),
 
             scenes.Blank(self),
         ]
 
-    def __init__(self, enable_profile=True):
+    def __init__(self, enable_profile=False):
         self._initialize_scenes()
 
         self.output_plugins = [self]

@@ -66,9 +66,8 @@ class ResultJudge(Scene):
         context['game']['judge'] = 'win' if match_win else 'lose'
 
         if not self.matched_in(context, 30 * 1000, attr='_last_event_msec'):
-            print('trigger event')
-            context['game']['image_judge'] = copy.deepcopy(
-                context['engine']['frame'])
+            context['game']['image_judge'] = \
+                copy.deepcopy(context['engine']['frame'])
             self._analyze(context)
             self._call_plugins('on_result_judge')
             self._last_event_msec = context['engine']['msec']
@@ -109,6 +108,7 @@ class ResultJudge(Scene):
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='result_judge/win',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -120,6 +120,7 @@ class ResultJudge(Scene):
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='result_judge/win_ko',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -131,6 +132,7 @@ class ResultJudge(Scene):
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='result_judge/lose',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 
@@ -142,6 +144,7 @@ class ResultJudge(Scene):
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='result_judge/lose_ko',
+            call_plugins=self._call_plugins,
             debug=debug,
         )
 

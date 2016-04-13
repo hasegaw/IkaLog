@@ -24,6 +24,7 @@ import pprint
 import threading
 import time
 import traceback
+import uuid
 
 import cv2
 import urllib3
@@ -83,6 +84,7 @@ class StatInk(object):
         self.track_objective_enabled = False
         self.track_splatzone_enabled = False
         self.api_key = None
+        self.video_id = None
 
     def on_config_load_from_context(self, context):
         self.on_config_reset(context)
@@ -100,6 +102,7 @@ class StatInk(object):
         self.track_objective_enabled = conf.get('TrackObjective', False)
         self.track_splatzone_enabled = conf.get('TrackSplatzone', False)
         self.api_key = conf.get('APIKEY', '')
+        self.video_id = conf.get('VIDEOID', '')
 
         self.refresh_ui()
         return True
@@ -114,6 +117,7 @@ class StatInk(object):
             'TrackObjective': self.track_objective_enabled,
             'TrackSplatzone': self.track_splatzone_enabled,
             'APIKEY': self.api_key,
+            'VIDEOID': self.video_id,
         }
 
     def on_config_apply(self, context):
@@ -230,8 +234,21 @@ class StatInk(object):
             'value': event_sub_type,
         })
 
+    def composite_agent_variables(self, context):
+        variables = {}
+
+        variables['input_class'] = \
+            context['engine'].get('input_class', 'unknown')
+
+        variables['primary_language'] = \
+            Localization.get_game_languages()[0]
+
+        return variables
+
     def composite_payload(self, context):
-        payload = {}
+        payload = {
+            'uuid': uuid.uuid1().hex,
+        }
 
         # Lobby
 
@@ -277,6 +294,10 @@ class StatInk(object):
 
         if len(self.events) > 0:
             payload['events'] = list(self.events)
+
+        # Video URL
+        if not self.video_id is None:
+            payload['link_url'] = 'https://www.youtube.com/watch?v=%s' % self.video_id
 
         # ResultJudge
 
@@ -470,7 +491,8 @@ class StatInk(object):
 
         payload['agent'] = 'IkaLog'
         payload['agent_version'] = IKALOG_VERSION
-        payload['IKALOG_LANG'] = Localization.get_game_languages()[0]
+
+        payload['agent_variables'] = self.composite_agent_variables(context)
 
         for field in payload.keys():
             if payload[field] is None:
@@ -529,7 +551,8 @@ class StatInk(object):
 
         pool = urllib3.PoolManager(
             cert_reqs='CERT_REQUIRED',  # Force certificate check
-            ca_certs=Certifi.where(),  # Path to the Certifi bundle.
+            ca_certs=Certifi.where(),   # Path to the Certifi bundle.
+            timeout=120.0,              # Timeout (in sec)
         )
 
         try:
@@ -807,7 +830,7 @@ class StatInk(object):
     def on_game_ranked_they_lead(self, context):
         self._add_ranked_battle_event(context, 'they_lead')
 
-    def __init__(self, api_key=None, track_objective=False, track_splatzone=False, track_inklings=False, track_special_gauge=False, track_special_weapon=False, debug=False, dry_run=False, url='https://stat.ink'):
+    def __init__(self, api_key=None, track_objective=False, track_splatzone=False, track_inklings=False, track_special_gauge=False, track_special_weapon=False, debug=False, dry_run=False, url='https://stat.ink', video_id=None):
         self.enabled = not (api_key is None)
         self.api_key = api_key
         self.dry_run = dry_run
@@ -834,6 +857,8 @@ class StatInk(object):
         self.track_splatzone_enabled = track_splatzone
 
         self.url_statink_v1_battle = '%s/api/v1/battle' % url
+
+        self.video_id = video_id
 
 if __name__ == "__main__":
     # main として呼ばれた場合

@@ -77,14 +77,16 @@ class TestConstants(unittest.TestCase):
     def test_statink_weapons_lookup_by_statink_key(self):
         statink_weapons = self._get_statink_v1_weapons()
         weapons = self._load_constants_module().weapons
+        upcoming_weapons = self._load_constants_module().upcoming_weapons
 
         error_list = []
         for statink_weapon in statink_weapons:
             statink_key = statink_weapon['key']
 
             found = (statink_key in weapons)
-            if not found:
-                error_list.append('IkaLog does not have key %s' % statink_key)
+            if not found: 
+                if not (statink_key in upcoming_weapons):
+                    error_list.append('IkaLog does not have key %s' % statink_key)
 
         assert len(error_list) == 0, '\n'.join(error_list)
 
@@ -112,7 +114,7 @@ class TestConstants(unittest.TestCase):
         death_reasons.extend(self._load_constants_module().deadly_sub_weapons)
         death_reasons.extend(
             self._load_constants_module().deadly_special_weapons)
-        death_reasons.extend(['hoko_shot', 'hoko_barrier', 'hoko_inksplode'])
+        death_reasons.extend(['hoko_shot', 'hoko_barrier', 'hoko_inksplode', 'propeller'])
 
         error_list = []
         # 順方向

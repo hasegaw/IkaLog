@@ -46,9 +46,8 @@ def loopbackTest():
     sort_zumi = {}
 
     for gearpower in gearpowers.groups:
-        for sample_tuple in gearpower['images']:
-            sample = sample_tuple[0]
-            answer, distance = gearpowers.match(sample)  # = img
+        for sample in gearpower['images']:
+            answer, distance = gearpowers.predict(sample['img'])
 
             total = total + 1
             if (gearpower['name'] == answer):
@@ -60,7 +59,7 @@ def loopbackTest():
 
             if not answer in sort_zumi:
                 sort_zumi[answer] = []
-            sort_zumi[answer].append((distance, sample_tuple[3]))
+            sort_zumi[answer].append((distance, sample['src_path']))
 
             #print("%s: %s 結果: %s<br>" % (msg, gearpower['name'], r['name']))
 
@@ -69,7 +68,7 @@ def loopbackTest():
 
     # miss list 表示
     misses_hist = []
-    for sample in misses:
+    for sample in []: #misses:
         param, r = gearpowers.analyze_image(sample, debug=True)
         misses_hist.append(r)
     gearpowers.show_learned_icon_image(misses_hist, 'Misses', save='misses.png')

@@ -56,7 +56,7 @@ class GameSpecialGauge(Scene):
 
         charged = False
         if value > 95:
-            img_white = matcher.MM_WHITE().evaluate(frame[34:34+102, 1117:1117+102, :])
+            img_white = matcher.MM_WHITE()(frame[34:34+102, 1117:1117+102, :])
             img_white_masked = np.minimum(img_white, self._mask_gauge[:, :, 0])
             white_score = np.sum(img_white_masked / 255)
             charged = (white_score > 0)

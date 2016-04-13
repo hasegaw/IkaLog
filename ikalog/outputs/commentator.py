@@ -93,6 +93,9 @@ class CommentatorDictionary(object):
         'session_end': [
             {'text': 'おつかれさまでした', 'emotion': 'byebye'},
         ],
+        'session_abort': [
+            {'text': 'ゲームを見失いました', 'emotion': 'byebye'},
+        ],
         'ranked_we_lead': [
             {'text': 'カウントリードした', 'emotion': 'hakushu'},
             {'text': 'このまま行けば勝てるぞ', 'emotion': 'wktk'},
@@ -175,8 +178,9 @@ class Commentator(object):
         '96gal_deco': 'きゅーろくガロンデコ',
         'nzap85': 'エヌザップ85',
         'nzap89': 'エヌザップ89',
-        'bamboo14mk1': 'ひとよん式竹筒銃・こう',
-        'bamboo14mk2': 'ひとよん式竹筒銃・おつ',
+        'bamboo14mk1': 'ひとよん式竹筒じゅう・こう',
+        'bamboo14mk2': 'ひとよん式竹筒じゅう・おつ',
+        'bamboo14mk3': 'ひとよん式竹筒じゅう・へい',
         'liter3k': 'リッター3ケー',
         'liter3k_custom': 'リッター3ケーカスタム',
         'liter3k_scope': '3ケースコープ',
@@ -185,7 +189,9 @@ class Commentator(object):
         'promodeler_mg': 'プロモデラーエムジー',
         'squiclean_a': 'スクイックリンアルファ',
         'squiclean_b': 'スクイックリンベータ',
+        'squiclean_g': 'スクイックリンガンマ',
         'rapid_elite': 'ラピッドブラスターエリート',
+        'rapid_elite_deco': 'ラピッドブラスターエリートデコ',
         'unknown': '未知の武器',
     }
 
@@ -256,15 +262,8 @@ class Commentator(object):
     def _death_reason_label(self, reason):
         if reason in self.custom_read:
             return self.custom_read[reason]
-        if reason in weapons:
-            return weapons[reason]['ja']
-        if reason in sub_weapons:
-            return sub_weapons[reason]['ja']
-        if reason in special_weapons:
-            return special_weapons[reason]['ja']
-        if reason in hurtable_objects:
-            return hurtable_objects[reason]['ja']
-        return self.custom_read['unknown']
+        return IkaUtils.death_reason2text(
+            reason, self.custom_read['unknown'], 'ja')
 
     def on_game_finish(self, context):
         self._read_event('finish')
@@ -288,6 +287,9 @@ class Commentator(object):
 
     def on_game_session_end(self, context):
         self._read_event('session_end')
+
+    def on_game_session_abort(self, context):
+        self._read_event('session_abort')
 
     def on_game_ranked_we_lead(self, context):
         self._read_event('ranked_we_lead')

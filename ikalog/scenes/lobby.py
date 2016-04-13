@@ -65,7 +65,7 @@ class Lobby(Scene):
             for n in range(len(top_list)):
                 top = top_list[n]
                 img_ready = frame[top:top + 41, 1118:1118 + 51]
-                img_ready_yellow = filter_yellow.evaluate(img_ready)
+                img_ready_yellow = filter_yellow(img_ready)
 
                 # vチェックが付いていれば平均600ぐらい、
                 # vチェックが付いていなければ真っ黒(0)ぐらいのはず
@@ -128,7 +128,7 @@ class Lobby(Scene):
             if matched:
                 match_count = match_count + 1
 
-        if match_count > 1:
+        if match_count != 1:
             return False
 
         # フェスの場合
@@ -216,6 +216,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Pub/Rule',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -227,6 +228,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Pub/Stage',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -238,6 +240,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Tag/Rule',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -249,6 +252,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Tag/Stage',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -257,10 +261,11 @@ class Lobby(Scene):
             826, 37, 280, 34,
             img_file='lobby_public_matching.png',
             threshold=0.90,
-            orig_threshold=0.15,
+            orig_threshold=0.30,
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='Matching',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -269,11 +274,12 @@ class Lobby(Scene):
             826, 37, 280, 34,
             img_file='lobby_public_matched.png',
             threshold=0.90,
-            orig_threshold=0.15,
+            orig_threshold=0.30,
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='Matched',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -288,6 +294,7 @@ class Lobby(Scene):
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='TagMatched',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -301,6 +308,7 @@ class Lobby(Scene):
                 hue=(150, 180), visibility=(0, 255)),
             fg_method=matcher.MM_WHITE(),
             label='TagMatching',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -313,6 +321,7 @@ class Lobby(Scene):
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='FestaMatched',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -324,6 +333,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='lobby/private/matched/rule',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -335,6 +345,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='lobby/private/matched/stage',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -346,6 +357,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='lobby/private/matching/alpha',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -357,6 +369,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='lobby/private/matching/alpha',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -368,6 +381,7 @@ class Lobby(Scene):
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='lobby/private/matched/stage',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -375,10 +389,11 @@ class Lobby(Scene):
             737, 36, 240, 30,
             img_file='lobby_private_matched.png',
             threshold=0.80,
-            orig_threshold=0.15,
+            orig_threshold=0.30,
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='lobby/private/matched/a',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 
@@ -386,10 +401,11 @@ class Lobby(Scene):
             737, 380, 240, 30,
             img_file='lobby_private_matched.png',
             threshold=0.80,
-            orig_threshold=0.15,
+            orig_threshold=0.30,
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='lobby/private/match/b',
+            call_plugins=self._call_plugins,
             debug=debug
         )
 

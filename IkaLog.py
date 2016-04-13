@@ -21,25 +21,51 @@
 from ikalog.utils import Localization, IkaUtils
 Localization.print_language_settings()
 
+import argparse
 import signal
 from ikalog.engine import *
 from IkaConfig import *
 from ikalog.utils import *
 
 
-engine = IkaEngine()
 
 def signal_handler(num, frame):
     IkaUtils.dprint('IkaLog: got signal %d' % num)
     if num == 2:
         engine.stop()
 
-signal.signal(signal.SIGINT, signal_handler)
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input_file', '-f', dest='input_file', type=str)
+    parser.add_argument('--output_description', '--desc',
+                        dest='output_description', type=str)
+    parser.add_argument('--profile', dest='profile', action='store_true',
+                        default=False)
+    parser.add_argument('--time', '-t', dest='time', type=str)
+    parser.add_argument('--time_msec', dest='time_msec', type=int)
+    parser.add_argument('--video_id', dest='video_id', type=str)
 
-capture, OutputPlugins = IkaConfig().config()
-engine.pause(False)
-engine.set_capture(capture)
-engine.set_plugins(OutputPlugins)
-engine.close_session_at_eof = True
-engine.run()
-IkaUtils.dprint('bye!')
+    return vars(parser.parse_args())
+
+def time_to_msec(time):
+    minute, sec = time.split(':')
+    return (int(minute) * 60 + int(sec)) * 1000
+
+if __name__ == "__main__":
+    signal.signal(signal.SIGINT, signal_handler)
+
+    args = get_args()
+    capture, OutputPlugins = IkaConfig().config(args)
+
+    if isinstance(capture, inputs.CVFile):
+        pos_msec = args.get('time_msec') or time_to_msec(args.get('time') or '0:0')
+        if pos_msec:
+            capture.video_capture.set(cv2.CAP_PROP_POS_MSEC, pos_msec)
+
+    engine = IkaEngine(enable_profile=args.get('profile'))
+    engine.pause(False)
+    engine.set_capture(capture)
+    engine.set_plugins(OutputPlugins)
+    engine.close_session_at_eof = True
+    engine.run()
+    IkaUtils.dprint('bye!')

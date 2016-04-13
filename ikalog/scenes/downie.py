@@ -48,7 +48,7 @@ class Downie(StatefulScene):
             gear_brands_knn = GearBrandRecoginizer()
             gear_brands_knn.load_model_from_file()
             gear_brands_knn.knn_train()
-            result, distance = gear_brands_knn.match(gear_brand_image)
+            result, distance = gear_brands_knn.predict(gear_brand_image)
             return result
         except:
             return None
@@ -65,7 +65,7 @@ class Downie(StatefulScene):
 
     def _detect_gear_level(self, gear_level_image):
         img_level = matcher.MM_COLOR_BY_HUE(
-            hue=(30 - 5, 30 + 5), visibility=(200, 255)).evaluate(gear_level_image)
+            hue=(30 - 5, 30 + 5), visibility=(200, 255))(gear_level_image)
         cv2.imshow('level', img_level)
         img_level_hist = np.sum(img_level / 255, axis=0)
         img_level_x = np.extract(img_level_hist > 3, np.arange(1024))
@@ -130,6 +130,29 @@ class Downie(StatefulScene):
         context['game']['downie']['sub_abilities'] = sub_abilities
         return True
 
+    def _detect_sazae_and_cash(self, frame):
+        img_num_sazae = frame[137:137 + 30, 936:936 + 75]
+        img_cash = frame[137:137 + 30, 1054:1052 + 175]
+
+        cash = None
+        sazae = None
+        if 1:  # try:
+            cash = self.number_recoginizer.match_digits(
+                img_cash,
+                num_digits=(7, 7),
+                char_width=(5, 20),
+                char_height=(16, 24),
+            )
+
+        if 1:
+            sazae = self.number_recoginizer.match_digits(
+                img_num_sazae,
+                num_digits=(3, 3),
+                char_width=(5, 20),
+                char_height=(16, 24),
+            )
+        return {'cash': cash, 'sazae': sazae}
+
     def _state_default(self, context):
         if self.is_another_scene_matched(context, 'GameTimerIcon'):
             return False
@@ -141,16 +164,27 @@ class Downie(StatefulScene):
         if not self.mask_cancel.match(frame):
             return False
 
-        if not self.mask_run.match(frame):
+        if not self.mask_gear_window.match(frame):
             return False
 
-        if not self.mask_gear_window.match(frame):
+        if not self.mask_run.match(frame):
+            r = self._detect_sazae_and_cash(frame)
+            context['game']['downie'] = {
+                'cash': r['cash'],
+                'sazae': r['sazae'],
+            }
             return False
 
         if self.matched_in(context, 5000, attr='_last_lottery_start_msec'):
             return False
 
-        context['game']['downie'] = {}
+        if not 'downie' in context:
+            context['game']['downie'] = {}
+
+        context['game']['downie'] = {
+            'sazae_pre': context['game']['downie'].get('sazae', None),
+            'cash_pre': context['game']['downie'].get('cash', None),
+        }
 
         self._last_lottery_stat_msec = context['engine']['msec']
         self._last_sub_images = None
@@ -170,7 +204,10 @@ class Downie(StatefulScene):
             return False
 
         if not self.mask_gear_window.match(frame):
-            if not self.matched_in(context, 15000, attr='_last_lottery_start_msec'):
+            # FIXME
+            # not self.matched_in(context, 15000,
+            # attr='_last_lottery_start_msec'):
+            if 0:
                 # We're lost.
                 IkaUtils.dprint('%s: Unexpected scene transition.' % self)
                 self._switch_state(self._state_default)
@@ -205,7 +242,9 @@ class Downie(StatefulScene):
 
             self._detect_gear_info(context)
             self._detect_gear_lottery_result(context)
-
+            r = self._detect_sazae_and_cash(frame)
+            context['game']['downie']['sazae'] = r['sazae']
+            context['game']['downie']['cash'] = r['cash']
             self._call_plugins('on_inkopolis_lottery_done')
 
             self._switch_state(self._state_default)
@@ -242,7 +281,6 @@ class Downie(StatefulScene):
 #        if self.match(context) != True:
 #            return False
 
-        print('dump')
         self.dump(context)
 
     def _init_scene(self, debug=False):
@@ -279,6 +317,7 @@ class Downie(StatefulScene):
             debug=debug,
         )
 
+        self.number_recoginizer = NumberRecoginizer()
         self._client_local = APIClient(local_mode=True)
 
 if __name__ == "__main__":

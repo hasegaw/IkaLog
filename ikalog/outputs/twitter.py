@@ -279,8 +279,12 @@ class Twitter(object):
 
         oauth_session = OAuth1Session(
             self._preset_ck, client_secret=self._preset_cs, callback_uri='oob')
-        step1 = oauth_session.fetch_request_token(request_token_url)
-        auth_web_url = oauth_session.authorization_url(authorization_url)
+        step1 = oauth_session.fetch_request_token(
+            request_token_url, verify=self._get_cert_path()
+        )
+        auth_web_url = oauth_session.authorization_url(
+            authorization_url, verify=self._get_cert_path()
+        )
 
         msg = _('Access the URL below to get authenticated at Twitter.')
 
@@ -302,8 +306,10 @@ class Twitter(object):
             return
 
         oauth_session.params['oauth_verifier'] = pin
-        r = oauth_session.get('%s?oauth_token=%s' %
-                              (access_token_url, step1['oauth_token']))
+        r = oauth_session.get(
+            '%s?oauth_token=%s' %(access_token_url, step1['oauth_token']),
+            verify=self._get_cert_path()
+        )
 
         d = oauth_session.parse_authorization_response('?' + r.text)
         AT = d['oauth_token']
@@ -390,6 +396,12 @@ class Twitter(object):
             wx.EVT_BUTTON, self.on_ika_log_auth_button_click)
         self.buttonTest.Bind(wx.EVT_BUTTON, self.on_test_button_click)
 
+    def _get_cert_path(self):
+        path = Certifi.where()
+        if path is None:
+            return False
+        return path
+
     ##
     # Post a tweet
     # @param self    The object pointer.
@@ -409,7 +421,7 @@ class Twitter(object):
 
         twitter = OAuth1Session(
             CK, CS, self.access_token, self.access_token_secret)
-        return  twitter.post(self.url, params=params)
+        return twitter.post(self.url, params=params, verify=self._get_cert_path())
 
     ##
     # Post a screenshot to Twitter
@@ -432,8 +444,13 @@ class Twitter(object):
 
         from requests_oauthlib import OAuth1Session
         twitter = OAuth1Session(
-            CK, CS, self.access_token, self.access_token_secret)
-        req = twitter.post(self.url_media, files=files)
+            CK, CS, self.access_token, self.access_token_secret
+        )
+        req = twitter.post(
+            self.url_media,
+            files=files,
+            verify=self._get_cert_path()
+        )
 
         if req.status_code == 200:
             return json.loads(req.text)['media_id']
@@ -453,7 +470,7 @@ class Twitter(object):
 
         result = IkaUtils.getWinLoseText(
             context['game']['won'], win_text=_('won'),
-            lose_text=_('lose'),
+            lose_text=_('lost'),
             unknown_text=_('played'))
 
         t = datetime.now().strftime("%Y/%m/%d %H:%M")

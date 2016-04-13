@@ -29,6 +29,8 @@ import numpy as np
 from PIL import Image
 
 from ikalog.constants import stages, rules, gear_abilities
+# Constants for death_reason2text
+from ikalog.constants import hurtable_objects, oob_reasons, special_weapons, sub_weapons, weapons
 from ikalog.utils.localization import Localization
 from ikalog.utils import imread
 
@@ -85,6 +87,18 @@ class IkaUtils(object):
         return "%s%s" % (prefix, playerEntry['gender'])
 
     @staticmethod
+    def extend_languages(languages=None):
+        if languages is None:
+            languages = Localization.get_languages()
+
+        if not isinstance(languages, list):
+            languages = [languages]
+
+        # fallback list
+        languages.extend(['en', 'ja'])
+        return languages
+
+    @staticmethod
     def map2id(map, unknown='?'):
         if map is None:
             return unknown
@@ -100,16 +114,7 @@ class IkaUtils(object):
         if stages.get(map_id, None) is None:
             return unknown
 
-        if languages is None:
-            languages = Localization.get_languages()
-
-        if not isinstance(languages, list):
-            languages = [languages]
-
-        # fallback list
-        languages.extend(['en', 'ja'])
-
-        for lang in languages:
+        for lang in IkaUtils.extend_languages(languages):
             map_text = stages[map_id].get(lang, None)
             if map_text is not None:
                 return map_text
@@ -133,16 +138,7 @@ class IkaUtils(object):
         if rules.get(rule_id, None) is None:
             return unknown
 
-        if languages is None:
-            languages = Localization.get_languages()
-
-        if not isinstance(languages, list):
-            languages = [languages]
-
-        # fallback list
-        languages.extend(['en', 'ja'])
-
-        for lang in languages:
+        for lang in IkaUtils.extend_languages(languages):
             rule_text = rules[rule_id].get(lang, None)
             if rule_text is not None:
                 return rule_text
@@ -151,37 +147,40 @@ class IkaUtils(object):
         return rule_id
 
     @staticmethod
-    def gear_ability2id(gear_ability, unknown='?'):
+    def gear_ability2text(gear_ability, unknown='?', languages=None):
         if gear_ability is None:
             return unknown
-        return gear_ability.id_
 
-    @staticmethod
-    def gear_ability2text(gear_ability, unknown='?', languages=None):
-        gear_ability_id = IkaUtils.gear_ability2id(gear_ability, unknown=None)
-
-        if gear_ability_id is None:
+        if gear_abilities.get(gear_ability, None) is None:
             return unknown
 
-        if gear_abilities.get(gear_ability_id, None) is None:
-            return unknown
-
-        if languages is None:
-            languages = Localization.get_languages()
-
-        if not isinstance(languages, list):
-            languages = [languages]
-
-        # fallback list
-        languages.extend(['en', 'ja'])
-
-        for lang in languages:
-            gear_ability_text = gear_abilities[gear_ability_id].get(lang, None)
+        for lang in IkaUtils.extend_languages(languages):
+            gear_ability_text = gear_abilities[gear_ability].get(lang, None)
             if gear_ability_text is not None:
                 return gear_ability_text
 
         # Should not reach here
         return gear_ability_id
+
+    @staticmethod
+    def death_reason2text(reason, unknown='?', languages=None):
+        reason_dict = {}
+        if reason in weapons:
+            reason_dict = weapons[reason]
+        if reason in sub_weapons:
+            reason_dict = sub_weapons[reason]
+        if reason in special_weapons:
+            reason_dict = special_weapons[reason]
+        if reason in oob_reasons:
+            reason_dict = oob_reasons[reason]
+        if reason in hurtable_objects:
+            reason_dict = hurtable_objects[reason]
+
+        for lang in IkaUtils.extend_languages(languages):
+            if lang in reason_dict:
+                return reason_dict[lang]
+
+        return unknown
 
     @staticmethod
     def cropImageGray(img, left, top, width, height):
