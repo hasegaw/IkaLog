@@ -188,6 +188,7 @@ class Commentator(object):
         'promodeler_mg': 'プロモデラーエムジー',
         'squiclean_a': 'スクイックリンアルファ',
         'squiclean_b': 'スクイックリンベータ',
+        'squiclean_b': 'スクイックリンガンマ',
         'rapid_elite': 'ラピッドブラスターエリート',
         'unknown': '未知の武器',
     }

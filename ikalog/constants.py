@@ -73,6 +73,7 @@ weapons = {
     'nzap89': {'ja': 'N-ZAP89', 'en': 'N-Zap \'89'},
     'octoshooter_replica': {'ja': 'オクタシューターレプリカ', 'en': 'Octoshot Replica'},
     'prime': {'ja': 'プライムシューター', 'en': 'Splattershot Pro'},
+    'prime_berry': {'ja': 'プライムシューターベリー', 'en': 'Berry Splattershot Pro'},
     'prime_collabo': {'ja': 'プライムシューターコラボ', 'en': 'Forge Splattershot Pro'},
     'promodeler_mg': {'ja': 'プロモデラーMG', 'en': 'Aerospray MG'},
     'promodeler_rg': {'ja': 'プロモデラーRG', 'en': 'Aerospray RG'},
@@ -84,22 +85,26 @@ weapons = {
     'sharp_neo': {'ja': 'シャープマーカーネオ', 'en': 'Neo Splash-o-matic'},
     'sshooter': {'ja': 'スプラシューター', 'en': 'Splattershot'},
     'sshooter_collabo': {'ja': 'スプラシューターコラボ', 'en': 'Tentatek Splattershot'},
+    'sshooter_wasabi': {'ja': 'スプラシューターワサビ', 'en': 'Wasabi Splattershot'},
     'wakaba': {'ja': 'わかばシューター', 'en': 'Splattershot Jr.'},
 
     'carbon': {'ja': 'カーボンローラー', 'en': 'Carbon Roller'},
     'carbon_deco': {'ja': 'カーボンローラーデコ', 'en': 'Carbon Roller Deco'},
     'dynamo': {'ja': 'ダイナモローラー', 'en': 'Dynamo Roller'},
+    'dynamo_burned': {'ja': 'ダイナモローラーバーンド', 'en': 'Tempered Dynamo Roller'},
     'dynamo_tesla': {'ja': 'ダイナモローラーテスラ', 'en': 'Gold Dynamo Roller'},
     'heroroller_replica': {'ja': 'ヒーローローラーレプリカ', 'en': 'Hero Roller Replica'},
     'hokusai': {'ja': 'ホクサイ', 'en': 'Octobrush'},
     'hokusai_hue': {'ja': 'ホクサイ・ヒュー', 'en': 'Octobrush Nouveau'},
     'pablo': {'ja': 'パブロ', 'en': 'Inkbrush'},
     'pablo_hue': {'ja': 'パブロ・ヒュー', 'en': 'Inkbrush Nouveau'},
+    'pablo_permanent': {'ja': 'パーマネント・パブロ', 'en': 'Permanent Inkbrush'},
     'splatroller': {'ja': 'スプラローラー', 'en': 'Splat Roller'},
     'splatroller_collabo': {'ja': 'スプラローラーコラボ', 'en': 'Krak-On Splat Roller'},
 
     'bamboo14mk1': {'ja': '14式竹筒銃・甲', 'en': 'Bamboozler 14 MK I'},
     'bamboo14mk2': {'ja': '14式竹筒銃・乙', 'en': 'Bamboozler 14 MK II'},
+    'bamboo14mk3': {'ja': '14式竹筒銃・丙', 'en': 'Bamboozler 14 Mk III'},
     'herocharger_replica': {'ja': 'ヒーローチャージャーレプリカ', 'en': 'Hero Charger Replica'},
     'liter3k': {'ja': 'リッター3K', 'en': 'E-liter 3K'},
     'liter3k_custom': {'ja': 'リッター3Kカスタム', 'en': 'Custom E-liter 3K'},
@@ -111,9 +116,11 @@ weapons = {
     'splatscope_wakame': {'ja': 'スプラスコープワカメ', 'en': 'Kelp Splatterscope'},
     'squiclean_a': {'ja': 'スクイックリンα', 'en': 'Classic Squiffer'},
     'squiclean_b': {'ja': 'スクイックリンβ', 'en': 'New Squiffer'},
+    'squiclean_g': {'ja': 'スクイックリンγ', 'en': 'Fresh Squiffer'},
 
     'bucketslosher': {'ja': 'バケットスロッシャー', 'en': 'Slosher'},
     'bucketslosher_deco': {'ja': 'バケットスロッシャーデコ', 'en': 'Slosher Deco'},
+    'bucketslosher_soda': {'ja': 'バケットスロッシャーソーダ', 'en': 'Soda Slosher'},
     'hissen': {'ja': 'ヒッセン', 'en': 'Tri-Slosher'},
     'hissen_hue': {'ja': 'ヒッセン・ヒュー', 'en': 'Tri-Slosher Nouveau'},
     'screwslosher': {'ja': 'スクリュースロッシャー', 'en': 'Sloshing Machine'},
@@ -125,6 +132,7 @@ weapons = {
     'hydra_custom': {'ja': 'ハイドラントカスタム', 'en': 'Custom Hydra Splatling'},
     'splatspinner': {'ja': 'スプラスピナー', 'en': 'Mini Splatling'},
     'splatspinner_collabo': {'ja': 'スプラスピナーコラボ', 'en': 'Zink Mini Splatling'},
+    'splatspinner_repair': {'ja': 'スプラスピナーリペア', 'en': 'Refurbished Mini Splatling'},
 }
 
 sub_weapons = {
@@ -232,7 +240,6 @@ gear_brands = {
 #
 
 upcoming_weapons = [
-    'sshooter_wasabi', 'prime_berry', 'squiclean_g', 'pablo_permanent'
 ]
 
 #
