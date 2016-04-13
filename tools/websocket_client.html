@@ -1,0 +1,47 @@
+<!-- very simple WS sample -->
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>WebSocket Sample</title>
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+$(function(){
+    // WebSocket作成
+    var ws = new WebSocket("ws://localhost:9090/ws");
+ 
+    // WebSocket open時のイベントハンドラ登録
+    ws.onopen = function(){
+        $("#log").prepend("&lt;onopen&gt; " + "<br/>");
+    }
+ 
+    // WebSocket message受信時のイベントハンドラ登録
+    ws.onmessage = function(message){
+        $("#log").prepend(message.data + "<br/>");
+    }
+ 
+    // WebSocket error時のイベントハンドラ登録
+    ws.onerror = function(){
+        $("#log").prepend("&lt;onerror&gt; " + "<br/>");
+    }
+ 
+    // WebSocket close時のイベントハンドラ登録
+    ws.onclose = function(){
+        $("#log").prepend("&lt;onclose&gt; " + "<br/>");
+    }
+ 
+    // Windowが閉じられた(例：ブラウザを閉じた)時のイベントを設定
+    $(window).unload(function() {
+        ws.onclose(); // WebSocket close
+    })
+ 
+    // キー入力時のイベントを設定
+    // $("#message").keyup(function(e){
+    //     ws.send($("#message").val()); // WebSocketを使いサーバにメッセージを送信
+    // });
+ 
+})
+</script>
+</head>
+<body><input type="text" id="message" /><div id="log" /></body>
+</html>
