@@ -596,11 +596,11 @@ class StatInk(object):
                 'error': 'Not a JSON response',
             }
 
-        # try:
-        call_plugins_func = \
-            context['engine']['service']['call_plugins_later']
-        # except:
-        #    call_plugins_func = call_plugins_mock
+        try:
+            call_plugins_func = \
+                context['engine']['service']['call_plugins_later']
+        except:
+           call_plugins_func = call_plugins_mock
 
         if error:
             call_plugins_func(
