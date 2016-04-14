@@ -84,7 +84,6 @@ class StatInk(object):
         self.track_objective_enabled = False
         self.track_splatzone_enabled = False
         self.api_key = None
-        self.video_id = None
 
     def on_config_load_from_context(self, context):
         self.on_config_reset(context)
@@ -102,7 +101,6 @@ class StatInk(object):
         self.track_objective_enabled = conf.get('TrackObjective', False)
         self.track_splatzone_enabled = conf.get('TrackSplatzone', False)
         self.api_key = conf.get('APIKEY', '')
-        self.video_id = conf.get('VIDEOID', '')
 
         self.refresh_ui()
         return True
@@ -117,7 +115,6 @@ class StatInk(object):
             'TrackObjective': self.track_objective_enabled,
             'TrackSplatzone': self.track_splatzone_enabled,
             'APIKEY': self.api_key,
-            'VIDEOID': self.video_id,
         }
 
     def on_config_apply(self, context):
@@ -296,7 +293,7 @@ class StatInk(object):
             payload['events'] = list(self.events)
 
         # Video URL
-        if not self.video_id is None:
+        if not ((self.video_id is None) or (self.video_id == '')):
             payload['link_url'] = 'https://www.youtube.com/watch?v=%s' % self.video_id
 
         # ResultJudge
