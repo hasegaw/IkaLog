@@ -142,6 +142,9 @@ class IkaEngine:
             'engine': {
                 'frame': None,
                 'service': {
+                    'call_plugins': self.call_plugins,
+                    'call_plugins_later': self.call_plugins,
+                    # For backward compatibility
                     'callPlugins': self.call_plugins,
                 }
             },
