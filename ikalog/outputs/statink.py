@@ -561,6 +561,8 @@ class StatInk(object):
             timeout=120.0,              # Timeout (in sec)
         )
 
+        # Post the payload
+
         try:
             req = pool.urlopen('POST', self.url_statink_v1_battle,
                                headers=http_headers,
@@ -569,6 +571,23 @@ class StatInk(object):
         except urllib3.exceptions.SSLError as e:
             # Handle incorrect certificate error.
             IkaUtils.dprint('%s: SSLError, value: %s' % (self, e.value))
+
+        # Error detection
+
+        error = False
+        try:
+            statink_response = json.loads(req.data.decode('utf-8'))
+            error = 'error' in statink_response
+            if error:
+                IkaUtils.dprint('%s: API Error occured')
+        except:
+            error = True
+            IkaUtils.dprint('%s: Stat.ink return non-JSON response')
+            statink_response = {
+                'error': 'Not a JSON response',
+            }
+
+        # Debug messages
 
         if self.show_response_enabled or error:
             IkaUtils.dprint('%s: == Response begin ==' % self)
@@ -583,18 +602,7 @@ class StatInk(object):
             )
         )
 
-        error = False
-        try:
-            statink_response = json.loads(req.data.decode('utf-8'))
-            error = 'error' in statink_response
-            if error:
-                IkaUtils.dprint('%s: API Error occured')
-        except:
-            error = True
-            IkaUtils.dprint('%s: Stat.ink return non-JSON response')
-            statink_response = {
-                'error': 'Not a JSON response',
-            }
+        # Trigger a event.
 
         try:
             call_plugins_func = \
