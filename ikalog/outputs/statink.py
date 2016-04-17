@@ -47,6 +47,10 @@ except:
 # IkaLog Output Plugin for Stat.ink
 
 
+def call_plugins_mock(event_name, params=None, debug=False):
+    pass
+
+
 class StatInk(object):
 
     def apply_ui(self):
@@ -84,7 +88,6 @@ class StatInk(object):
         self.track_objective_enabled = False
         self.track_splatzone_enabled = False
         self.api_key = None
-        self.video_id = None
 
     def on_config_load_from_context(self, context):
         self.on_config_reset(context)
@@ -102,7 +105,6 @@ class StatInk(object):
         self.track_objective_enabled = conf.get('TrackObjective', False)
         self.track_splatzone_enabled = conf.get('TrackSplatzone', False)
         self.api_key = conf.get('APIKEY', '')
-        self.video_id = conf.get('VIDEOID', '')
 
         self.refresh_ui()
         return True
@@ -117,7 +119,6 @@ class StatInk(object):
             'TrackObjective': self.track_objective_enabled,
             'TrackSplatzone': self.track_splatzone_enabled,
             'APIKEY': self.api_key,
-            'VIDEOID': self.video_id,
         }
 
     def on_config_apply(self, context):
@@ -296,7 +297,7 @@ class StatInk(object):
             payload['events'] = list(self.events)
 
         # Video URL
-        if not self.video_id is None:
+        if not ((self.video_id is None) or (self.video_id == '')):
             payload['link_url'] = 'https://www.youtube.com/watch?v=%s' % self.video_id
 
         # ResultJudge
@@ -535,7 +536,9 @@ class StatInk(object):
             IkaUtils.dprint('%s: Failed to write msgpack file' % self)
             IkaUtils.dprint(traceback.format_exc())
 
-    def _post_payload_worker(self, payload):
+    def _post_payload_worker(self, context, payload):
+        # This function runs on worker thread.
+
         if self.dry_run == 'server':
             payload['test'] = 'dry_run'
 
@@ -555,6 +558,8 @@ class StatInk(object):
             timeout=120.0,              # Timeout (in sec)
         )
 
+        # Post the payload
+
         try:
             req = pool.urlopen('POST', self.url_statink_v1_battle,
                                headers=http_headers,
@@ -564,10 +569,22 @@ class StatInk(object):
             # Handle incorrect certificate error.
             IkaUtils.dprint('%s: SSLError, value: %s' % (self, e.value))
 
-        statink_reponse = json.loads(req.data.decode('utf-8'))
-        error = 'error' in statink_reponse
-        if error:
-            IkaUtils.dprint('%s: API Error occured')
+        # Error detection
+
+        error = False
+        try:
+            statink_response = json.loads(req.data.decode('utf-8'))
+            error = 'error' in statink_response
+            if error:
+                IkaUtils.dprint('%s: API Error occured')
+        except:
+            error = True
+            IkaUtils.dprint('%s: Stat.ink return non-JSON response')
+            statink_response = {
+                'error': 'Not a JSON response',
+            }
+
+        # Debug messages
 
         if self.show_response_enabled or error:
             IkaUtils.dprint('%s: == Response begin ==' % self)
@@ -582,7 +599,33 @@ class StatInk(object):
             )
         )
 
-    def post_payload(self, payload, api_key=None):
+        # Trigger a event.
+
+        try:
+            call_plugins_func = \
+                context['engine']['service']['call_plugins_later']
+        except:
+           call_plugins_func = call_plugins_mock
+
+        if error:
+            call_plugins_func(
+                'on_output_statink_submission_error',
+                params=statink_response
+            )
+
+        elif statink_response.get('id', 0) == 0:
+            call_plugins_func(
+                'on_output_statink_submission_dryrun',
+                params=statink_response
+            )
+
+        else:
+            call_plugins_func(
+                'on_output_statink_submission_done',
+                params=statink_response
+            )
+
+    def post_payload(self, context, payload, api_key=None):
         if self.dry_run == True:
             IkaUtils.dprint(
                 '%s: Dry-run mode, skipping POST to stat.ink.' % self)
@@ -601,7 +644,7 @@ class StatInk(object):
         payload['apikey'] = api_key
 
         thread = threading.Thread(
-            target=self._post_payload_worker, args=(payload,))
+            target=self._post_payload_worker, args=(context, payload))
         thread.start()
 
     def print_payload(self, payload):
@@ -679,7 +722,7 @@ class StatInk(object):
         if self.debug_writePayloadToFile:
             self.write_payload_to_file(payload)
 
-        self.post_payload(payload)
+        self.post_payload(context, payload)
 
     def on_game_killed(self, context):
         self._add_event(context, {'type': 'killed'})
