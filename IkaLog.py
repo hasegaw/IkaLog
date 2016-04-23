@@ -61,6 +61,8 @@ def get_epoch_time(args, capture):
         return None
 
     if not epoch_time_arg:
+        if isinstance(capture, inputs.CVFile):
+            return capture.get_start_time()
         return None
 
     return time.mktime(time.strptime(epoch_time_arg, "%Y%m%d_%H%M%S"))
