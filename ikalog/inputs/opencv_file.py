@@ -104,6 +104,10 @@ class CVFile(VideoInput):
 
         return frame
 
+    def set_pos_msec(self, pos_msec):
+        """Moves the video position to |pos_msec| in msec."""
+        self.video_capture.set(cv2.CAP_PROP_POS_MSEC, pos_msec)
+
     def __init__(self):
         self.video_capture = None
         super(CVFile, self).__init__()
