@@ -60,7 +60,7 @@ if __name__ == "__main__":
     if isinstance(capture, inputs.CVFile):
         pos_msec = args.get('time_msec') or time_to_msec(args.get('time') or '0:0')
         if pos_msec:
-            capture.video_capture.set(cv2.CAP_PROP_POS_MSEC, pos_msec)
+            capture.set_pos_msec(pos_msec)
 
     engine = IkaEngine(enable_profile=args.get('profile'))
     engine.pause(False)
