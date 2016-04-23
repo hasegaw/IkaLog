@@ -140,6 +140,7 @@ class IkaEngine:
     def create_context(self):
         self.context = {
             'engine': {
+                'epoch_time': None,
                 'frame': None,
                 'service': {
                     'call_plugins': self.call_plugins,
@@ -272,6 +273,9 @@ class IkaEngine:
     def set_capture(self, capture):
         self.capture = capture
         self.context['engine']['input_class'] = self.capture.__class__.__name__
+
+    def set_epoch_time(self, epoch_time):
+        self.context['engine']['epoch_time'] = epoch_time
 
     def set_plugins(self, plugins):
         self.output_plugins = [self]

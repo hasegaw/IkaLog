@@ -27,6 +27,7 @@
 import unittest
 import os.path
 import sys
+import time
 
 # Append the Ikalog root dir to sys.path to import IkaUtils.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -195,6 +196,31 @@ class TestIkaUtils(unittest.TestCase):
         self.assertEqual('<:=',
                          IkaUtils.death_reason2text(unknown_reason,
                                                     unknown='<:='))
+
+
+    def test_get_time(self):
+        mock_context = {'engine': {'epoch_time': None, 'msec': 5000}}
+
+        # epoch_time is None
+        time_before = time.time()
+        time_actual = IkaUtils.getTime(mock_context)
+        time_after = time.time()
+        self.assertTrue(time_before <= time_actual <= time_after)
+
+        # epoch_time is 0
+        mock_context['engine']['epoch_time'] = 0
+        expected_time = (mock_context['engine']['epoch_time'] +
+                         mock_context['engine']['msec'] / 1000.0)
+        self.assertEqual(expected_time, IkaUtils.getTime(mock_context))
+
+        # epoch_time is 2015-05-28 10:00:00, msec is 1 hour
+        mock_context['engine']['epoch_time'] = (
+            time.mktime(time.strptime("20150528_100000", "%Y%m%d_%H%M%S")))
+        mock_context['engine']['msec'] = 60 * 60 * 1000
+        time_actual = IkaUtils.getTime(mock_context)
+        self.assertEqual("20150528_110000",
+                         time.strftime("%Y%m%d_%H%M%S",
+                                       time.localtime(time_actual)))
 
 if __name__ == '__main__':
     unittest.main()
