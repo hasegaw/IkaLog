@@ -23,6 +23,7 @@ import os
 import platform
 import re
 import sys
+import time
 
 import cv2
 import numpy as np
@@ -253,3 +254,12 @@ class IkaUtils(object):
             self.dprint("Screenshot: failed")
             return False
         return True
+
+    @staticmethod
+    def getTime(context):
+        """Returns the current time in sec considering the epoch time."""
+        epoch_time = context['engine']['epoch_time']
+        if epoch_time is None:
+            return time.time()
+        time_sec = context['engine']['msec'] / 1000.0
+        return epoch_time + time_sec
