@@ -30,6 +30,7 @@ import cv2
 import urllib3
 import umsgpack
 
+from datetime import datetime
 from ikalog.constants import fes_rank_titles, stages, weapons, special_weapons
 from ikalog.version import IKALOG_VERSION
 from ikalog.utils import *
@@ -705,6 +706,11 @@ class StatInk(object):
                         (self, self.img_result_detail.shape))
 
     def on_result_judge(self, context):
+        # If self.time_end_at is None, on_game_finish was not called.
+        # So call it here to initialize self.time_end_at.
+        if not self.time_end_at:
+            self.on_game_finish(context)
+
         self.img_judge = context['game'].get('image_judge', None)
         IkaUtils.dprint('%s: Gathered img_judge(%s)' %
                         (self, self.img_judge.shape))
