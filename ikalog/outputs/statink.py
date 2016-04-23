@@ -661,7 +661,7 @@ class StatInk(object):
         pprint.pprint(payload)
 
     def on_game_go_sign(self, context):
-        self.time_start_at = int(time.time())
+        self.time_start_at = int(IkaUtils.getTime(context))
         self.time_end_at = None
         self.events = []
         self.time_last_score_msec = None
@@ -679,7 +679,7 @@ class StatInk(object):
         self.on_game_go_sign(context)
 
     def on_game_finish(self, context):
-        self.time_end_at = int(time.time())
+        self.time_end_at = int(IkaUtils.getTime(context))
         if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
             duration_msec = context['engine']['msec'] - self.time_start_at_msec
 
