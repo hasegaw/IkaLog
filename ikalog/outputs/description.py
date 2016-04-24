@@ -221,16 +221,25 @@ class Description(object):
                 else:
                     players_list.append('負けチーム')
 
-            kd = '%2dk%2dd' % (player['kills'], player['deaths'])
-            # weapon = IkaUtils.death_reason2text(player['weapon'])
-            weapon = normalize_name(
-                IkaUtils.death_reason2text(player['weapon']))
+            result_list = []
+            # name
             if player['me']:
-                name = '[%d]' % index
+                result_list.append('[%d]' % index)
             else:
-                name = ' %d ' % index
-            result = '%s %-2s %s %s' % (name, player['udemae_pre'], kd, weapon)
-            players_list.append(result)
+                result_list.append(' %d ' % index)
+
+            # rank (udemae) for ranked battle (gachi match).
+            if 'udemae_pre' in player:
+                result_list.append('%-2s' % player['udemae_pre'])
+
+            # kd
+            result_list.append('%2dk%2dd' % (player['kills'], player['deaths']))
+
+            # weapon
+            result_list.append(normalize_name(
+                IkaUtils.death_reason2text(player['weapon'])))
+
+            players_list.append(' '.join(result_list))
 
             if index == 4:
                 index = 1
