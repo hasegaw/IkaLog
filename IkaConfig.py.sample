@@ -27,34 +27,35 @@ class IkaConfig:
     def config(self, args):
         # 使いたい入力を設定
         source = None
+        input_type = (args.get('input') or 'YOUR_DEFEAFULT')
 
         # パターン1: Windows 上でキャプチャデバイスを利用(DirectShow)
-        # source = inputs.DirectShow()
-        # source.select_device(THE_DEVICE_ID)
+        if input_type == 'DirectShow':
+            source = inputs.DirectShow()
+            source.select_device(THE_DEVICE_ID)
 
         # パターン2: OpenCV VideoCapture 経由でキャプチャデバイスを利用
-        # source = inputs.CVCapture()
-        # source.select_device(THE_DEVICE_ID)
+        if input_type == 'CVCapture':
+            source = inputs.CVCapture()
+            source.select_device(THE_DEVICE_ID)
 
         # パターン3: Windows 上でスクリーンキャプチャを利用
         # 起動時は全画面を取り込み。 C キー押下で画面内にある WiiU 画面を検出
-        # source = inputs.ScreenCapture()
+        if input_type == 'ScreenCapture':
+            source = inputs.ScreenCapture()
 
         # パターン4: Mac 上で AVFoundation を介してキャプチャデバイスを利用
         # 現在 UltraStudio Mini Recorder のみ動作確認
-        # source = inputs.AVFoundationCapture()
-        # source.select_source(THE_DEVICE_ID)
+        if input_type == 'AVFoundationCapture':
+            source = inputs.AVFoundationCapture()
+            source.select_source(THE_DEVICE_ID)
 
         # パターン5: OpenCV のビデオファイル読み込み機能を利用する
         # OpenCV が FFMPEG に対応していること
         # 直接ファイルを指定するか、コマンドラインから --input_file で指定可能
-        # source = inputs.CVFile()
-        # source.select_source(name='video.avi')
-        # source.set_frame_rate(10)
-
-        if args.get('input_file'):
+        if input_type == 'CVFile' or args.get('input_file'):
             source = inputs.CVFile()
-            source.select_source(name=args['input_file'])
+            source.select_source(name=args.get('input_file', 'video.avi'))
             source.set_frame_rate(10)
 
         # パターン6: OpenCV の GStreamerパイプラインからの読み込み機能を利用する
