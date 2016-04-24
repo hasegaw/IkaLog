@@ -107,6 +107,9 @@ class CVFile(VideoInput):
 
     def get_start_time(self):
         """Returns the timestamp of the beginning of this video in sec."""
+        if not self._source_file:
+            return None
+
         last_modified_time = os.stat(self._source_file).st_mtime
 
         frames = self.video_capture.get(cv2.CAP_PROP_FRAME_COUNT)
@@ -121,6 +124,7 @@ class CVFile(VideoInput):
 
     def __init__(self):
         self.video_capture = None
+        self._source_file = None
         super(CVFile, self).__init__()
 
     # backward compatibility
