@@ -882,8 +882,8 @@ class ResultDetail(StatefulScene):
 
         self.load_akaze_model()
         self._client_local = APIClient(local_mode=True)
-        # APIClient(local_mode=False, base_uri='http://localhost:8000')
-        self._client_remote = None
+        self._client_remote =  APIClient(local_mode=False, base_uri='http://localhost:8000')
+#        self._client_remote = None
 
 if __name__ == "__main__":
     ResultDetail.main_func()

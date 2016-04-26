@@ -95,10 +95,6 @@ def process_file(filename):
         'players': [],
     }
 
-    me = IkaUtils.getMyEntryFromContext(context)
-    if me.get('weapon', None) in constants.weapons:
-        payload['weapon'] = me.get('weapon')
-
     for e in context['game']['players']:
         player = {}
         player['team'] = 'my' if (e['team'] == me['team']) else 'his'
@@ -113,7 +109,12 @@ def process_file(filename):
                 ['int', 'death', 'deaths'],
                 ['int', 'level', 'rank'],
                 ['int', 'point', 'score'],
+                ['str_lower', 'rank', 'udemae_pre'],
             ], player, e)
+
+        # Validation
+        if not player['rank'] in constants.udemae_strings:
+            del player['rank']
 
     return payload
 
