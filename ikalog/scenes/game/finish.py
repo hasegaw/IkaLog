@@ -39,7 +39,7 @@ class GameFinish(Scene):
         if self.is_another_scene_matched(context, 'GameTimerIcon'):
             return False
 
-        if not self.find_scene_object('GameTimerIcon').matched_in(context, 10 * 1000):
+        if not self.find_scene_object('GameTimerIcon').matched_in(context, 20 * 1000):
             return False
 
         frame = context['engine']['frame']
