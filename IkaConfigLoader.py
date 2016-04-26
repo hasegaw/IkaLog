@@ -23,6 +23,7 @@ import IkaConfig
 from ikalog import inputs
 from ikalog import outputs
 
+
 def _init_source(opts):
     # 使いたい入力を設定
     source = None
@@ -88,6 +89,7 @@ def _init_source(opts):
 
     return source
 
+
 def _init_outputs(opts):
     # 使いたいプラグインを適宜設定
     OutputPlugins = []
@@ -132,7 +134,7 @@ def _init_outputs(opts):
     # StatInk: stat.ink (スプラトゥーンプレイ実績投稿サイト)
     if 'StatInk' in output_plugins:
         if opts.get('video_id'):
-              output_args['StatInk']['video_id'] = opts['video_id']
+            output_args['StatInk']['video_id'] = opts['video_id']
 
         OutputPlugins.append(outputs.StatInk(**output_args['StatInk']))
 
@@ -150,7 +152,7 @@ def _init_outputs(opts):
     # YouTube 用、動画の概要。input.CVFile と組み合わせた使用を想定。
     # ビデオ内に複数のゲームがある場合には未検証。
     if (('Description' in output_plugins) or
-        opts.get('output_description')):
+            opts.get('output_description')):
 
         if opts.get('output_description'):
             output_args['Description']['output_filepath'] = (
@@ -200,7 +202,6 @@ def config(opts):
     if 'frame_rate' in source_args:
         source.set_frame_rate(source_args['frame_rate'])
 
-
     # 使いたいプラグインを適宜設定
     OutputPlugins = _init_outputs(opts)
 
@@ -208,7 +209,6 @@ def config(opts):
     OutputPlugins.append(source)
 
     return [source, OutputPlugins]
-
 
 
 if __name__ == '__main__':
