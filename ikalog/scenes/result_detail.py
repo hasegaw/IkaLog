@@ -269,16 +269,16 @@ class ResultDetail(StatefulScene):
                 if best_match[1] < score:
                     best_match = (img, score, ox, oy)
 
-                if 1:
+                if 0:
                     l.append({
-                        'image': img,
+                        'frame': img,
                         'score': score,
                         'desc': 'Offset (%s, %s)' % (ox, oy),
                     })
 
         if best_match[2] != 0 or best_match[3] != 0:
             l.append({
-                'image': best_match[0],
+                'frame': best_match[0],
                 'score': score,
                 'desc': 'Offset (%s, %s)' % (best_match[2], best_match[3]),
                 'acceptable': True,
