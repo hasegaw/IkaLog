@@ -178,6 +178,9 @@ def _init_outputs(opts):
 
 
 def config(opts):
+    # Checks if IkaConfig.py is an old version or not by checking the
+    # existance of the IkaConfig class. If it is an old version,
+    # we just use it to keep the backward compatibility.
     if hasattr(IkaConfig, 'IkaConfig'):
         return IkaConfig.IkaConfig().config(opts)
 
