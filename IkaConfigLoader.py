@@ -40,13 +40,13 @@ def _init_source(opts):
     # パターン1: Windows 上でキャプチャデバイスを利用(DirectShow)
     if input_type == 'DirectShow':
         source = inputs.DirectShow()
-        source.select_device(input_args.get('device'))
+        source.select_source(input_args.get('device'))
         return source
 
     # パターン2: OpenCV VideoCapture 経由でキャプチャデバイスを利用
     if input_type == 'CVCapture':
         source = inputs.CVCapture()
-        source.select_device(input_args.get('device'))
+        source.select_source(input_args.get('device'))
         return source
 
     # パターン3: Windows 上でスクリーンキャプチャを利用
