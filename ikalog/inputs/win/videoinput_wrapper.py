@@ -94,7 +94,8 @@ class VideoInputWrapper(object):
         return num_devices.value
 
     def get_device_name(self, index):
-        friendly_name = self.dll.VI_GetDeviceName(index)
+        friendly_name_b = self.dll.VI_GetDeviceName(index)
+        friendly_name = friendly_name_b.decode('ascii', errors='replace')
         return friendly_name
 
     def get_device_list(self):
@@ -102,7 +103,7 @@ class VideoInputWrapper(object):
         device_list = []
 
         for n in range(num_devices):
-            device_list.append(self.get_device_name(n).decode('utf-8'))
+            device_list.append(self.get_device_name(n))
 
         return device_list
 
