@@ -523,10 +523,10 @@ class StatInk(object):
         payload['agent_variables'] = self.composite_agent_variables(context)
         payload['agent_custom'] = self.composite_agent_custom(context)
 
-        for field in payload.keys():
-            if payload[field] is None:
-                IkaUtils.dprint('%s: [FIXME] payload has blank entry %s:%s' % (
-                    self, field, payload[field]))
+        # Remove any 'None' data
+        for key, val in payload.items():
+            if val is None:
+                del payload[key]
 
         return payload
 
