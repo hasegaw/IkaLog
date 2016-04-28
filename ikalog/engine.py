@@ -174,8 +174,17 @@ class IkaEngine:
     def process_scene(self, scene):
         context = self.context
 
-        scene.new_frame(context)
-        r = scene.match(context)
+        try:
+            scene.new_frame(context)
+            scene.match(context)
+        except:
+            if self._abort_at_scene_exception:
+                raise
+
+            self.dprint('%s raised a exception >>>>' %
+                (scene.__class__.__name__))
+            self.dprint(traceback.format_exc())
+            self.dprint('<<<<<')
 
     def find_scene_object(self, scene_class_name):
         for scene in self.scenes:
@@ -303,7 +312,7 @@ class IkaEngine:
             scenes.Blank(self),
         ]
 
-    def __init__(self, enable_profile=False):
+    def __init__(self, enable_profile=False, abort_at_scene_exception=False):
         self._initialize_scenes()
 
         self.output_plugins = [self]
@@ -315,5 +324,6 @@ class IkaEngine:
 
         self.close_session_at_eof = False
         self._enable_profile = enable_profile
+        self._abort_at_scene_exception = abort_at_scene_exception
 
         self.create_context()
