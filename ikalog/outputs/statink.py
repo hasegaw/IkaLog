@@ -235,6 +235,20 @@ class StatInk(object):
             'value': event_sub_type,
         })
 
+    def composite_agent_custom(self, context):
+        custom = {}
+
+        if 'exceptions_log' in context['engine']:
+            if len(context['engine']['exceptions_log']) > 0:
+                custom['exceptions'] = \
+                    context['engine']['exceptions_log'].copy()
+
+        if len(custom) == 0:
+            return None
+
+        return json.dumps(custom, separators=(',', ':'))
+
+
     def composite_agent_variables(self, context):
         variables = {}
 
@@ -507,6 +521,7 @@ class StatInk(object):
         payload['agent_version'] = IKALOG_VERSION
 
         payload['agent_variables'] = self.composite_agent_variables(context)
+        payload['agent_custom'] = self.composite_agent_custom(context)
 
         for field in payload.keys():
             if payload[field] is None:
