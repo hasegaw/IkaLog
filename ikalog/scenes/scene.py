@@ -150,7 +150,6 @@ class Scene(object):
 
     def __init__(self, engine, debug=False):
         self._engine = engine
-        self.exclusive_scene = False
 
         if (engine is not None) and hasattr(engine, 'call_plugins'):
             self._call_plugins = engine.call_plugins
@@ -158,6 +157,7 @@ class Scene(object):
         else:
             self._call_plugins = self._call_plugins_nop
             self._call_plugins_later = self._call_plugins_nop
+
         self._init_scene()
 
         self._prof_time_enter = False

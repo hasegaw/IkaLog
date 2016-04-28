@@ -176,18 +176,6 @@ class IkaEngine:
 
         scene.new_frame(context)
         r = scene.match(context)
-        if r and scene.exclusive_scene:
-            print('%s: entering %s' % (self, scene.__class__.__name__))
-            while r and (not self._stop):
-                frame, t = self.read_next_frame()
-                if frame is None:
-                    continue
-                context['engine']['frame'] = frame
-                scene.new_frame(context)
-                r = scene.match(context)
-                if r:
-                    scene.analyze(context)
-            print('%s: escaping %s' % (self, scene.__class__.__name__))
 
     def find_scene_object(self, scene_class_name):
         for scene in self.scenes:
