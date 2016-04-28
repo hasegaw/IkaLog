@@ -31,7 +31,7 @@ from ikalog.utils import *
 class ObjectiveTracker(Scene):
     # 720p サイズでの値
     tower_width = 580
-    tower_left = 1280 / 2 - tower_width / 2
+    tower_left = int(1280 / 2 - tower_width / 2)
     tower_top = 78
     tower_height = 88
 
