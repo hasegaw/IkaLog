@@ -244,6 +244,19 @@ class StatInk(object):
         variables['primary_language'] = \
             Localization.get_game_languages()[0]
 
+        # variables['exceptions']
+        #
+        # e.g. "InklingsTracker(10) GameStart(4) ..."
+        if 'exceptions_log' in context['engine']:
+            if len(context['engine']['exceptions_log']) > 0:
+
+                exceptions = context['engine']['exceptions_log'].items()
+                # FIXME: Sorting
+                s = []
+                for e in exceptions:
+                    s.append('%s(%d)' % (e[0], e[1]['count']))
+                variables['exceptions'] = ', '.join(s)
+
         return variables
 
     def composite_payload(self, context):
@@ -551,7 +564,7 @@ class StatInk(object):
             call_plugins_func = \
                 context['engine']['service']['call_plugins_later']
         except:
-           call_plugins_func = call_plugins_mock
+            call_plugins_func = call_plugins_mock
 
         if error:
             call_plugins_func(
