@@ -537,12 +537,7 @@ class StatInk(object):
             IkaUtils.dprint('%s: Failed to write msgpack file' % self)
             IkaUtils.dprint(traceback.format_exc())
 
-    def _post_payload_worker(self, context, payload):
-        # This function runs on worker thread.
-
-        if self.dry_run == 'server':
-            payload['test'] = 'dry_run'
-
+    def _post_payload_internal(self, url, payload, show_response):
         mp_payload_bytes = umsgpack.packb(payload)
         mp_payload = ''.join(map(chr, mp_payload_bytes))
 
@@ -550,7 +545,7 @@ class StatInk(object):
             'Content-Type': 'application/x-msgpack',
         }
 
-        IkaUtils.dprint('%s: POST %s' % (self, self.url_statink_v1_battle))
+        IkaUtils.dprint('%s: POST %s' % (self, url))
         time_post_start = time.time()
 
         pool = urllib3.PoolManager(
@@ -562,7 +557,7 @@ class StatInk(object):
         # Post the payload
 
         try:
-            req = pool.urlopen('POST', self.url_statink_v1_battle,
+            req = pool.urlopen('POST', url,
                                headers=http_headers,
                                body=mp_payload,
                                )
@@ -587,7 +582,7 @@ class StatInk(object):
 
         # Debug messages
 
-        if self.show_response_enabled or error:
+        if show_response or error:
             IkaUtils.dprint('%s: == Response begin ==' % self)
             print(req.data.decode('utf-8'))
             IkaUtils.dprint('%s: == Response end ===' % self)
@@ -599,6 +594,17 @@ class StatInk(object):
                 int((time.time() - time_post_start) * 10) / 10,
             )
         )
+
+        return statink_response
+
+    def _post_payload_worker(self, context, payload):
+        # This function runs on worker thread.
+
+        if self.dry_run == 'server':
+            payload['test'] = 'dry_run'
+
+        statink_response = self._post_payload_internal(
+            self.url_statink_v1_battle, payload, self.show_response_enabled)
 
         # Trigger a event.
 
