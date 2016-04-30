@@ -551,14 +551,14 @@ class StatInk(object):
             IkaUtils.dprint('%s: Failed to write file' % self)
             IkaUtils.dprint(traceback.format_exc())
 
-    def write_payload_to_file(self, payload, basename=None):
-        if basename is None:
+    def write_payload_to_file(self, payload, filename=None):
+        if filename is None:
             t = datetime.now().strftime("%Y%m%d_%H%M")
-            basename = os.path.join('/tmp', 'statink_%s' % t)
+            filename = os.path.join('/tmp', 'statink_%s.msgpack' % t)
 
         try:
-            f = open(basename + '.msgpack', 'w')
-            f.write(''.join(map(chr, umsgpack.packb(payload))))
+            f = open(filename, 'wb')
+            umsgpack.pack(payload, f)
             f.close()
         except:
             IkaUtils.dprint('%s: Failed to write msgpack file' % self)
