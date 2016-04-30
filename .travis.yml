@@ -1,15 +1,19 @@
 language: python
 python:
- - "3.4"
-
+- '3.4'
 before_install:
- - sudo apt-get update
- - sudo apt-get install build-essential cmake git libgtk2.0-dev pkg-config libdc1394-22 libdc1394-22-dev libjpeg-dev libpng12-dev libtiff4-dev libjasper-dev libavcodec-dev libavformat-dev libswscale-dev libxine-dev libv4l-dev libtbb-dev libqt4-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev libblas-dev libatlas-dev libatlas-base-dev x264 v4l-utils unzip wget
-
+- sudo apt-get update
+- sudo apt-get install build-essential cmake git libgtk2.0-dev pkg-config libdc1394-22
+  libdc1394-22-dev libjpeg-dev libpng12-dev libtiff4-dev libjasper-dev libavcodec-dev
+  libavformat-dev libswscale-dev libxine-dev libv4l-dev libtbb-dev libqt4-dev libfaac-dev
+  libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev
+  libxvidcore-dev libblas-dev libatlas-dev libatlas-base-dev x264 v4l-utils unzip
+  wget
 install:
- - pip install --pre -r test/ci/pip-install.txt
- - bash -x test/ci/opencv3_setup.sh
-
+- pip install --pre -r test/ci/pip-install.txt
+- bash -x test/ci/opencv3_setup.sh
 script:
- - bash -x test/ci/download.sh
- - bash -x test/ci/run_tests.sh
+- bash -x test/ci/download.sh
+- bash -x test/ci/run_tests.sh
+dd:
+  secure: B9cnex9WhYPBvjsM0yHj3w7FQCQ76k0Fpl7qDU9oJS1Bt3cxHkREECXaYkTkJ1CQr1YXVYrO0/wkd6jGz+9W/bzFr+4W4Uy9JfwNnRdq9xE7gUNMKOo/+pZHrlI6zfXeGeh+1D2Qz7/JNWJjlKAzepAy69YuzMOjbU+P0Dv3cLAcJiga5znHUQkTsq72sqDX/faQbMIk7H/qdrP0T3NhmNPoHKYZIQ1wSUOqAGRkuHLV//0RkZ9j1+UqQwPX/dcy9ueicdpBv+QEYuc6b45W4puclcJLVIw4oHmuquK2pbaNWVVhKpBuJOhVm3ot5YbsFnO7SWB17WwSxzvW1MPeIjM9xT2FiI3Zb2rwKxnuPSA19c8Ef4sF/R8UNxMd8WxSaDRM4DtRtwr/cb9blStwCoMH22r5n5i6w86JnnX/27W/jNsU+qpJf7wagFAqkM7ZlG41xBH9YNzjFntHdoU34BilzBvjg9OZBFl36MPQeEaDTZ0pdwNfavOoRSiWDlAexA/VlybPXXOzPxNm9ARjaJFexbfN9PIovk4brRw0pDw4X54IKnFPAGfjcCBAZ8iQaJvCOGPhnDy5EC6NzP3JEhkDiJspN355y3aIpYGuj2QyjA7HQJFY5RNWLAYpKqDMBSmJvmRxl2Ymtr0Clq76OPqBt3LGuY+A2Ht8myaMzRI=
