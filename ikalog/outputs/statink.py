@@ -524,7 +524,7 @@ class StatInk(object):
         payload['agent_custom'] = self.composite_agent_custom(context)
 
         # Remove any 'None' data
-        for key, val in payload.items():
+        for key, val in list(payload.items()):
             if val is None:
                 del payload[key]
 
