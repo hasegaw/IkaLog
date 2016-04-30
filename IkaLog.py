@@ -44,6 +44,10 @@ def get_args():
     parser.add_argument('--input_file', '-f', dest='input_file', type=str)
     parser.add_argument('--output_description', '--desc',
                         dest='output_description', type=str)
+    parser.add_argument('--statink_payload',
+                        dest='statink_payload', type=str,
+                        help='Payload file to stat.ink. '
+                        'If this is specified, the data is not uploaded.')
     parser.add_argument('--profile', dest='profile', action='store_true',
                         default=False)
     parser.add_argument('--time', '-t', dest='time', type=str)

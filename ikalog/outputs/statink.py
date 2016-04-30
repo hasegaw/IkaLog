@@ -605,6 +605,12 @@ class StatInk(object):
                 '%s: Dry-run mode, skipping POST to stat.ink.' % self)
             return
 
+        if self.payload_file:
+            IkaUtils.dprint(
+                '%s: payload_file is specified to %s, '
+                'skipping POST to stat.ink.' % (self, self.payload_file))
+            return
+
         if api_key is None:
             api_key = self.api_key
 
@@ -692,8 +698,8 @@ class StatInk(object):
 
         self.print_payload(payload)
 
-        if self.debug_writePayloadToFile:
-            self.write_payload_to_file(payload)
+        if self.debug_writePayloadToFile or self.payload_file:
+            self.write_payload_to_file(payload, filename=self.payload_file)
 
         self.post_payload(context, payload)
 
@@ -846,7 +852,11 @@ class StatInk(object):
     def on_game_ranked_they_lead(self, context):
         self._add_ranked_battle_event(context, 'they_lead')
 
-    def __init__(self, api_key=None, track_objective=False, track_splatzone=False, track_inklings=False, track_special_gauge=False, track_special_weapon=False, debug=False, dry_run=False, url='https://stat.ink', video_id=None):
+    def __init__(self, api_key=None, track_objective=False,
+                 track_splatzone=False, track_inklings=False,
+                 track_special_gauge=False, track_special_weapon=False,
+                 debug=False, dry_run=False, url='https://stat.ink',
+                 video_id=None, payload_file=None):
         self.enabled = not (api_key is None)
         self.api_key = api_key
         self.dry_run = dry_run
@@ -875,6 +885,7 @@ class StatInk(object):
         self.url_statink_v1_battle = '%s/api/v1/battle' % url
 
         self.video_id = video_id
+        self.payload_file = payload_file
 
 if __name__ == "__main__":
     # main として呼ばれた場合
