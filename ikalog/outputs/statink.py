@@ -30,7 +30,7 @@ import umsgpack
 
 from datetime import datetime
 from ikalog.constants import fes_rank_titles, stages, weapons, special_weapons
-from ikalog.outputs.statink_uploader import UploadToStatInk
+from ikalog.utils.statink_uploader import UploadToStatInk
 from ikalog.version import IKALOG_VERSION
 from ikalog.utils import *
 
