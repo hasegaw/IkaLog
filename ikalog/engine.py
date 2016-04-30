@@ -22,6 +22,7 @@ from __future__ import print_function
 
 import copy
 import cv2
+import pprint
 import sys
 import time
 import traceback
@@ -35,6 +36,8 @@ from . import scenes
 
 class IkaEngine:
 
+    # Profiling
+
     def _profile_dump_scenes(self):
         for scene in self.scenes:
             print('%4.3fs %s' % (scene._prof_time_took, scene))
@@ -47,6 +50,32 @@ class IkaEngine:
 
     def disble_profile(self):
         self._enable_profile = False
+
+    # Exception Logging
+
+    def _exception_log_init(self, context):
+        context['engine']['exceptions_log'] = {}
+
+    def _exception_log_dump(self, context):
+        if not 'exceptions_log' in context['engine']:
+            self._exception_log_init(context)
+
+        if len(context['engine']['exceptions_log']) > 0:
+            pprint.pprint(context['engine']['exceptions_log'])
+
+    def _exception_log_append(self, context, name, text):
+        if not 'exceptions_log' in context['engine']:
+            self._exception_log_init(context)
+
+        d = context['engine']['exceptions_log']
+
+        count = d.get(name, {'count': 0})['count']
+        d[name] = {
+            'count': count + 1,
+            'text': text,
+        }
+
+    #
 
     def on_game_individual_result(self, context):
         self.session_close_wdt = context['engine']['msec'] + (20 * 1000)
@@ -136,6 +165,7 @@ class IkaEngine:
             'towerTrack': [],
         }
         self.call_plugins('on_game_reset')
+        self._exception_log_init(self.context)
 
     def create_context(self):
         self.context = {
@@ -147,7 +177,9 @@ class IkaEngine:
                     'call_plugins_later': self.call_plugins,
                     # For backward compatibility
                     'callPlugins': self.call_plugins,
-                }
+                },
+                'exceptions_log': {
+                },
             },
             'scenes': {
             },
@@ -174,20 +206,21 @@ class IkaEngine:
     def process_scene(self, scene):
         context = self.context
 
-        scene.new_frame(context)
-        r = scene.match(context)
-        if r and scene.exclusive_scene:
-            print('%s: entering %s' % (self, scene.__class__.__name__))
-            while r and (not self._stop):
-                frame, t = self.read_next_frame()
-                if frame is None:
-                    continue
-                context['engine']['frame'] = frame
-                scene.new_frame(context)
-                r = scene.match(context)
-                if r:
-                    scene.analyze(context)
-            print('%s: escaping %s' % (self, scene.__class__.__name__))
+        try:
+            scene.new_frame(context)
+            scene.match(context)
+        except:
+            if self._abort_at_scene_exception:
+                raise
+
+            scene_name = scene.__class__.__name__
+            desc = traceback.format_exc()
+
+            self.dprint('%s raised a exception >>>>' % scene_name)
+            self.dprint(desc)
+            self.dprint('<<<<<')
+
+            self._exception_log_append(context, scene_name, desc)
 
     def find_scene_object(self, scene_class_name):
         for scene in self.scenes:
@@ -270,6 +303,9 @@ class IkaEngine:
             if self._enable_profile:
                 self._profile_dump()
 
+            if 1:
+                self._exception_log_dump(self.context)
+
     def set_capture(self, capture):
         self.capture = capture
         self.context['engine']['input_class'] = self.capture.__class__.__name__
@@ -315,7 +351,7 @@ class IkaEngine:
             scenes.Blank(self),
         ]
 
-    def __init__(self, enable_profile=False):
+    def __init__(self, enable_profile=False, abort_at_scene_exception=False):
         self._initialize_scenes()
 
         self.output_plugins = [self]
@@ -327,5 +363,6 @@ class IkaEngine:
 
         self.close_session_at_eof = False
         self._enable_profile = enable_profile
+        self._abort_at_scene_exception = abort_at_scene_exception
 
         self.create_context()

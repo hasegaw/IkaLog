@@ -235,6 +235,20 @@ class StatInk(object):
             'value': event_sub_type,
         })
 
+    def composite_agent_custom(self, context):
+        custom = {}
+
+        if 'exceptions_log' in context['engine']:
+            if len(context['engine']['exceptions_log']) > 0:
+                custom['exceptions'] = \
+                    context['engine']['exceptions_log'].copy()
+
+        if len(custom) == 0:
+            return None
+
+        return json.dumps(custom, separators=(',', ':'))
+
+
     def composite_agent_variables(self, context):
         variables = {}
 
@@ -243,6 +257,19 @@ class StatInk(object):
 
         variables['primary_language'] = \
             Localization.get_game_languages()[0]
+
+        # variables['exceptions']
+        #
+        # e.g. "InklingsTracker(10) GameStart(4) ..."
+        if 'exceptions_log' in context['engine']:
+            if len(context['engine']['exceptions_log']) > 0:
+
+                exceptions = context['engine']['exceptions_log'].items()
+                # FIXME: Sorting
+                s = []
+                for e in exceptions:
+                    s.append('%s(%d)' % (e[0], e[1]['count']))
+                variables['exceptions'] = ', '.join(s)
 
         return variables
 
@@ -494,11 +521,12 @@ class StatInk(object):
         payload['agent_version'] = IKALOG_VERSION
 
         payload['agent_variables'] = self.composite_agent_variables(context)
+        payload['agent_custom'] = self.composite_agent_custom(context)
 
-        for field in payload.keys():
-            if payload[field] is None:
-                IkaUtils.dprint('%s: [FIXME] payload has blank entry %s:%s' % (
-                    self, field, payload[field]))
+        # Remove any 'None' data
+        for key, val in payload.items():
+            if val is None:
+                del payload[key]
 
         return payload
 
@@ -551,7 +579,7 @@ class StatInk(object):
             call_plugins_func = \
                 context['engine']['service']['call_plugins_later']
         except:
-           call_plugins_func = call_plugins_mock
+            call_plugins_func = call_plugins_mock
 
         if error:
             call_plugins_func(
