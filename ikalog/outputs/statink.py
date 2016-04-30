@@ -18,7 +18,6 @@
 #  limitations under the License.
 #
 
-import json
 import os
 import pprint
 import threading
@@ -27,11 +26,11 @@ import traceback
 import uuid
 
 import cv2
-import urllib3
 import umsgpack
 
 from datetime import datetime
 from ikalog.constants import fes_rank_titles, stages, weapons, special_weapons
+from ikalog.outputs.statink_uploader import UploadToStatInk
 from ikalog.version import IKALOG_VERSION
 from ikalog.utils import *
 
@@ -537,74 +536,14 @@ class StatInk(object):
             IkaUtils.dprint('%s: Failed to write msgpack file' % self)
             IkaUtils.dprint(traceback.format_exc())
 
-    def _post_payload_internal(self, url, payload, show_response):
-        mp_payload_bytes = umsgpack.packb(payload)
-        mp_payload = ''.join(map(chr, mp_payload_bytes))
-
-        http_headers = {
-            'Content-Type': 'application/x-msgpack',
-        }
-
-        IkaUtils.dprint('%s: POST %s' % (self, url))
-        time_post_start = time.time()
-
-        pool = urllib3.PoolManager(
-            cert_reqs='CERT_REQUIRED',  # Force certificate check
-            ca_certs=Certifi.where(),   # Path to the Certifi bundle.
-            timeout=120.0,              # Timeout (in sec)
-        )
-
-        # Post the payload
-
-        try:
-            req = pool.urlopen('POST', url,
-                               headers=http_headers,
-                               body=mp_payload,
-                               )
-        except urllib3.exceptions.SSLError as e:
-            # Handle incorrect certificate error.
-            IkaUtils.dprint('%s: SSLError, value: %s' % (self, e.value))
-
-        # Error detection
-
-        error = False
-        try:
-            statink_response = json.loads(req.data.decode('utf-8'))
-            error = 'error' in statink_response
-            if error:
-                IkaUtils.dprint('%s: API Error occured')
-        except:
-            error = True
-            IkaUtils.dprint('%s: Stat.ink return non-JSON response')
-            statink_response = {
-                'error': 'Not a JSON response',
-            }
-
-        # Debug messages
-
-        if show_response or error:
-            IkaUtils.dprint('%s: == Response begin ==' % self)
-            print(req.data.decode('utf-8'))
-            IkaUtils.dprint('%s: == Response end ===' % self)
-
-        IkaUtils.dprint(
-            '%s: POST Done. %d bytes in %f second(s).' % (
-                self,
-                len(mp_payload),
-                int((time.time() - time_post_start) * 10) / 10,
-            )
-        )
-
-        return statink_response
-
-    def _post_payload_worker(self, context, payload):
+    def _post_payload_worker(self, context, payload, api_key):
         # This function runs on worker thread.
 
-        if self.dry_run == 'server':
-            payload['test'] = 'dry_run'
-
-        statink_response = self._post_payload_internal(
-            self.url_statink_v1_battle, payload, self.show_response_enabled)
+        error, statink_response = UploadToStatInk(payload,
+                                                  self.url_statink_v1_battle,
+                                                  api_key,
+                                                  self.show_response_enabled,
+                                                  (self.dry_run == 'server'))
 
         # Trigger a event.
 
@@ -644,14 +583,8 @@ class StatInk(object):
         if api_key is None:
             raise('No API key specified')
 
-        # Payload data will be modified, so we copy it.
-        # It is not deep copy, so only dict object is
-        # duplicated.
-        payload = payload.copy()
-        payload['apikey'] = api_key
-
         thread = threading.Thread(
-            target=self._post_payload_worker, args=(context, payload))
+            target=self._post_payload_worker, args=(context, payload, api_key))
         thread.start()
 
     def print_payload(self, payload):
