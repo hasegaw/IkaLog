@@ -24,9 +24,10 @@ Localization.print_language_settings()
 import argparse
 import signal
 import time
+from ikalog import inputs
 from ikalog.engine import *
-from IkaConfig import *
 from ikalog.utils import *
+from ikalog.utils import config_loader
 
 
 
@@ -74,7 +75,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
 
     args = get_args()
-    capture, OutputPlugins = IkaConfig().config(args)
+    capture, OutputPlugins = config_loader.config(args)
 
     if isinstance(capture, inputs.CVFile):
         pos_msec = args.get('time_msec') or time_to_msec(args.get('time') or '0:0')
