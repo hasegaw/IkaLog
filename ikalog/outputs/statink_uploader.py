@@ -25,9 +25,6 @@ import time
 import umsgpack
 import urllib3
 
-# Append the Ikalog root dir to sys.path to import IkaUtils.
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-import IkaConfig
 from ikalog.utils import *
 
 
