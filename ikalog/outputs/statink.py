@@ -568,8 +568,8 @@ class StatInk(object):
         # This function runs on worker thread.
 
         error, statink_response = UploadToStatInk(payload,
-                                                  self.url_statink_v1_battle,
                                                   api_key,
+                                                  self.url_statink_v1_battle,
                                                   self.show_response_enabled,
                                                   (self.dry_run == 'server'))
 

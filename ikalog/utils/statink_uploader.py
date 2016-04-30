@@ -28,9 +28,11 @@ import urllib3
 from ikalog.utils import *
 
 
-def UploadToStatInk(payload, url, api_key, video_id=None,
+def UploadToStatInk(payload, api_key, url=None, video_id=None,
                     show_response=False, dry_run=False):
     name = 'UploadToStatInk'
+    if not url:
+        url = 'https://stat.ink/api/v1/battle'
 
     # Payload data will be modified, so we copy it.
     # It is not deep copy, so only dict object is duplicated.
