@@ -135,6 +135,8 @@ def _init_outputs(opts):
     if 'StatInk' in output_plugins:
         if opts.get('video_id'):
             output_args['StatInk']['video_id'] = opts['video_id']
+        if opts.get('statink_payload'):
+            output_args['StatInk']['payload_file'] = opts['statink_payload']
 
         OutputPlugins.append(outputs.StatInk(**output_args['StatInk']))
 

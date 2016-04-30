@@ -152,6 +152,7 @@ OUTPUT_ARGS['StatInk'] = {
     'track_objective': False,
     'track_inklings': False,
     'video_id': None,
+    'payload_file': None,
 }
 
 # Twitter: Twitter 連携
@@ -200,4 +201,3 @@ OUTPUT_ARGS['DebugVideoWriter'] = {'dir': './debug_videos/'}
 #
 # OUTPUT_PLUGINS.append('PreviewDetected')
 OUTPUT_ARGS['PreviewDetected'] = {}
-
