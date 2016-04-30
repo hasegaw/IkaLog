@@ -27,6 +27,7 @@ import os
 import pprint
 import re
 import time
+import sqlite3
 import sys
 
 from ikalog import scenes, constants
@@ -35,8 +36,10 @@ from ikalog.version import IKALOG_VERSION
 
 scene = scenes.ResultDetail(None)
 
+
 def call_plugins_noop(context, params):
     pass
+
 
 def _set_values(fields, dest, src):
     for field in fields:
@@ -58,6 +61,7 @@ def _set_values(fields, dest, src):
             elif f_type == 'str_lower':
                 dest[f_statink] = str(src[f_ikalog]).lower()
 
+
 def filename2statink_game_id(filename):
     dirname, filename_ = os.path.split(filename)
 
@@ -68,15 +72,52 @@ def filename2statink_game_id(filename):
     except ValueError:
         return None
 
+
+def query_statink_db(battle_id):
+    #    battle_id = 1104044
+    sql = 'SELECT id, battle_id, is_me, is_my_team, rank_in_team, level, rank, weapon, kill, death, point FROM battle_player WHERE battle_id=%d;' % battle_id
+    print(sql)
+    rows = db_battles.execute(sql)
+    r = [None, None, None, None, None, None, None, None]
+    for row in rows:
+        row_id, battle_id_, is_me, is_my_team, rank_in_team, level, rank, weapon, kill, death, point = row
+        team = 'my' if is_my_team else 'his'
+        player_row = (1 - is_my_team) * 4 + rank_in_team - 1
+        is_me = True if is_me else False
+        r[player_row] = {
+            'team': team,
+            'is_me': is_me,
+            'weapon': weapon,
+            'rank': rank,
+            'rank_in_team': rank_in_team,
+            'level': level,
+            'kill': kill,
+            'death': death,
+            'point': point,
+            'row': player_row,
+        }
+    return r
+
+
+def normalize_players(payload):
+    r = [None, None, None, None, None, None, None, None]
+    for p in payload['players']:
+        is_my_team = 1 if p['team'] == 'my' else 0
+        player_row = (1 - is_my_team) * 4 + p['rank_in_team'] - 1
+        r[player_row] = p
+    return r
+
+
 def process_file(filename):
     context = {
-        'engine': { 'msec': 0,
-            'service': { 'callPlugins': call_plugins_noop } },
+        'engine': {'msec': 0,
+                   'service': {'callPlugins': call_plugins_noop}},
         'game': {},
         'scenes': {},
         'lobby': {},
     }
 
+    IkaUtils.dprint('Reading %s' % filename)
     context['engine']['frame'] = cv2.imread(filename, 1)
 
     assert context['engine']['frame'] is not None
@@ -85,6 +126,7 @@ def process_file(filename):
 
     game_id = filename2statink_game_id(filename)
     assert game_id is not None
+    me = IkaUtils.getMyEntryFromContext(context)
 
     payload = {
         'id': game_id,
@@ -113,28 +155,102 @@ def process_file(filename):
             ], player, e)
 
         # Validation
-        if not player['rank'] in constants.udemae_strings:
-            del player['rank']
+        if player.get('rank', False):
+            if not player['rank'] in constants.udemae_strings:
+                del player['rank']
 
-    return payload
+    return context, payload
+
+
+def logprint(text):
+    print(text)
+
+db_battles = sqlite3.connect('/home/hasegaw/battles/battles.db')
 
 for filename in sys.argv[1:]:
     try:
-        payload = process_file(filename)
+        context, payload = process_file(filename)
     except AssertionError:
         print('AssertionError at %s' % filename)
         continue
-    except:
-        print('UnExpected error at %s' % filename)
-        continue
+    # except:
+    #    print('UnExpected error at %s' % filename)
+    #    continue
 
     if payload is None:
         print('Re-detection failed at %s' % filename)
         continue
 
+    players_statink = query_statink_db(payload['id'])
+    players_new = normalize_players(payload)
+    battle_id = int(payload['id'])
+
+    if payload is None:
+        print('Re-detection failed at %s' % filename)
+
+    for i in range(8):
+        # Compare values
+        n = players_new[i]
+        s = players_statink[i]
+
+        if (n is None) or (s is None):
+            if (n is None) and (s is None):
+                # Private match or squid match, not changed
+                continue
+            elif (n is None):
+                # Player disappered
+                logprint('battle %d player %d: Deleted' % (battle_id, i))
+                continue
+            elif (s is None):
+                # Player added
+                logprint('battle %d player %d: Add' % (battle_id, i))
+                pass
+
+        diff = False
+        weapon_diff = False
+
+        for key in ['rank', 'level', 'weapon', 'kill', 'death', 'point']:
+            vs = s.get(key, None)
+            ns = n.get(key, None)
+            if str(vs) != str(ns):
+                logprint('battle %d player %d: point %s -> %s' %
+                         (battle_id, i, s.get(key, None), n.get(key, None)))
+                diff = True
+                if key == 'weapon':
+                    weapon_diff = True
+
+        if weapon_diff:
+            # find the original index number
+            if context['game']['won']:
+                orig_team = {'my': 1, 'his': 2}[n['team']]
+            else:
+                orig_team = {'my': 2, 'his': 1}[n['team']]
+
+            orig_row = None
+            for i in range(len(context['game']['players'])):
+                z = context['game']['players'][i]
+
+                if z.get('team', 0) == orig_team and z.get('rank_in_team') == n['rank_in_team']:
+                    orig_row = i
+            assert orig_row is not None
+
+            # Write weapon image file.
+            dirname = os.path.join('weapons_new', str(n['weapon']))
+            filename = os.path.join(dirname, '%d_%d.png' %
+                                    (battle_id, orig_row))
+            try:
+                os.makedirs(dirname)
+            except:
+                pass
+            cv2.imwrite(filename, context['game'][
+                        'players'][orig_row]['img_weapon'])
+
+#    sys.exit()
+
     a = payload['id'] - (payload['id'] % 10000)
     b = a + 9999
-    log_filename = 'statink_rerecognition.%08d-%08d.json.txt' % (a, b)
+    #log_filename = 'statink_rerecognition.%08d-%08d.json.txt' % (a, b)
+    log_filename = 'statink_rerecognition/%08d.json.txt' % (payload['id'])
     payload_json = json.dumps(payload, separators=(',', ':')) + "\n"
 
     try:
