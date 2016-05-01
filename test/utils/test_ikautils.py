@@ -42,6 +42,24 @@ class TestIkaUtils(unittest.TestCase):
     #
     # Test Cases
     #
+    def test_getMyEntryFromContext(self):
+        context = {'game': {}}
+        self.assertIsNone(IkaUtils.getMyEntryFromContext(context))
+
+        context['game']['players'] = [
+            {'me': False, 'team': 1, 'rank_in_team': 1},
+            {'me': False, 'team': 1, 'rank_in_team': 2},
+            {'me': False, 'team': 2, 'rank_in_team': 1},
+            {'me': False, 'team': 2, 'rank_in_team': 2},
+        ]
+        self.assertIsNone(IkaUtils.getMyEntryFromContext(context))
+
+        context['game']['players'][2]['me'] = True
+        me = IkaUtils.getMyEntryFromContext(context)
+        self.assertEqual(2, me['team'])
+        self.assertEqual(1, me['rank_in_team'])
+
+
     def test_extend_languages(self):
         # Default languages
         self.assertIsNotNone(IkaUtils.extend_languages(None))
