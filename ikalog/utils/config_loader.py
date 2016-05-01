@@ -154,7 +154,7 @@ def _init_outputs(opts):
     # YouTube 用、動画の概要。input.CVFile と組み合わせた使用を想定。
     # ビデオ内に複数のゲームがある場合には未検証。
     if (('Description' in output_plugins) or
-            opts.get('output_description')):
+        opts.get('output_description')):
 
         if opts.get('output_description'):
             output_args['Description']['output_filepath'] = (
@@ -164,7 +164,7 @@ def _init_outputs(opts):
 
     # 不具合調査向け。
     # イベントトリガをコンソールに出力。イベントトリガ時のスクリーンショット保存
-    if 'DebugLog' in output_plugins:
+    if (('DebugLog' in output_plugins) or opts.get('debug')):
         OutputPlugins.append(outputs.DebugLog(**output_args['DebugLog']))
 
     # 不具合調査向け。

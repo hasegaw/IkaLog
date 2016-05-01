@@ -55,6 +55,8 @@ def get_args():
     parser.add_argument('--epoch_time', dest='epoch_time', type=str,
                         help='In the format like 20150528_235900 or "now".')
     parser.add_argument('--video_id', dest='video_id', type=str)
+    parser.add_argument('--debug', dest='debug', action='store_true',
+                        default=False)
 
     return vars(parser.parse_args())
 
