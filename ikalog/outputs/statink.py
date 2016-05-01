@@ -327,6 +327,35 @@ class StatInk(object):
         if not ((self.video_id is None) or (self.video_id == '')):
             payload['link_url'] = 'https://www.youtube.com/watch?v=%s' % self.video_id
 
+        self.composite_result_payload(context, payload)
+
+        # Team colors
+        if ('my_team_color' in context['game']):
+            payload['my_team_color'] = {
+                'hue': context['game']['my_team_color']['hsv'][0] * 2,
+                'rgb': context['game']['my_team_color']['rgb'],
+            }
+            payload['his_team_color'] = {
+                'hue': context['game']['counter_team_color']['hsv'][0] * 2,
+                'rgb': context['game']['counter_team_color']['rgb'],
+            }
+
+        # Agent Information
+
+        payload['agent'] = 'IkaLog'
+        payload['agent_version'] = IKALOG_VERSION
+
+        payload['agent_variables'] = self.composite_agent_variables(context)
+        payload['agent_custom'] = self.composite_agent_custom(context)
+
+        # Remove any 'None' data
+        for key, val in list(payload.items()):
+            if val is None:
+                del payload[key]
+
+        return payload
+
+    def composite_result_payload(self, context, payload):
         # ResultJudge
 
         if payload.get('rule', None) in ['nawabari']:
@@ -492,17 +521,6 @@ class StatInk(object):
 
                 payload['fest_title_after'] = current_title.lower()
 
-        # Team colors
-        if ('my_team_color' in context['game']):
-            payload['my_team_color'] = {
-                'hue': context['game']['my_team_color']['hsv'][0] * 2,
-                'rgb': context['game']['my_team_color']['rgb'],
-            }
-            payload['his_team_color'] = {
-                'hue': context['game']['counter_team_color']['hsv'][0] * 2,
-                'rgb': context['game']['counter_team_color']['rgb'],
-            }
-
         # Screenshots
 
         if self.img_result_detail is not None:
@@ -515,20 +533,6 @@ class StatInk(object):
         else:
             IkaUtils.dprint('%s: img_judge is empty.' % self)
 
-        # Agent Information
-
-        payload['agent'] = 'IkaLog'
-        payload['agent_version'] = IKALOG_VERSION
-
-        payload['agent_variables'] = self.composite_agent_variables(context)
-        payload['agent_custom'] = self.composite_agent_custom(context)
-
-        # Remove any 'None' data
-        for key, val in list(payload.items()):
-            if val is None:
-                del payload[key]
-
-        return payload
 
     def write_response_to_file(self, r_header, r_body, basename=None):
         if basename is None:
@@ -633,7 +637,7 @@ class StatInk(object):
 
         pprint.pprint(payload)
 
-    def on_game_go_sign(self, context):
+    def _open_game_session(self, context):
         self.time_start_at = int(IkaUtils.getTime(context))
         self.time_end_at = None
         self.events = []
@@ -646,12 +650,15 @@ class StatInk(object):
         if 'msec' in context['engine']:
             self.time_start_at_msec = context['engine']['msec']
 
+    def on_game_go_sign(self, context):
+        self._open_game_session(context)
+
     def on_game_start(self, context):
         # ゴーサインをベースにカウントするが、ゴーサインを認識
         # できなかった場合の保険として on_game_start も拾っておく
-        self.on_game_go_sign(context)
+        self._open_game_session(context)
 
-    def on_game_finish(self, context):
+    def _set_times(self, context):
         self.time_end_at = int(IkaUtils.getTime(context))
         if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
             duration_msec = context['engine']['msec'] - self.time_start_at_msec
@@ -660,6 +667,9 @@ class StatInk(object):
                 self.time_start_at = int(
                     self.time_end_at - int(duration_msec / 1000))
 
+
+    def on_game_finish(self, context):
+        self._set_times(context)
         self.on_game_paint_score_update(context)
 
         # 戦績画面はこの後にくるはずなので今までにあるデータは捨てる
@@ -688,7 +698,7 @@ class StatInk(object):
         IkaUtils.dprint('%s: Gathered img_judge(%s)' %
                         (self, self.img_judge.shape))
 
-    def on_game_session_end(self, context):
+    def _close_game_session(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
         if (not self.enabled) and (not self.dry_run):
@@ -702,6 +712,9 @@ class StatInk(object):
             self.write_payload_to_file(payload, filename=self.payload_file)
 
         self.post_payload(context, payload)
+
+    def on_game_session_end(self, context):
+        self._close_game_session(context)
 
     def on_game_killed(self, context):
         self._add_event(context, {'type': 'killed'})
