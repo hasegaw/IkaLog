@@ -311,8 +311,9 @@ class StatInk(object):
         if rule:
             payload['rule'] = rule
 
-        if self.time_start_at and self.time_end_at:
+        if self.time_start_at:
             payload['start_at'] = int(self.time_start_at)
+        if self.time_end_at:
             payload['end_at'] = int(self.time_end_at)
 
         # In-game logs
@@ -659,8 +660,12 @@ class StatInk(object):
         self._open_game_session(context)
 
     def _set_times(self, context):
+        if self.time_end_at:
+            return
+
         self.time_end_at = int(IkaUtils.getTime(context))
-        if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
+        if (('msec' in context['engine']) and
+            (self.time_start_at_msec is not None)):
             duration_msec = context['engine']['msec'] - self.time_start_at_msec
 
             if duration_msec >= 0.0:
@@ -699,6 +704,9 @@ class StatInk(object):
                         (self, self.img_judge.shape))
 
     def _close_game_session(self, context):
+        # set time_start_at and time_end_at if necessary.
+        self._set_times(context)
+
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
         if (not self.enabled) and (not self.dry_run):
