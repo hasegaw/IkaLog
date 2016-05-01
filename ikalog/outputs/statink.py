@@ -381,6 +381,8 @@ class StatInk(object):
         # ResultDetail
 
         me = IkaUtils.getMyEntryFromContext(context)
+        if me is None:
+            return
 
         payload['result'] = IkaUtils.getWinLoseText(
             context['game']['won'],
@@ -645,6 +647,7 @@ class StatInk(object):
         self.time_last_score_msec = None
         self.time_last_objective_msec = None
         self.last_dead_event = None
+        self._called_close_game_session = False
 
         # check if context['engine']['msec'] exists
         # to allow unit test.
@@ -704,6 +707,10 @@ class StatInk(object):
                         (self, self.img_judge.shape))
 
     def _close_game_session(self, context):
+        if self._called_close_game_session:
+            return
+        self._called_close_game_session = True
+
         # set time_start_at and time_end_at if necessary.
         self._set_times(context)
 
@@ -722,6 +729,9 @@ class StatInk(object):
         self.post_payload(context, payload)
 
     def on_game_session_end(self, context):
+        self._close_game_session(context)
+
+    def on_game_session_abort(self, context):
         self._close_game_session(context)
 
     def on_game_killed(self, context):
@@ -907,6 +917,9 @@ class StatInk(object):
 
         self.video_id = video_id
         self.payload_file = payload_file
+
+        # If true, it means the payload is not posted or saved.
+        self._called_close_game_session = False
 
 if __name__ == "__main__":
     # main として呼ばれた場合
