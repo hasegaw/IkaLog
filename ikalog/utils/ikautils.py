@@ -67,6 +67,8 @@ class IkaUtils(object):
     # @return The player information (Directionary class) if found.
     @staticmethod
     def getMyEntryFromContext(context):
+        if not context['game'].get('players'):
+            return None
         for e in context['game']['players']:
             if e['me']:
                 return e
