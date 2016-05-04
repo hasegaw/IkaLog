@@ -153,6 +153,12 @@ class GameStart(StatefulScene):
             context['game']['map'] = self.elect(context, self.stage_votes)
             context['game']['rule'] = self.elect(context, self.rule_votes)
 
+            if not context['game']['start_time']:
+                # start_time should be initialized in GameGoSign.
+                # This is a fallback in case GameGoSign was skipped.
+                context['game']['start_time'] = IkaUtils.getTime(context)
+                context['game']['start_offset_msec'] = context['engine']['msec']
+
             self._call_plugins('on_game_start')
             self._last_event_msec = context['engine']['msec']
 

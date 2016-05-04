@@ -47,6 +47,9 @@ class GameFinish(Scene):
         if not self.mask_finish.match(frame):
             return False
 
+        context['game']['end_time'] = IkaUtils.getTime(context)
+        context['game']['end_offset_msec'] = context['engine']['msec']
+
         self._call_plugins('on_game_finish')
         self._last_event_msec = context['engine']['msec']
 
