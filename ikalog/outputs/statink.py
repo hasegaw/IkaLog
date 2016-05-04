@@ -216,10 +216,16 @@ class StatInk(object):
                 elif f_type == 'str_lower':
                     dest[f_statink] = str(src[f_ikalog]).lower()
 
+    def _get_offset_msec(self, context):
+        if context['engine'].get('msec') and self.time_start_at_msec:
+            return context['engine']['msec'] - self.time_start_at_msec
+        return None
+
     def _add_event(self, context, event_data=None, time_delta=0.0):
         assert event_data is not None
-        if (not 'at'in event_data) and (self.time_start_at_msec is not None):
-            offset_msec = context['engine']['msec'] - self.time_start_at_msec
+        offset_msec = self._get_offset_msec(context)
+        if (not 'at' in event_data) and offset_msec:
+            # Use only the first decimal.
             event_data['at'] = int(offset_msec / 100) / 10 + time_delta
         else:
             IkaUtils.dprint('%s: Event %s not logged due to no timing information.' % (
@@ -667,14 +673,9 @@ class StatInk(object):
             return
 
         self.time_end_at = int(IkaUtils.getTime(context))
-        if (('msec' in context['engine']) and
-            (self.time_start_at_msec is not None)):
-            duration_msec = context['engine']['msec'] - self.time_start_at_msec
-
-            if duration_msec >= 0.0:
-                self.time_start_at = int(
-                    self.time_end_at - int(duration_msec / 1000))
-
+        duration_msec = self._get_offset_msec(context)
+        if duration_msec:
+            self.time_start_at = self.time_end_at - int(duration_msec / 1000)
 
     def on_game_finish(self, context):
         self._set_times(context)
@@ -752,7 +753,7 @@ class StatInk(object):
         if not self.track_inklings_enabled:
             return
 
-        if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
+        if self._get_offset_msec(context):
             self._add_event(context, {
                 'type': 'alive_inklings',
                 'my_team': context['game']['inkling_state'][0],
@@ -761,8 +762,8 @@ class StatInk(object):
 
     def on_game_paint_score_update(self, context):
         score = context['game'].get('paint_score', 0)
-        if (score > 0 and 'msec' in context['engine']) and (self.time_start_at_msec is not None):
-            event_msec = context['engine']['msec'] - self.time_start_at_msec
+        event_msec = self._get_offset_msec(context)
+        if (score > 0) and event_msec:
             # 前回のスコアイベントから 200ms 経っていない場合は処理しない
             if (self.time_last_score_msec is None) or (event_msec - self.time_last_score_msec >= 200):
                 self._add_event(context, {
@@ -776,8 +777,8 @@ class StatInk(object):
             return
 
         score = context['game'].get('special_gauge', 0)
-        if (score > 0 and 'msec' in context['engine']) and (self.time_start_at_msec is not None):
-            event_msec = context['engine']['msec'] - self.time_start_at_msec
+        event_msec = self._get_offset_msec(context)
+        if (score > 0) and event_msec:
             # 前回のスコアイベントから 200ms 経っていない場合は処理しない
             if (self.time_last_special_gauge_msec is None) or (event_msec - self.time_last_special_gauge_msec >= 200):
                 self._add_event(context, {
@@ -790,8 +791,8 @@ class StatInk(object):
         if not self.track_special_gauge_enabled:
             return
 
-        if (self.time_start_at_msec is not None):
-            event_msec = context['engine']['msec'] - self.time_start_at_msec
+        event_msec = self._get_offset_msec(context)
+        if event_msec:
             self._add_event(context, {
                 'type': 'special_charged',
             })
@@ -806,8 +807,8 @@ class StatInk(object):
                             (self, special_weapon))
             return
 
-        if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
-            event_msec = context['engine']['msec'] - self.time_start_at_msec
+        event_msec = self._get_offset_msec(context)
+        if event_msec:
             self._add_event(context, {
                 'type': 'special_weapon',
                 'special_weapon': special_weapon,
@@ -818,7 +819,7 @@ class StatInk(object):
         if not self.track_objective_enabled:
             return
 
-        event_msec = context['engine']['msec'] - self.time_start_at_msec
+        event_msec = self._get_offset_msec(context)
 
         if (self.time_last_objective_msec is None) or (event_msec - self.time_last_objective_msec >= 200):
             self._add_event(context, {
@@ -831,7 +832,7 @@ class StatInk(object):
         if not self.track_splatzone_enabled:
             return
 
-        event_msec = context['engine']['msec'] - self.time_start_at_msec
+        event_msec = self._get_offset_msec(context)
         self._add_event(context, {
             'type': 'splatzone',
             'my_team_count': context['game']['splatzone_my_team_counter']['value'],
