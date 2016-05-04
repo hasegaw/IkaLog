@@ -163,6 +163,15 @@ class IkaEngine:
             'inkling_state': [None, None],
             'livesTrack': [],
             'towerTrack': [],
+
+            # Float values of start and end times scince the epoch in second.
+            # They are used with IkaUtils.GetTime.
+            'start_time': None,
+            'end_time': None,
+            # Int values of start and end offset times in millisecond.
+            # They are used with context['engine']['msec']
+            'start_offset_msec': None,
+            'end_offset_msec': None,
         }
         self.call_plugins('on_game_reset')
         self._exception_log_init(self.context)
@@ -194,11 +203,24 @@ class IkaEngine:
     def session_close(self):
         self.session_close_wdt = None
 
+        if not self.context['game']['end_time']:
+            # end_time should be initialized in GameFinish.
+            # This is a fallback in case GameFinish was skipped.
+            self.context['game']['end_time'] = IkaUtils.getTime(context)
+            self.context['game']['end_offset_msec'] = context['engine']['msec']
+
+
         self.call_plugins('on_game_session_end')
         self.reset()
 
     def session_abort(self):
         self.session_close_wdt = None
+
+        if not self.context['game']['end_time']:
+            # end_time should be initialized in GameFinish or session_close.
+            # This is a fallback in case they were skipped.
+            self.context['game']['end_time'] = IkaUtils.getTime(context)
+            self.context['game']['end_offset_msec'] = context['engine']['msec']
 
         self.call_plugins('on_game_session_abort')
         self.reset()

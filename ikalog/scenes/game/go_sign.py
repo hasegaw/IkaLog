@@ -48,6 +48,9 @@ class GameGoSign(Scene):
         if not self.mask_go_sign.match(frame):
             return False
 
+        context['game']['start_time'] = IkaUtils.getTime(context)
+        context['game']['start_offset_msec'] = context['engine']['msec']
+
         self._call_plugins('on_game_go_sign')
         self._last_event_msec = context['engine']['msec']
         self._last_game_start_msec = -100 * 1000
