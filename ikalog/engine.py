@@ -206,7 +206,7 @@ class IkaEngine:
         if not self.context['game']['end_time']:
             # end_time should be initialized in GameFinish.
             # This is a fallback in case GameFinish was skipped.
-            self.context['game']['end_time'] = IkaUtils.getTime(context)
+            self.context['game']['end_time'] = IkaUtils.getTime(self.context)
             self.context['game']['end_offset_msec'] = context['engine']['msec']
 
 
@@ -219,7 +219,7 @@ class IkaEngine:
         if not self.context['game']['end_time']:
             # end_time should be initialized in GameFinish or session_close.
             # This is a fallback in case they were skipped.
-            self.context['game']['end_time'] = IkaUtils.getTime(context)
+            self.context['game']['end_time'] = IkaUtils.getTime(self.context)
             self.context['game']['end_offset_msec'] = context['engine']['msec']
 
         self.call_plugins('on_game_session_abort')
