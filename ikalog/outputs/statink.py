@@ -217,8 +217,10 @@ class StatInk(object):
                     dest[f_statink] = str(src[f_ikalog]).lower()
 
     def _get_offset_msec(self, context):
-        if context['engine'].get('msec') and self.time_start_at_msec:
-            return context['engine']['msec'] - self.time_start_at_msec
+        if (context['engine'].get('msec') and
+            context['game'].get('start_offset_msec')):
+            return (context['engine']['msec'] -
+                    context['game']['start_offset_msec'])
         return None
 
     def _add_event(self, context, event_data=None, time_delta=0.0):
@@ -317,10 +319,10 @@ class StatInk(object):
         if rule:
             payload['rule'] = rule
 
-        if self.time_start_at:
-            payload['start_at'] = int(self.time_start_at)
-        if self.time_end_at:
-            payload['end_at'] = int(self.time_end_at)
+        if context['game'].get('start_time'):
+            payload['start_at'] = int(context['game']['start_time'])
+        if context['game'].get('end_time'):
+            payload['end_at'] = int(context['game']['end_time'])
 
         # In-game logs
 
@@ -647,18 +649,11 @@ class StatInk(object):
         pprint.pprint(payload)
 
     def _open_game_session(self, context):
-        self.time_start_at = int(IkaUtils.getTime(context))
-        self.time_end_at = None
         self.events = []
         self.time_last_score_msec = None
         self.time_last_objective_msec = None
         self.last_dead_event = None
         self._called_close_game_session = False
-
-        # check if context['engine']['msec'] exists
-        # to allow unit test.
-        if 'msec' in context['engine']:
-            self.time_start_at_msec = context['engine']['msec']
 
     def on_game_go_sign(self, context):
         self._open_game_session(context)
@@ -668,17 +663,7 @@ class StatInk(object):
         # できなかった場合の保険として on_game_start も拾っておく
         self._open_game_session(context)
 
-    def _set_times(self, context):
-        if self.time_end_at:
-            return
-
-        self.time_end_at = int(IkaUtils.getTime(context))
-        duration_msec = self._get_offset_msec(context)
-        if duration_msec:
-            self.time_start_at = self.time_end_at - int(duration_msec / 1000)
-
     def on_game_finish(self, context):
-        self._set_times(context)
         self.on_game_paint_score_update(context)
 
         # 戦績画面はこの後にくるはずなので今までにあるデータは捨てる
@@ -698,11 +683,6 @@ class StatInk(object):
                         (self, self.img_result_detail.shape))
 
     def on_result_judge(self, context):
-        # If self.time_end_at is None, on_game_finish was not called.
-        # So call it here to initialize self.time_end_at.
-        if not self.time_end_at:
-            self.on_game_finish(context)
-
         self.img_judge = context['game'].get('image_judge', None)
         IkaUtils.dprint('%s: Gathered img_judge(%s)' %
                         (self, self.img_judge.shape))
@@ -711,9 +691,6 @@ class StatInk(object):
         if self._called_close_game_session:
             return
         self._called_close_game_session = True
-
-        # set time_start_at and time_end_at if necessary.
-        self._set_times(context)
 
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
@@ -892,10 +869,6 @@ class StatInk(object):
         self.enabled = not (api_key is None)
         self.api_key = api_key
         self.dry_run = dry_run
-
-        self.time_start_at = None
-        self.time_end_at = None
-        self.time_start_at_msec = None
 
         self.events = []
         self.time_last_score_msec = None
