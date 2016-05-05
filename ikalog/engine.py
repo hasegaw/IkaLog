@@ -321,8 +321,6 @@ class IkaEngine:
 
                 self._stop = True
 
-        cv2.destroyAllWindows()
-
     def run(self):
         try:
             self._main_loop()
