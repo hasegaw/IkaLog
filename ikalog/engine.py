@@ -90,40 +90,50 @@ class IkaEngine:
     def dprint(self, text):
         print(text, file=sys.stderr)
 
+    def call_plugin(self, plugin, event_name, params=None, debug=False):
+        context = self.context
+
+        if hasattr(plugin, event_name):
+            if debug:
+                self.dprint('Call  %s' % plugin.__class__.__name__)
+            try:
+                if params is None:
+                    getattr(plugin, event_name)(context)
+                else:
+                    getattr(plugin, event_name)(context, params)
+            except:
+                self.dprint('%s.%s() raised a exception >>>>' %
+                            (plugin.__class__.__name__, event_name))
+                self.dprint(traceback.format_exc())
+                self.dprint('<<<<<')
+
+        elif hasattr(plugin, 'on_uncaught_event'):
+            if debug:
+                self.dprint(
+                    'call plug-in hook (on_uncaught_event, %s):' % event_name)
+            try:
+                getattr(plugin, 'on_uncaught_event')(event_name, context)
+            except:
+                self.dprint('%s.%s() raised a exception >>>>' %
+                            (plugin.__class__.__name__, event_name))
+                self.dprint(traceback.format_exc())
+                self.dprint('<<<<<')
+
     def call_plugins(self, event_name, params=None, debug=False):
+        context = self.context
+
         if debug:
             self.dprint('call plug-in hook (%s):' % event_name)
 
         for op in self.output_plugins:
-            if hasattr(op, event_name):
-                if debug:
-                    self.dprint('Call  %s' % op.__class__.__name__)
-                try:
-                    if params is None:
-                        getattr(op, event_name)(self.context)
-                    else:
-                        getattr(op, event_name)(self.context, params)
-                except:
-                    self.dprint('%s.%s() raised a exception >>>>' %
-                                (op.__class__.__name__, event_name))
-                    self.dprint(traceback.format_exc())
-                    self.dprint('<<<<<')
-            elif hasattr(op, 'onUncatchedEvent'):
-                if debug:
-                    self.dprint(
-                        'call plug-in hook (UncatchedEvent, %s):' % event_name)
-                try:
-                    getattr(op, 'onUncatchedEvent')(event_name, self.context)
-                except:
-                    self.dprint('%s.%s() raised a exception >>>>' %
-                                (op.__class__.__name__, event_name))
-                    self.dprint(traceback.format_exc())
-                    self.dprint('<<<<<')
+            self.call_plugin(op, event_name, params, debug)
 
     def call_plugins_later(self, event_name, params=None, debug=False):
         self._event_queue.append((event_name, params))
 
     def read_next_frame(self, skip_frames=0):
+        context = self.context
+
         for i in range(skip_frames):
             frame = self.capture.read_frame()
         frame = self.capture.read_frame()
@@ -136,9 +146,9 @@ class IkaEngine:
             frame = self.capture.read_frame()
 
         t = self.capture.get_current_timestamp()
-        self.context['engine']['msec'] = t
-        self.context['engine']['frame'] = frame
-        self.context['engine']['preview'] = copy.deepcopy(frame)
+        context['engine']['msec'] = t
+        context['engine']['frame'] = frame
+        context['engine']['preview'] = copy.deepcopy(frame)
 
         self.call_plugins('on_debug_read_next_frame')
 
@@ -161,8 +171,6 @@ class IkaEngine:
             'death_reasons': {},
 
             'inkling_state': [None, None],
-            'livesTrack': [],
-            'towerTrack': [],
 
             # Float values of start and end times scince the epoch in second.
             # They are used with IkaUtils.GetTime.
@@ -179,8 +187,10 @@ class IkaEngine:
     def create_context(self):
         self.context = {
             'engine': {
+                'engine': self,
                 'epoch_time': None,
                 'frame': None,
+                'msec': None,
                 'service': {
                     'call_plugins': self.call_plugins,
                     'call_plugins_later': self.call_plugins,
@@ -201,26 +211,27 @@ class IkaEngine:
         self.session_close_wdt = None
 
     def session_close(self):
+        context = self.context
         self.session_close_wdt = None
 
-        if not self.context['game']['end_time']:
+        if not context['game']['end_time']:
             # end_time should be initialized in GameFinish.
             # This is a fallback in case GameFinish was skipped.
-            self.context['game']['end_time'] = IkaUtils.getTime(self.context)
-            self.context['game']['end_offset_msec'] = self.context['engine']['msec']
-
+            context['game']['end_time'] = IkaUtils.getTime(context)
+            context['game']['end_offset_msec'] = context['engine']['msec']
 
         self.call_plugins('on_game_session_end')
         self.reset()
 
     def session_abort(self):
+        context = self.context
         self.session_close_wdt = None
 
         if not self.context['game']['end_time']:
             # end_time should be initialized in GameFinish or session_close.
             # This is a fallback in case they were skipped.
-            self.context['game']['end_time'] = IkaUtils.getTime(self.context)
-            self.context['game']['end_offset_msec'] = self.context['engine'].get('msec', None)
+            context['game']['end_time'] = IkaUtils.getTime(context)
+            context['game']['end_offset_msec'] = context['engine']['msec']
 
         self.call_plugins('on_game_session_abort')
         self.reset()
@@ -258,8 +269,8 @@ class IkaEngine:
         if frame is None:
             return False
 
-        context['engine']['inGame'] = self.find_scene_object(
-            'GameTimerIcon').match(context)
+        context['engine']['inGame'] = \
+            self.find_scene_object('GameTimerIcon').match(context)
 
         self.call_plugins('on_frame_read')
 
@@ -280,14 +291,14 @@ class IkaEngine:
         # self.call_plugins() doesn't work for those.
 
         for op in self.output_plugins:
-            if hasattr(op, "on_frame_next"):
+            if hasattr(op, 'on_frame_next'):
                 try:
                     key = op.on_frame_next(context)
                 except:
                     pass
 
         for op in self.output_plugins:
-            if hasattr(op, "on_key_press"):
+            if hasattr(op, 'on_key_press'):
                 try:
                     op.on_key_press(context, key)
                 except:
@@ -316,8 +327,6 @@ class IkaEngine:
 
                 self._stop = True
 
-        cv2.destroyAllWindows()
-
     def run(self):
         try:
             self._main_loop()
@@ -339,6 +348,13 @@ class IkaEngine:
         self.output_plugins = [self]
         self.output_plugins.extend(self.scenes)
         self.output_plugins.extend(plugins)
+
+    def enable_plugin(self, plugin):
+        if not (plugin in self.output_plugins):
+            self.dprint('%s: cannot enable plugin %s' % (self, plugin))
+            return False
+
+        self.call_plugin(plugin, 'on_enable')
 
     def pause(self, pause):
         self._pause = pause
@@ -368,10 +384,13 @@ class IkaEngine:
             scenes.ResultFesta(self),
 
             scenes.Lobby(self),
-#            scenes.Downie(self),
+            # scenes.Downie(self),
 
             scenes.Blank(self),
         ]
+
+    def __del__(self):
+        self.call_plugins('on_engine_destroy')
 
     def __init__(self, enable_profile=False, abort_at_scene_exception=False):
         self._initialize_scenes()

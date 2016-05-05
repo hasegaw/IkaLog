@@ -148,6 +148,10 @@ def _init_outputs(opts):
     if 'WebSocket' in output_plugins:
         OutputPlugins.append(outputs.WebSocket(**output_args['WebSocket']))
 
+    # REST API Server
+    if 'RESTAPIServer' in output_plugins:
+        OutputPlugins.append(outputs.RESTAPIServer(**output_args['RESTAPIServer']))
+
     # Video description for YouTube. It is expected to be used with
     # input.CVFile. Multiple matches in a video is not tested.
     #
