@@ -107,12 +107,12 @@ class IkaEngine:
                 self.dprint(traceback.format_exc())
                 self.dprint('<<<<<')
 
-        elif hasattr(plugin, 'onUncatchedEvent'):
+        elif hasattr(plugin, 'on_uncaught_event'):
             if debug:
                 self.dprint(
-                    'call plug-in hook (UncatchedEvent, %s):' % event_name)
+                    'call plug-in hook (on_uncaught_event, %s):' % event_name)
             try:
-                getattr(plugin, 'onUncatchedEvent')(event_name, context)
+                getattr(plugin, 'on_uncaught_event')(event_name, context)
             except:
                 self.dprint('%s.%s() raised a exception >>>>' %
                             (plugin.__class__.__name__, event_name))

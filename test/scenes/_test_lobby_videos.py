@@ -17,7 +17,7 @@ class TestSceneLobbyVideos(unittest.TestCase):
     def on_frame_read_failed(self, context):
         self.engine.stop()
 
-    def onUncatchedEvent(self, event_name, context):
+    def on_uncaught_event(self, event_name, context):
         if not (event_name in self.event_tickets):
             self.errors.append('Unexpected event %s triggered' % event_name)
 
