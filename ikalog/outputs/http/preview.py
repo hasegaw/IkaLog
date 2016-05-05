@@ -18,16 +18,10 @@
 #  limitations under the License.
 #
 
-from http.server import HTTPServer, SimpleHTTPRequestHandler
-import time
 import threading
-import os
+import time
 
 import cv2
-
-# FIXME
-connections = []
-jpeg_latest = None
 
 
 class PreviewRequestHandler(object):
@@ -37,6 +31,7 @@ class PreviewRequestHandler(object):
         self._plugin = http_handler.server.parent
         self._frame = None
         self._new_image = False
+        self._stopped = False
 
         self._http_handler.send_response(200)
         self._http_handler.send_header(
@@ -45,7 +40,7 @@ class PreviewRequestHandler(object):
 
         self._plugin._listeners.append(self)
 
-        while True:
+        while not self._stopped:
             time.sleep(0.1)
 
             if (self._frame is None):
@@ -61,7 +56,8 @@ class PreviewRequestHandler(object):
             self.new_image = False
 
             self._http_handler.wfile.write(
-                '--frame_boundary\r\n'.encode('utf-8'))
+                '--frame_boundary\r\n'.encode('utf-8')
+            )
             self._http_handler.send_header('Content-type', 'image/jpeg')
             self._http_handler.send_header('Content-length', str(jpeg_length))
             self._http_handler.end_headers()
@@ -70,7 +66,9 @@ class PreviewRequestHandler(object):
         self._plugin._listeners.remove(self)
 
     def on_event(self, event_name, context, params=None):
-
         if event_name == 'on_show_preview':
             self._frame = context['engine']['frame']
             self._new_image = (self._frame is not None)
+
+        elif event_name == 'on_stop':
+            self._stopped = True
