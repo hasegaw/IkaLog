@@ -108,6 +108,9 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
 
+    # daemon_threads = False  (default)
+    # The process doesn't exit until all of the HTTP requests are processed.
+
 
 class RESTAPIServer(object):
 
