@@ -179,6 +179,7 @@ class IkaEngine:
     def create_context(self):
         self.context = {
             'engine': {
+                'engine': self,
                 'epoch_time': None,
                 'frame': None,
                 'service': {
