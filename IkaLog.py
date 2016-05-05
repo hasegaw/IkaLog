@@ -25,8 +25,7 @@ import argparse
 import signal
 import time
 from ikalog import inputs
-from ikalog.engine import *
-from ikalog.utils import *
+from ikalog.engine import IkaEngine
 from ikalog.utils import config_loader
 
 
