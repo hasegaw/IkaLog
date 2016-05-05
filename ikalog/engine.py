@@ -161,7 +161,6 @@ class IkaEngine:
             'death_reasons': {},
 
             'inkling_state': [None, None],
-            'livesTrack': [],
             'towerTrack': [],
 
             # Float values of start and end times scince the epoch in second.
