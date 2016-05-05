@@ -376,6 +376,9 @@ class IkaEngine:
             scenes.Blank(self),
         ]
 
+    def __del__(self):
+        self.call_plugins('on_engine_destroy')
+
     def __init__(self, enable_profile=False, abort_at_scene_exception=False):
         self._initialize_scenes()
 
