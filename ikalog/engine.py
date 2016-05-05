@@ -90,6 +90,35 @@ class IkaEngine:
     def dprint(self, text):
         print(text, file=sys.stderr)
 
+    def call_plugin(self, plugin, event_name, params=None, debug=False):
+        context = self.context
+
+        if hasattr(plugin, event_name):
+            if debug:
+                self.dprint('Call  %s' % plugin.__class__.__name__)
+            try:
+                if params is None:
+                    getattr(plugin, event_name)(context)
+                else:
+                    getattr(plugin, event_name)(context, params)
+            except:
+                self.dprint('%s.%s() raised a exception >>>>' %
+                            (plugin.__class__.__name__, event_name))
+                self.dprint(traceback.format_exc())
+                self.dprint('<<<<<')
+
+        elif hasattr(plugin, 'onUncatchedEvent'):
+            if debug:
+                self.dprint(
+                    'call plug-in hook (UncatchedEvent, %s):' % event_name)
+            try:
+                getattr(plugin, 'onUncatchedEvent')(event_name, context)
+            except:
+                self.dprint('%s.%s() raised a exception >>>>' %
+                            (plugin.__class__.__name__, event_name))
+                self.dprint(traceback.format_exc())
+                self.dprint('<<<<<')
+
     def call_plugins(self, event_name, params=None, debug=False):
         context = self.context
 
@@ -97,30 +126,7 @@ class IkaEngine:
             self.dprint('call plug-in hook (%s):' % event_name)
 
         for op in self.output_plugins:
-            if hasattr(op, event_name):
-                if debug:
-                    self.dprint('Call  %s' % op.__class__.__name__)
-                try:
-                    if params is None:
-                        getattr(op, event_name)(context)
-                    else:
-                        getattr(op, event_name)(context, params)
-                except:
-                    self.dprint('%s.%s() raised a exception >>>>' %
-                                (op.__class__.__name__, event_name))
-                    self.dprint(traceback.format_exc())
-                    self.dprint('<<<<<')
-            elif hasattr(op, 'onUncatchedEvent'):
-                if debug:
-                    self.dprint(
-                        'call plug-in hook (UncatchedEvent, %s):' % event_name)
-                try:
-                    getattr(op, 'onUncatchedEvent')(event_name, context)
-                except:
-                    self.dprint('%s.%s() raised a exception >>>>' %
-                                (op.__class__.__name__, event_name))
-                    self.dprint(traceback.format_exc())
-                    self.dprint('<<<<<')
+            self.call_plugin(op, event_name, params, debug)
 
     def call_plugins_later(self, event_name, params=None, debug=False):
         self._event_queue.append((event_name, params))
