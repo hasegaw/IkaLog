@@ -155,8 +155,12 @@ class IkaEngine:
         return frame, t
 
     def stop(self):
-        self.call_plugins('on_stop')
+        if not self._stop:
+            self.call_plugins('on_stop')
         self._stop = True
+
+    def is_stopped(self):
+        return self._stop
 
     def reset(self):
         # Initalize the context
@@ -336,6 +340,8 @@ class IkaEngine:
 
             if 1:
                 self._exception_log_dump(self.context)
+
+        self.stop()
 
     def set_capture(self, capture):
         self.capture = capture
