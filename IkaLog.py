@@ -90,7 +90,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
 
     args = get_args()
-    capture, OutputPlugins = config_loader.config(args)
+    capture, output_plugins = config_loader.config(args)
 
     if isinstance(capture, inputs.CVFile):
         init_for_cvfile(args, capture)
@@ -103,7 +103,10 @@ if __name__ == "__main__":
     if epoch_time:
         engine.set_epoch_time(epoch_time)
 
-    engine.set_plugins(OutputPlugins)
+    engine.set_plugins(output_plugins)
+    for op in output_plugins:
+        engine.enable_plugin(op)
+
     engine.close_session_at_eof = True
     engine.run()
     IkaUtils.dprint('bye!')

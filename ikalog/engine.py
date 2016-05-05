@@ -349,6 +349,13 @@ class IkaEngine:
         self.output_plugins.extend(self.scenes)
         self.output_plugins.extend(plugins)
 
+    def enable_plugin(self, plugin):
+        if not (plugin in self.output_plugins):
+            self.dprint('%s: cannot enable plugin %s' % (self, plugin))
+            return False
+
+        self.call_plugin(plugin, 'on_enable')
+
     def pause(self, pause):
         self._pause = pause
 
