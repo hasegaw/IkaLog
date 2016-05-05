@@ -161,7 +161,6 @@ class IkaEngine:
             'death_reasons': {},
 
             'inkling_state': [None, None],
-            'towerTrack': [],
 
             # Float values of start and end times scince the epoch in second.
             # They are used with IkaUtils.GetTime.
