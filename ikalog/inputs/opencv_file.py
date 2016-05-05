@@ -62,7 +62,7 @@ class CVFile(VideoInput):
             # FIXME: Does it work with non-ascii path?
             self.video_capture = cv2.VideoCapture(source)
             self._source_file = source
-            if not self.video_capture.isOpened:
+            if not self.video_capture.isOpened():
                 self.video_capture = None
             self.reset_tick()
 
@@ -107,7 +107,7 @@ class CVFile(VideoInput):
 
     def get_start_time(self):
         """Returns the timestamp of the beginning of this video in sec."""
-        if not self._source_file:
+        if (not self._source_file) or (not self.video_capture):
             return None
 
         last_modified_time = os.stat(self._source_file).st_mtime

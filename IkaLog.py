@@ -77,6 +77,16 @@ def get_epoch_time(args, capture):
 
     return time.mktime(time.strptime(epoch_time_arg, "%Y%m%d_%H%M%S"))
 
+def init_for_cvfile(args, capture):
+    if not capture.is_active():
+        IkaUtils.dprint('Failed to initialize with: %s' % capture._source_file)
+        sys.exit(1)
+
+    pos_msec = args.get('time_msec') or time_to_msec(args.get('time') or '0:0')
+    if pos_msec:
+        capture.set_pos_msec(pos_msec)
+
+
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
 
@@ -84,9 +94,7 @@ if __name__ == "__main__":
     capture, OutputPlugins = config_loader.config(args)
 
     if isinstance(capture, inputs.CVFile):
-        pos_msec = args.get('time_msec') or time_to_msec(args.get('time') or '0:0')
-        if pos_msec:
-            capture.set_pos_msec(pos_msec)
+        init_for_cvfile(args, capture)
 
     engine = IkaEngine(enable_profile=args.get('profile'))
     engine.pause(False)
