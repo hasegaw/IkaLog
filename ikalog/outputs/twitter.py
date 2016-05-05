@@ -473,7 +473,7 @@ class Twitter(object):
             lose_text=_('lost'),
             unknown_text=_('played'))
 
-        t = datetime.now().strftime("%Y/%m/%d %H:%M")
+        t = datetime.fromtimestamp(context['game']['end_time']).strftime("%Y/%m/%d %H:%M")
 
         s = _('Just %(result)s %(rule)s at %(stage)s') % \
             { 'stage': stage, 'rule': rule, 'result': result}
