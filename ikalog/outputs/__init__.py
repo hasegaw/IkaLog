@@ -25,6 +25,7 @@ from .debug_video_writer import DebugVideoWriter
 from .description import Description
 from .fluentd import Fluentd
 from .hue import Hue
+from .http.server import RESTAPIServer
 from .printjson import JSON
 from .preview import Screen
 from .preview_detected import PreviewDetected
