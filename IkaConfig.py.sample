@@ -95,6 +95,13 @@ SOURCE_ARGS = {}
 ## Plugins Configurations
 #############################################################################
 
+# Variables:
+#
+# __INPUT_FILE__ : The value specified by --input_file flag.
+#   If the command is 'IkaLog.py --input_file=/tmp/video.mp4',
+#   '__INPUT_FILE__.txt' becomes '/tmp/video.mp4.txt'.
+
+
 OUTPUT_PLUGINS = []
 OUTPUT_ARGS = {}
 

@@ -41,7 +41,9 @@ def get_args():
     parser.add_argument('--input', '-i', dest='input', type=str,
                         choices=['DirectShow', 'CVCapture', 'ScreenCapture',
                                  'AVFoundationCapture', 'CVFile'])
-    parser.add_argument('--input_file', '-f', dest='input_file', type=str)
+    parser.add_argument('--input_file', '-f', dest='input_file', type=str,
+                        help='Input video file. '
+                        'Other flags can refer this flag as __INPUT_FILE__')
     parser.add_argument('--output_description', '--desc',
                         dest='output_description', type=str)
     parser.add_argument('--statink_payload',
