@@ -24,6 +24,7 @@ import platform
 import re
 import sys
 import time
+from datetime import datetime
 
 import cv2
 import numpy as np
@@ -265,3 +266,11 @@ class IkaUtils(object):
             return time.time()
         time_sec = context['engine']['msec'] / 1000.0
         return epoch_time + time_sec
+
+    @staticmethod
+    def get_end_time(context):
+        unix_time = context['game'].get('end_time')
+        if unix_time:
+            return datetime.fromtimestamp(unix_time)
+        else:
+            return datetime.now()

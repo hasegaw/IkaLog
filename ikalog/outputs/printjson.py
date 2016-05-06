@@ -18,7 +18,6 @@
 #  limitations under the License.
 #
 
-from datetime import datetime
 import json
 import os
 import time
@@ -120,9 +119,7 @@ class JSON(object):
         won = IkaUtils.getWinLoseText(
             context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
 
-        t = datetime.now()
-        t_str = t.strftime("%Y,%m,%d,%H,%M")
-        t_unix = int(time.mktime(t.timetuple()))
+        t_unix = int(IkaUtils.get_end_time(context))
 
         record = {
             'time': t_unix,

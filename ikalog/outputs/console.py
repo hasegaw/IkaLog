@@ -122,9 +122,6 @@ class Console(object):
             lose_text=_('lose'),
             unknown_text=_('unknown'),
         )
-        t = datetime.now()
-        t_str = t.strftime("%Y,%m,%d,%H,%M")
-        t_unix = int(time.mktime(t.timetuple()))
         me = IkaUtils.getMyEntryFromContext(context)
 
         s = _('Results. Stage: %(stage)s, Mode: %(rule)s, Result: %(result)s') % \
