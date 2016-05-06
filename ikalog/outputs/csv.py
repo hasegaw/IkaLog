@@ -121,7 +121,7 @@ class CSV(object):
             context['game']['won'], win_text="勝ち", lose_text="負け", unknown_text="不明")
 
         t = IkaUtils.get_end_time(context)
-        t_unix = int(t)
+        t_unix = int(time.mktime(t.timetuple()))
         t_str = t.strftime("%Y,%m,%d,%H,%M")
         s_won = IkaUtils.getWinLoseText(
             won, win_text="勝ち", lose_text="負け", unknown_text="不明")

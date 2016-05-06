@@ -119,7 +119,7 @@ class JSON(object):
         won = IkaUtils.getWinLoseText(
             context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
 
-        t_unix = int(IkaUtils.get_end_time(context))
+        t_unix = int(time.mktime(IkaUtils.get_end_time(context).timetuple()))
 
         record = {
             'time': t_unix,
