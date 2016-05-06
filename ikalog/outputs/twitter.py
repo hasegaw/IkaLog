@@ -21,7 +21,6 @@
 # @package IkaOutput_Twitter
 
 import os
-from datetime import datetime
 import json
 
 import cv2
@@ -473,7 +472,7 @@ class Twitter(object):
             lose_text=_('lost'),
             unknown_text=_('played'))
 
-        t = datetime.fromtimestamp(context['game']['end_time']).strftime("%Y/%m/%d %H:%M")
+        t = IkaUtils.get_end_time(context).strftime("%Y/%m/%d %H:%M")
 
         s = _('Just %(result)s %(rule)s at %(stage)s') % \
             { 'stage': stage, 'rule': rule, 'result': result}

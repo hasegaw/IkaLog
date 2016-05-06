@@ -18,7 +18,6 @@
 #  limitations under the License.
 #
 
-from datetime import datetime
 import os
 import time
 
@@ -121,9 +120,9 @@ class CSV(object):
         won = IkaUtils.getWinLoseText(
             context['game']['won'], win_text="勝ち", lose_text="負け", unknown_text="不明")
 
-        t = context['game']['end_time']
+        t = IkaUtils.get_end_time(context)
         t_unix = int(t)
-        t_str = datetime.fromtimestamp(t).strftime("%Y,%m,%d,%H,%M")
+        t_str = t.strftime("%Y,%m,%d,%H,%M")
         s_won = IkaUtils.getWinLoseText(
             won, win_text="勝ち", lose_text="負け", unknown_text="不明")
 
