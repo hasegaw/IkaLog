@@ -23,6 +23,7 @@ Localization.print_language_settings()
 
 import argparse
 import signal
+import sys
 import time
 from ikalog import inputs
 from ikalog.engine import IkaEngine
