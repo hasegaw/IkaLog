@@ -163,8 +163,19 @@ class IkaEngine:
         return self._stop
 
     def reset(self):
+        index = 0
+        if 'game' in self.context:
+            index = self.context['game'].get('index', 0)
+            # Increment the value only when end_time is available,
+            # (e.g. the game was finished).
+            if self.context['game'].get('end_time'):
+                index += 1
+
         # Initalize the context
         self.context['game'] = {
+            # Index of this game.
+            'index': index,
+
             'map': None,
             'rule': None,
             'won': None,
