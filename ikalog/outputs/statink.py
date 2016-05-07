@@ -677,7 +677,7 @@ class StatInk(object):
         # 戦績画面はこの後にくるはずなので今までにあるデータは捨てる
         self.img_result_detail = None
         self.img_judge = None
-        self.img_gaers = None
+        self.img_gears = None
 
         IkaUtils.dprint('%s: Discarded screenshots' % self)
 
