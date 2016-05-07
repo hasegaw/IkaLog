@@ -84,6 +84,7 @@ class ResultGears(StatefulScene):
             # The values, especially cash, will be overwritten by
             # the results of the last frame, but may be used for fallbacks.
             matched = self._analyze(frame, context)
+            self._call_plugins('on_result_gears_still')
 
         if matched:
             game = context['game']

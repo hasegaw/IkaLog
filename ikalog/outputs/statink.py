@@ -349,6 +349,9 @@ class StatInk(object):
                 'rgb': context['game']['counter_team_color']['rgb'],
             }
 
+        if self.img_gears is not None:
+            payload['image_gear'] = self.encode_image(self.img_gears)
+
         # Agent Information
 
         payload['agent'] = 'IkaLog'
@@ -641,8 +644,13 @@ class StatInk(object):
 
         if 'image_result' in payload:
             payload['image_result'] = '(PNG Data)'
+
         if 'image_judge' in payload:
             payload['image_judge'] = '(PNG Data)'
+
+        if 'image_gear' in payload:
+            payload['image_gear'] = '(PNG Data)'
+
         if 'events' in payload:
             payload['events'] = '(Events)'
 
@@ -669,6 +677,7 @@ class StatInk(object):
         # 戦績画面はこの後にくるはずなので今までにあるデータは捨てる
         self.img_result_detail = None
         self.img_judge = None
+        self.img_gears = None
 
         IkaUtils.dprint('%s: Discarded screenshots' % self)
 
@@ -705,6 +714,11 @@ class StatInk(object):
             self.write_payload_to_file(payload, filename=self.payload_file)
 
         self.post_payload(context, payload)
+
+    def on_result_gears_still(self, context):
+        self.img_gears = context['engine']['frame']
+        IkaUtils.dprint('%s: Gathered img_gears (%s)' %
+                        (self, self.img_gears.shape))
 
     def on_game_session_end(self, context):
         self._close_game_session(context)
@@ -878,6 +892,7 @@ class StatInk(object):
 
         self.img_result_detail = None
         self.img_judge = None
+        self.img_gears = None
 
         self.debug_writePayloadToFile = False
         self.show_response_enabled = debug
