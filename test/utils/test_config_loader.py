@@ -18,11 +18,11 @@
 #  limitations under the License.
 #
 
-#  Unit test for ikautils.
+#  Unit test for config_loader.
 #  Usage:
-#    python ./test_ikautils.py
+#    python ./test_config_loader.py
 #  or
-#    py.test ./test_ikautils.py
+#    py.test ./test_config_loader.py
 
 import unittest
 import os.path
