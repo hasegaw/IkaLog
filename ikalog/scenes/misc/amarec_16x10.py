@@ -50,7 +50,7 @@ class Amarec16x10Warning(StatefulScene):
         if matched:
             self._switch_state(self._state_tracking)
             self._call_plugins(
-                'on_amarec16x19_warning',
+                'on_amarec16x10_warning',
                 params={'enabled': True},
             )
 
@@ -61,7 +61,7 @@ class Amarec16x10Warning(StatefulScene):
         if not matched:
             self._switch_state(self._state_default)
             self._call_plugins(
-                'on_amarec16x19_warning',
+                'on_amarec16x10_warning',
                 params={'enabled': False},
             )
 
