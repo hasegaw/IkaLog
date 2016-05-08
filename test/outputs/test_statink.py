@@ -18,10 +18,17 @@
 #  limitations under the License.
 #
 
-
 import unittest
+import os.path
+import sys
+
+# Append the Ikalog root dir to sys.path to import IkaUtils.
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from ikalog import constants
 
+class IkaMatcherMock(object):
+    def __init__(self, id):
+        self.id_ = id
 
 class TestStatInk(unittest.TestCase):
 
@@ -39,12 +46,15 @@ class TestStatInk(unittest.TestCase):
                 'is_fes': False,
                 'won': True,
                 'players': [
-                    {'me': True, },
+                    {'me': True,
+                     'team': 1,
+                     },
                 ],
                 'death_reasons': {},
             },
             'lobby': {},
             'scenes': {},
+            'engine': {},
         }
 
         payload = statink.composite_payload(context)
@@ -63,19 +73,20 @@ class TestStatInk(unittest.TestCase):
 
         assert not 'rule' in payload
 
-        context['game']['rule'] = {'name': 'ナワバリバトル'}
+        context['game']['rule'] = IkaMatcherMock('area')
         payload = statink.composite_payload(context)
-        assert payload['rule'] == 'nawabari'
+        assert payload['rule'] == 'area'
 
         # local inkling's stats
         context['game']['players'] = [{
             'me': True,
+            'team': 1,
             'kills': 1,
             'deaths': 2,
             'rank': 3,
             'score': 4,
-            'udemae_pre': 'a',
         }, ]
+        context['game']['result_udemae_str_pre'] = 'a'
         payload = statink.composite_payload(context)
         assert payload['kill'] == 1
         assert payload['death'] == 2
@@ -93,7 +104,7 @@ class TestStatInk(unittest.TestCase):
 
         assert not 'knockout' in payload
 
-        context['game']['rule'] = {'name': 'ナワバリバトル'}
+        context['game']['rule'] = IkaMatcherMock('nawabari')
         context['game']['knockout'] = True
         payload = statink.composite_payload(context)
         # ナワバリバトルではノックアウトが発生しないので
@@ -101,7 +112,7 @@ class TestStatInk(unittest.TestCase):
         assert not 'knockout' in payload
 
         # ガチヤグラなどではOK
-        context['game']['rule'] = {'name': 'ガチヤグラ'}
+        context['game']['rule'] = IkaMatcherMock('yagura')
         payload = statink.composite_payload(context)
         assert payload['knock_out'] == 'yes'
 
@@ -111,11 +122,10 @@ class TestStatInk(unittest.TestCase):
 
         # ResultUdemae
 
-        context['scenes']['result_udemae'] = {}
-        context['scenes']['result_udemae']['udemae_exp_pre'] = 10
-        context['scenes']['result_udemae']['udemae_exp_after'] = 20
-        context['scenes']['result_udemae']['udemae_str_pre'] = 'a'
-        context['scenes']['result_udemae']['udemae_str_after'] = 'a+'
+        context['game']['result_udemae_exp_pre'] = 10
+        context['game']['result_udemae_exp'] = 20
+        context['game']['result_udemae_str_pre'] = 'a'
+        context['game']['result_udemae_str'] = 'a+'
 
         payload = statink.composite_payload(context)
         assert payload['rank_exp'] == 10
@@ -148,3 +158,6 @@ class TestStatInk(unittest.TestCase):
         assert payload['his_team_color']['hue'] == 160 * 2
 
         # TODO: Test RGB data
+
+if __name__ == '__main__':
+    unittest.main()
