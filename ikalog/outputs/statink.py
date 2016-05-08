@@ -883,6 +883,13 @@ class StatInk(object):
         self.enabled = not (api_key is None)
         self.api_key = api_key
         self.dry_run = dry_run
+        self.debug_writePayloadToFile = False
+        self.show_response_enabled = debug
+        self.track_inklings_enabled = track_inklings
+        self.track_special_gauge_enabled = track_special_gauge
+        self.track_special_weapon_enabled = track_special_weapon
+        self.track_objective_enabled = track_objective
+        self.track_splatzone_enabled = track_splatzone
 
         self.events = []
         self.time_last_score_msec = None
@@ -894,13 +901,6 @@ class StatInk(object):
         self.img_judge = None
         self.img_gears = None
 
-        self.debug_writePayloadToFile = False
-        self.show_response_enabled = debug
-        self.track_inklings_enabled = track_inklings
-        self.track_special_gauge_enabled = track_special_gauge
-        self.track_special_weapon_enabled = track_special_weapon
-        self.track_objective_enabled = track_objective
-        self.track_splatzone_enabled = track_splatzone
 
         self.url_statink_v1_battle = '%s/api/v1/battle' % url
 
