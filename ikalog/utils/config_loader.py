@@ -99,7 +99,8 @@ def _replace_vars(args, vars):
         arg_val = args[arg_key]
         if isinstance(arg_val, str):
             for var_key in vars:
-                arg_val = arg_val.replace(var_key, vars[var_key])
+                if vars[var_key]:
+                    arg_val = arg_val.replace(var_key, vars[var_key])
         replaced[arg_key] = arg_val
     return replaced
 
