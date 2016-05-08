@@ -48,5 +48,13 @@ class TestConfigLoader(unittest.TestCase):
         self.assertEqual('/tmp/video.mp4.txt', replaced.get('file.txt'))
         self.assertEqual('This is /tmp/video.mp4.', replaced.get('message'))
 
+    def test__replace_vars_with_None(self):
+        vars = {'__INPUT_FILE__': None}
+        args = {
+                'file.txt': '__INPUT_FILE__.txt',
+                }
+        replaced = config_loader._replace_vars(args, vars)
+        self.assertEqual('__INPUT_FILE__.txt', replaced.get('file.txt'))
+
 if __name__ == '__main__':
     unittest.main()
