@@ -33,6 +33,7 @@ from ikalog.constants import fes_rank_titles, stages, weapons, special_weapons
 from ikalog.utils.statink_uploader import UploadToStatInk
 from ikalog.version import IKALOG_VERSION
 from ikalog.utils import *
+from ikalog.utils.anonymizer import anonymize
 
 _ = Localization.gettext_translation('statink', fallback=True).gettext
 
@@ -61,6 +62,8 @@ class StatInk(object):
         self.track_special_weapon_enabled = self.checkTrackSpecialWeaponEnable.GetValue()
         self.track_objective_enabled = self.checkTrackObjectiveEnable.GetValue()
         self.track_splatzone_enabled = self.checkTrackSplatzoneEnable.GetValue()
+        self.anon_others = self.radio_anon_others.GetValue()
+        self.anon_all = self.radio_anon_all.GetValue()
         self.api_key = self.editApiKey.GetValue()
 
     def refresh_ui(self):
@@ -73,6 +76,10 @@ class StatInk(object):
             self.track_special_weapon_enabled)
         self.checkTrackObjectiveEnable.SetValue(self.track_objective_enabled)
         self.checkTrackSplatzoneEnable.SetValue(self.track_splatzone_enabled)
+
+        self.radio_anon_disable.SetValue(True)
+        self.radio_anon_others.SetValue(self.anon_others)
+        self.radio_anon_all.SetValue(self.anon_all)
 
         if not self.api_key is None:
             self.editApiKey.SetValue(self.api_key)
@@ -87,6 +94,8 @@ class StatInk(object):
         self.track_special_weapon_enabled = False
         self.track_objective_enabled = False
         self.track_splatzone_enabled = False
+        self.anon_others = False
+        self.anon_all = False
         self.api_key = None
 
     def on_config_load_from_context(self, context):
@@ -104,6 +113,8 @@ class StatInk(object):
             'TrackSpecialWeapon', False)
         self.track_objective_enabled = conf.get('TrackObjective', False)
         self.track_splatzone_enabled = conf.get('TrackSplatzone', False)
+        self.anon_others = conf.get('anon_others', False)
+        self.anon_all = conf.get('anon_all', False)
         self.api_key = conf.get('APIKEY', '')
 
         self.refresh_ui()
@@ -118,6 +129,8 @@ class StatInk(object):
             'TrackSpecialWeapon': self.track_special_weapon_enabled,
             'TrackObjective': self.track_objective_enabled,
             'TrackSplatzone': self.track_splatzone_enabled,
+            'anon_others': self.anon_others,
+            'anon_all': self.anon_all,
             'APIKEY': self.api_key,
         }
 
@@ -145,6 +158,13 @@ class StatInk(object):
             self.panel, wx.ID_ANY, _('Include inkling status (experimental)'))
         self.editApiKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
+        self.radio_anon_disable = wx.RadioButton(
+            self.panel, wx.ID_ANY, _('Disabled'))
+        self.radio_anon_others = wx.RadioButton(
+            self.panel, wx.ID_ANY, _('Other players'))
+        self.radio_anon_all = wx.RadioButton(
+            self.panel, wx.ID_ANY, _('All players'))
+
         self.layout.Add(self.checkEnable)
         self.layout.Add(self.checkShowResponseEnable)
         self.layout.Add(self.checkTrackInklingStateEnable)
@@ -152,6 +172,10 @@ class StatInk(object):
         self.layout.Add(self.checkTrackSpecialWeaponEnable)
         self.layout.Add(self.checkTrackObjectiveEnable)
         self.layout.Add(self.checkTrackSplatzoneEnable)
+        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Anonymizer (Hide player names)')))
+        self.layout.Add(self.radio_anon_disable)
+        self.layout.Add(self.radio_anon_others)
+        self.layout.Add(self.radio_anon_all)
         self.layout.Add(wx.StaticText(
             self.panel, wx.ID_ANY, _('API Key')))
         self.layout.Add(self.editApiKey, flag=wx.EXPAND)
@@ -538,7 +562,12 @@ class StatInk(object):
         # Screenshots
 
         if self.img_result_detail is not None:
-            payload['image_result'] = self.encode_image(self.img_result_detail)
+            img_scoreboard = anonymize(
+                self.img_result_detail,
+                anonOthers = self.anon_others,
+                anonAll = self.anon_all,
+            )
+            payload['image_result'] = self.encode_image(img_scoreboard)
         else:
             IkaUtils.dprint('%s: img_result_detail is empty.' % self)
 
@@ -672,6 +701,7 @@ class StatInk(object):
         self._open_game_session(context)
 
     def on_game_finish(self, context):
+        self._add_event(context, {'type': 'finish'})
         self.on_game_paint_score_update(context)
 
         # 戦績画面はこの後にくるはずなので今までにあるデータは捨てる
@@ -878,11 +908,21 @@ class StatInk(object):
     def __init__(self, api_key=None, track_objective=False,
                  track_splatzone=False, track_inklings=False,
                  track_special_gauge=False, track_special_weapon=False,
+                 anon_all = False, anon_others = False,
                  debug=False, dry_run=False, url='https://stat.ink',
                  video_id=None, payload_file=None):
         self.enabled = not (api_key is None)
         self.api_key = api_key
         self.dry_run = dry_run
+        self.debug_writePayloadToFile = False
+        self.show_response_enabled = debug
+        self.track_inklings_enabled = track_inklings
+        self.track_special_gauge_enabled = track_special_gauge
+        self.track_special_weapon_enabled = track_special_weapon
+        self.track_objective_enabled = track_objective
+        self.track_splatzone_enabled = track_splatzone
+        self.anon_all = anon_all
+        self.anon_others = anon_others
 
         self.events = []
         self.time_last_score_msec = None
@@ -894,13 +934,6 @@ class StatInk(object):
         self.img_judge = None
         self.img_gears = None
 
-        self.debug_writePayloadToFile = False
-        self.show_response_enabled = debug
-        self.track_inklings_enabled = track_inklings
-        self.track_special_gauge_enabled = track_special_gauge
-        self.track_special_weapon_enabled = track_special_weapon
-        self.track_objective_enabled = track_objective
-        self.track_splatzone_enabled = track_splatzone
 
         self.url_statink_v1_battle = '%s/api/v1/battle' % url
 
