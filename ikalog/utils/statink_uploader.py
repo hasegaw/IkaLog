@@ -40,7 +40,8 @@ def UploadToStatInk(payload, api_key, url=None, video_id=None,
     payload['apikey'] = api_key
     if dry_run:
         payload['test'] = 'dry_run'
-    if video_id:
+
+    if isinstance(video_id, str) and (video_id != ''):
         payload['link_url'] = 'https://www.youtube.com/watch?v=%s' % video_id
 
     mp_payload_bytes = umsgpack.packb(payload)

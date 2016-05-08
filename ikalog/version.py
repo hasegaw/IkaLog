@@ -36,6 +36,7 @@ def __get_ikalog_version():
     return '%s (%s)' % (__get_ikalog_revision(), platform.system())
 
 IKALOG_VERSION =  __get_ikalog_version()
+IKALOG_GAME_VERSION = '2016-04-13_00'
 
 if __name__ == '__main__':
     print(IKALOG_VERSION)

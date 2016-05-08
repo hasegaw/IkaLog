@@ -333,7 +333,7 @@ class StatInk(object):
             payload['events'] = list(self.events)
 
         # Video URL
-        if not ((self.video_id is None) or (self.video_id == '')):
+        if isinstance(self.video_id, str) and (self.video_id != ''):
             payload['link_url'] = 'https://www.youtube.com/watch?v=%s' % self.video_id
 
         self.composite_result_payload(context, payload)
