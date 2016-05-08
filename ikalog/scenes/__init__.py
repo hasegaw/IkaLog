@@ -3,7 +3,7 @@
 #
 #  IkaLog
 #  ======
-#  Copyright (C) 2015 Takeshi HASEGAWA
+#  Copyright (C) 2016 Takeshi HASEGAWA
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -44,3 +44,4 @@ from .plaza_user_stat import PlazaUserStat
 
 from .downie import Downie
 from .blank import Blank
+from .misc.amarec_16x10 import Amarec16x10Warning
