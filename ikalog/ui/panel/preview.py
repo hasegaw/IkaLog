@@ -24,6 +24,9 @@ import threading
 import wx
 import cv2
 
+from ikalog.utils import Localization
+
+_ = Localization.gettext_translation('IkaUI', fallback=True).gettext
 
 class PreviewPanel(wx.Panel):
 
@@ -31,6 +34,10 @@ class PreviewPanel(wx.Panel):
         orig_state = obj.GetEvtHandlerEnabled()
         obj.SetEvtHandlerEnabled(enable)
         return orig_state
+
+
+    def on_amarec16x10_warning(self, context, params):
+        self._amarec16x10_warning = params['enabled']
 
     def on_show_preview(self, context):
         self.lock.acquire()
@@ -83,6 +90,11 @@ class PreviewPanel(wx.Panel):
         if not self.refresh_at_next:
             return
 
+        if self._amarec16x10_warning is not None:
+            label = self.label_amarec16x10_warning
+            { True: label.Show, False: label.Hide }[self._amarec16x10_warning]()
+            self._amarec16x10_warning = None
+
         self.Refresh()
         self.refresh_at_next = False
 
@@ -98,6 +110,10 @@ class PreviewPanel(wx.Panel):
         # self.Bind(wx.EVT_SIZE, self.OnResize)
         self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
 
+        self.label_amarec16x10_warning = wx.StaticText(
+            self, wx.ID_ANY, _('The image seems to be 16x10. Perhaps the source is misconfigured.'), pos=(0, 0))
+        self.label_amarec16x10_warning.Hide();
+        self._amarec16x10_warning = None
 
 if __name__ == "__main__":
     import sys
