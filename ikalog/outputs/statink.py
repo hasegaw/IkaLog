@@ -701,6 +701,7 @@ class StatInk(object):
         self._open_game_session(context)
 
     def on_game_finish(self, context):
+        self._add_event(context, {'type': 'finish'})
         self.on_game_paint_score_update(context)
 
         # 戦績画面はこの後にくるはずなので今までにあるデータは捨てる
