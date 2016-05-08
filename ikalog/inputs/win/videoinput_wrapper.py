@@ -31,6 +31,7 @@ from ikalog.utils import *
 
 c_int_p = ctypes.POINTER(c_int)
 
+
 class VideoInputWrapper(object):
     VI_COMPOSITE = 0
     VI_S_VIDEO = 1
@@ -84,7 +85,6 @@ class VideoInputWrapper(object):
     DS_CONNECTION = 0x20
 
     def __del__(self):
-        print('running destructor')
         self.dll.VI_Deinit()
 
     def get_device_names(self):
@@ -205,14 +205,10 @@ class VideoInputWrapper(object):
         ]
         self.dll.VI_GetPixels.restype = c_int
 
-
-
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, '__instance__'):
             cls.__instance__ = \
                 super(VideoInputWrapper, cls).__new__(cls, *args, **kwargs)
+            cls.__instance__._load_library()
+            cls.__instance__.dll.VI_Init()
         return cls.__instance__
-
-    def __init__(self):
-        self._load_library()
-        self.dll.VI_Init()
