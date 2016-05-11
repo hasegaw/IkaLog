@@ -25,19 +25,15 @@ import sys
 # Append the Ikalog root dir to sys.path to import IkaUtils.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from ikalog import constants
+from ikalog.outputs.statink import StatInk
 
 class IkaMatcherMock(object):
     def __init__(self, id):
         self.id_ = id
 
 class TestStatInk(unittest.TestCase):
-
-    def _load_StatInk(self):
-        from ikalog.outputs.statink import StatInk
-        return StatInk('not_valid_key')
-
     def test_composite(self):
-        statink = self._load_StatInk()
+        statink = StatInk()
 
         context = {
             'game': {
@@ -158,6 +154,18 @@ class TestStatInk(unittest.TestCase):
         assert payload['his_team_color']['hue'] == 160 * 2
 
         # TODO: Test RGB data
+
+    def test__get_payload_file(self):
+        statink = StatInk()
+        self.assertIsNone(statink._get_payload_file(None, 0))
+        self.assertEqual('/tmp/statink.msgpack',
+                         statink._get_payload_file('/tmp/statink.msgpack', 0))
+        self.assertEqual('/tmp/statink-1.msgpack',
+                         statink._get_payload_file('/tmp/statink.msgpack', 1))
+        self.assertEqual('/tmp/statink-10.msgpack',
+                         statink._get_payload_file('/tmp/statink.msgpack', 10))
+        self.assertEqual('/tmp/video.mp4-1.statink',
+                         statink._get_payload_file('/tmp/video.mp4.statink', 1))
 
 if __name__ == '__main__':
     unittest.main()

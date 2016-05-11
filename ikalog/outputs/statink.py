@@ -726,6 +726,12 @@ class StatInk(object):
         IkaUtils.dprint('%s: Gathered img_judge(%s)' %
                         (self, self.img_judge.shape))
 
+    def _get_payload_file(self, payload_file, index):
+        if not payload_file or index == 0:
+            return payload_file
+        base, ext = os.path.splitext(payload_file)
+        return '%s-%d%s' % (base, index, ext)
+
     def _close_game_session(self, context):
         if self._called_close_game_session:
             return
@@ -741,7 +747,9 @@ class StatInk(object):
         self.print_payload(payload)
 
         if self.debug_writePayloadToFile or self.payload_file:
-            self.write_payload_to_file(payload, filename=self.payload_file)
+            payload_file = self._get_payload_file(self.payload_file,
+                                                  context['game']['index'])
+            self.write_payload_to_file(payload, filename=payload_file)
 
         self.post_payload(context, payload)
 
