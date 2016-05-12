@@ -31,7 +31,7 @@ import umsgpack
 from datetime import datetime
 from ikalog.constants import fes_rank_titles, stages, weapons, special_weapons
 from ikalog.utils.statink_uploader import UploadToStatInk
-from ikalog.version import IKALOG_VERSION
+import ikalog.version
 from ikalog.utils import *
 from ikalog.utils.anonymizer import anonymize
 
@@ -379,7 +379,9 @@ class StatInk(object):
         # Agent Information
 
         payload['agent'] = 'IkaLog'
-        payload['agent_version'] = IKALOG_VERSION
+        payload['agent_version'] = ikalog.version.IKALOG_VERSION
+        payload['agent_game_version'] = ikalog.version.GAME_VERSION
+        payload['agent_game_version_date'] = ikalog.version.GAME_VERSION_DATE
 
         payload['agent_variables'] = self.composite_agent_variables(context)
         payload['agent_custom'] = self.composite_agent_custom(context)
