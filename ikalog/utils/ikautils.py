@@ -167,6 +167,18 @@ class IkaUtils(object):
         return gear_ability_id
 
     @staticmethod
+    def weapon2text(reason, unknown='?', languages=None):
+        reason_dict = {}
+        if reason in weapons:
+            reason_dict = weapons[reason]
+
+        for lang in IkaUtils.extend_languages(languages):
+            if lang in reason_dict:
+                return reason_dict[lang]
+
+        return unknown
+
+    @staticmethod
     def death_reason2text(reason, unknown='?', languages=None):
         reason_dict = {}
         if reason in weapons:
@@ -274,3 +286,11 @@ class IkaUtils(object):
             return datetime.fromtimestamp(unix_time)
         else:
             return datetime.now()
+
+    @staticmethod
+    def getFileName(filename, index):
+        """Returns filename with number suffix, if index is not zero."""
+        if not filename or index == 0:
+            return filename
+        base, ext = os.path.splitext(filename)
+        return '%s-%d%s' % (base, index, ext)

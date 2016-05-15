@@ -155,17 +155,5 @@ class TestStatInk(unittest.TestCase):
 
         # TODO: Test RGB data
 
-    def test__get_payload_file(self):
-        statink = StatInk()
-        self.assertIsNone(statink._get_payload_file(None, 0))
-        self.assertEqual('/tmp/statink.msgpack',
-                         statink._get_payload_file('/tmp/statink.msgpack', 0))
-        self.assertEqual('/tmp/statink-1.msgpack',
-                         statink._get_payload_file('/tmp/statink.msgpack', 1))
-        self.assertEqual('/tmp/statink-10.msgpack',
-                         statink._get_payload_file('/tmp/statink.msgpack', 10))
-        self.assertEqual('/tmp/video.mp4-1.statink',
-                         statink._get_payload_file('/tmp/video.mp4.statink', 1))
-
 if __name__ == '__main__':
     unittest.main()

@@ -159,6 +159,38 @@ class TestIkaUtils(unittest.TestCase):
                                                     unknown='<:='))
 
 
+    def test_weapon2text(self):
+        ### Weapons
+        weapon = 'bamboo14mk3'
+
+        # English
+        self.assertEqual('Bamboozler 14 Mk III',
+                         IkaUtils.weapon2text(weapon, languages='en'))
+
+        # Japanese
+        self.assertEqual('14式竹筒銃・丙',
+                         IkaUtils.weapon2text(weapon, languages='ja'))
+
+        # Fallback to English
+        self.assertEqual('Bamboozler 14 Mk III',
+                         IkaUtils.weapon2text(weapon, languages='??'))
+
+        # Multiple languages
+        self.assertEqual('14式竹筒銃・丙',
+                         IkaUtils.weapon2text(weapon, languages=['ja', 'en']))
+
+        ### Invalid weapons
+        weapon = 'kyubanbomb'  # Suction Bomb
+        self.assertEqual('?', IkaUtils.weapon2text(weapon, languages='en'))
+        self.assertEqual('?', IkaUtils.weapon2text(weapon, languages='ja'))
+
+        ### Unkonwn
+        unknown_weapon = 'unknown'
+        self.assertEqual('?', IkaUtils.weapon2text(unknown_weapon))
+        self.assertEqual('<:=',
+                         IkaUtils.weapon2text(unknown_weapon, unknown='<:='))
+
+
     def test_death_reason2text(self):
         ### Weapons
         reason = 'hokusai'
@@ -239,6 +271,18 @@ class TestIkaUtils(unittest.TestCase):
         self.assertEqual("20150528_110000",
                          time.strftime("%Y%m%d_%H%M%S",
                                        time.localtime(time_actual)))
+
+
+    def test_getFileName(self):
+        self.assertIsNone(IkaUtils.getFileName(None, 0))
+        self.assertEqual('/tmp/statink.msgpack',
+                         IkaUtils.getFileName('/tmp/statink.msgpack', 0))
+        self.assertEqual('/tmp/statink-1.msgpack',
+                         IkaUtils.getFileName('/tmp/statink.msgpack', 1))
+        self.assertEqual('/tmp/statink-10.msgpack',
+                         IkaUtils.getFileName('/tmp/statink.msgpack', 10))
+        self.assertEqual('/tmp/video.mp4-1.statink',
+                         IkaUtils.getFileName('/tmp/video.mp4.statink', 1))
 
 if __name__ == '__main__':
     unittest.main()
