@@ -99,12 +99,17 @@ class JSON(object):
     # Write a line to text file.
     # @param self     The Object Pointer.
     # @param record   Record (text)
+    # @param index    Index of the game.
     #
-    def write_record(self, record):
+    def write_record(self, record, index=0):
         try:
-            json_file = open(self.json_filename, "a")
-            json_file.write(record)
-            json_file.close
+            if self.append_data:
+                json_file = open(self.json_filename, "a")
+            else:
+                filename = IkaUtils.getFileName(self.json_filename, index)
+                json_file = open(filename, 'w')
+            json_file.write(json.dumps(record, separators=(',', ':')) + '\n')
+            json_file.close()
         except:
             print("JSON: Failed to write JSON file")
 
@@ -161,7 +166,18 @@ class JSON(object):
                     player_record[field] = player[field]
             record['players'].append(player_record)
 
-        return json.dumps(record, separators=(',', ':')) + "\n"
+        return record
+
+    def _close_game_session(self, context):
+        IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
+        if not self.enabled:
+            return
+
+        record = self.get_record_game_result(context)
+        if record['time'] == self._last_record_time:
+            return
+        self._last_record_time = record['time']
+        self.write_record(record, context['game'].get('index'))
 
     ##
     # on_game_individual_result Hook
@@ -169,19 +185,19 @@ class JSON(object):
     # @param context   IkaLog context
     #
     def on_game_session_end(self, context):
-        IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
+        self._close_game_session(context)
 
-        if not self.enabled:
-            return
-
-        record = self.get_record_game_result(context)
-        self.write_record(record)
+    def on_game_session_abort(self, context):
+        self._close_game_session(context)
 
     ##
     # Constructor
     # @param self          The Object Pointer.
     # @param json_filename JSON log file name
+    # @param append_data whether append or overwrite the data to file.
     #
-    def __init__(self, json_filename=None):
+    def __init__(self, json_filename=None, append_data=True):
         self.enabled = (not json_filename is None)
         self.json_filename = json_filename
+        self.append_data = append_data
+        self._last_record_time = None
