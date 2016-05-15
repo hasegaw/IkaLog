@@ -32,6 +32,12 @@ try:
 except:
     pass
 
+
+def _set(dest, dest_key, src, src_key):
+    if src_key not in src:
+        return
+    dest[dest_key] = src[src_key]
+
 # IkaOutput_JSON: IkaLog Output Plugin for JSON Logging
 #
 # Write JSON Log file
@@ -119,12 +125,11 @@ class JSON(object):
     # @param context   IkaLog context
     #
     def get_record_game_result(self, context):
-        map = IkaUtils.map2text(context['game']['map'])
-        rule = IkaUtils.rule2text(context['game']['rule'])
+        map = IkaUtils.map2id(context['game']['map'])
+        rule = IkaUtils.rule2id(context['game']['rule'])
         won = IkaUtils.getWinLoseText(
             context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
-
-        t_unix = int(time.mktime(IkaUtils.get_end_time(context).timetuple()))
+        t_unix = int(IkaUtils.get_end_time(context).timestamp())
 
         record = {
             'time': t_unix,
@@ -134,37 +139,35 @@ class JSON(object):
             'result': won
         }
 
+        _set(record, 'lobby', context['lobby'], 'type')
+
         # ウデマエ
-        try:
-            udemae = context['scenes']['result_udemae']
-            record['udemae_pre'] = result_udemae['udemae_exp_pre']
-            record['udemae_exp_pre'] = udemae['udemae_exp_pre']
-            record['udemae_after'] = udemae['udemae_str_after']
-            record['udemae_exp_after'] = udemae['udemae_exp_after']
-        except:
-            pass
+        _set(record, 'udemae_pre', context['game'], 'result_udemae_str_pre')
+        _set(record, 'udemae_exp_pre', context['game'], 'result_udemae_exp_pre')
+        _set(record, 'udemae_after', context['game'],'result_udemae_str')
+        _set(record, 'udemae_exp_after', context['game'], 'result_udemae_exp')
 
         # オカネ
-        try:
-            record['cash_after'] = context['scenes']['result_gears']['cash']
-        except:
-            pass
+        if context['scenes'].get('result_gears'):
+            _set(record, 'cash_after',
+                 context['scenes']['result_gears'], 'cash')
 
         # 個人成績
         me = IkaUtils.getMyEntryFromContext(context)
-
-        for field in ['team', 'kills', 'deaths', 'score', 'udemae_pre', 'weapon', 'rank_in_team']:
-            if field in me:
-                record[field] = me[field]
+        if me:
+            for field in ['team', 'kills', 'deaths', 'score', 'weapon',
+                          'rank_in_team']:
+                _set(record, field, me, field)
 
         # 全プレイヤーの成績
-        record['players'] = []
-        for player in context['game']['players']:
-            player_record = {}
-            for field in ['team', 'kills', 'deaths', 'score', 'udemae_pre', 'weapon', 'rank_in_team']:
-                if field in player:
-                    player_record[field] = player[field]
-            record['players'].append(player_record)
+        if context['game'].get('players'):
+            record['players'] = []
+            for player in context['game']['players']:
+                player_record = {}
+                for field in ['team', 'kills', 'deaths', 'score', 'weapon',
+                              'rank_in_team']:
+                    _set(player_record, field, player, field)
+                record['players'].append(player_record)
 
         return record
 
