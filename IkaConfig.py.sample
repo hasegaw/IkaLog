@@ -135,9 +135,13 @@ OUTPUT_ARGS['Fluentd'] = {
 OUTPUT_ARGS['Hue'] = {'host': '192.168.0.1', 'user': 'newdeveloper'}
 
 # JSON: Write JSON log.
-#
+#  json_filename  output file name.  --output_json is the commandline flag.
+#  append_data    whether the output is appended to the file or overwrites.
 OUTPUT_PLUGINS.append('JSON')
-OUTPUT_ARGS['JSON'] = {'json_filename': 'ika.json'}
+OUTPUT_ARGS['JSON'] = {
+    'json_filename': 'ika.json',
+    'append_data': True,
+}
 
 # Screenshot: Save scoreboard screenshots.
 #
