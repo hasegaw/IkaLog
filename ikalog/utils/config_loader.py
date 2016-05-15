@@ -140,7 +140,9 @@ def _init_outputs(opts):
         OutputPlugins.append(outputs.Hue(**args))
 
     # JSON: JSONログファイルを出力します。
-    if 'JSON' in output_plugins:
+    if ('JSON' in output_plugins) or opts.get('output_json'):
+        if opts.get('output_json'):
+            output_args['JSON']['json_filename'] = opts['output_json']
         args = _replace_vars(output_args['JSON'], vars)
         OutputPlugins.append(outputs.JSON(**args))
 
