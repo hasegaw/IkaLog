@@ -101,6 +101,16 @@ class JSON(object):
 
         self.layout.Add(self.checkEnable)
 
+    def _open_game_session(self, context):
+        self._called_close_game_session = False
+
+    def on_game_go_sign(self, context):
+        self._open_game_session(context)
+
+    def on_game_start(self, context):
+        # Fallback in the case on_game_go_sign was skipped.
+        self._open_game_session(context)
+
     ##
     # Write a line to text file.
     # @param self     The Object Pointer.
@@ -172,14 +182,15 @@ class JSON(object):
         return record
 
     def _close_game_session(self, context):
+        if self._called_close_game_session:
+            return
+        self._called_close_game_session = True
+
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
         if not self.enabled:
             return
 
         record = self.get_record_game_result(context)
-        if record['time'] == self._last_record_time:
-            return
-        self._last_record_time = record['time']
         self.write_record(record, context['game'].get('index'))
 
     ##
@@ -203,4 +214,6 @@ class JSON(object):
         self.enabled = (not json_filename is None)
         self.json_filename = json_filename
         self.append_data = append_data
-        self._last_record_time = None
+
+        # If true, it means the data is not saved.
+        self._called_close_game_session = False
