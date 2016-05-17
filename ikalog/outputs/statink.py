@@ -319,7 +319,7 @@ class StatInk(object):
         elif lobby_type == 'private':
             payload['lobby'] = 'private'
 
-        elif context['game']['is_fes'] or (lobby_type == 'festa'):
+        elif context['game'].get('is_fes') or (lobby_type == 'festa'):
             payload['lobby'] = 'fest'
 
         elif lobby_type == 'tag':
