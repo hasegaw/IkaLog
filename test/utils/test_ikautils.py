@@ -79,6 +79,32 @@ class TestIkaUtils(unittest.TestCase):
         self.assertTrue('ja' in languages)
 
 
+    def test_map_id2text(self):
+        map_id = 'shottsuru'
+
+        # English
+        self.assertEqual('Piranha Pit',
+                         IkaUtils.map_id2text(map_id, languages='en'))
+
+        # Japanese
+        self.assertEqual('ショッツル鉱山',
+                         IkaUtils.map_id2text(map_id, languages='ja'))
+
+        # Fallback to English
+        self.assertEqual('Piranha Pit',
+                         IkaUtils.map_id2text(map_id, languages='??'))
+
+        # Multiple languages
+        self.assertEqual('ショッツル鉱山',
+                         IkaUtils.map_id2text(map_id, languages=['ja', 'en']))
+
+        # Unkonwn
+        unknown_map_id = 'unknown'
+        self.assertEqual('?', IkaUtils.map_id2text(unknown_map_id))
+        self.assertEqual('<:=',
+                         IkaUtils.map_id2text(unknown_map_id, unknown='<:='))
+
+
     def test_map2text(self):
         map_mock = IkaMatcherMock('kinmedai')
 
@@ -103,6 +129,32 @@ class TestIkaUtils(unittest.TestCase):
         self.assertEqual('?', IkaUtils.map2text(unknown_map_mock))
         self.assertEqual('<:=',
                          IkaUtils.map2text(unknown_map_mock, unknown='<:='))
+
+
+    def test_rule_id2text(self):
+        rule_id = 'nawabari'
+
+        # English
+        self.assertEqual('Turf War',
+                         IkaUtils.rule_id2text(rule_id, languages='en'))
+
+        # Japanese
+        self.assertEqual('ナワバリバトル',
+                         IkaUtils.rule_id2text(rule_id, languages='ja'))
+
+        # Fallback to English
+        self.assertEqual('Turf War',
+                         IkaUtils.rule_id2text(rule_id, languages='??'))
+
+        # Multiple languages
+        self.assertEqual('ナワバリバトル',
+                         IkaUtils.rule_id2text(rule_id, languages=['ja', 'en']))
+
+        # Unkonwn
+        unknown_rule_id = 'unknown'
+        self.assertEqual('?', IkaUtils.rule_id2text(unknown_rule_id))
+        self.assertEqual('<:=',
+                         IkaUtils.rule_id2text(unknown_rule_id, unknown='<:='))
 
 
     def test_rule2text(self):
