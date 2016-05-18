@@ -248,6 +248,37 @@ class TestIkaUtils(unittest.TestCase):
                                                     unknown='<:='))
 
 
+    def test_lobby2text(self):
+        lobby = 'tag'
+
+        # English
+        self.assertEqual('Squad Battle',
+                         IkaUtils.lobby2text(lobby, languages='en'))
+
+        # Japanese
+        self.assertEqual('タッグマッチ',
+                         IkaUtils.lobby2text(lobby, languages='ja'))
+
+        # Fallback to English
+        self.assertEqual('Squad Battle',
+                         IkaUtils.lobby2text(lobby, languages='??'))
+
+        # Multiple languages
+        self.assertEqual('タッグマッチ',
+                         IkaUtils.lobby2text(lobby, languages=['ja', 'en']))
+
+        ### Invalid lobby type
+        lobby = 'nawabari'  # Turf War
+        self.assertEqual('?', IkaUtils.lobby2text(lobby, languages='en'))
+        self.assertEqual('?', IkaUtils.lobby2text(lobby, languages='ja'))
+
+        ### Unkonwn
+        unknown_lobby = 'unknown'
+        self.assertEqual('?', IkaUtils.lobby2text(unknown_lobby))
+        self.assertEqual('<:=',
+                         IkaUtils.lobby2text(unknown_lobby, unknown='<:='))
+
+
     def test_get_time(self):
         mock_context = {'engine': {'epoch_time': None, 'msec': 5000}}
 

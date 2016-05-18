@@ -30,7 +30,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from ikalog.constants import stages, rules, gear_abilities
+from ikalog.constants import stages, rules, gear_abilities, lobby_types
 # Constants for death_reason2text
 from ikalog.constants import hurtable_objects, oob_reasons, special_weapons, sub_weapons, weapons
 from ikalog.utils.localization import Localization
@@ -195,6 +195,18 @@ class IkaUtils(object):
         for lang in IkaUtils.extend_languages(languages):
             if lang in reason_dict:
                 return reason_dict[lang]
+
+        return unknown
+
+    @staticmethod
+    def lobby2text(lobby_type, unknown='?', languages=None):
+        lobby_dict = {}
+        if lobby_type in lobby_types:
+            lobby_dict = lobby_types[lobby_type]
+
+        for lang in IkaUtils.extend_languages(languages):
+            if lang in lobby_dict:
+                return lobby_dict[lang]
 
         return unknown
 
