@@ -150,6 +150,8 @@ class JSON(object):
         }
 
         _set(record, 'lobby', context['lobby'], 'type')
+        if (not record.get('lobby')) and context['game'].get('is_fes'):
+            record['lobby'] = 'festa'
 
         # ウデマエ
         _set(record, 'udemae_pre', context['game'], 'result_udemae_str_pre')
