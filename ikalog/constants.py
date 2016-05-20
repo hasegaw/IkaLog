@@ -237,6 +237,13 @@ gear_brands = {
     'zink':       {'ja': 'アイロニック', 'en': 'Zink', },
 }
 
+lobby_types = {
+    'festa':    {'ja': 'フェス', 'en': 'Splatfest'},
+    'private':  {'ja': 'プライベートマッチ', 'en': 'Private Battle'},
+    'public':   {'ja': '通常マッチ', 'en': 'Standard Battle'},
+    'tag':      {'ja': 'タッグマッチ', 'en': 'Squad Battle'},
+}
+
 #
 
 upcoming_weapons = [
