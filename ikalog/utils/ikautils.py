@@ -109,9 +109,7 @@ class IkaUtils(object):
         return map.id_
 
     @staticmethod
-    def map2text(map, unknown='?', languages=None):
-        map_id = IkaUtils.map2id(map, unknown=None)
-
+    def map_id2text(map_id, unknown='?', languages=None):
         if map_id is None:
             return unknown
 
@@ -127,15 +125,18 @@ class IkaUtils(object):
         return map_id
 
     @staticmethod
+    def map2text(map, unknown='?', languages=None):
+        map_id = IkaUtils.map2id(map, unknown=None)
+        return IkaUtils.map_id2text(map_id, unknown, languages)
+
+    @staticmethod
     def rule2id(rule, unknown='?'):
         if rule is None:
             return unknown
         return rule.id_
 
     @staticmethod
-    def rule2text(rule, unknown='?', languages=None):
-        rule_id = IkaUtils.rule2id(rule, unknown=None)
-
+    def rule_id2text(rule_id, unknown='?', languages=None):
         if rule_id is None:
             return unknown
 
@@ -149,6 +150,11 @@ class IkaUtils(object):
 
         # Should not reach here
         return rule_id
+
+    @staticmethod
+    def rule2text(rule, unknown='?', languages=None):
+        rule_id = IkaUtils.rule2id(rule, unknown=None)
+        return IkaUtils.rule_id2text(rule_id, unknown, languages)
 
     @staticmethod
     def gear_ability2text(gear_ability, unknown='?', languages=None):
@@ -167,14 +173,14 @@ class IkaUtils(object):
         return gear_ability_id
 
     @staticmethod
-    def weapon2text(reason, unknown='?', languages=None):
-        reason_dict = {}
-        if reason in weapons:
-            reason_dict = weapons[reason]
+    def weapon2text(weapon_id, unknown='?', languages=None):
+        weapon_dict = {}
+        if weapon_id in weapons:
+            weapon_dict = weapons[weapon_id]
 
         for lang in IkaUtils.extend_languages(languages):
-            if lang in reason_dict:
-                return reason_dict[lang]
+            if lang in weapon_dict:
+                return weapon_dict[lang]
 
         return unknown
 
