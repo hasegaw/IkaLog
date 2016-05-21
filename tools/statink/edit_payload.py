@@ -29,7 +29,7 @@ import umsgpack
 
 # Append the Ikalog root dir to sys.path to import IkaUtils.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-from ikalog.constants import rules, stages, weapons
+from ikalog.constants import rules, stages, udemae_strings, weapons
 
 LOBBY_LIST = [
   'DELETE',
@@ -45,13 +45,12 @@ RESULT_LIST = ['DELETE', 'win', 'lose']
 RULE_LIST = ['DELETE'] + list(rules.keys())
 MAP_LIST = ['DELETE'] + list(stages.keys())
 WEAPON_LIST = ['DELETE'] + list(weapons.keys())
+RANK_LIST = ['DELETE'] + udemae_strings
 
-RANK_LIST = ['DELETE', 'c-', 'c', 'c+', 'b-', 'b', 'b+',
-             'a-', 'a', 'a+', 's', 's+']
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input', type=str)
+    parser.add_argument('--input', type=str, required=True)
     parser.add_argument('--output', type=str)
     parser.add_argument('--lobby', choices=LOBBY_LIST)
     parser.add_argument('--rule', choices=RULE_LIST)
@@ -64,6 +63,7 @@ def get_args():
     parser.add_argument('--rank_after', choices=RANK_LIST)
     parser.add_argument('--rank_exp_after', type=int,
                         choices=range(0, 100), metavar='[0 - 99]')
+    parser.add_argument('--link_url', type=str)
 
     return vars(parser.parse_args())
 
@@ -74,7 +74,7 @@ def main():
         payload = umsgpack.unpack(f)
 
     keys = ['lobby', 'rule', 'map', 'weapon', 'result',
-            'rank', 'rank_exp', 'rank_after', 'rank_exp_after']
+            'rank', 'rank_exp', 'rank_after', 'rank_exp_after', 'link_url']
     for key in keys:
         value = args.get(key)
         if not value:
