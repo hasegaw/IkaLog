@@ -33,22 +33,26 @@ import umsgpack
 
 # Append the Ikalog root dir to sys.path to import IkaUtils.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import IkaConfig
 from ikalog.utils.statink_uploader import UploadToStatInk
 from ikalog.utils.ikautils import IkaUtils
 
 
 def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--statink', dest='statink', type=str)
-    parser.add_argument('--json', dest='json', type=str)
+    parser = argparse.ArgumentParser(
+        description='Output stat.ink payload/JSON file in human readable format.'
+    )
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--statink', dest='statink',
+                       metavar='STATINK_PAYLOAD_FILE', type=str)
+    group.add_argument('--json', dest='json', metavar='JSON_FILE', type=str)
 
     return vars(parser.parse_args())
 
 
 def print_statink(filepath):
     with open(filepath, 'rb') as data:
-      payload = umsgpack.unpack(data)
+        payload = umsgpack.unpack(data)
 
     if 'image_result' in payload:
         payload['image_result'] = '(PNG Data)'
