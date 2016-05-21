@@ -33,7 +33,6 @@ import umsgpack
 
 # Append the Ikalog root dir to sys.path to import IkaUtils.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import IkaConfig
 from ikalog.utils.statink_uploader import UploadToStatInk
 from ikalog.utils.ikautils import IkaUtils
 
