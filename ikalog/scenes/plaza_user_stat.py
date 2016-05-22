@@ -42,26 +42,26 @@ class PlazaUserStat(object):
 
         src = context['engine']['frame']
 
-        img_order = IkaUtils.cropImageGray(
+        img_order = ImageUtils.crop_image_gray(
             src, self.order_left, self.order_top, self.order_width, self.order_height
         )
 
-        if not IkaUtils.matchWithMask(img_order, self.mask_order, 0.85, 0.6):
+        if not ImageUtils.match_with_mask(img_order, self.mask_order, 0.85, 0.6):
             return False
 
-        img_return = IkaUtils.cropImageGray(
+        img_return = ImageUtils.crop_image_gray(
             src, self.return_left, self.return_top, self.return_width, self.return_height
         )
 
-        if not IkaUtils.matchWithMask(img_return, self.mask_return, 0.85, 0.6):
+        if not ImageUtils.match_with_mask(img_return, self.mask_return, 0.85, 0.6):
             return False
 
         return True
 
     def __init__(self):
-        self.mask_return = IkaUtils.loadMask(
+        self.mask_return = ImageUtils.load_mask(
             'masks/plaza_userstat.png', self.return_left, self.return_top, self.return_width, self.return_height)
-        self.mask_order = IkaUtils.loadMask(
+        self.mask_order = ImageUtils.load_mask(
             'masks/plaza_userstat.png', self.order_left, self.order_top, self.order_width, self.order_height)
 
 if __name__ == "__main__":
