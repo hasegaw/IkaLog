@@ -21,6 +21,7 @@
 from .game.start import GameStart
 from .game.go_sign import GameGoSign
 from .game.kill import GameKill
+from .game.kill_combo import GameKillCombo
 from .game.dead import GameDead
 from .game.finish import GameFinish
 from .game.timer_icon import GameTimerIcon
