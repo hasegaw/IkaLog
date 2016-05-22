@@ -204,7 +204,7 @@ class ResultDetail(StatefulScene):
         new_frame = cv2.warpPerspective(frame, M, (w, h))
 
         # 変形した画像がマスクと一致するか？
-        matched = IkaUtils.matchWithMask(
+        matched = ImageUtils.match_with_mask(
             new_frame, self.winlose_gray, 0.997, 0.22)
         if matched:
             return new_frame
@@ -687,7 +687,7 @@ class ResultDetail(StatefulScene):
         if frame is None:
             return False
 
-        matched = IkaUtils.matchWithMask(
+        matched = ImageUtils.match_with_mask(
             context['engine']['frame'], self.winlose_gray, 0.997, 0.22)
 
         if matched:
@@ -702,7 +702,7 @@ class ResultDetail(StatefulScene):
             return False
 
         # マッチ1: 既知のマスクでざっくり
-        matched = IkaUtils.matchWithMask(
+        matched = ImageUtils.match_with_mask(
             context['engine']['frame'], self.winlose_gray, 0.997, 0.22)
 
         # マッチ2: マッチ1を満たした場合は、白文字が安定するまで待つ

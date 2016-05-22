@@ -22,6 +22,7 @@ from __future__ import print_function
 from .image_loader import imread
 
 from .ikautils import IkaUtils
+from .image_utils import ImageUtils
 from .matcher import IkaMatcher
 from .certifi import Certifi
 from .localization import Localization
