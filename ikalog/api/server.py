@@ -110,10 +110,21 @@ class APIServer(object):
 
     def recoginize_weapons(self, payload):
         weapons_list = []
+
+        # '.52ガロン' was previously written as 'ガロン52'. Since KNN model data
+        # still uses this name, we need to normalize the name.
+        normalization_dict = {
+            'ガロン52': '.52ガロン',
+            'ガロン96': '.96ガロン',
+            'ガロンデコ52': '.52ガロンデコ',
+            'ガロンデコ96': '.96ガロンデコ',
+        }
+
         for img_bytes in payload:
             img = cv2.imdecode(np.fromstring(img_bytes, dtype='uint8'), 1)
             assert img is not None
             result, distance = weapons.predict(img)
+            result = normalization_dict.get(result, result)
 
             # FIXME: 現状返ってくる key が日本語表記なので id に変換
             weapon_id = None
