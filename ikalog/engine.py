@@ -382,6 +382,7 @@ class IkaEngine:
             scenes.GameStart(self),
             scenes.GameGoSign(self),
             scenes.GameKill(self),
+            scenes.GameKillCombo(self),
             scenes.GameDead(self),
             scenes.GameOutOfBound(self),
             scenes.GameFinish(self),

@@ -42,7 +42,10 @@ class Console(object):
         print(_('Game Start. Stage: %(stage)s, Mode: %(rule)s') % {'rule': rule, 'stage':map})
 
     def on_game_killed(self, context):
-        print(_('Splatted an enemy!'))
+        print(_('Splatted an enemy! (%(streak)d streak)') % {'streak' : context['game'].get('kill_streak', 1)})
+
+    def on_game_chained_kill_combo(self, context):
+        print(_('You chained %(combo)d kill combo(s)!') % {'combo' : context['game'].get('kill_combo', 1)})
 
     def on_game_dead(self, context):
         print(_('You were splatted!'))
