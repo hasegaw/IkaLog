@@ -353,6 +353,12 @@ class StatInk(object):
         if len(context['game']['death_reasons'].keys()) > 0:
             payload['death_reasons'] = context['game']['death_reasons'].copy()
 
+        if context['game'].get('max_kill_combo'):
+            payload['max_kill_combo'] = int(context['game']['max_kill_combo'])
+
+        if context['game'].get('max_kill_streak'):
+            payload['max_kill_streak'] = int(context['game']['max_kill_streak'])
+
         if len(self.events) > 0:
             payload['events'] = list(self.events)
 
@@ -761,7 +767,16 @@ class StatInk(object):
         self._close_game_session(context)
 
     def on_game_killed(self, context):
-        self._add_event(context, {'type': 'killed'})
+        self._add_event(context, {
+            'type': 'killed',
+            'streak': context['game'].get('kill_streak', 1),
+        })
+
+    def on_game_chained_kill_combo(self, context):
+        self._add_event(context, {
+            'type': 'chained_kill_combo',
+            'combo': context['game'].get('kill_combo', 1),
+        })
 
     def on_game_dead(self, context):
         self.last_dead_event = {'type': 'dead'}
