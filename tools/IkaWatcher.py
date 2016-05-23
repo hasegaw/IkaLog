@@ -67,12 +67,36 @@ def print_file_info(path):
 
 def ikalog_with_queue(video_queue):
     ika_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    video_path = ''
+
     while True:
-        video_path = video_queue.get()
+        # Wait for video_path.
+        while video_path is '':
+            video_path = video_queue.get()
+
+        # Termination check.
         if video_path is None:
-            break
+            return
+
+        # Wait for the next file until a timeout.
+        for i in range(180):
+            time.sleep(1)
+            if not video_queue.empty():
+                queued_data = video_queue.get()
+                break
+        else:
+            # Timeout
+            queued_data = ''
+
+        # If not a new file, keep listening.
+        # Note: video_path is not '' or None here.
+        if queued_data == video_path:
+            continue
+
         command = [os.path.join(ika_path, 'IkaLog.py'), '-f', video_path]
         subprocess.call(command)
+
+        video_path = queued_data
 
 
 class WatchdogHandler(FileSystemEventHandler):
@@ -87,6 +111,8 @@ class WatchdogHandler(FileSystemEventHandler):
             return
         print('%s: on_created(%s)' % (get_time(time.time()), path))
         print_file_info(path)
+
+        self._video_queue.put('')
 
     def on_modified(self, event):
         path = event.src_path
