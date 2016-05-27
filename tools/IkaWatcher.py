@@ -79,13 +79,9 @@ def ikalog_with_queue(video_queue):
             return
 
         # Wait for the next file until a timeout.
-        for i in range(180):
-            time.sleep(1)
-            if not video_queue.empty():
-                queued_data = video_queue.get()
-                break
-        else:
-            # Timeout
+        try:
+            queued_data = video_queue.get(timeout=180)
+        except Empty:
             queued_data = ''
 
         # If not a new file, keep listening.
@@ -153,7 +149,11 @@ def main():
 
     try:
         while True:
-            time.sleep(1)
+            input('')  # Wait a key input.
+            key = input('Start processing? ([Y] or N): ')
+            if key in ['', 'Y']:
+                video_queue.put('')  # '' triggers processing a queued value.
+
     except KeyboardInterrupt:
         print('==== KeyboardInterrupt ====')
         observer.stop()
