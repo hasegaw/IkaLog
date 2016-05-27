@@ -205,10 +205,7 @@ class Description(object):
                                      udemae['udemae_exp_after'])
             summary_list.append('%s→%s' % (udemae_before, udemae_after))
 
-        tsv_data = ['IKA', rule, map, result, kills, deaths,
-                    udemae_before, udemae_after, weapon]
-
-        return '\t'.join(tsv_data) + '\n' + ' '.join(summary_list)
+        return ' '.join(summary_list)
 
 
     def get_players(self, context):
