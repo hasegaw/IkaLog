@@ -81,7 +81,7 @@ def ikalog_with_queue(video_queue):
         # Wait for the next file until a timeout.
         try:
             queued_data = video_queue.get(timeout=180)
-        except Empty:
+        except queue.Empty:
             queued_data = ''
 
         # If not a new file, keep listening.
