@@ -57,6 +57,8 @@ def get_args():
     parser.add_argument('--map', choices=MAP_LIST)
     parser.add_argument('--weapon', choices=WEAPON_LIST)
     parser.add_argument('--result', choices=RESULT_LIST)
+    parser.add_argument('--kill', type=int)
+    parser.add_argument('--death', type=int)
     parser.add_argument('--rank', choices=RANK_LIST)
     parser.add_argument('--rank_exp', type=int,
                         choices=range(0, 100), metavar='[0 - 99]')
@@ -73,7 +75,7 @@ def main():
     with open(args['input'], 'rb') as f:
         payload = umsgpack.unpack(f)
 
-    keys = ['lobby', 'rule', 'map', 'weapon', 'result',
+    keys = ['lobby', 'rule', 'map', 'weapon', 'result', 'kill', 'death',
             'rank', 'rank_exp', 'rank_after', 'rank_exp_after', 'link_url']
     for key in keys:
         value = args.get(key)
@@ -84,7 +86,7 @@ def main():
         else:
             prev_value = payload.get(key, '')
             payload[key] = args[key]
-        print('Modified %s : %s -> %s' % (key, prev_value, value))
+        print('Modified %s : %s -> %s' % (key, str(prev_value), str(value)))
 
     output = args.get('output') or args['input']
     with open(output, 'wb') as f:
