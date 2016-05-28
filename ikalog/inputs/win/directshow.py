@@ -30,6 +30,7 @@ from ikalog.inputs import VideoInput
 
 class DirectShow(VideoInput):
 
+    # override
     def _enumerate_sources_func(self):
         return self._videoinput_wrapper.get_device_list()
 
@@ -47,19 +48,24 @@ class DirectShow(VideoInput):
 
         return frame
 
+    # override
     def _read_frame_func(self):
         frame = self.read_raw()
         return frame
 
+    # override
     def _initialize_driver_func(self):
         pass
 
+    # override
     def _cleanup_driver_func(self):
         pass
 
+    # override
     def _is_active_func(self):
         return (self._device_id is not None)
 
+    # override
     def _select_device_by_index_func(self, source, width=1280, height=720, framerate=59.94):
         device_id = int(source)
         vi = self._videoinput_wrapper
@@ -106,6 +112,7 @@ class DirectShow(VideoInput):
         finally:
             self.lock.release()
 
+    # override
     def _select_device_by_name_func(self, source):
         IkaUtils.dprint('%s: Select device by name "%s"' % (self, source))
 

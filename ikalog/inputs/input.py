@@ -93,6 +93,13 @@ class VideoInput(object):
         pass
 
     ##
+    # _read_frame_func()
+    # @param self    the object
+    # @return        the current frame of the input source.
+    def _read_frame_func(self):
+        raise
+
+    ##
     # is_active()
     # Returns the state of the input source.
     # @return True if the input source is active. Otherwise False.
