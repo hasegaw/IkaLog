@@ -29,15 +29,6 @@ import time
 
 from ikalog.utils import *
 
-def normalize_name(name):
-  normalization_dict = {
-    "ガロン52": ".52ガロン",
-    "ガロン96": ".96ガロン",
-    "ガロンデコ52": ".52ガロンデコ",
-    "ガロンデコ96": ".96ガロンデコ",
-  }
-  return normalization_dict.get(name, name)
-
 
 class Description(object):
     def __init__(self, output_filepath, verbose=True):
@@ -96,7 +87,7 @@ class Description(object):
     def on_game_death_reason_identified(self, context):
         reason = IkaUtils.death_reason2text(
             context['game']['last_death_reason'])
-        self.append_description("くX彡 %s でやられた！" % normalize_name(reason),
+        self.append_description("くX彡 %s でやられた！" % reason,
                                 self._last_death_time)
         self._last_death_time = ""
 
@@ -165,8 +156,7 @@ class Description(object):
             return '', '', '', ''
 
         me = IkaUtils.getMyEntryFromContext(context)
-        weapon = normalize_name(
-            IkaUtils.death_reason2text(me.get('weapon', '')))
+        weapon = IkaUtils.death_reason2text(me.get('weapon', ''))
         kills = str(me.get('kills', ''))
         deaths = str(me.get('deaths', ''))
         score = me.get('score', '')
@@ -233,8 +223,7 @@ class Description(object):
             result_list.append('%2dk%2dd' % (player['kills'], player['deaths']))
 
             # weapon
-            result_list.append(normalize_name(
-                IkaUtils.death_reason2text(player['weapon'])))
+            result_list.append(IkaUtils.death_reason2text(player['weapon']))
 
             players_list.append(' '.join(result_list))
 
