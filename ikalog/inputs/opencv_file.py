@@ -47,9 +47,7 @@ class CVFile(VideoInput):
 
     # override
     def _is_active_func(self):
-        return \
-            hasattr(self, 'video_capture') and \
-            (self.video_capture is not None)
+        return (self.video_capture is not None)
 
     # override
     def _select_device_by_index_func(self, source):
