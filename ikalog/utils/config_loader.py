@@ -75,6 +75,7 @@ def _init_source(opts):
         source.select_source(name=(opts.get('input_file') or
                                    input_args.get('source')))
         source.set_frame_rate(input_args.get('frame_rate'))
+        source.set_use_file_timestamp(input_args.get('use_file_timestamp'))
         return source
 
     # パターン6: OpenCV の GStreamerパイプラインからの読み込み機能を利用する
