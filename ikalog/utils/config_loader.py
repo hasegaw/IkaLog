@@ -113,7 +113,11 @@ def _init_outputs(opts):
     # Set output_args with command line options.
     output_args = IkaConfig.OUTPUT_ARGS.copy()
 
-    vars = {'__INPUT_FILE__': opts.get('input_file', '__INPUT_FILE__')}
+    # No vars to be replaced at present. Previously '__INPUT_FILE__' was
+    # replaced here, but now it is replaced in IkaUtils.get_file_name
+    #
+    # vars = {'__INPUT_FILE__': opts.get('input_file', '__INPUT_FILE__')}
+    vars = {}
 
     # Screen: IkaLog 実行中にキャプチャ画像を表示します。
     if 'Screen' in output_plugins:

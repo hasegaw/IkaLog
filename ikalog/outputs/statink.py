@@ -749,8 +749,7 @@ class StatInk(object):
         self.print_payload(payload)
 
         if self.debug_writePayloadToFile or self.payload_file:
-            payload_file = IkaUtils.getFileName(self.payload_file,
-                                                context['game']['index'])
+            payload_file = IkaUtils.get_file_name(self.payload_file, context)
             self.write_payload_to_file(payload, filename=payload_file)
 
         self.post_payload(context, payload)

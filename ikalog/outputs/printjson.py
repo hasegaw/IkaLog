@@ -115,14 +115,14 @@ class JSON(object):
     # Write a line to text file.
     # @param self     The Object Pointer.
     # @param record   Record (text)
-    # @param index    Index of the game.
+    # @param context  The context
     #
-    def write_record(self, record, index=0):
+    def write_record(self, record, context):
         try:
             if self.append_data:
                 json_file = open(self.json_filename, "a")
             else:
-                filename = IkaUtils.getFileName(self.json_filename, index)
+                filename = IkaUtils.get_file_name(self.json_filename, context)
                 json_file = open(filename, 'w')
             json_file.write(json.dumps(record, separators=(',', ':')) + '\n')
             json_file.close()
@@ -193,7 +193,7 @@ class JSON(object):
             return
 
         record = self.get_record_game_result(context)
-        self.write_record(record, context['game'].get('index'))
+        self.write_record(record, context)
 
     ##
     # on_game_individual_result Hook

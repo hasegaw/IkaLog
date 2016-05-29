@@ -250,9 +250,18 @@ class IkaUtils(object):
             return datetime.now()
 
     @staticmethod
-    def getFileName(filename, index):
-        """Returns filename with number suffix, if index is not zero."""
-        if not filename or index == 0:
+    def get_file_name(filename, context):
+        """Returns filename modifying index and macro values."""
+        if not filename:
             return filename
+
+        source_file = context['engine']['source_file']
+        filename = filename.replace('__INPUT_FILE__',
+                                    (source_file or '__INPUT_FILE__'))
+
+        index = context['game']['index']
+        if index == 0:
+            return filename
+
         base, ext = os.path.splitext(filename)
         return '%s-%d%s' % (base, index, ext)

@@ -204,6 +204,7 @@ class IkaEngine:
             'engine': {
                 'engine': self,
                 'epoch_time': None,
+                'source_file': None,  # file path if input is a file.
                 'frame': None,
                 'msec': None,
                 'service': {
@@ -358,6 +359,7 @@ class IkaEngine:
         self.capture = capture
         self.context['engine']['input_class'] = capture.__class__.__name__
         self.context['engine']['epoch_time'] = capture.get_epoch_time()
+        self.context['engine']['source_file'] = capture.get_source_file()
 
     def set_epoch_time(self, arg):
         if not arg:

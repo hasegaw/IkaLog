@@ -265,7 +265,8 @@ class Description(object):
         summary = self.get_game_summary(context)
         self._print(summary)
         self._print(self._description)
-        with open(self._output_filepath, 'w') as datafile:
+        filepath = IkaUtils.get_file_name(self._output_filepath, context)
+        with open(filepath, 'w') as datafile:
           datafile.write(summary + '\n\n')
           datafile.write(self._description)
         self._session_active = False
