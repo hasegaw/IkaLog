@@ -28,6 +28,7 @@
 import unittest
 import os.path
 import sys
+import time
 
 # Append the Ikalog root dir to sys.path to import IkaUtils.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -78,7 +79,8 @@ class TestEngine(unittest.TestCase):
         # None is the default as the current time.
         self.assertIsNone(context['engine']['epoch_time'])
 
-        IKA_EPOCH = 1432784096.0  # '20150528_123456' in sec.
+        IKA_EPOCH = time.mktime(time.strptime('20150528_123456',
+                                              '%Y%m%d_%H%M%S'))
         engine.set_epoch_time('20150528_123456')
         self.assertEqual(IKA_EPOCH, context['engine']['epoch_time'])
 
