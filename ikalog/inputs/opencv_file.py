@@ -115,7 +115,10 @@ class CVFile(VideoInput):
 
     # override
     def get_epoch_time(self):
-        return self._epoch_time
+        if self._use_file_timestamp:
+           return self._epoch_time
+        else:
+            return None
 
     def get_start_time(self):
         """Returns the timestamp of the beginning of this video in sec."""
@@ -139,10 +142,14 @@ class CVFile(VideoInput):
     def get_source_file(self):
         return self._source_file
 
+    def set_use_file_timestamp(self, use_file_timestamp=True):
+        self._use_file_timestamp = use_file_timestamp
+
     def __init__(self):
         self.video_capture = None
         self._source_file = None
         self._epoch_time = None
+        self._use_file_timestamp = True
         super(CVFile, self).__init__()
 
     # backward compatibility

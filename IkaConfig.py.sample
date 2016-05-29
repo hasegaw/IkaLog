@@ -62,7 +62,12 @@ INPUT_ARGS['AVFoundationCapture'] = {'source': 'THE_DEVICE_ID'}
 # - You can override source filename with --input_file options.
 #
 # INPUT_SOURCE = 'CVFile'
-INPUT_ARGS['CVFile'] = {'source': 'video.avi', 'frame_rate': 10}
+INPUT_ARGS['CVFile'] = {
+    'source': 'video.avi',
+    'frame_rate': 10,
+    # Use input file's timestamp instead of the current time.
+    'use_file_timestamp': True,
+}
 
 # GStreamer: Read from GStreamer
 # - You need OpenCV runtime with GStreamer support.
