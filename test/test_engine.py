@@ -28,6 +28,7 @@
 import unittest
 import os.path
 import sys
+import time
 
 # Append the Ikalog root dir to sys.path to import IkaUtils.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -69,6 +70,29 @@ class TestEngine(unittest.TestCase):
         # take care about if session_close was called before.
         engine.session_abort()
         self.assertEqual(5, context['game']['index'])
+
+    def test_set_epoch_time(self):
+        engine = ikalog.engine.IkaEngine()
+        engine.reset()
+        context = engine.context
+
+        # None is the default as the current time.
+        self.assertIsNone(context['engine']['epoch_time'])
+
+        IKA_EPOCH = time.mktime(time.strptime('20150528_123456',
+                                              '%Y%m%d_%H%M%S'))
+        engine.set_epoch_time('20150528_123456')
+        self.assertEqual(IKA_EPOCH, context['engine']['epoch_time'])
+
+        # '' or None does not change the current value.
+        engine.set_epoch_time('')
+        self.assertEqual(IKA_EPOCH, context['engine']['epoch_time'])
+        engine.set_epoch_time(None)
+        self.assertEqual(IKA_EPOCH, context['engine']['epoch_time'])
+
+        # None is the default as the current time.
+        engine.set_epoch_time('now')
+        self.assertIsNone(context['engine']['epoch_time'])
 
 if __name__ == '__main__':
     unittest.main()
