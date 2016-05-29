@@ -28,6 +28,10 @@ from ikalog.inputs import VideoInput
 
 class GStreamer(VideoInput):
 
+    # Note: This is for backward compatibility. GStreamer was a subclass of
+    # CVFile which sets this variable True. It might be OK to remove it.
+    cap_recorded_video = True
+
     # override
     def _initialize_driver_func(self):
         # OpenCV File doesn't need pre-initialization.
