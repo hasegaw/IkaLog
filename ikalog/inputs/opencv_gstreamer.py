@@ -28,9 +28,11 @@ from ikalog.inputs import CVFile
 
 class GStreamer(CVFile):
 
+    # override
     def _select_device_by_index_func(self, source):
         raise Exception('%s does not support selecting device by index.')
 
+    # override
     def _select_device_by_name_func(self, source):
         self.lock.acquire()
         try:

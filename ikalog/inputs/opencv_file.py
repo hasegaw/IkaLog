@@ -30,10 +30,12 @@ class CVFile(VideoInput):
 
     cap_recorded_video = True
 
+    # override
     def _initialize_driver_func(self):
         # OpenCV File doesn't need pre-initialization.
         self._cleanup_driver_func()
 
+    # override
     def _cleanup_driver_func(self):
         self.lock.acquire()
         try:
@@ -43,15 +45,18 @@ class CVFile(VideoInput):
         finally:
             self.lock.release()
 
+    # override
     def _is_active_func(self):
         return \
             hasattr(self, 'video_capture') and \
             (self.video_capture is not None)
 
+    # override
     def _select_device_by_index_func(self, source):
         raise Exception(
             '%s does not support selecting device by index.' % self)
 
+    # override
     def _select_device_by_name_func(self, source):
         self.lock.acquire()
         try:
@@ -71,9 +76,11 @@ class CVFile(VideoInput):
 
         return self.is_active()
 
+    # override
     def _next_frame_func(self):
         pass
 
+    # override
     def _get_current_timestamp_func(self):
         video_msec = self.video_capture.get(cv2.CAP_PROP_POS_MSEC)
 
@@ -82,6 +89,7 @@ class CVFile(VideoInput):
 
         return video_msec
 
+    # override
     def _read_frame_func(self):
         ret, frame = self.video_capture.read()
         if not ret:
