@@ -64,31 +64,15 @@ def get_args():
 
     return vars(parser.parse_args())
 
-def time_to_msec(time):
-    minute, sec = time.split(':')
-    return (int(minute) * 60 + int(sec)) * 1000
 
-def get_epoch_time(args, capture):
-    """Returns the epoch time in sec or None."""
-    epoch_time_arg = args.get('epoch_time')
-    if epoch_time_arg == 'now':
-        return None
-
-    if not epoch_time_arg:
-        if isinstance(capture, inputs.CVFile):
-            return capture.get_start_time()
-        return None
-
-    return time.mktime(time.strptime(epoch_time_arg, "%Y%m%d_%H%M%S"))
-
-def init_for_cvfile(args, capture):
-    if not capture.is_active():
-        IkaUtils.dprint('Failed to initialize with: %s' % capture._source_file)
-        sys.exit(1)
-
-    pos_msec = args.get('time_msec') or time_to_msec(args.get('time') or '0:0')
-    if pos_msec:
-        capture.set_pos_msec(pos_msec)
+def get_pos_msec(args):
+    if args['time_msec']:
+        return args['time_msec']
+    elif args['time']:
+        minute, sec = args['time'].split(':')
+        return (int(minute) * 60 + int(sec)) * 1000
+    else:
+        return 0
 
 
 if __name__ == "__main__":
@@ -96,17 +80,12 @@ if __name__ == "__main__":
 
     args = get_args()
     capture, output_plugins = config_loader.config(args)
-
-    if isinstance(capture, inputs.CVFile):
-        init_for_cvfile(args, capture)
+    capture.set_pos_msec(get_pos_msec(args))
 
     engine = IkaEngine(enable_profile=args.get('profile'))
     engine.pause(False)
     engine.set_capture(capture)
-
-    epoch_time = get_epoch_time(args, capture)
-    if epoch_time:
-        engine.set_epoch_time(epoch_time)
+    engine.set_epoch_time(args['epoch_time'])
 
     engine.set_plugins(output_plugins)
     for op in output_plugins:

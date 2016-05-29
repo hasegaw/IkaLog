@@ -65,7 +65,9 @@ class CVFile(VideoInput):
             # FIXME: Does it work with non-ascii path?
             self.video_capture = cv2.VideoCapture(source)
             self._source_file = source
-            if not self.video_capture.isOpened():
+            if self.video_capture.isOpened():
+                self._epoch_time = self.get_start_time()
+            else:
                 self.video_capture = None
             self.reset_tick()
 
@@ -111,6 +113,10 @@ class CVFile(VideoInput):
 
         return frame
 
+    # override
+    def get_epoch_time(self):
+        return self._epoch_time
+
     def get_start_time(self):
         """Returns the timestamp of the beginning of this video in sec."""
         if (not self._source_file) or (not self.video_capture):
@@ -124,6 +130,7 @@ class CVFile(VideoInput):
 
         return last_modified_time - duration
 
+    # override
     def set_pos_msec(self, pos_msec):
         """Moves the video position to |pos_msec| in msec."""
         self.video_capture.set(cv2.CAP_PROP_POS_MSEC, pos_msec)
@@ -131,6 +138,7 @@ class CVFile(VideoInput):
     def __init__(self):
         self.video_capture = None
         self._source_file = None
+        self._epoch_time = None
         super(CVFile, self).__init__()
 
     # backward compatibility

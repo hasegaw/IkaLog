@@ -252,6 +252,12 @@ class VideoInput(object):
     def get_current_timestamp(self):
         return self._get_current_timestamp_func()
 
+    def get_epoch_time(self):
+        return None
+
+    def set_pos_msec(self, pos_msec):
+        pass
+
     ##
     # set_frame_rate(self, fps=None, realtime=False)
     #

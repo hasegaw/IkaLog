@@ -70,5 +70,27 @@ class TestEngine(unittest.TestCase):
         engine.session_abort()
         self.assertEqual(5, context['game']['index'])
 
+    def test_set_epoch_time(self):
+        engine = ikalog.engine.IkaEngine()
+        engine.reset()
+        context = engine.context
+
+        # None is the default as the current time.
+        self.assertIsNone(context['engine']['epoch_time'])
+
+        IKA_EPOCH = 1432784096.0  # '20150528_123456' in sec.
+        engine.set_epoch_time('20150528_123456')
+        self.assertEqual(IKA_EPOCH, context['engine']['epoch_time'])
+
+        # '' or None does not change the current value.
+        engine.set_epoch_time('')
+        self.assertEqual(IKA_EPOCH, context['engine']['epoch_time'])
+        engine.set_epoch_time(None)
+        self.assertEqual(IKA_EPOCH, context['engine']['epoch_time'])
+
+        # None is the default as the current time.
+        engine.set_epoch_time('now')
+        self.assertIsNone(context['engine']['epoch_time'])
+
 if __name__ == '__main__':
     unittest.main()

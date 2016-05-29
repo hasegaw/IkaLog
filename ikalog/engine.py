@@ -356,9 +356,18 @@ class IkaEngine:
 
     def set_capture(self, capture):
         self.capture = capture
-        self.context['engine']['input_class'] = self.capture.__class__.__name__
+        self.context['engine']['input_class'] = capture.__class__.__name__
+        self.context['engine']['epoch_time'] = capture.get_epoch_time()
 
-    def set_epoch_time(self, epoch_time):
+    def set_epoch_time(self, arg):
+        if not arg:
+            # Do nothing. Keep the current value.
+            return
+
+        epoch_time = None
+        if arg != 'now':
+            epoch_time = time.mktime(time.strptime(arg, '%Y%m%d_%H%M%S'))
+
         self.context['engine']['epoch_time'] = epoch_time
 
     def set_plugins(self, plugins):
