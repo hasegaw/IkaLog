@@ -356,16 +356,54 @@ class TestIkaUtils(unittest.TestCase):
                                        time.localtime(time_actual)))
 
 
-    def test_getFileName(self):
-        self.assertIsNone(IkaUtils.getFileName(None, 0))
+    def test_get_file_name(self):
+        mock_context = {'game': {'index': 0},
+                        'engine': {'source_file': None}}
+
+        self.assertIsNone(IkaUtils.get_file_name(None, mock_context))
         self.assertEqual('/tmp/statink.msgpack',
-                         IkaUtils.getFileName('/tmp/statink.msgpack', 0))
+                         IkaUtils.get_file_name('/tmp/statink.msgpack',
+                                                mock_context))
+        mock_context['game']['index'] = 1
         self.assertEqual('/tmp/statink-1.msgpack',
-                         IkaUtils.getFileName('/tmp/statink.msgpack', 1))
+                         IkaUtils.get_file_name('/tmp/statink.msgpack',
+                                                mock_context))
+        mock_context['game']['index'] = 10
         self.assertEqual('/tmp/statink-10.msgpack',
-                         IkaUtils.getFileName('/tmp/statink.msgpack', 10))
+                         IkaUtils.get_file_name('/tmp/statink.msgpack',
+                                                mock_context))
+        mock_context['game']['index'] = 1
         self.assertEqual('/tmp/video.mp4-1.statink',
-                         IkaUtils.getFileName('/tmp/video.mp4.statink', 1))
+                         IkaUtils.get_file_name('/tmp/video.mp4.statink',
+                                                mock_context))
+
+        self.assertEqual('/tmp/video.mp4-1.statink',
+                         IkaUtils.get_file_name('/tmp/video.mp4.statink',
+                                                mock_context))
+
+        mock_context['engine']['source_file'] = None
+        mock_context['game']['index'] = 0
+        self.assertEqual('__INPUT_FILE__.statink',
+                         IkaUtils.get_file_name('__INPUT_FILE__.statink',
+                                                mock_context))
+
+        mock_context['engine']['source_file'] = None
+        mock_context['game']['index'] = 2
+        self.assertEqual('__INPUT_FILE__-2.statink',
+                         IkaUtils.get_file_name('__INPUT_FILE__.statink',
+                                                mock_context))
+
+        mock_context['engine']['source_file'] = '/tmp/video.mp4'
+        mock_context['game']['index'] = 0
+        self.assertEqual('/tmp/video.mp4.statink',
+                         IkaUtils.get_file_name('__INPUT_FILE__.statink',
+                                                mock_context))
+
+        mock_context['engine']['source_file'] = '/tmp/video.mp4'
+        mock_context['game']['index'] = 3
+        self.assertEqual('/tmp/video.mp4-3.statink',
+                         IkaUtils.get_file_name('__INPUT_FILE__.statink',
+                                                mock_context))
 
 if __name__ == '__main__':
     unittest.main()

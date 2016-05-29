@@ -258,6 +258,10 @@ class VideoInput(object):
     def set_pos_msec(self, pos_msec):
         pass
 
+    # Returns the source file if the input is from a file. Otherwise None.
+    def get_source_file(self):
+        return None
+
     ##
     # set_frame_rate(self, fps=None, realtime=False)
     #
