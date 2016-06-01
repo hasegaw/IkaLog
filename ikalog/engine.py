@@ -341,7 +341,10 @@ class IkaEngine:
                     else:
                         self.session_abort()
 
-                self._stop = True
+                if self.capture.on_eof():
+                    self.reset_capture()
+                else:
+                    self._stop = True
 
     def run(self):
         try:
@@ -357,9 +360,12 @@ class IkaEngine:
 
     def set_capture(self, capture):
         self.capture = capture
-        self.context['engine']['input_class'] = capture.__class__.__name__
-        self.context['engine']['epoch_time'] = capture.get_epoch_time()
-        self.context['engine']['source_file'] = capture.get_source_file()
+        self.reset_capture()
+
+    def reset_capture(self):
+        self.context['engine']['input_class'] = self.capture.__class__.__name__
+        self.context['engine']['epoch_time'] = self.capture.get_epoch_time()
+        self.context['engine']['source_file'] = self.capture.get_source_file()
 
     def set_plugins(self, plugins):
         self.output_plugins = [self]

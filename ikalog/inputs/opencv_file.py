@@ -56,15 +56,33 @@ class CVFile(VideoInput):
 
     # override
     def _select_device_by_name_func(self, source):
+        if isinstance(source, str):
+            self._source_files = [source]
+        elif isinstance(source, list):
+            self._source_files = source
+        else:
+            return False
+
+        return self._init_with_sources()
+
+    # override
+    def on_eof(self):
+        return self._init_with_sources()
+
+    def _init_with_sources(self):
+        if not self._source_files:
+            return False
+
         self.lock.acquire()
         try:
             if self.is_active():
                 self.video_capture.release()
 
             self.reset()
+
             # FIXME: Does it work with non-ascii path?
-            self.video_capture = cv2.VideoCapture(source)
-            self._source_file = source
+            self._source_file = self._source_files.pop(0)
+            self.video_capture = cv2.VideoCapture(self._source_file)
             if self.video_capture.isOpened():
                 self._epoch_time = self.get_start_time()
             else:
@@ -148,6 +166,7 @@ class CVFile(VideoInput):
     def __init__(self):
         self.video_capture = None
         self._source_file = None
+        self._source_files = []
         self._epoch_time = None
         self._use_file_timestamp = True
         super(CVFile, self).__init__()
