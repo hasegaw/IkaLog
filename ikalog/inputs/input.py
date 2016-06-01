@@ -185,15 +185,17 @@ class VideoInput(object):
 
         next_tick = None
 
-        if self.cap_recorded_video:
-            self._skip_frame_recorded()
-        else:
-            next_tick = self._skip_frame_realtime()
+        try:
+            if self.cap_recorded_video:
+                self._skip_frame_recorded()
+            else:
+                next_tick = self._skip_frame_realtime()
 
-        self._next_frame_func()
+            self._next_frame_func()
 
-        img = self._read_frame_func()
-        self.lock.release()
+            img = self._read_frame_func()
+        finally:
+            self.lock.release()
 
         if img is None:
             return None
@@ -261,6 +263,10 @@ class VideoInput(object):
     # Returns the source file if the input is from a file. Otherwise None.
     def get_source_file(self):
         return None
+
+    # Callback on EOFError. Returns True if a next data source is available.
+    def on_eof(self):
+        return False
 
     ##
     # set_frame_rate(self, fps=None, realtime=False)
