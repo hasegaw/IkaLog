@@ -615,7 +615,7 @@ class StatInk(object):
             IkaUtils.dprint(traceback.format_exc())
 
     def _post_payload_worker(self, context, payload, api_key,
-                             call_plugins_func=None):
+                             call_plugins_later_func=None):
         # This function runs on worker thread.
         error, statink_response = UploadToStatInk(payload,
                                                   api_key,
@@ -623,24 +623,24 @@ class StatInk(object):
                                                   self.show_response_enabled,
                                                   (self.dry_run == 'server'))
 
-        if not call_plugins_func:
+        if not call_plugins_later_func:
             return
 
         # Trigger a event.
         if error:
-            call_plugins_func(
+            call_plugins_later_func(
                 'on_output_statink_submission_error',
                 params=statink_response, context=context
             )
 
         elif statink_response.get('id', 0) == 0:
-            call_plugins_func(
+            call_plugins_later_func(
                 'on_output_statink_submission_dryrun',
                 params=statink_response, context=context
             )
 
         else:
-            call_plugins_func(
+            call_plugins_later_func(
                 'on_output_statink_submission_done',
                 params=statink_response, context=context
             )
@@ -664,11 +664,11 @@ class StatInk(object):
             raise('No API key specified')
 
         copied_context = IkaUtils.copy_context(context)
-        call_plugins_func = context['engine']['service']['call_plugins_later']
+        call_plugins_later_func = context['engine']['service']['call_plugins_later']
 
         thread = threading.Thread(
             target=self._post_payload_worker,
-            args=(copied_context, payload, api_key, call_plugins_func))
+            args=(copied_context, payload, api_key, call_plugins_later_func))
         thread.start()
 
     def print_payload(self, payload):
