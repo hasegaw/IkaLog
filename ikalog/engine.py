@@ -90,8 +90,10 @@ class IkaEngine:
     def dprint(self, text):
         print(text, file=sys.stderr)
 
-    def call_plugin(self, plugin, event_name, params=None, debug=False):
-        context = self.context
+    def call_plugin(self, plugin, event_name,
+                    params=None, debug=False, context=None):
+        if not context:
+            context = self.context
 
         if hasattr(plugin, event_name):
             if debug:
@@ -119,14 +121,15 @@ class IkaEngine:
                 self.dprint(traceback.format_exc())
                 self.dprint('<<<<<')
 
-    def call_plugins(self, event_name, params=None, debug=False):
-        context = self.context
+    def call_plugins(self, event_name, params=None, debug=False, context=None):
+        if not context:
+            context = self.context
 
         if debug:
             self.dprint('call plug-in hook (%s):' % event_name)
 
         for op in self.output_plugins:
-            self.call_plugin(op, event_name, params, debug)
+            self.call_plugin(op, event_name, params, debug, context)
 
     def call_plugins_later(self, event_name, params=None, debug=False):
         self._event_queue.append((event_name, params))
