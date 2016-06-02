@@ -47,11 +47,6 @@ except:
 
 # IkaLog Output Plugin for Stat.ink
 
-
-def call_plugins_mock(event_name, params=None, debug=False):
-    pass
-
-
 class StatInk(object):
 
     def apply_ui(self):
@@ -619,39 +614,35 @@ class StatInk(object):
             IkaUtils.dprint('%s: Failed to write msgpack file' % self)
             IkaUtils.dprint(traceback.format_exc())
 
-    def _post_payload_worker(self, context, payload, api_key):
+    def _post_payload_worker(self, context, payload, api_key,
+                             call_plugins_func=None):
         # This function runs on worker thread.
-
         error, statink_response = UploadToStatInk(payload,
                                                   api_key,
                                                   self.url_statink_v1_battle,
                                                   self.show_response_enabled,
                                                   (self.dry_run == 'server'))
 
+        if not call_plugins_func:
+            return
+
         # Trigger a event.
-
-        try:
-            call_plugins_func = \
-                context['engine']['service']['call_plugins_later']
-        except:
-            call_plugins_func = call_plugins_mock
-
         if error:
             call_plugins_func(
                 'on_output_statink_submission_error',
-                params=statink_response
+                params=statink_response, context=context
             )
 
         elif statink_response.get('id', 0) == 0:
             call_plugins_func(
                 'on_output_statink_submission_dryrun',
-                params=statink_response
+                params=statink_response, context=context
             )
 
         else:
             call_plugins_func(
                 'on_output_statink_submission_done',
-                params=statink_response
+                params=statink_response, context=context
             )
 
     def post_payload(self, context, payload, api_key=None):
@@ -672,8 +663,12 @@ class StatInk(object):
         if api_key is None:
             raise('No API key specified')
 
+        copied_context = IkaUtils.copy_context(context)
+        call_plugins_func = context['engine']['service']['call_plugins_later']
+
         thread = threading.Thread(
-            target=self._post_payload_worker, args=(context, payload, api_key))
+            target=self._post_payload_worker,
+            args=(copied_context, payload, api_key, call_plugins_func))
         thread.start()
 
     def print_payload(self, payload):

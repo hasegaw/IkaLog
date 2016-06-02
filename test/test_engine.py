@@ -33,6 +33,7 @@ import time
 # Append the Ikalog root dir to sys.path to import IkaUtils.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import ikalog.engine
+from ikalog.utils import *
 
 class TestEngine(unittest.TestCase):
     def test_reset(self):
@@ -70,6 +71,16 @@ class TestEngine(unittest.TestCase):
         # take care about if session_close was called before.
         engine.session_abort()
         self.assertEqual(5, context['game']['index'])
+
+    def test_copy_context(self):
+        engine = ikalog.engine.IkaEngine()
+        engine.reset()
+        context = IkaUtils.copy_context(engine.context)
+        self.assertEqual(context['game']['kills'],
+                         engine.context['game']['kills'])
+        context['game']['kills'] = 99
+        self.assertNotEqual(context['game']['kills'],
+                            engine.context['game']['kills'])
 
 
 if __name__ == '__main__':

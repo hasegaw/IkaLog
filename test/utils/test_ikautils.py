@@ -405,5 +405,20 @@ class TestIkaUtils(unittest.TestCase):
                          IkaUtils.get_file_name('__INPUT_FILE__.statink',
                                                 mock_context))
 
+    def test_copy_context(self):
+        mock_context = {
+            'engine': {
+                'engine': self,
+                'source_file': 'video.mp4',
+                'service': {'call_plugins_later': self.test_copy_context}}}
+
+        copied_context = IkaUtils.copy_context(mock_context)
+        copied_context['engine']['source_file'] = 'movie.ts'
+        self.assertEqual('video.mp4', mock_context['engine']['source_file'])
+        self.assertEqual('movie.ts', copied_context['engine']['source_file'])
+        self.assertIsNone(copied_context['engine']['engine'])
+        self.assertIsNone(
+            copied_context['engine']['service'].get('call_plugins_later'))
+
 if __name__ == '__main__':
     unittest.main()
