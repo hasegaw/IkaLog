@@ -19,7 +19,6 @@
 #
 from __future__ import print_function
 
-import copy
 import os
 import platform
 import re
@@ -266,14 +265,3 @@ class IkaUtils(object):
 
         base, ext = os.path.splitext(filename)
         return '%s-%d%s' % (base, index, ext)
-
-    @staticmethod
-    def copy_context(context):
-        """Copies context as deep copy without Python objects."""
-        context2 = context.copy()  # shallow copy
-        context2['engine'] = context['engine'].copy()  # shallow copy
-        # Because some Python objects cannot be copied as deepcopy,
-        # these values are replaced with None before deepcopy.
-        context2['engine']['engine'] = None  # IkaEngine
-        context2['engine']['service'] = {}  # functions of IkaEngine
-        return copy.deepcopy(context2)
