@@ -276,4 +276,7 @@ class IkaUtils(object):
         # these values are replaced with None before deepcopy.
         context2['engine']['engine'] = None  # IkaEngine
         context2['engine']['service'] = {}  # functions of IkaEngine
+        context2['game'] = context['game'].copy()  # shallow copy
+        context2['game']['map'] = None  # IkaMatcher
+        context2['game']['rule'] = None  # IkaMatcher
         return copy.deepcopy(context2)

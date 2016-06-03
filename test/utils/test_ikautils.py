@@ -406,19 +406,35 @@ class TestIkaUtils(unittest.TestCase):
                                                 mock_context))
 
     def test_copy_context(self):
+        mock_map = IkaMatcherMock('kinmedai')
+        mock_rule = IkaMatcherMock('area')
         mock_context = {
             'engine': {
                 'engine': self,
                 'source_file': 'video.mp4',
-                'service': {'call_plugins_later': self.test_copy_context}}}
+                'service': {'call_plugins_later': self.test_copy_context},
+            },
+            'game': {
+                'map': mock_map,
+                'rule': mock_rule,
+            }}
 
         copied_context = IkaUtils.copy_context(mock_context)
         copied_context['engine']['source_file'] = 'movie.ts'
         self.assertEqual('video.mp4', mock_context['engine']['source_file'])
         self.assertEqual('movie.ts', copied_context['engine']['source_file'])
+
+        self.assertIsNotNone(mock_context['engine']['engine'])
+        self.assertIsNotNone(
+            mock_context['engine']['service'].get('call_plugins_later'))
+        self.assertIsNotNone(mock_context['game']['map'])
+        self.assertIsNotNone(mock_context['game']['rule'])
+
         self.assertIsNone(copied_context['engine']['engine'])
         self.assertIsNone(
             copied_context['engine']['service'].get('call_plugins_later'))
+        self.assertIsNone(copied_context['game']['map'])
+        self.assertIsNone(copied_context['game']['rule'])
 
 if __name__ == '__main__':
     unittest.main()
