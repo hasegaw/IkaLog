@@ -178,8 +178,7 @@ class StatInk(object):
         self.panel.SetSizer(self.layout)
 
     def encode_stage_name(self, context):
-        stage_id = IkaUtils.map2id(context['game']['map'], unknown=None)
-        return stage_id
+        return context['game']['map']
 
     def encode_rule_name(self, context):
         rule_id = IkaUtils.rule2id(context['game']['rule'], unknown=None)

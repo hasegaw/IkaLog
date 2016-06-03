@@ -112,7 +112,7 @@ class GameStart(StatefulScene):
         rule = self.find_best_match(frame, self.rule_matchers)
 
         if not stage is None:
-            context['game']['map'] = stage
+            context['game']['map'] = stage.id_
 
         if not rule is None:
             context['game']['rule'] = rule
@@ -150,7 +150,7 @@ class GameStart(StatefulScene):
         # それ以上マッチングしなかった場合 -> シーンを抜けている
 
         if not self.matched_in(context, 20000, attr='_last_event_msec'):
-            context['game']['map'] = self.elect(context, self.stage_votes)
+            context['game']['map'] = self.elect(context, self.stage_votes).id_
             context['game']['rule'] = self.elect(context, self.rule_votes)
 
             if not context['game']['start_time']:
