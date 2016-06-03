@@ -80,7 +80,7 @@ def print_tsv(summary, tsv_format):
     summary['lobby_text'] = IkaUtils.lobby2text(_get_lobby_id(summary['lobby']),
                                                 unknown='')
     summary['rule_text'] = IkaUtils.rule_id2text(summary['rule'], unknown='')
-    summary['map_text'] = IkaUtils.map_id2text(summary['map'], unknown='')
+    summary['map_text'] = IkaUtils.map2text(summary['map'], unknown='')
     summary['weapon_text'] = IkaUtils.weapon2text(summary['weapon'], unknown='')
 
     keys = tsv_format.split(',')

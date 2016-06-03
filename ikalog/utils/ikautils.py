@@ -102,13 +102,7 @@ class IkaUtils(object):
         return languages
 
     @staticmethod
-    def map2id(map, unknown='?'):
-        if map is None:
-            return unknown
-        return map.id_
-
-    @staticmethod
-    def map_id2text(map_id, unknown='?', languages=None):
+    def map2text(map_id, unknown='?', languages=None):
         if map_id is None:
             return unknown
 
@@ -122,11 +116,6 @@ class IkaUtils(object):
 
         # Should not reach here
         return map_id
-
-    @staticmethod
-    def map2text(map, unknown='?', languages=None):
-        map_id = IkaUtils.map2id(map, unknown=None)
-        return IkaUtils.map_id2text(map_id, unknown, languages)
 
     @staticmethod
     def rule2id(rule, unknown='?'):
@@ -277,6 +266,5 @@ class IkaUtils(object):
         context2['engine']['engine'] = None  # IkaEngine
         context2['engine']['service'] = {}  # functions of IkaEngine
         context2['game'] = context['game'].copy()  # shallow copy
-        context2['game']['map'] = None  # IkaMatcher
         context2['game']['rule'] = None  # IkaMatcher
         return copy.deepcopy(context2)

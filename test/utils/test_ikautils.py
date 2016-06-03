@@ -79,56 +79,30 @@ class TestIkaUtils(unittest.TestCase):
         self.assertTrue('ja' in languages)
 
 
-    def test_map_id2text(self):
+    def test_map2text(self):
         map_id = 'shottsuru'
 
         # English
         self.assertEqual('Piranha Pit',
-                         IkaUtils.map_id2text(map_id, languages='en'))
+                         IkaUtils.map2text(map_id, languages='en'))
 
         # Japanese
         self.assertEqual('ショッツル鉱山',
-                         IkaUtils.map_id2text(map_id, languages='ja'))
+                         IkaUtils.map2text(map_id, languages='ja'))
 
         # Fallback to English
         self.assertEqual('Piranha Pit',
-                         IkaUtils.map_id2text(map_id, languages='??'))
+                         IkaUtils.map2text(map_id, languages='??'))
 
         # Multiple languages
         self.assertEqual('ショッツル鉱山',
-                         IkaUtils.map_id2text(map_id, languages=['ja', 'en']))
+                         IkaUtils.map2text(map_id, languages=['ja', 'en']))
 
         # Unkonwn
         unknown_map_id = 'unknown'
-        self.assertEqual('?', IkaUtils.map_id2text(unknown_map_id))
+        self.assertEqual('?', IkaUtils.map2text(unknown_map_id))
         self.assertEqual('<:=',
-                         IkaUtils.map_id2text(unknown_map_id, unknown='<:='))
-
-
-    def test_map2text(self):
-        map_mock = IkaMatcherMock('kinmedai')
-
-        # English
-        self.assertEqual('Museum d\'Alfonsino',
-                         IkaUtils.map2text(map_mock, languages='en'))
-
-        # Japanese
-        self.assertEqual('キンメダイ美術館',
-                         IkaUtils.map2text(map_mock, languages='ja'))
-
-        # Fallback to English
-        self.assertEqual('Museum d\'Alfonsino',
-                         IkaUtils.map2text(map_mock, languages='??'))
-
-        # Multiple languages
-        self.assertEqual('キンメダイ美術館',
-                         IkaUtils.map2text(map_mock, languages=['ja', 'en']))
-
-        # Unkonwn
-        unknown_map_mock = IkaMatcherMock('unknown')
-        self.assertEqual('?', IkaUtils.map2text(unknown_map_mock))
-        self.assertEqual('<:=',
-                         IkaUtils.map2text(unknown_map_mock, unknown='<:='))
+                         IkaUtils.map2text(unknown_map_id, unknown='<:='))
 
 
     def test_rule_id2text(self):
@@ -406,7 +380,6 @@ class TestIkaUtils(unittest.TestCase):
                                                 mock_context))
 
     def test_copy_context(self):
-        mock_map = IkaMatcherMock('kinmedai')
         mock_rule = IkaMatcherMock('area')
         mock_context = {
             'engine': {
@@ -415,25 +388,26 @@ class TestIkaUtils(unittest.TestCase):
                 'service': {'call_plugins_later': self.test_copy_context},
             },
             'game': {
-                'map': mock_map,
+                'map': 'kinmedai',
                 'rule': mock_rule,
             }}
 
         copied_context = IkaUtils.copy_context(mock_context)
         copied_context['engine']['source_file'] = 'movie.ts'
+        copied_context['game']['map'] = 'hokke'
         self.assertEqual('video.mp4', mock_context['engine']['source_file'])
         self.assertEqual('movie.ts', copied_context['engine']['source_file'])
 
         self.assertIsNotNone(mock_context['engine']['engine'])
         self.assertIsNotNone(
             mock_context['engine']['service'].get('call_plugins_later'))
-        self.assertIsNotNone(mock_context['game']['map'])
+        self.assertEqual('kinmedai', mock_context['game']['map'])
         self.assertIsNotNone(mock_context['game']['rule'])
 
         self.assertIsNone(copied_context['engine']['engine'])
         self.assertIsNone(
             copied_context['engine']['service'].get('call_plugins_later'))
-        self.assertIsNone(copied_context['game']['map'])
+        self.assertEqual('hokke', copied_context['game']['map'])
         self.assertIsNone(copied_context['game']['rule'])
 
 if __name__ == '__main__':

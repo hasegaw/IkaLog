@@ -135,7 +135,7 @@ class JSON(object):
     # @param context   IkaLog context
     #
     def get_record_game_result(self, context):
-        map = IkaUtils.map2id(context['game']['map'])
+        map = context['game']['map']
         rule = IkaUtils.rule2id(context['game']['rule'])
         won = IkaUtils.getWinLoseText(
             context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
