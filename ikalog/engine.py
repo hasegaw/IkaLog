@@ -131,8 +131,8 @@ class IkaEngine:
         for op in self.output_plugins:
             self.call_plugin(op, event_name, params, debug, context)
 
-    def call_plugins_later(self, event_name, params=None, debug=False):
-        self._event_queue.append((event_name, params))
+    def call_plugins_later(self, event_name, params=None, debug=False, context=None):
+        self._event_queue.append((event_name, params, context))
 
     def read_next_frame(self, skip_frames=0):
         context = self.context
@@ -212,7 +212,7 @@ class IkaEngine:
                 'msec': None,
                 'service': {
                     'call_plugins': self.call_plugins,
-                    'call_plugins_later': self.call_plugins,
+                    'call_plugins_later': self.call_plugins_later,
                     # For backward compatibility
                     'callPlugins': self.call_plugins,
                 },
@@ -325,7 +325,7 @@ class IkaEngine:
 
         while len(self._event_queue) > 0:
             event = self._event_queue.pop(0)
-            self.call_plugins(event_name=event[0], params=event[1])
+            self.call_plugins(event_name=event[0], params=event[1], context=event[2])
 
     def _main_loop(self):
         while not self._stop:
