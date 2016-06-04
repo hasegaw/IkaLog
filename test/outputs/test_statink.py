@@ -27,10 +27,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from ikalog import constants
 from ikalog.outputs.statink import StatInk
 
-class IkaMatcherMock(object):
-    def __init__(self, id):
-        self.id_ = id
-
 class TestStatInk(unittest.TestCase):
     def test_composite(self):
         statink = StatInk()
@@ -69,7 +65,7 @@ class TestStatInk(unittest.TestCase):
 
         assert not 'rule' in payload
 
-        context['game']['rule'] = IkaMatcherMock('area')
+        context['game']['rule'] = 'area'
         payload = statink.composite_payload(context)
         assert payload['rule'] == 'area'
 
@@ -100,7 +96,7 @@ class TestStatInk(unittest.TestCase):
 
         assert not 'knockout' in payload
 
-        context['game']['rule'] = IkaMatcherMock('nawabari')
+        context['game']['rule'] = 'nawabari'
         context['game']['knockout'] = True
         payload = statink.composite_payload(context)
         # ナワバリバトルではノックアウトが発生しないので
@@ -108,7 +104,7 @@ class TestStatInk(unittest.TestCase):
         assert not 'knockout' in payload
 
         # ガチヤグラなどではOK
-        context['game']['rule'] = IkaMatcherMock('yagura')
+        context['game']['rule'] = 'yagura'
         payload = statink.composite_payload(context)
         assert payload['knock_out'] == 'yes'
 

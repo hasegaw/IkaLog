@@ -181,8 +181,7 @@ class StatInk(object):
         return context['game']['map']
 
     def encode_rule_name(self, context):
-        rule_id = IkaUtils.rule2id(context['game']['rule'], unknown=None)
-        return rule_id
+        return context['game']['rule']
 
     def encode_weapon_name(self, weapon):
         # FIXME: 現状返ってくる key が日本語表記なので id に変換
