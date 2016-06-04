@@ -50,16 +50,23 @@ class IkaUtils(object):
         print(text, file=sys.stderr)
 
     @staticmethod
-    def baseDirectory():
-        base_directory = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        base_directory = re.sub('[\\/]+$', '', base_directory)
+    def get_path(*dirs):
+        '''Returns the path prepended the top dir and appened subdirs.'''
+        path = ''
+        if dirs:
+            path = os.path.join(*dirs)
+            if os.path.isabs(path):
+                return path
 
-        if os.path.isfile(base_directory):
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        base_dir = re.sub('[\\/]+$', '', base_dir)
+
+        if os.path.isfile(base_dir):
             # In this case, this version of IkaLog is py2exe'd,
-            # and base_directory is still pointing at the executable.
-            base_directory = os.path.dirname(base_directory)
+            # and base_dir is still pointing at the executable.
+            base_dir = os.path.dirname(base_dir)
 
-        return base_directory
+        return os.path.abspath(os.path.join(base_dir, path))
 
     # Find the local player.
     #

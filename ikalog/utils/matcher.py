@@ -114,19 +114,19 @@ class IkaMatcher(object):
                 languages = [lang]
 
             for lang in languages:
-                f = os.path.join(IkaUtils.baseDirectory(), 'masks', lang, img_file)
+                f = IkaUtils.get_path('masks', lang, img_file)
                 if os.path.exists(f):
                     return f
 
-        f = os.path.join(IkaUtils.baseDirectory(), 'masks', img_file)
+        f = IkaUtils.get_path('masks', img_file)
         if os.path.exists(f):
             return f
 
-        f = os.path.join(IkaUtils.baseDirectory(), img_file)
+        f = IkaUtils.get_path(img_file)
         if os.path.exists(f):
             return f
 
-        f = os.path.join(IkaUtils.baseDirectory(), 'masks', 'ja', img_file)
+        f = IkaUtils.get_path('masks', 'ja', img_file)
         if os.path.exists(f):
             IkaUtils.dprint('%s: mask %s: using ja version' %
                 (self, img_file))

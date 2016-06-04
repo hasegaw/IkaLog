@@ -38,6 +38,21 @@ class TestIkaUtils(unittest.TestCase):
     #
     # Test Cases
     #
+    def test_get_path(self):
+        self.assertTrue(os.path.isfile(IkaUtils.get_path('IkaLog.py')))
+        self.assertTrue(os.path.isdir(IkaUtils.get_path('test')))
+        self.assertTrue(os.path.isdir(IkaUtils.get_path()))
+        self.assertEqual(os.path.abspath(__file__),
+                         IkaUtils.get_path('test', 'utils', 'test_ikautils.py'))
+
+        if IkaUtils.isWindows():
+            pass
+            # TODO: add test cases
+        else:
+            abspath = '/tmp/test/dir'
+            self.assertEqual(abspath, IkaUtils.get_path(abspath))
+
+
     def test_getMyEntryFromContext(self):
         context = {'game': {}}
         self.assertIsNone(IkaUtils.getMyEntryFromContext(context))
