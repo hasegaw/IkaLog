@@ -124,11 +124,8 @@ class WarpFilterModel(object):
         super(WarpFilterModel, self).__init__()
 
         for lang in Localization.get_game_languages():
-            model_filename = os.path.join(
-                IkaUtils.baseDirectory(),
-                'data',
-                'webcam_calibration.%s.model' % lang
-            )
+            model_filename = IkaUtils.get_path(
+                'data', 'webcam_calibration.%s.model' % lang)
             if os.path.exists(model_filename):
                 break
 
@@ -146,15 +143,14 @@ class WarpFilterModel(object):
             calibration_image = cv2.imread('camera/ika_usbcam/Pause.png', 0)
             self.calibration_image_size = calibration_image.shape[:2]
             calibration_image_hight, calibration_image_width = \
-                calibration_image.shape[ :2] 
+                calibration_image.shape[ :2]
             self.calibration_image_keypoints, self.calibration_image_descriptors = \
                 self.detector.detectAndCompute( calibration_image, None)
 
             print(self.calibration_image_keypoints)
             print(self.calibration_image_descriptors)
 
-            model_filename = os.path.join(
-                IkaUtils.baseDirectory(),
+            model_filename = IkaUtils.get_path(
                 'data',
                 'webcam_calibration.%s.model' % Localization.get_game_languages()[0]
             )

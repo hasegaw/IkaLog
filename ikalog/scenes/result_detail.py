@@ -146,8 +146,8 @@ class ResultDetail(StatefulScene):
         IkaUtils.dprint('%s: Created model data %s' % (self, dest_filename))
 
     def load_akaze_model(self):
-        model_filename = os.path.join(
-            IkaUtils.baseDirectory(), 'data', 'result_detail_features.akaze.model')
+        model_filename = IkaUtils.get_path(
+            'data', 'result_detail_features.akaze.model')
 
         try:
             self.load_model_from_file(model_filename)
@@ -859,16 +859,14 @@ class ResultDetail(StatefulScene):
             debug=False,
         )
 
-        base_dir = IkaUtils.baseDirectory()
         languages = Localization.get_game_languages()
         for lang in languages:
-            mask_file = os.path.join(
-                base_dir, 'masks', lang, 'result_detail.png')
+            mask_file = IkaUtils.get_path('masks', lang, 'result_detail.png')
             if os.path.exists(mask_file):
                 break
 
         if not os.path.exists(mask_file):
-            mask_file = os.path.join(base_dir, 'masks', 'result_detail.png')
+            mask_file = IkaUtils.get_path('masks', 'result_detail.png')
         winlose = imread(mask_file)
         self.winlose_gray = cv2.cvtColor(winlose, cv2.COLOR_BGR2GRAY)
 
