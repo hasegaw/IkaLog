@@ -136,7 +136,7 @@ class JSON(object):
     #
     def get_record_game_result(self, context):
         map = context['game']['map']
-        rule = IkaUtils.rule2id(context['game']['rule'])
+        rule = context['game']['rule']
         won = IkaUtils.getWinLoseText(
             context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
         t_unix = int(IkaUtils.get_end_time(context).timestamp())

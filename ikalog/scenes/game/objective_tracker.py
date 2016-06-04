@@ -85,7 +85,7 @@ class ObjectiveTracker(Scene):
         if context['game']['rule'] is None:
             return False
 
-        rule_id = IkaUtils.rule2id(context['game']['rule'])
+        rule_id = context['game']['rule']
         applicable_modes = ['yagura', 'hoko']
         if not (rule_id in applicable_modes):
             return False

@@ -118,13 +118,7 @@ class IkaUtils(object):
         return map_id
 
     @staticmethod
-    def rule2id(rule, unknown='?'):
-        if rule is None:
-            return unknown
-        return rule.id_
-
-    @staticmethod
-    def rule_id2text(rule_id, unknown='?', languages=None):
+    def rule2text(rule_id, unknown='?', languages=None):
         if rule_id is None:
             return unknown
 
@@ -138,11 +132,6 @@ class IkaUtils(object):
 
         # Should not reach here
         return rule_id
-
-    @staticmethod
-    def rule2text(rule, unknown='?', languages=None):
-        rule_id = IkaUtils.rule2id(rule, unknown=None)
-        return IkaUtils.rule_id2text(rule_id, unknown, languages)
 
     @staticmethod
     def gear_ability2text(gear_ability, unknown='?', languages=None):
@@ -265,6 +254,4 @@ class IkaUtils(object):
         # these values are replaced with None before deepcopy.
         context2['engine']['engine'] = None  # IkaEngine
         context2['engine']['service'] = {}  # functions of IkaEngine
-        context2['game'] = context['game'].copy()  # shallow copy
-        context2['game']['rule'] = None  # IkaMatcher
         return copy.deepcopy(context2)

@@ -115,7 +115,7 @@ class GameStart(StatefulScene):
             context['game']['map'] = stage.id_
 
         if not rule is None:
-            context['game']['rule'] = rule
+            context['game']['rule'] = rule.id_
 
         if stage or rule:
             self.stage_votes = []
@@ -151,7 +151,7 @@ class GameStart(StatefulScene):
 
         if not self.matched_in(context, 20000, attr='_last_event_msec'):
             context['game']['map'] = self.elect(context, self.stage_votes).id_
-            context['game']['rule'] = self.elect(context, self.rule_votes)
+            context['game']['rule'] = self.elect(context, self.rule_votes).id_
 
             if not context['game']['start_time']:
                 # start_time should be initialized in GameGoSign.

@@ -48,7 +48,7 @@ class GameRankedBattleEvents(StatefulScene):
         self._masks_active = {}
 
     def on_game_start(self, context):
-        rule_id = IkaUtils.rule2id(context['game']['rule'])
+        rule_id = context['game']['rule']
         if rule_id == 'area':
             self._masks_active = self._masks_splatzone.copy()
             self._masks_active.update(self._masks_ranked)

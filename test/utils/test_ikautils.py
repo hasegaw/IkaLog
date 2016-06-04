@@ -33,10 +33,6 @@ import time
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from ikalog.utils import IkaUtils
 
-class IkaMatcherMock(object):
-    def __init__(self, id):
-        self.id_ = id
-
 class TestIkaUtils(unittest.TestCase):
 
     #
@@ -105,56 +101,30 @@ class TestIkaUtils(unittest.TestCase):
                          IkaUtils.map2text(unknown_map_id, unknown='<:='))
 
 
-    def test_rule_id2text(self):
-        rule_id = 'nawabari'
+    def test_rule2text(self):
+        rule_id = 'area'
 
         # English
-        self.assertEqual('Turf War',
-                         IkaUtils.rule_id2text(rule_id, languages='en'))
+        self.assertEqual('Splat Zones',
+                         IkaUtils.rule2text(rule_id, languages='en'))
 
         # Japanese
-        self.assertEqual('ナワバリバトル',
-                         IkaUtils.rule_id2text(rule_id, languages='ja'))
+        self.assertEqual('ガチエリア',
+                         IkaUtils.rule2text(rule_id, languages='ja'))
 
         # Fallback to English
-        self.assertEqual('Turf War',
-                         IkaUtils.rule_id2text(rule_id, languages='??'))
+        self.assertEqual('Splat Zones',
+                         IkaUtils.rule2text(rule_id, languages='??'))
 
         # Multiple languages
-        self.assertEqual('ナワバリバトル',
-                         IkaUtils.rule_id2text(rule_id, languages=['ja', 'en']))
+        self.assertEqual('ガチエリア',
+                         IkaUtils.rule2text(rule_id, languages=['ja', 'en']))
 
         # Unkonwn
         unknown_rule_id = 'unknown'
-        self.assertEqual('?', IkaUtils.rule_id2text(unknown_rule_id))
+        self.assertEqual('?', IkaUtils.rule2text(unknown_rule_id))
         self.assertEqual('<:=',
-                         IkaUtils.rule_id2text(unknown_rule_id, unknown='<:='))
-
-
-    def test_rule2text(self):
-        rule_mock = IkaMatcherMock('area')
-
-        # English
-        self.assertEqual('Splat Zones',
-                         IkaUtils.rule2text(rule_mock, languages='en'))
-
-        # Japanese
-        self.assertEqual('ガチエリア',
-                         IkaUtils.rule2text(rule_mock, languages='ja'))
-
-        # Fallback to English
-        self.assertEqual('Splat Zones',
-                         IkaUtils.rule2text(rule_mock, languages='??'))
-
-        # Multiple languages
-        self.assertEqual('ガチエリア',
-                         IkaUtils.rule2text(rule_mock, languages=['ja', 'en']))
-
-        # Unkonwn
-        unknown_rule_mock = IkaMatcherMock('unknown')
-        self.assertEqual('?', IkaUtils.rule2text(unknown_rule_mock))
-        self.assertEqual('<:=',
-                         IkaUtils.rule2text(unknown_rule_mock, unknown='<:='))
+                         IkaUtils.rule2text(unknown_rule_id, unknown='<:='))
 
 
     def test_gear_ability2text(self):
@@ -380,7 +350,6 @@ class TestIkaUtils(unittest.TestCase):
                                                 mock_context))
 
     def test_copy_context(self):
-        mock_rule = IkaMatcherMock('area')
         mock_context = {
             'engine': {
                 'engine': self,
@@ -389,12 +358,13 @@ class TestIkaUtils(unittest.TestCase):
             },
             'game': {
                 'map': 'kinmedai',
-                'rule': mock_rule,
+                'rule': 'area',
             }}
 
         copied_context = IkaUtils.copy_context(mock_context)
         copied_context['engine']['source_file'] = 'movie.ts'
         copied_context['game']['map'] = 'hokke'
+        copied_context['game']['rule'] = 'nawabari'
         self.assertEqual('video.mp4', mock_context['engine']['source_file'])
         self.assertEqual('movie.ts', copied_context['engine']['source_file'])
 
@@ -402,13 +372,13 @@ class TestIkaUtils(unittest.TestCase):
         self.assertIsNotNone(
             mock_context['engine']['service'].get('call_plugins_later'))
         self.assertEqual('kinmedai', mock_context['game']['map'])
-        self.assertIsNotNone(mock_context['game']['rule'])
+        self.assertEqual('area', mock_context['game']['rule'])
 
         self.assertIsNone(copied_context['engine']['engine'])
         self.assertIsNone(
             copied_context['engine']['service'].get('call_plugins_later'))
         self.assertEqual('hokke', copied_context['game']['map'])
-        self.assertIsNone(copied_context['game']['rule'])
+        self.assertEqual('nawabari', copied_context['game']['rule'])
 
 if __name__ == '__main__':
     unittest.main()
