@@ -92,12 +92,16 @@ class InklingsTracker(StatefulScene):
             frame[24 + 16: 24 + 30, self.meter_x1: self.meter_x2]
         )
         img_eye_hist = np.sum(img_eye, axis=0)
+        self._call_plugins('on_mark_rect_in_preview',
+                           [(self.meter_x1, 24+16), (self.meter_x2, 24 + 30)])
 
         # Manipulate histgram array of inkling bodies.
         img_fg_b = matcher.MM_WHITE(sat=(40, 255), visibility=(60, 255))(
-            frame[24 + 31: 24 + 36, self.meter_x1:self.meter_x2]
+            frame[24 + 30: 24 + 34, self.meter_x1:self.meter_x2]
         )
         img_fg_hist = np.sum(img_fg_b / 255, axis=0)
+        self._call_plugins('on_mark_rect_in_preview',
+                           [(self.meter_x1, 24+30), (self.meter_x2, 24 + 34)])
 
         # Mask false-positive values in img_eye_hist.
         img_eye_hist[img_fg_hist < 4] = 0
@@ -280,15 +284,22 @@ class InklingsTracker(StatefulScene):
         if vs_xpos is None:
             return False
 
-        my_team = self._find_inklings(context, 0, vs_xpos - 35)
-        counter_team = self._find_inklings(
-            context, vs_xpos + 35, self.meter_width_half * 2)
+        if context['lobby'].get('type') in ['public', 'festa']:
+            # If lobby.type is 'public' or 'festa', the number of teams should
+            # be four.
+            my_team = [False, False, False, False]
+            counter_team = [False, False, False, False]
 
-        for i in range(len(my_team)):
-            my_team[i] = {True: False, False: None}[my_team[i]]
+        else:
+            my_team = self._find_inklings(context, 0, vs_xpos - 35)
+            counter_team = self._find_inklings(
+                context, vs_xpos + 35, self.meter_width_half * 2)
 
-        for i in range(len(counter_team)):
-            counter_team[i] = {True: False, False: None}[counter_team[i]]
+            for i in range(len(my_team)):
+                my_team[i] = {True: False, False: None}[my_team[i]]
+
+            for i in range(len(counter_team)):
+                counter_team[i] = {True: False, False: None}[counter_team[i]]
 
         self.my_team = my_team
         self.counter_team = counter_team
