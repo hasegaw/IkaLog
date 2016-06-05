@@ -49,6 +49,28 @@ class VideoCapture(object):
             return None
         return self.capture.get_current_timestamp()
 
+    def get_epoch_time(self):
+        if self.capture is None:
+            return None
+        return self.capture.get_epoch_time()
+
+    def set_pos_msec(self, pos_msec):
+        if self.capture is None:
+            return
+        return self.capture.set_pos_msec(pos_msec)
+
+    # Returns the source file if the input is from a file. Otherwise None.
+    def get_source_file(self):
+        if self.capture is None:
+            return None
+        return self.capture.get_source_file()
+
+    # Callback on EOFError. Returns True if a next data source is available.
+    def on_eof(self):
+        if self.capture is None:
+            return False
+        return self.capture.on_eof()
+
     def start_recorded_file(self, file):
         IkaUtils.dprint(
             '%s: initalizing pre-recorded video file %s' % (self, file))
