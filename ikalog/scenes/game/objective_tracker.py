@@ -61,11 +61,9 @@ class ObjectiveTracker(Scene):
 
         # 白い部分にいまヤグラ/ホコがある
         img3_hsv = cv2.cvtColor(img3, cv2.COLOR_BGR2HSV)
-        white_mask_s = cv2.inRange(img3_hsv[:, :, 1], 0, 8)
         white_mask_v = cv2.inRange(img3_hsv[:, :, 2], 248, 256)
-        white_mask = np.minimum(white_mask_s, white_mask_v)
         x_list = np.arange(self.tower_width)
-        tower_x = np.extract(white_mask[3, :] > 128, x_list)
+        tower_x = np.extract(white_mask_v[3, :] > 128, x_list)
 
         if tower_x.shape[0] == 0:
             return None
