@@ -43,7 +43,6 @@ class ResultUdemae(StatefulScene):
         if frame is None:
             return False
 
-        frame = context['engine']['frame']
         matched = self.mask_udemae_msg.match(frame) and self._analyze(context)
 
         if matched and self._analyze(context):
@@ -100,9 +99,8 @@ class ResultUdemae(StatefulScene):
         udemae_str = None
         udemae_exp = None
 
-        frame = context['engine']['frame']
-        img_udemae = frame[357:357 + 108, 450:450 + 190]
-        img_udemae_exp = frame[310:310 + 185, 770:770 + 110]
+        img_udemae = self._crop_frame(context, 450, 357, 450+190, 357+108)
+        img_udemae_exp = self._crop_frame(context, 770, 310, 770+110, 310+185)
 
         # ウデマエアップ／ダウンで黄色くなるのでチェックする
         filter_white = matcher.MM_WHITE()
