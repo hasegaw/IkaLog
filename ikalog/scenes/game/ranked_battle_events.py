@@ -27,12 +27,14 @@ from ikalog.scenes.stateful_scene import StatefulScene
 
 class GameRankedBattleEvents(StatefulScene):
 
+    # Called per Engine's reset.
     def reset(self):
         super(GameRankedBattleEvents, self).reset()
 
         self._last_event_msec = - 100 * 1000
         self._last_mask_matched = None
         self._last_mask_triggered_msec = - 100 * 1000
+        self._masks_active = {}
 
     def find_best_match(self, frame, matchers_list):
         most_possible = (0, None)
@@ -299,8 +301,8 @@ class GameRankedBattleEvents(StatefulScene):
             mask_they_lost: 'on_game_towercontrol_they_lost',
         }
 
+    # Called only once on initialization.
     def _init_scene(self, debug=False):
-        self._masks_active = {}
         self._load_rainmaker_masks(debug=debug)
         self._load_splatzone_masks(debug=debug)
         self._load_towercontrol_masks(debug=debug)

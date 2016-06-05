@@ -366,9 +366,13 @@ class IkaEngine:
         self.reset_capture()
 
     def reset_capture(self):
+        self.create_context()
         self.context['engine']['input_class'] = self.capture.__class__.__name__
         self.context['engine']['epoch_time'] = self.capture.get_epoch_time()
         self.context['engine']['source_file'] = self.capture.get_source_file()
+
+        for scene in self.scenes:
+            scene.reset()
 
     def set_plugins(self, plugins):
         self.output_plugins = [self]

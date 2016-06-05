@@ -38,6 +38,11 @@ class ObjectiveTracker(Scene):
     tower_line_top = 93
     tower_line_height = 5
 
+    # Called per Engine's reset.
+    def reset(self):
+        super(ObjectiveTracker, self).reset()
+        self._last_update_msec = -100 * 1000
+
     def tower_pos(self, context):
         img = context['engine']['frame'][self.tower_line_top:self.tower_line_top +
                                          self.tower_line_height, self.tower_left:self.tower_left + self.tower_width]
@@ -123,11 +128,11 @@ class ObjectiveTracker(Scene):
         self._last_update_msec = context['engine']['msec']
         return True
 
+    # Called only once on initialization.
     def _init_scene(self):
         self.ui_tower_mask = imread('masks/ui_tower.png')
         self.ui_tower_mask = self.ui_tower_mask[
             self.tower_line_top:self.tower_line_top + self.tower_line_height, self.tower_left:self.tower_left + self.tower_width]
-        self._last_update_msec = -100 * 1000
 
 if __name__ == "__main__":
     target = cv2.imread(sys.argv[1])
