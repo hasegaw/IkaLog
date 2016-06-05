@@ -33,8 +33,14 @@ class InklingsTracker(StatefulScene):
     meter_x1 = meter_center - meter_width_half
     meter_x2 = meter_center + meter_width_half
 
+    # Called per Engine's reset.
     def reset(self):
         super(InklingsTracker, self).reset()
+
+        self.my_team = [False, False, False, False]
+        self.counter_team = [False, False, False, False]
+        self._last_bitmap = None
+
 
     ##
     # _get_vs_xpos(self, context)
@@ -331,7 +337,6 @@ class InklingsTracker(StatefulScene):
             self._state_to_string(context['game']['inkling_state'][1])
         ))
 
+    # Called only once on initialization.
     def _init_scene(self, debug=False):
-        self.my_team = [False, False, False, False]
-        self.counter_team = [False, False, False, False]
-        self._last_bitmap = None
+        pass

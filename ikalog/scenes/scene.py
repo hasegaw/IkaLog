@@ -58,6 +58,7 @@ class Scene(object):
 
     # 何らかの原因で Engine 全体がリセットした
     def reset(self):
+        '''Called per Engine's reset.'''
         self._matched = None
         self._analyzed = None
         self._last_matched_msec = None
@@ -114,7 +115,9 @@ class Scene(object):
         self._prof_exit()
         return self._matched
 
+    # 初期化時に一度だけ呼ばれる
     def _init_scene(self):
+        '''Called only once on initialization.'''
         pass
 
     def _call_plugins_nop(self, event_name, params=None, debug=False):

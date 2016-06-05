@@ -65,6 +65,7 @@ class GameSpecialWeapon(StatefulScene):
 
         return most_possible[1]
 
+    # Called per Engine's reset.
     def reset(self):
         super(GameSpecialWeapon, self).reset()
         self.img_last_special = None
@@ -192,9 +193,8 @@ class GameSpecialWeapon(StatefulScene):
     def _analyze(self, context):
         pass
 
+    # Called only once on initialization.
     def _init_scene(self, debug=False):
-        self.my_team = []
-        self.counter_team = []
         #
         # To gather mask data, enable this.
         #
