@@ -32,16 +32,19 @@ from ikalog.utils import *
 
 class Description(object):
     def __init__(self, output_filepath, verbose=True):
-        self._description = ""
-        self._last_death_time = ""
-        self._first_act = True
-        self._session_active = True
         self._output_filepath = output_filepath
         self._verbose = verbose
+        self.reset()
 
     def _print(self, message):
         if self._verbose:
             print(message)
+
+    def reset(self):
+        self._description = ''
+        self._last_death_time = ''
+        self._first_act = True
+        self._session_active = True
 
     def get_timestamp(self, context):
         time_sec = context['engine']['msec'] / 1000
@@ -59,6 +62,9 @@ class Description(object):
             self._description += "　　└ "
         self._description += (message + "\n")
         self._print(self._description)
+
+    def on_game_reset(self, context):
+        self.reset()
 
     def on_game_start(self, context):
         time = self.get_timestamp(context)
