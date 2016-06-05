@@ -130,8 +130,7 @@ class ResultUdemae(StatefulScene):
 
         # ウデマエ(数値部分)
         if self.number_recoginizer:
-            udemae_exp = self.number_recoginizer.match_digits(
-                img_udemae_exp)
+            udemae_exp = self.number_recoginizer.match_digits(img_udemae_exp)
 
         if (udemae_exp is not None):
             # ウデマエの数字は 0~99 しかありえない
@@ -140,8 +139,7 @@ class ResultUdemae(StatefulScene):
 
         # ウデマエが正しく取得できない場合は別の画面を誤認識している
         # 可能性が高い
-
-        if not (udemae_str and udemae_exp):
+        if (not udemae_str) or (udemae_exp is None):  # udemae_exp can be 0.
             return False
 
         game = context['game']
