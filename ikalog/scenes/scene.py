@@ -151,6 +151,11 @@ class Scene(object):
         print('matched %s' % self._matched)
         print('')
 
+    def _crop_frame(self, context, x1, y1, x2, y2):
+        frame = context['engine']['frame']
+        self._call_plugins('on_mark_rect_in_preview', [(x1, y1), (x2, y2)])
+        return frame[y1 : y2, x1 : x2]
+
     def __init__(self, engine, debug=False):
         self._engine = engine
 

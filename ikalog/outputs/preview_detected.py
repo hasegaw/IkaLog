@@ -41,7 +41,7 @@ class PreviewDetected(object):
             cv2.rectangle(
                 context['engine']['preview'],
                 rect[0], rect[1],
-                color=(255, 255, 255),
+                color=(255, 255, 255),  # BGR
                 thickness=4
             )
 
