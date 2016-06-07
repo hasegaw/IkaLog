@@ -77,15 +77,10 @@ class IkaEngine:
 
     #
 
-    def on_game_individual_result(self, context):
-        self.session_close_wdt = context['engine']['msec'] + (20 * 1000)
+    def on_game_reset(self, context):
+        self._exception_log_init(self.context)
 
-    def on_result_gears(self, context):
-        if self.session_close_wdt is not None:
-            self.session_close_wdt = context['engine']['msec'] + (1 * 1000)
-
-    def on_game_lost_sync(self, context):
-        self.session_abort()
+    #
 
     def dprint(self, text):
         print(text, file=sys.stderr)
@@ -166,41 +161,7 @@ class IkaEngine:
         return self._stop
 
     def reset(self):
-        index = 0
-        if 'game' in self.context:
-            index = self.context['game'].get('index', 0)
-            # Increment the value only when end_time is available,
-            # (e.g. the game was finished).
-            if self.context['game'].get('end_time'):
-                index += 1
-
-        # Initalize the context
-        self.context['game'] = {
-            # Index of this game.
-            'index': index,
-
-            'map': None,
-            'rule': None,
-            'won': None,
-            'players': None,
-
-            'kills': 0,
-            'dead': False,
-            'death_reasons': {},
-
-            'inkling_state': [None, None],
-
-            # Float values of start and end times scince the epoch in second.
-            # They are used with IkaUtils.GetTime.
-            'start_time': None,
-            'end_time': None,
-            # Int values of start and end offset times in millisecond.
-            # They are used with context['engine']['msec']
-            'start_offset_msec': None,
-            'end_offset_msec': None,
-        }
-        self.call_plugins('on_game_reset')
-        self._exception_log_init(self.context)
+        self.find_scene_object('GameSession').game_reset(self.context)
 
     def create_context(self):
         self.context = {
@@ -219,6 +180,8 @@ class IkaEngine:
                 'exceptions_log': {
                 },
             },
+            'game': {
+            },
             'scenes': {
             },
             'config': {
@@ -226,33 +189,7 @@ class IkaEngine:
             'lobby': {
             }
         }
-        self.reset()
-        self.session_close_wdt = None
 
-    def session_close(self):
-        context = self.context
-        self.session_close_wdt = None
-
-        if not context['game']['end_time']:
-            # end_time should be initialized in GameFinish.
-            # This is a fallback in case GameFinish was skipped.
-            context['game']['end_time'] = IkaUtils.getTime(context)
-            context['game']['end_offset_msec'] = context['engine']['msec']
-
-        self.call_plugins('on_game_session_end')
-        self.reset()
-
-    def session_abort(self):
-        context = self.context
-        self.session_close_wdt = None
-
-        if not self.context['game']['end_time']:
-            # end_time should be initialized in GameFinish or session_close.
-            # This is a fallback in case they were skipped.
-            context['game']['end_time'] = IkaUtils.getTime(context)
-            context['game']['end_offset_msec'] = context['engine']['msec']
-
-        self.call_plugins('on_game_session_abort')
         self.reset()
 
     def process_scene(self, scene):
@@ -280,6 +217,12 @@ class IkaEngine:
                 return scene
         return None
 
+    def process_queued_events(self):
+        while len(self._event_queue) > 0:
+            event = self._event_queue.pop(0)
+            self.call_plugins(event_name=event[0], params=event[
+                              1], context=event[2])
+
     def process_frame(self):
         context = self.context
 
@@ -295,11 +238,6 @@ class IkaEngine:
 
         for scene in self.scenes:
             self.process_scene(scene)
-
-        if self.session_close_wdt is not None:
-            if self.session_close_wdt < context['engine']['msec']:
-                self.dprint('Watchdog fired. Closing current session')
-                self.session_close()
 
         key = None
 
@@ -323,9 +261,7 @@ class IkaEngine:
                 except:
                     pass
 
-        while len(self._event_queue) > 0:
-            event = self._event_queue.pop(0)
-            self.call_plugins(event_name=event[0], params=event[1], context=event[2])
+        self.process_queued_events()
 
     def _main_loop(self):
         while not self._stop:
@@ -338,11 +274,8 @@ class IkaEngine:
             except EOFError:
                 # EOF. Close session if close_session_at_eof is set.
                 if self.close_session_at_eof:
-                    if self.session_close_wdt is not None:
-                        self.dprint('Closing current session at EOF')
-                        self.session_close()
-                    else:
-                        self.session_abort()
+                    self.find_scene_object(
+                        'GameSession').close_session(self.context)
 
                 if self.capture.on_eof():
                     self.reset_capture()
@@ -390,7 +323,9 @@ class IkaEngine:
         self._pause = pause
 
     def _initialize_scenes(self):
+
         self.scenes = [
+            scenes.GameSession(self),
             scenes.GameTimerIcon(self),
             scenes.GameStart(self),
             scenes.GameGoSign(self),
@@ -425,9 +360,11 @@ class IkaEngine:
         self.call_plugins('on_engine_destroy')
 
     def __init__(self, enable_profile=False, abort_at_scene_exception=False):
-        self._initialize_scenes()
-
         self.output_plugins = [self]
+
+        self._initialize_scenes()
+        self.create_context()
+
         self.last_capture = time.time() - 100
 
         self._stop = False
@@ -437,5 +374,3 @@ class IkaEngine:
         self.close_session_at_eof = False
         self._enable_profile = enable_profile
         self._abort_at_scene_exception = abort_at_scene_exception
-
-        self.create_context()

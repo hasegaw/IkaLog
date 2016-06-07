@@ -18,6 +18,8 @@
 #  limitations under the License.
 #
 
+from .game.session import GameSession
+
 from .game.start import GameStart
 from .game.go_sign import GameGoSign
 from .game.kill import GameKill

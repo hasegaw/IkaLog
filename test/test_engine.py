@@ -46,32 +46,6 @@ class TestEngine(unittest.TestCase):
         self.assertIsNone(context['game']['start_time'])
         self.assertIsNone(context['game']['end_time'])
 
-    def test_game_index(self):
-        engine = ikalog.engine.IkaEngine()
-        engine.reset()
-        context = engine.context
-
-        self.assertEqual(0, context['game']['index'])
-
-        context['game']['index'] = 3
-        engine.reset()
-        self.assertEqual(3, context['game']['index'])
-
-        # The second sequential reset() should not increase the index.
-        engine.reset()
-        self.assertEqual(3, context['game']['index'])
-
-        # After session_close, index should be incremented.
-        # Note: We can change the timing of the increment from game_end to
-        #       game_start later, if necessary.
-        engine.session_close()
-        self.assertEqual(4, context['game']['index'])
-
-        # After session_abort also increases the index. Output plugins should
-        # take care about if session_close was called before.
-        engine.session_abort()
-        self.assertEqual(5, context['game']['index'])
-
     def test_copy_context(self):
         engine = ikalog.engine.IkaEngine()
         engine.reset()
