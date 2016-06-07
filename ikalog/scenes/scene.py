@@ -58,6 +58,7 @@ class Scene(object):
 
     # 何らかの原因で Engine 全体がリセットした
     def reset(self):
+        '''Called per Engine's reset.'''
         self._matched = None
         self._analyzed = None
         self._last_matched_msec = None
@@ -114,7 +115,9 @@ class Scene(object):
         self._prof_exit()
         return self._matched
 
+    # 初期化時に一度だけ呼ばれる
     def _init_scene(self):
+        '''Called only once on initialization.'''
         pass
 
     def _call_plugins_nop(self, event_name, params=None, debug=False):
@@ -148,9 +151,13 @@ class Scene(object):
         print('matched %s' % self._matched)
         print('')
 
+    def _crop_frame(self, context, x1, y1, x2, y2):
+        frame = context['engine']['frame']
+        self._call_plugins('on_mark_rect_in_preview', [(x1, y1), (x2, y2)])
+        return frame[y1 : y2, x1 : x2]
+
     def __init__(self, engine, debug=False):
         self._engine = engine
-        self.exclusive_scene = False
 
         if (engine is not None) and hasattr(engine, 'call_plugins'):
             self._call_plugins = engine.call_plugins
@@ -158,6 +165,7 @@ class Scene(object):
         else:
             self._call_plugins = self._call_plugins_nop
             self._call_plugins_later = self._call_plugins_nop
+
         self._init_scene()
 
         self._prof_time_enter = False

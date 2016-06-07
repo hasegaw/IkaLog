@@ -112,10 +112,10 @@ class GameStart(StatefulScene):
         rule = self.find_best_match(frame, self.rule_matchers)
 
         if not stage is None:
-            context['game']['map'] = stage
+            context['game']['map'] = stage.id_
 
         if not rule is None:
-            context['game']['rule'] = rule
+            context['game']['rule'] = rule.id_
 
         if stage or rule:
             self.stage_votes = []
@@ -150,8 +150,14 @@ class GameStart(StatefulScene):
         # それ以上マッチングしなかった場合 -> シーンを抜けている
 
         if not self.matched_in(context, 20000, attr='_last_event_msec'):
-            context['game']['map'] = self.elect(context, self.stage_votes)
-            context['game']['rule'] = self.elect(context, self.rule_votes)
+            context['game']['map'] = self.elect(context, self.stage_votes).id_
+            context['game']['rule'] = self.elect(context, self.rule_votes).id_
+
+            if not context['game']['start_time']:
+                # start_time should be initialized in GameGoSign.
+                # This is a fallback in case GameGoSign was skipped.
+                context['game']['start_time'] = IkaUtils.getTime(context)
+                context['game']['start_offset_msec'] = context['engine']['msec']
 
             self._call_plugins('on_game_start')
             self._last_event_msec = context['engine']['msec']

@@ -18,7 +18,6 @@
 #  limitations under the License.
 #
 
-import json
 import os
 import pprint
 import threading
@@ -27,12 +26,14 @@ import traceback
 import uuid
 
 import cv2
-import urllib3
 import umsgpack
 
+from datetime import datetime
 from ikalog.constants import fes_rank_titles, stages, weapons, special_weapons
-from ikalog.version import IKALOG_VERSION
+from ikalog.utils.statink_uploader import UploadToStatInk
+import ikalog.version
 from ikalog.utils import *
+from ikalog.utils.anonymizer import anonymize
 
 _ = Localization.gettext_translation('statink', fallback=True).gettext
 
@@ -46,11 +47,6 @@ except:
 
 # IkaLog Output Plugin for Stat.ink
 
-
-def call_plugins_mock(event_name, params=None, debug=False):
-    pass
-
-
 class StatInk(object):
 
     def apply_ui(self):
@@ -61,6 +57,8 @@ class StatInk(object):
         self.track_special_weapon_enabled = self.checkTrackSpecialWeaponEnable.GetValue()
         self.track_objective_enabled = self.checkTrackObjectiveEnable.GetValue()
         self.track_splatzone_enabled = self.checkTrackSplatzoneEnable.GetValue()
+        self.anon_others = self.radio_anon_others.GetValue()
+        self.anon_all = self.radio_anon_all.GetValue()
         self.api_key = self.editApiKey.GetValue()
 
     def refresh_ui(self):
@@ -73,6 +71,10 @@ class StatInk(object):
             self.track_special_weapon_enabled)
         self.checkTrackObjectiveEnable.SetValue(self.track_objective_enabled)
         self.checkTrackSplatzoneEnable.SetValue(self.track_splatzone_enabled)
+
+        self.radio_anon_disable.SetValue(True)
+        self.radio_anon_others.SetValue(self.anon_others)
+        self.radio_anon_all.SetValue(self.anon_all)
 
         if not self.api_key is None:
             self.editApiKey.SetValue(self.api_key)
@@ -87,6 +89,8 @@ class StatInk(object):
         self.track_special_weapon_enabled = False
         self.track_objective_enabled = False
         self.track_splatzone_enabled = False
+        self.anon_others = False
+        self.anon_all = False
         self.api_key = None
 
     def on_config_load_from_context(self, context):
@@ -104,6 +108,8 @@ class StatInk(object):
             'TrackSpecialWeapon', False)
         self.track_objective_enabled = conf.get('TrackObjective', False)
         self.track_splatzone_enabled = conf.get('TrackSplatzone', False)
+        self.anon_others = conf.get('anon_others', False)
+        self.anon_all = conf.get('anon_all', False)
         self.api_key = conf.get('APIKEY', '')
 
         self.refresh_ui()
@@ -118,6 +124,8 @@ class StatInk(object):
             'TrackSpecialWeapon': self.track_special_weapon_enabled,
             'TrackObjective': self.track_objective_enabled,
             'TrackSplatzone': self.track_splatzone_enabled,
+            'anon_others': self.anon_others,
+            'anon_all': self.anon_all,
             'APIKEY': self.api_key,
         }
 
@@ -145,6 +153,13 @@ class StatInk(object):
             self.panel, wx.ID_ANY, _('Include inkling status (experimental)'))
         self.editApiKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
+        self.radio_anon_disable = wx.RadioButton(
+            self.panel, wx.ID_ANY, _('Disabled'))
+        self.radio_anon_others = wx.RadioButton(
+            self.panel, wx.ID_ANY, _('Other players'))
+        self.radio_anon_all = wx.RadioButton(
+            self.panel, wx.ID_ANY, _('All players'))
+
         self.layout.Add(self.checkEnable)
         self.layout.Add(self.checkShowResponseEnable)
         self.layout.Add(self.checkTrackInklingStateEnable)
@@ -152,6 +167,10 @@ class StatInk(object):
         self.layout.Add(self.checkTrackSpecialWeaponEnable)
         self.layout.Add(self.checkTrackObjectiveEnable)
         self.layout.Add(self.checkTrackSplatzoneEnable)
+        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Anonymizer (Hide player names)')))
+        self.layout.Add(self.radio_anon_disable)
+        self.layout.Add(self.radio_anon_others)
+        self.layout.Add(self.radio_anon_all)
         self.layout.Add(wx.StaticText(
             self.panel, wx.ID_ANY, _('API Key')))
         self.layout.Add(self.editApiKey, flag=wx.EXPAND)
@@ -159,12 +178,10 @@ class StatInk(object):
         self.panel.SetSizer(self.layout)
 
     def encode_stage_name(self, context):
-        stage_id = IkaUtils.map2id(context['game']['map'], unknown=None)
-        return stage_id
+        return context['game']['map']
 
     def encode_rule_name(self, context):
-        rule_id = IkaUtils.rule2id(context['game']['rule'], unknown=None)
-        return rule_id
+        return context['game']['rule']
 
     def encode_weapon_name(self, weapon):
         # FIXME: 現状返ってくる key が日本語表記なので id に変換
@@ -216,10 +233,18 @@ class StatInk(object):
                 elif f_type == 'str_lower':
                     dest[f_statink] = str(src[f_ikalog]).lower()
 
+    def _get_offset_msec(self, context):
+        if (context['engine'].get('msec') and
+            context['game'].get('start_offset_msec')):
+            return (context['engine']['msec'] -
+                    context['game']['start_offset_msec'])
+        return None
+
     def _add_event(self, context, event_data=None, time_delta=0.0):
         assert event_data is not None
-        if (not 'at'in event_data) and (self.time_start_at_msec is not None):
-            offset_msec = context['engine']['msec'] - self.time_start_at_msec
+        offset_msec = self._get_offset_msec(context)
+        if (not 'at' in event_data) and offset_msec:
+            # Use only the first decimal.
             event_data['at'] = int(offset_msec / 100) / 10 + time_delta
         else:
             IkaUtils.dprint('%s: Event %s not logged due to no timing information.' % (
@@ -235,6 +260,20 @@ class StatInk(object):
             'value': event_sub_type,
         })
 
+    def composite_agent_custom(self, context):
+        custom = {}
+
+        if 'exceptions_log' in context['engine']:
+            if len(context['engine']['exceptions_log']) > 0:
+                custom['exceptions'] = \
+                    context['engine']['exceptions_log'].copy()
+
+        if len(custom) == 0:
+            return None
+
+        return json.dumps(custom, separators=(',', ':'))
+
+
     def composite_agent_variables(self, context):
         variables = {}
 
@@ -243,6 +282,19 @@ class StatInk(object):
 
         variables['primary_language'] = \
             Localization.get_game_languages()[0]
+
+        # variables['exceptions']
+        #
+        # e.g. "InklingsTracker(10) GameStart(4) ..."
+        if 'exceptions_log' in context['engine']:
+            if len(context['engine']['exceptions_log']) > 0:
+
+                exceptions = context['engine']['exceptions_log'].items()
+                # FIXME: Sorting
+                s = []
+                for e in exceptions:
+                    s.append('%s(%d)' % (e[0], e[1]['count']))
+                variables['exceptions'] = ', '.join(s)
 
         return variables
 
@@ -260,7 +312,7 @@ class StatInk(object):
         elif lobby_type == 'private':
             payload['lobby'] = 'private'
 
-        elif context['game']['is_fes'] or (lobby_type == 'festa'):
+        elif context['game'].get('is_fes') or (lobby_type == 'festa'):
             payload['lobby'] = 'fest'
 
         elif lobby_type == 'tag':
@@ -284,22 +336,63 @@ class StatInk(object):
         if rule:
             payload['rule'] = rule
 
-        if self.time_start_at and self.time_end_at:
-            payload['start_at'] = int(self.time_start_at)
-            payload['end_at'] = int(self.time_end_at)
+        if context['game'].get('start_time'):
+            payload['start_at'] = int(context['game']['start_time'])
+        if context['game'].get('end_time'):
+            payload['end_at'] = int(context['game']['end_time'])
 
         # In-game logs
 
         if len(context['game']['death_reasons'].keys()) > 0:
             payload['death_reasons'] = context['game']['death_reasons'].copy()
 
+        if context['game'].get('max_kill_combo'):
+            payload['max_kill_combo'] = int(context['game']['max_kill_combo'])
+
+        if context['game'].get('max_kill_streak'):
+            payload['max_kill_streak'] = int(context['game']['max_kill_streak'])
+
         if len(self.events) > 0:
             payload['events'] = list(self.events)
 
         # Video URL
-        if not ((self.video_id is None) or (self.video_id == '')):
+        if isinstance(self.video_id, str) and (self.video_id != ''):
             payload['link_url'] = 'https://www.youtube.com/watch?v=%s' % self.video_id
 
+        self.composite_result_payload(context, payload)
+
+        # Team colors
+        if ('my_team_color' in context['game']):
+            payload['my_team_color'] = {
+                'hue': context['game']['my_team_color']['hsv'][0] * 2,
+                'rgb': context['game']['my_team_color']['rgb'],
+            }
+            payload['his_team_color'] = {
+                'hue': context['game']['counter_team_color']['hsv'][0] * 2,
+                'rgb': context['game']['counter_team_color']['rgb'],
+            }
+
+        if self.img_gears is not None:
+            payload['image_gear'] = self.encode_image(self.img_gears)
+
+        # Agent Information
+
+        payload['agent'] = 'IkaLog'
+        payload['agent_version'] = ikalog.version.IKALOG_VERSION
+        payload['agent_game_version'] = ikalog.version.GAME_VERSION
+        payload['agent_game_version_date'] = ikalog.version.GAME_VERSION_DATE
+
+        payload['agent_variables'] = self.composite_agent_variables(context)
+        payload['agent_custom'] = self.composite_agent_custom(context)
+
+        # Remove any 'None' data
+        for key, val in list(payload.items()):
+            if val is None:
+                del payload[key]
+
+        return payload
+
+    def composite_result_payload(self, context, payload):
         # ResultJudge
 
         if payload.get('rule', None) in ['nawabari']:
@@ -324,6 +417,8 @@ class StatInk(object):
         # ResultDetail
 
         me = IkaUtils.getMyEntryFromContext(context)
+        if me is None:
+            return
 
         payload['result'] = IkaUtils.getWinLoseText(
             context['game']['won'],
@@ -465,21 +560,15 @@ class StatInk(object):
 
                 payload['fest_title_after'] = current_title.lower()
 
-        # Team colors
-        if ('my_team_color' in context['game']):
-            payload['my_team_color'] = {
-                'hue': context['game']['my_team_color']['hsv'][0] * 2,
-                'rgb': context['game']['my_team_color']['rgb'],
-            }
-            payload['his_team_color'] = {
-                'hue': context['game']['counter_team_color']['hsv'][0] * 2,
-                'rgb': context['game']['counter_team_color']['rgb'],
-            }
-
         # Screenshots
 
         if self.img_result_detail is not None:
-            payload['image_result'] = self.encode_image(self.img_result_detail)
+            img_scoreboard = anonymize(
+                self.img_result_detail,
+                anonOthers = self.anon_others,
+                anonAll = self.anon_all,
+            )
+            payload['image_result'] = self.encode_image(img_scoreboard)
         else:
             IkaUtils.dprint('%s: img_result_detail is empty.' % self)
 
@@ -488,19 +577,6 @@ class StatInk(object):
         else:
             IkaUtils.dprint('%s: img_judge is empty.' % self)
 
-        # Agent Information
-
-        payload['agent'] = 'IkaLog'
-        payload['agent_version'] = IKALOG_VERSION
-
-        payload['agent_variables'] = self.composite_agent_variables(context)
-
-        for field in payload.keys():
-            if payload[field] is None:
-                IkaUtils.dprint('%s: [FIXME] payload has blank entry %s:%s' % (
-                    self, field, payload[field]))
-
-        return payload
 
     def write_response_to_file(self, r_header, r_body, basename=None):
         if basename is None:
@@ -523,106 +599,48 @@ class StatInk(object):
             IkaUtils.dprint('%s: Failed to write file' % self)
             IkaUtils.dprint(traceback.format_exc())
 
-    def write_payload_to_file(self, payload, basename=None):
-        if basename is None:
+    def write_payload_to_file(self, payload, filename=None):
+        if filename is None:
             t = datetime.now().strftime("%Y%m%d_%H%M")
-            basename = os.path.join('/tmp', 'statink_%s' % t)
+            filename = os.path.join('/tmp', 'statink_%s.msgpack' % t)
 
         try:
-            f = open(basename + '.msgpack', 'w')
-            f.write(''.join(map(chr, umsgpack.packb(payload))))
+            f = open(filename, 'wb')
+            umsgpack.pack(payload, f)
             f.close()
         except:
             IkaUtils.dprint('%s: Failed to write msgpack file' % self)
             IkaUtils.dprint(traceback.format_exc())
 
-    def _post_payload_worker(self, context, payload):
+    def _post_payload_worker(self, context, payload, api_key,
+                             call_plugins_later_func=None):
         # This function runs on worker thread.
+        error, statink_response = UploadToStatInk(payload,
+                                                  api_key,
+                                                  self.url_statink_v1_battle,
+                                                  self.show_response_enabled,
+                                                  (self.dry_run == 'server'))
 
-        if self.dry_run == 'server':
-            payload['test'] = 'dry_run'
-
-        mp_payload_bytes = umsgpack.packb(payload)
-        mp_payload = ''.join(map(chr, mp_payload_bytes))
-
-        http_headers = {
-            'Content-Type': 'application/x-msgpack',
-        }
-
-        IkaUtils.dprint('%s: POST %s' % (self, self.url_statink_v1_battle))
-        time_post_start = time.time()
-
-        pool = urllib3.PoolManager(
-            cert_reqs='CERT_REQUIRED',  # Force certificate check
-            ca_certs=Certifi.where(),   # Path to the Certifi bundle.
-            timeout=120.0,              # Timeout (in sec)
-        )
-
-        # Post the payload
-
-        try:
-            req = pool.urlopen('POST', self.url_statink_v1_battle,
-                               headers=http_headers,
-                               body=mp_payload,
-                               )
-        except urllib3.exceptions.SSLError as e:
-            # Handle incorrect certificate error.
-            IkaUtils.dprint('%s: SSLError, value: %s' % (self, e.value))
-
-        # Error detection
-
-        error = False
-        try:
-            statink_response = json.loads(req.data.decode('utf-8'))
-            error = 'error' in statink_response
-            if error:
-                IkaUtils.dprint('%s: API Error occured')
-        except:
-            error = True
-            IkaUtils.dprint('%s: Stat.ink return non-JSON response')
-            statink_response = {
-                'error': 'Not a JSON response',
-            }
-
-        # Debug messages
-
-        if self.show_response_enabled or error:
-            IkaUtils.dprint('%s: == Response begin ==' % self)
-            print(req.data.decode('utf-8'))
-            IkaUtils.dprint('%s: == Response end ===' % self)
-
-        IkaUtils.dprint(
-            '%s: POST Done. %d bytes in %f second(s).' % (
-                self,
-                len(mp_payload),
-                int((time.time() - time_post_start) * 10) / 10,
-            )
-        )
+        if not call_plugins_later_func:
+            return
 
         # Trigger a event.
-
-        try:
-            call_plugins_func = \
-                context['engine']['service']['call_plugins_later']
-        except:
-           call_plugins_func = call_plugins_mock
-
         if error:
-            call_plugins_func(
+            call_plugins_later_func(
                 'on_output_statink_submission_error',
-                params=statink_response
+                params=statink_response, context=context
             )
 
         elif statink_response.get('id', 0) == 0:
-            call_plugins_func(
+            call_plugins_later_func(
                 'on_output_statink_submission_dryrun',
-                params=statink_response
+                params=statink_response, context=context
             )
 
         else:
-            call_plugins_func(
+            call_plugins_later_func(
                 'on_output_statink_submission_done',
-                params=statink_response
+                params=statink_response, context=context
             )
 
     def post_payload(self, context, payload, api_key=None):
@@ -631,20 +649,24 @@ class StatInk(object):
                 '%s: Dry-run mode, skipping POST to stat.ink.' % self)
             return
 
+        if self.payload_file:
+            IkaUtils.dprint(
+                '%s: payload_file is specified to %s, '
+                'skipping POST to stat.ink.' % (self, self.payload_file))
+            return
+
         if api_key is None:
             api_key = self.api_key
 
         if api_key is None:
             raise('No API key specified')
 
-        # Payload data will be modified, so we copy it.
-        # It is not deep copy, so only dict object is
-        # duplicated.
-        payload = payload.copy()
-        payload['apikey'] = api_key
+        copied_context = IkaUtils.copy_context(context)
+        call_plugins_later_func = context['engine']['service']['call_plugins_later']
 
         thread = threading.Thread(
-            target=self._post_payload_worker, args=(context, payload))
+            target=self._post_payload_worker,
+            args=(copied_context, payload, api_key, call_plugins_later_func))
         thread.start()
 
     def print_payload(self, payload):
@@ -652,45 +674,41 @@ class StatInk(object):
 
         if 'image_result' in payload:
             payload['image_result'] = '(PNG Data)'
+
         if 'image_judge' in payload:
             payload['image_judge'] = '(PNG Data)'
+
+        if 'image_gear' in payload:
+            payload['image_gear'] = '(PNG Data)'
+
         if 'events' in payload:
             payload['events'] = '(Events)'
 
         pprint.pprint(payload)
 
-    def on_game_go_sign(self, context):
-        self.time_start_at = int(time.time())
-        self.time_end_at = None
+    def _open_game_session(self, context):
         self.events = []
         self.time_last_score_msec = None
         self.time_last_objective_msec = None
         self.last_dead_event = None
+        self._called_close_game_session = False
 
-        # check if context['engine']['msec'] exists
-        # to allow unit test.
-        if 'msec' in context['engine']:
-            self.time_start_at_msec = context['engine']['msec']
+    def on_game_go_sign(self, context):
+        self._open_game_session(context)
 
     def on_game_start(self, context):
         # ゴーサインをベースにカウントするが、ゴーサインを認識
         # できなかった場合の保険として on_game_start も拾っておく
-        self.on_game_go_sign(context)
+        self._open_game_session(context)
 
     def on_game_finish(self, context):
-        self.time_end_at = int(time.time())
-        if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
-            duration_msec = context['engine']['msec'] - self.time_start_at_msec
-
-            if duration_msec >= 0.0:
-                self.time_start_at = int(
-                    self.time_end_at - int(duration_msec / 1000))
-
+        self._add_event(context, {'type': 'finish'})
         self.on_game_paint_score_update(context)
 
         # 戦績画面はこの後にくるはずなので今までにあるデータは捨てる
         self.img_result_detail = None
         self.img_judge = None
+        self.img_gears = None
 
         IkaUtils.dprint('%s: Discarded screenshots' % self)
 
@@ -709,7 +727,11 @@ class StatInk(object):
         IkaUtils.dprint('%s: Gathered img_judge(%s)' %
                         (self, self.img_judge.shape))
 
-    def on_game_session_end(self, context):
+    def _close_game_session(self, context):
+        if self._called_close_game_session:
+            return
+        self._called_close_game_session = True
+
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
         if (not self.enabled) and (not self.dry_run):
@@ -719,10 +741,22 @@ class StatInk(object):
 
         self.print_payload(payload)
 
-        if self.debug_writePayloadToFile:
-            self.write_payload_to_file(payload)
+        if self.debug_writePayloadToFile or self.payload_file:
+            payload_file = IkaUtils.get_file_name(self.payload_file, context)
+            self.write_payload_to_file(payload, filename=payload_file)
 
         self.post_payload(context, payload)
+
+    def on_result_gears_still(self, context):
+        self.img_gears = context['engine']['frame']
+        IkaUtils.dprint('%s: Gathered img_gears (%s)' %
+                        (self, self.img_gears.shape))
+
+    def on_game_session_end(self, context):
+        self._close_game_session(context)
+
+    def on_game_session_abort(self, context):
+        self._close_game_session(context)
 
     def on_game_killed(self, context):
         self._add_event(context, {'type': 'killed'})
@@ -742,7 +776,7 @@ class StatInk(object):
         if not self.track_inklings_enabled:
             return
 
-        if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
+        if self._get_offset_msec(context):
             self._add_event(context, {
                 'type': 'alive_inklings',
                 'my_team': context['game']['inkling_state'][0],
@@ -751,8 +785,8 @@ class StatInk(object):
 
     def on_game_paint_score_update(self, context):
         score = context['game'].get('paint_score', 0)
-        if (score > 0 and 'msec' in context['engine']) and (self.time_start_at_msec is not None):
-            event_msec = context['engine']['msec'] - self.time_start_at_msec
+        event_msec = self._get_offset_msec(context)
+        if (score > 0) and event_msec:
             # 前回のスコアイベントから 200ms 経っていない場合は処理しない
             if (self.time_last_score_msec is None) or (event_msec - self.time_last_score_msec >= 200):
                 self._add_event(context, {
@@ -766,8 +800,8 @@ class StatInk(object):
             return
 
         score = context['game'].get('special_gauge', 0)
-        if (score > 0 and 'msec' in context['engine']) and (self.time_start_at_msec is not None):
-            event_msec = context['engine']['msec'] - self.time_start_at_msec
+        event_msec = self._get_offset_msec(context)
+        if (score > 0) and event_msec:
             # 前回のスコアイベントから 200ms 経っていない場合は処理しない
             if (self.time_last_special_gauge_msec is None) or (event_msec - self.time_last_special_gauge_msec >= 200):
                 self._add_event(context, {
@@ -780,8 +814,8 @@ class StatInk(object):
         if not self.track_special_gauge_enabled:
             return
 
-        if (self.time_start_at_msec is not None):
-            event_msec = context['engine']['msec'] - self.time_start_at_msec
+        event_msec = self._get_offset_msec(context)
+        if event_msec:
             self._add_event(context, {
                 'type': 'special_charged',
             })
@@ -796,8 +830,8 @@ class StatInk(object):
                             (self, special_weapon))
             return
 
-        if ('msec' in context['engine']) and (self.time_start_at_msec is not None):
-            event_msec = context['engine']['msec'] - self.time_start_at_msec
+        event_msec = self._get_offset_msec(context)
+        if event_msec:
             self._add_event(context, {
                 'type': 'special_weapon',
                 'special_weapon': special_weapon,
@@ -808,7 +842,7 @@ class StatInk(object):
         if not self.track_objective_enabled:
             return
 
-        event_msec = context['engine']['msec'] - self.time_start_at_msec
+        event_msec = self._get_offset_msec(context)
 
         if (self.time_last_objective_msec is None) or (event_msec - self.time_last_objective_msec >= 200):
             self._add_event(context, {
@@ -821,7 +855,7 @@ class StatInk(object):
         if not self.track_splatzone_enabled:
             return
 
-        event_msec = context['engine']['msec'] - self.time_start_at_msec
+        event_msec = self._get_offset_msec(context)
         self._add_event(context, {
             'type': 'splatzone',
             'my_team_count': context['game']['splatzone_my_team_counter']['value'],
@@ -873,14 +907,24 @@ class StatInk(object):
     def on_game_ranked_they_lead(self, context):
         self._add_ranked_battle_event(context, 'they_lead')
 
-    def __init__(self, api_key=None, track_objective=False, track_splatzone=False, track_inklings=False, track_special_gauge=False, track_special_weapon=False, debug=False, dry_run=False, url='https://stat.ink', video_id=None):
+    def __init__(self, api_key=None, track_objective=False,
+                 track_splatzone=False, track_inklings=False,
+                 track_special_gauge=False, track_special_weapon=False,
+                 anon_all = False, anon_others = False,
+                 debug=False, dry_run=False, url='https://stat.ink',
+                 video_id=None, payload_file=None):
         self.enabled = not (api_key is None)
         self.api_key = api_key
         self.dry_run = dry_run
-
-        self.time_start_at = None
-        self.time_end_at = None
-        self.time_start_at_msec = None
+        self.debug_writePayloadToFile = False
+        self.show_response_enabled = debug
+        self.track_inklings_enabled = track_inklings
+        self.track_special_gauge_enabled = track_special_gauge
+        self.track_special_weapon_enabled = track_special_weapon
+        self.track_objective_enabled = track_objective
+        self.track_splatzone_enabled = track_splatzone
+        self.anon_all = anon_all
+        self.anon_others = anon_others
 
         self.events = []
         self.time_last_score_msec = None
@@ -890,18 +934,16 @@ class StatInk(object):
 
         self.img_result_detail = None
         self.img_judge = None
+        self.img_gears = None
 
-        self.debug_writePayloadToFile = False
-        self.show_response_enabled = debug
-        self.track_inklings_enabled = track_inklings
-        self.track_special_gauge_enabled = track_special_gauge
-        self.track_special_weapon_enabled = track_special_weapon
-        self.track_objective_enabled = track_objective
-        self.track_splatzone_enabled = track_splatzone
 
         self.url_statink_v1_battle = '%s/api/v1/battle' % url
 
         self.video_id = video_id
+        self.payload_file = payload_file
+
+        # If true, it means the payload is not posted or saved.
+        self._called_close_game_session = False
 
 if __name__ == "__main__":
     # main として呼ばれた場合

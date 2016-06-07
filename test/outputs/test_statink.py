@@ -18,19 +18,18 @@
 #  limitations under the License.
 #
 
-
 import unittest
-from ikalog import constants
+import os.path
+import sys
 
+# Append the Ikalog root dir to sys.path to import IkaUtils.
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+from ikalog import constants
+from ikalog.outputs.statink import StatInk
 
 class TestStatInk(unittest.TestCase):
-
-    def _load_StatInk(self):
-        from ikalog.outputs.statink import StatInk
-        return StatInk('not_valid_key')
-
     def test_composite(self):
-        statink = self._load_StatInk()
+        statink = StatInk()
 
         context = {
             'game': {
@@ -39,12 +38,15 @@ class TestStatInk(unittest.TestCase):
                 'is_fes': False,
                 'won': True,
                 'players': [
-                    {'me': True, },
+                    {'me': True,
+                     'team': 1,
+                     },
                 ],
                 'death_reasons': {},
             },
             'lobby': {},
             'scenes': {},
+            'engine': {},
         }
 
         payload = statink.composite_payload(context)
@@ -63,19 +65,20 @@ class TestStatInk(unittest.TestCase):
 
         assert not 'rule' in payload
 
-        context['game']['rule'] = {'name': 'ナワバリバトル'}
+        context['game']['rule'] = 'area'
         payload = statink.composite_payload(context)
-        assert payload['rule'] == 'nawabari'
+        assert payload['rule'] == 'area'
 
         # local inkling's stats
         context['game']['players'] = [{
             'me': True,
+            'team': 1,
             'kills': 1,
             'deaths': 2,
             'rank': 3,
             'score': 4,
-            'udemae_pre': 'a',
         }, ]
+        context['game']['result_udemae_str_pre'] = 'a'
         payload = statink.composite_payload(context)
         assert payload['kill'] == 1
         assert payload['death'] == 2
@@ -93,7 +96,7 @@ class TestStatInk(unittest.TestCase):
 
         assert not 'knockout' in payload
 
-        context['game']['rule'] = {'name': 'ナワバリバトル'}
+        context['game']['rule'] = 'nawabari'
         context['game']['knockout'] = True
         payload = statink.composite_payload(context)
         # ナワバリバトルではノックアウトが発生しないので
@@ -101,7 +104,7 @@ class TestStatInk(unittest.TestCase):
         assert not 'knockout' in payload
 
         # ガチヤグラなどではOK
-        context['game']['rule'] = {'name': 'ガチヤグラ'}
+        context['game']['rule'] = 'yagura'
         payload = statink.composite_payload(context)
         assert payload['knock_out'] == 'yes'
 
@@ -111,11 +114,10 @@ class TestStatInk(unittest.TestCase):
 
         # ResultUdemae
 
-        context['scenes']['result_udemae'] = {}
-        context['scenes']['result_udemae']['udemae_exp_pre'] = 10
-        context['scenes']['result_udemae']['udemae_exp_after'] = 20
-        context['scenes']['result_udemae']['udemae_str_pre'] = 'a'
-        context['scenes']['result_udemae']['udemae_str_after'] = 'a+'
+        context['game']['result_udemae_exp_pre'] = 10
+        context['game']['result_udemae_exp'] = 20
+        context['game']['result_udemae_str_pre'] = 'a'
+        context['game']['result_udemae_str'] = 'a+'
 
         payload = statink.composite_payload(context)
         assert payload['rank_exp'] == 10
@@ -148,3 +150,6 @@ class TestStatInk(unittest.TestCase):
         assert payload['his_team_color']['hue'] == 160 * 2
 
         # TODO: Test RGB data
+
+if __name__ == '__main__':
+    unittest.main()

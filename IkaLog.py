@@ -23,9 +23,11 @@ Localization.print_language_settings()
 
 import argparse
 import signal
-from ikalog.engine import *
-from IkaConfig import *
-from ikalog.utils import *
+import sys
+import time
+from ikalog import inputs
+from ikalog.engine import IkaEngine
+from ikalog.utils import config_loader
 
 
 
@@ -36,36 +38,56 @@ def signal_handler(num, frame):
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_file', '-f', dest='input_file', type=str)
+    parser.add_argument('--input', '-i', dest='input', type=str,
+                        choices=['DirectShow', 'CVCapture', 'ScreenCapture',
+                                 'AVFoundationCapture', 'CVFile'])
+    parser.add_argument('--input_file', '-f', dest='input_file', type=str,
+                        nargs='*', help='Input video file. '
+                        'Other flags can refer this flag as __INPUT_FILE__')
+    parser.add_argument('--output_json', '--json',
+                        dest='output_json', type=str)
     parser.add_argument('--output_description', '--desc',
                         dest='output_description', type=str)
+    parser.add_argument('--statink_payload',
+                        dest='statink_payload', type=str,
+                        help='Payload file to stat.ink. '
+                        'If this is specified, the data is not uploaded.')
     parser.add_argument('--profile', dest='profile', action='store_true',
                         default=False)
     parser.add_argument('--time', '-t', dest='time', type=str)
     parser.add_argument('--time_msec', dest='time_msec', type=int)
     parser.add_argument('--video_id', dest='video_id', type=str)
+    parser.add_argument('--debug', dest='debug', action='store_true',
+                        default=False)
 
     return vars(parser.parse_args())
 
-def time_to_msec(time):
-    minute, sec = time.split(':')
-    return (int(minute) * 60 + int(sec)) * 1000
+
+def get_pos_msec(args):
+    if args['time_msec']:
+        return args['time_msec']
+    elif args['time']:
+        minute, sec = args['time'].split(':')
+        return (int(minute) * 60 + int(sec)) * 1000
+    else:
+        return 0
+
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
 
     args = get_args()
-    capture, OutputPlugins = IkaConfig().config(args)
-
-    if isinstance(capture, inputs.CVFile):
-        pos_msec = args.get('time_msec') or time_to_msec(args.get('time') or '0:0')
-        if pos_msec:
-            capture.video_capture.set(cv2.CAP_PROP_POS_MSEC, pos_msec)
+    capture, output_plugins = config_loader.config(args)
+    capture.set_pos_msec(get_pos_msec(args))
 
     engine = IkaEngine(enable_profile=args.get('profile'))
     engine.pause(False)
     engine.set_capture(capture)
-    engine.set_plugins(OutputPlugins)
+
+    engine.set_plugins(output_plugins)
+    for op in output_plugins:
+        engine.enable_plugin(op)
+
     engine.close_session_at_eof = True
     engine.run()
     IkaUtils.dprint('bye!')

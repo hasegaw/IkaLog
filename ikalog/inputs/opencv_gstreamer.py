@@ -23,14 +23,39 @@ import threading
 
 import cv2
 from ikalog.utils import *
-from ikalog.inputs import CVFile
+from ikalog.inputs import VideoInput
 
 
-class GStreamer(CVFile):
+class GStreamer(VideoInput):
 
+    # Note: This is for backward compatibility. GStreamer was a subclass of
+    # CVFile which sets this variable True. It might be OK to remove it.
+    cap_recorded_video = True
+
+    # override
+    def _initialize_driver_func(self):
+        # OpenCV File doesn't need pre-initialization.
+        self._cleanup_driver_func()
+
+    # override
+    def _cleanup_driver_func(self):
+        self.lock.acquire()
+        try:
+            if self.video_capture is not None:
+                self.video_capture.release()
+            self.reset()
+        finally:
+            self.lock.release()
+
+    # override
+    def _is_active_func(self):
+        return (self.video_capture is not None)
+
+    # override
     def _select_device_by_index_func(self, source):
         raise Exception('%s does not support selecting device by index.')
 
+    # override
     def _select_device_by_name_func(self, source):
         self.lock.acquire()
         try:
@@ -44,6 +69,43 @@ class GStreamer(CVFile):
             self.lock.release()
 
         return self.is_active()
+
+    # override
+    def _next_frame_func(self):
+        pass
+
+    # override
+    def _get_current_timestamp_func(self):
+        video_msec = self.video_capture.get(cv2.CAP_PROP_POS_MSEC)
+
+        if video_msec is None:
+            return self.get_tick()
+
+        return video_msec
+
+    # override
+    def _read_frame_func(self):
+        ret, frame = self.video_capture.read()
+        if not ret:
+            raise EOFError()
+
+        if self.frame_skip_rt:
+            systime_msec = self.get_tick()
+            video_msec = self.video_capture.get(cv2.CAP_PROP_POS_MSEC)
+            assert systime_msec >= 0
+
+            skip = video_msec < systime_msec
+            while skip:
+                ret, frame_ = self.video_capture.read()
+
+                if not ret:
+                    break
+
+                frame = frame_
+                video_msec = self.video_capture.get(cv2.CAP_PROP_POS_MSEC)
+                skip = video_msec < systime_msec
+
+        return frame
 
     def __init__(self):
         self.video_capture = None

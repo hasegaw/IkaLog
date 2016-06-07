@@ -93,6 +93,13 @@ class VideoInput(object):
         pass
 
     ##
+    # _read_frame_func()
+    # @param self    the object
+    # @return        the current frame of the input source.
+    def _read_frame_func(self):
+        raise
+
+    ##
     # is_active()
     # Returns the state of the input source.
     # @return True if the input source is active. Otherwise False.
@@ -178,15 +185,17 @@ class VideoInput(object):
 
         next_tick = None
 
-        if self.cap_recorded_video:
-            self._skip_frame_recorded()
-        else:
-            next_tick = self._skip_frame_realtime()
+        try:
+            if self.cap_recorded_video:
+                self._skip_frame_recorded()
+            else:
+                next_tick = self._skip_frame_realtime()
 
-        self._next_frame_func()
+            self._next_frame_func()
 
-        img = self._read_frame_func()
-        self.lock.release()
+            img = self._read_frame_func()
+        finally:
+            self.lock.release()
 
         if img is None:
             return None
@@ -244,6 +253,20 @@ class VideoInput(object):
     # @return Timestamp (in msec)
     def get_current_timestamp(self):
         return self._get_current_timestamp_func()
+
+    def get_epoch_time(self):
+        return None
+
+    def set_pos_msec(self, pos_msec):
+        pass
+
+    # Returns the source file if the input is from a file. Otherwise None.
+    def get_source_file(self):
+        return None
+
+    # Callback on EOFError. Returns True if a next data source is available.
+    def on_eof(self):
+        return False
 
     ##
     # set_frame_rate(self, fps=None, realtime=False)

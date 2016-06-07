@@ -18,7 +18,6 @@
 #  limitations under the License.
 #
 
-from datetime import datetime
 import json
 import os
 import time
@@ -32,6 +31,12 @@ try:
     import wx
 except:
     pass
+
+
+def _set(dest, dest_key, src, src_key):
+    if src_key not in src:
+        return
+    dest[dest_key] = src[src_key]
 
 # IkaOutput_JSON: IkaLog Output Plugin for JSON Logging
 #
@@ -96,16 +101,31 @@ class JSON(object):
 
         self.layout.Add(self.checkEnable)
 
+    def _open_game_session(self, context):
+        self._called_close_game_session = False
+
+    def on_game_go_sign(self, context):
+        self._open_game_session(context)
+
+    def on_game_start(self, context):
+        # Fallback in the case on_game_go_sign was skipped.
+        self._open_game_session(context)
+
     ##
     # Write a line to text file.
     # @param self     The Object Pointer.
     # @param record   Record (text)
+    # @param context  The context
     #
-    def write_record(self, record):
+    def write_record(self, record, context):
         try:
-            json_file = open(self.json_filename, "a")
-            json_file.write(record)
-            json_file.close
+            if self.append_data:
+                json_file = open(self.json_filename, "a")
+            else:
+                filename = IkaUtils.get_file_name(self.json_filename, context)
+                json_file = open(filename, 'w')
+            json_file.write(json.dumps(record, separators=(',', ':')) + '\n')
+            json_file.close()
         except:
             print("JSON: Failed to write JSON file")
 
@@ -115,14 +135,11 @@ class JSON(object):
     # @param context   IkaLog context
     #
     def get_record_game_result(self, context):
-        map = IkaUtils.map2text(context['game']['map'])
-        rule = IkaUtils.rule2text(context['game']['rule'])
+        map = context['game']['map']
+        rule = context['game']['rule']
         won = IkaUtils.getWinLoseText(
             context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
-
-        t = datetime.now()
-        t_str = t.strftime("%Y,%m,%d,%H,%M")
-        t_unix = int(time.mktime(t.timetuple()))
+        t_unix = int(IkaUtils.get_end_time(context).timestamp())
 
         record = {
             'time': t_unix,
@@ -132,39 +149,51 @@ class JSON(object):
             'result': won
         }
 
+        _set(record, 'lobby', context['lobby'], 'type')
+        if (not record.get('lobby')) and context['game'].get('is_fes'):
+            record['lobby'] = 'festa'
+
         # ウデマエ
-        try:
-            udemae = context['scenes']['result_udemae']
-            record['udemae_pre'] = result_udemae['udemae_exp_pre']
-            record['udemae_exp_pre'] = udemae['udemae_exp_pre']
-            record['udemae_after'] = udemae['udemae_str_after']
-            record['udemae_exp_after'] = udemae['udemae_exp_after']
-        except:
-            pass
+        _set(record, 'udemae_pre', context['game'], 'result_udemae_str_pre')
+        _set(record, 'udemae_exp_pre', context['game'], 'result_udemae_exp_pre')
+        _set(record, 'udemae_after', context['game'],'result_udemae_str')
+        _set(record, 'udemae_exp_after', context['game'], 'result_udemae_exp')
 
         # オカネ
-        try:
-            record['cash_after'] = context['scenes']['result_gears']['cash']
-        except:
-            pass
+        if context['scenes'].get('result_gears'):
+            _set(record, 'cash_after',
+                 context['scenes']['result_gears'], 'cash')
 
         # 個人成績
         me = IkaUtils.getMyEntryFromContext(context)
-
-        for field in ['team', 'kills', 'deaths', 'score', 'udemae_pre', 'weapon', 'rank_in_team']:
-            if field in me:
-                record[field] = me[field]
+        if me:
+            for field in ['team', 'kills', 'deaths', 'score', 'weapon',
+                          'rank_in_team']:
+                _set(record, field, me, field)
 
         # 全プレイヤーの成績
-        record['players'] = []
-        for player in context['game']['players']:
-            player_record = {}
-            for field in ['team', 'kills', 'deaths', 'score', 'udemae_pre', 'weapon', 'rank_in_team']:
-                if field in player:
-                    player_record[field] = player[field]
-            record['players'].append(player_record)
+        if context['game'].get('players'):
+            record['players'] = []
+            for player in context['game']['players']:
+                player_record = {}
+                for field in ['team', 'kills', 'deaths', 'score', 'weapon',
+                              'rank_in_team']:
+                    _set(player_record, field, player, field)
+                record['players'].append(player_record)
 
-        return json.dumps(record, separators=(',', ':')) + "\n"
+        return record
+
+    def _close_game_session(self, context):
+        if self._called_close_game_session:
+            return
+        self._called_close_game_session = True
+
+        IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
+        if not self.enabled:
+            return
+
+        record = self.get_record_game_result(context)
+        self.write_record(record, context)
 
     ##
     # on_game_individual_result Hook
@@ -172,19 +201,21 @@ class JSON(object):
     # @param context   IkaLog context
     #
     def on_game_session_end(self, context):
-        IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
+        self._close_game_session(context)
 
-        if not self.enabled:
-            return
-
-        record = self.get_record_game_result(context)
-        self.write_record(record)
+    def on_game_session_abort(self, context):
+        self._close_game_session(context)
 
     ##
     # Constructor
     # @param self          The Object Pointer.
     # @param json_filename JSON log file name
+    # @param append_data whether append or overwrite the data to file.
     #
-    def __init__(self, json_filename=None):
+    def __init__(self, json_filename=None, append_data=True):
         self.enabled = (not json_filename is None)
         self.json_filename = json_filename
+        self.append_data = append_data
+
+        # If true, it means the data is not saved.
+        self._called_close_game_session = False

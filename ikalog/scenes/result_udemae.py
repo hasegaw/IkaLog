@@ -43,7 +43,6 @@ class ResultUdemae(StatefulScene):
         if frame is None:
             return False
 
-        frame = context['engine']['frame']
         matched = self.mask_udemae_msg.match(frame) and self._analyze(context)
 
         if matched and self._analyze(context):
@@ -100,9 +99,8 @@ class ResultUdemae(StatefulScene):
         udemae_str = None
         udemae_exp = None
 
-        frame = context['engine']['frame']
-        img_udemae = frame[357:357 + 108, 450:450 + 190]
-        img_udemae_exp = frame[310:310 + 185, 770:770 + 110]
+        img_udemae = self._crop_frame(context, 450, 357, 450+190, 357+108)
+        img_udemae_exp = self._crop_frame(context, 770, 310, 770+110, 310+185)
 
         # ウデマエアップ／ダウンで黄色くなるのでチェックする
         filter_white = matcher.MM_WHITE()
@@ -132,8 +130,7 @@ class ResultUdemae(StatefulScene):
 
         # ウデマエ(数値部分)
         if self.number_recoginizer:
-            udemae_exp = self.number_recoginizer.match_digits(
-                img_udemae_exp)
+            udemae_exp = self.number_recoginizer.match_digits(img_udemae_exp)
 
         if (udemae_exp is not None):
             # ウデマエの数字は 0~99 しかありえない
@@ -142,8 +139,7 @@ class ResultUdemae(StatefulScene):
 
         # ウデマエが正しく取得できない場合は別の画面を誤認識している
         # 可能性が高い
-
-        if not (udemae_str and udemae_exp):
+        if (not udemae_str) or (udemae_exp is None):  # udemae_exp can be 0.
             return False
 
         game = context['game']

@@ -91,9 +91,11 @@ class AVFoundationCaptureDevice(object):
 
 class AVFoundationCapture(VideoInput):
 
+    # override
     def _enumerate_sources_func(self):
         return self.cap.get_source_list()
 
+    # override
     def _read_frame_func(self):
 
         ret, frame = self.cap.read()
@@ -102,6 +104,7 @@ class AVFoundationCapture(VideoInput):
 
         return frame
 
+    # override
     def _cleanup_driver_func(self):
         self.lock.acquire()
         if not self.cap is None:
@@ -109,6 +112,7 @@ class AVFoundationCapture(VideoInput):
             sleep(0.1)
         self.lock.release()
 
+    # override
     def _initialize_driver_func(self):
         IkaUtils.dprint('%s: initializing class' % self)
         self.lock.acquire()
@@ -120,9 +124,11 @@ class AVFoundationCapture(VideoInput):
 
         self.lock.release()
 
+    # override
     def _is_active_func(self):
         return True
 
+    # override
     def _select_device_by_index_func(self, source):
         IkaUtils.dprint('%s: initializing capture device %s' % (self, source))
 
@@ -134,6 +140,7 @@ class AVFoundationCapture(VideoInput):
         self.cap.select_device(source)
         self.last_tick = self.get_tick()
 
+    # override
     def _select_device_by_name_func(self, source):
         IkaUtils.dprint(
             '%s: Doesn''t support _select_device_by_name_func()' % self)

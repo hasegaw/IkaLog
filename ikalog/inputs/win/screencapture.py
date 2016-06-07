@@ -138,6 +138,7 @@ class ScreenCapture(VideoInput):
 
         return cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)
 
+    # override
     def _read_frame_func(self):
         img = self.capture_screen()
 
@@ -154,19 +155,24 @@ class ScreenCapture(VideoInput):
             # 次回キャリブレーションを行う
             self._calibration_requested = True
 
+    # override
     def _is_active_func(self):
         return True
 
+    # override
     def _initialize_driver_func(self):
         pass
 
+    # override
     def _cleanup_driver_func(self):
         pass
 
+    # override
     def _select_device_by_index_func(self, source):
         IkaUtils.dprint(
             '%s: Does not support _select_device_by_index_func()' % self)
 
+    # override
     def _select_device_by_name_func(self, source):
         IkaUtils.dprint(
             '%s: Does not support _select_device_by_name_func()' % self)

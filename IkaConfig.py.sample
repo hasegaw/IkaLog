@@ -3,7 +3,7 @@
 #
 #  IkaLog
 #  ======
-#  Copyright (C) 2015 Takeshi HASEGAWA
+#  Copyright (C) 2016 Takeshi HASEGAWA
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -18,165 +18,213 @@
 #  limitations under the License.
 #
 
-from ikalog import inputs
-from ikalog import outputs
-from ikalog.utils import IkaUtils
+# IkaConfig.py: Configuration file for IkaLog CLI Version
+# - Copy this file to IkaConfig.py as modified as you need.
+# - Please see https://github.com/hasegaw/IkaLog/wiki/en_IkaConfig
+#   for details.
 
-class IkaConfig:
+#############################################################################
+## Input Source Configuration
+#############################################################################
+#
+# - Uncomment the "INPUT_SOUCE = ..." line you would like to enable.
+#   INPUT_SOURCE can be overrided in console optioni (e.g. --input CVFile)
+# - Don't forget to fill your THE_DEVICE_ID.
+#
 
-    def config(self, args):
-        # 使いたい入力を設定
-        source = None
+INPUT_SOURCE = None
+INPUT_ARGS = {}
 
-        # パターン1: Windows 上でキャプチャデバイスを利用(DirectShow)
-        # source = inputs.DirectShow()
-        # source.select_device(THE_DEVICE_ID)
+# DirectShow
+#
+# INPUT_SOURCE = 'DirectShow'
+INPUT_ARGS['DirectShow'] = {'device': 'THE_DEVICE_ID'}
 
-        # パターン2: OpenCV VideoCapture 経由でキャプチャデバイスを利用
-        # source = inputs.CVCapture()
-        # source.select_device(THE_DEVICE_ID)
+# OpenCV VideoCapture
+#
+# INPUT_SOURCE = 'CVCapture'
+INPUT_ARGS['CVCapture'] = {'device': 'THE_DEVICE_ID'}
 
-        # パターン3: Windows 上でスクリーンキャプチャを利用
-        # 起動時は全画面を取り込み。 C キー押下で画面内にある WiiU 画面を検出
-        # source = inputs.ScreenCapture()
+# ScreenCapture (for Windows)
+# Press C key in preview window to detect your WiiU screen.
+#
+# INPUT_SOURCE = 'ScreenCapture'
+INPUT_ARGS['ScreenCapture'] = {}
 
-        # パターン4: Mac 上で AVFoundation を介してキャプチャデバイスを利用
-        # 現在 UltraStudio Mini Recorder のみ動作確認
-        # source = inputs.AVFoundationCapture()
-        # source.select_source(THE_DEVICE_ID)
+# AVFoundationCapture (for Mac OS X)
+# Tested with: BlackMagic Design Ultra Mini Recorder, Intensity Shuttle
+#
+# INPUT_SOURCE = 'AVFoundationCapture'
+INPUT_ARGS['AVFoundationCapture'] = {'source': 'THE_DEVICE_ID'}
 
-        # パターン5: OpenCV のビデオファイル読み込み機能を利用する
-        # OpenCV が FFMPEG に対応していること
-        # 直接ファイルを指定するか、コマンドラインから --input_file で指定可能
-        # source = inputs.CVFile()
-        # source.select_source(name='video.avi')
-        # source.set_frame_rate(10)
+# CVFile: Read a video file
+# - You need OpenCV runtime with ffmpeg integration.
+# - You can override source filename with --input_file options.
+#
+# INPUT_SOURCE = 'CVFile'
+INPUT_ARGS['CVFile'] = {
+    'source': 'video.avi',
+    'frame_rate': 10,
+    # Use input file's timestamp instead of the current time.
+    'use_file_timestamp': True,
+}
 
-        if args.get('input_file'):
-            source = inputs.CVFile()
-            source.select_source(name=args['input_file'])
-            source.set_frame_rate(10)
+# GStreamer: Read from GStreamer
+# - You need OpenCV runtime with GStreamer support.
+#
+# INPUT_SOURCE = 'GStreamer'
+#
+# To read from Blackmagic Design DeckLink device #0 (720p, 59.94fps):
+# INPUT_ARGS['GStreamer'] = {'source': 'decklinksrc connection=hdmi mode=720p5994 device-number=0 ! videoconvert ! appsink'}
+#
+# To test GStreamer source with videotestsrc source:
+INPUT_ARGS['GStreamer'] = {'source': 'videotestsrc ! videoconvert ! appsink'}
 
-        # パターン6: OpenCV の GStreamerパイプラインからの読み込み機能を利用する
-        # ・OpenCV が GStreamer に対応していること
-        # ・パイプラインは '$YOUR_STREAM_SOURCE ! videoconvert ! appsink'
-        #
-        # 例) Blackmagic Design社のキャプチャデバイスのHDMIポートから720p 59.94fpsで取得する場合
-        # source = inputs.GStreamer()
-        # source.select_source(name='decklinksrc connection=hdmi mode=720p5994 device-number=0 ! videoconvert ! appsink')
-        #
-        # 例) テストパターンを表示
-        if not source:
-            source = inputs.GStreamer()
-            source.select_source(name='videotestsrc ! videoconvert ! appsink')
+# ----------------------------------------------------------------------
 
-        # 一部のHDMIキャプチャはHDMIソースのピクセルがずれている。
-        # 必要に応じてキャプチャのオフセットを(x, y) 指定
-        #
-        # source.set_offset((2, 0))            # サンコー HDMVC4UC(左に2ドットずれ)
+SOURCE_ARGS = {}
 
-        # 処理するフレームレート数を制限する場合は下記の設定を行う
-        # 経験上 10 フレーム/秒も処理できれば十分
-        # source.set_frame_rate(10)
+# Offset source image. (for some weird capture devices)
+#
+# SOURCE_ARGS['offset'] = (2, 0)  # SANKO HDMVC4UC (Offset to right for 2px)
 
-        # 使いたいプラグインを適宜設定
-        OutputPlugins = [
+# Limit the number of frames per second to process
+# - Generally processing more frames makes more accurate results.
+#   Less frames make processing speed faster but sacrifies the accuracy.
+# - 10 frames per second is sufficient in most case.
+#
+# SOURCE_ARGS['frame_rate'] = 10
 
-            # Screen: IkaLog 実行中にキャプチャ画像を表示します。
-            #   wait_ms=1        キャプチャ画像表示後に停止するミリ秒数。 ただし0=2秒毎に1ms
-            #   size=(1280, 720) ウインドウサイズ。
-            outputs.Screen(wait_ms=1, size=(1280, 720)),
 
-            # Console(): 各種メッセージを表示します。
-            outputs.Console(),
+#############################################################################
+## Plugins Configurations
+#############################################################################
 
-            # IkaOutput_CSV: CSVログファイルを出力します。
-            outputs.CSV('ika.csv'),
+# Variables:
+#
+# __INPUT_FILE__ : The value specified by --input_file flag.
+#   If the command is 'IkaLog.py --input_file=/tmp/video.mp4',
+#   '__INPUT_FILE__.txt' becomes '/tmp/video.mp4.txt'.
 
-            # Fluentd: Fluentd にデータを投げます。
-            # outputs.Fluentd(
-            # host='127.0.0.1',
-            #     port=24224,
-            #     username='＜8ヨ',
-            #     tag='ikalog'
-            # ),
 
-            # Hue(host='192.168.0.1',user='newdeveloper'),
+OUTPUT_PLUGINS = []
+OUTPUT_ARGS = {}
 
-            # JSON: JSONログファイルを出力します。
-            outputs.JSON('ika.json'),
+# Screen: Preview
+#   wait_ms=n             Wait time[msec] or 0 (Update every two seconds)
+#   size=(width, height)  Geometry of preview area.
+OUTPUT_PLUGINS.append('Screen')
+OUTPUT_ARGS['Screen'] = {'wait_ms': 1, 'size': (1280, 720)}
 
-            # Screenshot: 戦績画面のスクリーンショットを保存します。
-            outputs.Screenshot('./screenshots/'),
+# Console(): Show messages in Console.
+#
+OUTPUT_PLUGINS.append('Console')
+OUTPUT_ARGS['Console'] = {}
 
-            # Slack: Slack 連携
-            #   url='http://....'   Slack の Inconming Web Hook URL
-            #   username='botname'  Slack 上に出す bot 名
-            # outputs.Slack(url='https://hooks.slack.com/services/(incoming hook endpoint)'),
+# IkaOutput_CSV: Write CSV log.
+#
+OUTPUT_PLUGINS.append('CSV')
+OUTPUT_ARGS['CSV'] = {'csv_filename': 'ika.csv'}
 
-            # StatInk: stat.ink (スプラトゥーンプレイ実績投稿サイト)
-            #   api_key  APIキー。 https://stat.ink/ に登録し取得してください
-            #   dry_run  Trueの場合 stat.ink に送信しない(テストモード)
-            #   track_special_gauge スペシャルゲージの時系列情報を送信する
-            #   track_special_weapon スペシャル発動の時系列情報を送信する
-            #   track_splatzone  ガチエリアの時系列情報を送信する
-            #   track_objective  ヤグラ／ホコの時系列情報を送信する
-            #   track_inklings   インクリング生死の時系列情報を送信する
-            #   video_id         関連ページとするYoutubeのvideoid コマンドラインから --video_id で指定可能
+# Fluentd: Forward to Fluentd.
+#
+# OUTPUT_PLUGINS.append('Fluentd')
+OUTPUT_ARGS['Fluentd'] = {
+    'host': '127.0.0.1',
+    'port': 24224,
+    'username': '＜8ヨ',
+    'tag': 'ikalog'
+}
 
-            # outputs.StatInk(
-            #     api_key='YOUR_API_KEY_HERE',
-            #     dry_run=False,
-            #     track_special_gauge=False,
-            #     track_special_weapon=False,
-            #     track_splatzone=False,
-            #     track_objective=False,
-            #     track_inklings=False,
-            #     video_id=args['video_id'],
-            # ),
+# OUTPUT_PLUGINS.append('Hue')
+OUTPUT_ARGS['Hue'] = {'host': '192.168.0.1', 'user': 'newdeveloper'}
 
-            # Twitter: Twitter 連携
-            # outputs.Twitter(
-            #     'ConsumerToken',
-            #     'ConsumerSecret',
-            #     'AccessToken',
-            #     'AccessTokenSecret',
-            #     attach_image = False,
-            #     footer = 'マンメンミ',
-            #     tweet_kd = True,
-            #     tweet_udemae = True
-            # ),
+# JSON: Write JSON log.
+#  json_filename  output file name.  --output_json is the commandline flag.
+#  append_data    whether the output is appended to the file or overwrites.
+OUTPUT_PLUGINS.append('JSON')
+OUTPUT_ARGS['JSON'] = {
+    'json_filename': 'ika.json',
+    'append_data': True,
+}
 
-            # WebSocket サーバ
-            outputs.WebSocketServer(enabled=True),
+# Screenshot: Save scoreboard screenshots.
+#
+OUTPUT_PLUGINS.append('Screenshot')
+OUTPUT_ARGS['Screenshot'] = {'dest_dir': './screenshots/'}
 
-            # 不具合調査向け。
-            # イベントトリガをコンソールに出力。イベントトリガ時のスクリーンショット保存
-            # outputs.DebugLog(dir='./screenshots/', screenshot=False),
+# Slack: Slack Integration
+#   url='http://....'   Slack の Inconming Web Hook URL
+#   username='botname'  Slack 上に出す bot 名
+#
+# OUTPUT_PLUGINS.append('Slack')
+OUTPUT_ARGS['Slack'] = {
+  'url': 'https://hooks.slack.com/services/(incoming hook endpoint)'
+}
 
-            # 不具合調査向け。
-            # ウインドウに対して v キー押下でデバッグ録画を開始する
-            # outputs.DebugVideoWriter(dir='./debug_videos/'),
+# StatInk: stat.ink Integration (スプラトゥーンプレイ実績投稿サイト)
+#   api_key  APIキー。 https://stat.ink/ に登録し取得してください
+#   dry_run  Trueの場合 stat.ink に送信しない(テストモード)
+#   track_special_gauge スペシャルゲージの時系列情報を送信する
+#   track_special_weapon スペシャル発動の時系列情報を送信する
+#   track_splatzone  ガチエリアの時系列情報を送信する
+#   track_objective  ヤグラ／ホコの時系列情報を送信する
+#   track_inklings   インクリング生死の時系列情報を送信する
+#   video_id         関連ページとするYoutubeのvideoid コマンドラインから --video_id で指定可能
+#
+# OUTPUT_PLUGINS.append('StatInk')
+OUTPUT_ARGS['StatInk'] = {
+    'api_key': 'YOUR_API_KEY_HERE',
+    'dry_run': False,
+    'track_special_gauge': False,
+    'track_special_weapon': False,
+    'track_splatzone': False,
+    'track_objective': False,
+    'track_inklings': False,
+    'video_id': None,
+    'payload_file': None,
+}
 
-            # PreviewDetected: 認識した画像をプレビュー上でマークする
-            # outputs.PreviewDetected(),
+# Twitter: Twitter Integration
+#
+# OUTPUT_PLUGINS.append('Twitter')
+OUTPUT_ARGS['Twitter'] = {
+    'consumer_key': 'YOUR_CONSUMER_TOKEN',
+    'consumer_secret': 'YOUR_CONSUMER_SECRET',
+    'access_token': 'YOUR_ACCESS_TOKE',
+    'access_token_secret': 'YOUR_ACCESS_TOKE_SECRET',
+    'attach_image': False,
+    'footer': 'マンメンミ',
+    'tweet_my_score': False,
+    'tweet_kd': False,
+    'tweet_udemae': False,
+    'use_reply': True,
+}
 
-            # 入力ソース
-            source,
-        ]
+# WebSocket Server
+#
+OUTPUT_PLUGINS.append('WebSocketServer')
+OUTPUT_ARGS['WebSocketServer'] = {'enabled': True}
 
-        # Video description for YouTube. It is expected to be used with
-        # input.CVFile. Multiple matches in a video is not tested.
-        #
-        # YouTube 用、動画の概要。input.CVFile と組み合わせた使用を想定。
-        # ビデオ内に複数のゲームがある場合には未検証。
-        if args.get('output_description'):
-            OutputPlugins.append(
-                outputs.Description(args['output_description']))
+# Description: Video description for YouTube.
+# - It is expected to be used with input.CVFile.
+# - Streaming mode, or Multiple matches in a video is not tested.
+#
+# OUTPUT_PLUGINS.append('Description')
+OUTPUT_ARGS['Description'] = {'output_filepath': 'description.txt'}
 
-        return [source, OutputPlugins]
+# DebugLog: Debug log in console.
+#
+# OUTPUT_PLUGINS.append('DebugLog')
+OUTPUT_ARGS['DebugLog'] = {'dir': './screenshots/', 'screenshot': False}
 
-if __name__ == '__main__':
-    obj = IkaConfig()
-    args = {}
-    print(obj.config(args))
+# DebugVideoWriter: Video Recorder for debugging (aka flight recorder)
+# Press V key in preview window to toggle record.
+#
+# OUTPUT_PLUGINS.append('DebugVideoWriter')
+OUTPUT_ARGS['DebugVideoWriter'] = {'dir': './debug_videos/'}
+
+# PreviewDetected: Draw rect in preview when IkaLog detected something
+#
+# OUTPUT_PLUGINS.append('PreviewDetected')
+OUTPUT_ARGS['PreviewDetected'] = {}

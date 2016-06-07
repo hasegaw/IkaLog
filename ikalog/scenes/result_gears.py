@@ -30,7 +30,7 @@ from ikalog.inputs.filters import OffsetFilter
 
 class ResultGears(StatefulScene):
 
-    def auto_offset(self, context):
+    def auto_offset(self, frame):
         # 画面のオフセットを自動検出して image を返す
 
         filter = OffsetFilter(self)
@@ -40,13 +40,13 @@ class ResultGears(StatefulScene):
         self.out_width = 1280
         self.out_height = 720
 
-        best_match = (context['engine']['frame'], 0.0, 0, 0)
+        best_match = (frame, 0.0, 0, 0)
         offset_list = [0, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
 
         for ox in offset_list:
             for oy in offset_list:
                 filter.offset = (ox, oy)
-                img = filter.execute(context['engine']['frame'])
+                img = filter.execute(frame)
 
                 score = self.mask_gears_msg.match_score(img)
                 if not score[0]:
@@ -77,12 +77,19 @@ class ResultGears(StatefulScene):
 
         matched = self.mask_okane_msg.match(frame) and \
             self.mask_level_msg.match(frame) and \
-            self.mask_gears_msg.match(frame) and \
-            self._analyze(context)
+            self.mask_gears_msg.match(frame)
+
+        if matched:
+            # Analyze the first frame of the game result.
+            # The values, especially cash, will be overwritten by
+            # the results of the last frame, but may be used for fallbacks.
+            matched = self._analyze(frame, context)
+            self._call_plugins('on_result_gears_still')
 
         if matched:
             game = context['game']
             # game['result_cash_pre'] = game['result_cash']
+            self._prev_frame = frame.copy()
             self._switch_state(self._state_tracking)
 
         return matched
@@ -95,11 +102,11 @@ class ResultGears(StatefulScene):
 
         matched = self.mask_okane_msg.match(frame) and \
             self.mask_level_msg.match(frame) and \
-            self.mask_gears_msg.match(frame) and \
-            self._analyze(context)
+            self.mask_gears_msg.match(frame)
 
         # 画面が続いているならそのまま
         if matched:
+            self._prev_frame = frame.copy()
             return True
 
         # 1000ms 以内の非マッチはチャタリングとみなす
@@ -108,6 +115,10 @@ class ResultGears(StatefulScene):
 
         # それ以上マッチングしなかった場合 -> シーンを抜けている
         if not self.matched_in(context, 30 * 1000, attr='_last_event_msec'):
+            # The game result scene was end by the last frame.
+            # Do analyze with the last frame stored in _prev_frame.
+            # Skip of analysis with middle frames improves the latency.
+            self._analyze(self._prev_frame, context)
             # self.dump(context)
             self._call_plugins('on_result_gears')
 
@@ -116,12 +127,12 @@ class ResultGears(StatefulScene):
 
         return False
 
-    def analyzeGears(self, context):
+    def analyzeGears(self, frame, context):
         gears = []
         x_list = [613, 613 + 209, 613 + 209 * 2]
         for n in range(3):
             x = x_list[n]
-            frame = self.auto_offset(context)
+            frame = self.auto_offset(frame)
             img_gear = frame[457:457 + 233, x: x + 204]
 
             gear = {}
@@ -175,9 +186,7 @@ class ResultGears(StatefulScene):
                     # Mac gives Japanese text, Windows gives escape sequences
                     print('  gear %d : %s : %s' % (n, field, ability))
 
-    def _analyze(self, context):
-        frame = context['engine']['frame']
-
+    def _analyze(self, frame, context):
         cash = None
         level = None
         exp = None
@@ -202,7 +211,7 @@ class ResultGears(StatefulScene):
         if (cash is None) or (level is None) or (exp is None):
             return False
 
-        gears = self.analyzeGears(context)
+        gears = self.analyzeGears(frame, context)
         if not ('result_gears' in context['scenes']):
             context['scenes']['result_gears'] = {}
 

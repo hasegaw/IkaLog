@@ -1,5 +1,7 @@
 __pycache__
 .DS_Store
+.cache/
+/test_data/
 *.pyc
 *.swp
 *.swo

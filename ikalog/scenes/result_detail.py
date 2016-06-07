@@ -20,6 +20,7 @@
 
 import copy
 import datetime
+import math
 import os
 import pickle
 import re
@@ -38,6 +39,18 @@ from ikalog.inputs.filters import OffsetFilter
 
 
 class ResultDetail(StatefulScene):
+
+    def evaluate_image_accuracy(self, frame):
+        r_win = self.mask_win.match_score(frame)[1]
+        r_lose = self.mask_lose.match_score(frame)[1]
+        r_x = self.mask_x.match_score(frame)[1]
+
+        loss_win = (1.0 - r_win) ** 2
+        loss_lose = (1.0 - r_lose) ** 2
+        loss_x = (1.0 - r_x) ** 2
+
+        return 1.0 - math.sqrt((loss_win + loss_lose + loss_x)/3)
+
     #
     # AKAZE ベースのオフセット／サイズ調整
     #
@@ -133,8 +146,8 @@ class ResultDetail(StatefulScene):
         IkaUtils.dprint('%s: Created model data %s' % (self, dest_filename))
 
     def load_akaze_model(self):
-        model_filename = os.path.join(
-            IkaUtils.baseDirectory(), 'data', 'result_detail_features.akaze.model')
+        model_filename = IkaUtils.get_path(
+            'data', 'result_detail_features.akaze.model')
 
         try:
             self.load_model_from_file(model_filename)
@@ -191,7 +204,7 @@ class ResultDetail(StatefulScene):
         new_frame = cv2.warpPerspective(frame, M, (w, h))
 
         # 変形した画像がマスクと一致するか？
-        matched = IkaUtils.matchWithMask(
+        matched = ImageUtils.match_with_mask(
             new_frame, self.winlose_gray, 0.997, 0.22)
         if matched:
             return new_frame
@@ -199,8 +212,43 @@ class ResultDetail(StatefulScene):
         IkaUtils.dprint('%s: auto_warp() function broke the image.' % self)
         return None
 
-    def auto_offset(self, context):
-        # 画面のオフセットを自動検出して image を返す
+    def adjust_method_generic(self, context, l):
+        frame = context['engine']['frame']
+
+        # WIN/LOSE の表示部分の上側にある黒枠の幅を測る
+        img1 = frame[:30, 30:50, :]
+        img2 = np.sum(img1, axis=2)
+        img2 = np.sum(img2, axis=1)
+        img3 = np.array(range(img2.shape[0]))
+        img3[img2 > 0] = 0
+        v_margin = np.amax(img3)
+
+        if v_margin > 0:
+            my = v_margin + 1
+            mx = int(my * 1280 / 720)
+
+            new_frame = cv2.resize(frame[my: -my, :], (1280, 720))
+            l.append({
+                'frame': new_frame,
+                'score': self.evaluate_image_accuracy(new_frame),
+                'desc': 'Wrong resolution & aspect'
+            })
+
+            new_frame = cv2.resize(frame[my: -my, mx:-mx], (1280, 720))
+            l.append({
+                'frame': new_frame,
+                'score': self.evaluate_image_accuracy(new_frame),
+                'desc': 'Wrong resolution'
+            })
+
+        l.append({
+            'frame': frame,
+            'score': self.evaluate_image_accuracy(frame),
+            'acceptable': True,
+        })
+
+    def adjust_method_offset(self, context, l):
+        # Detect slide offset
 
         filter = OffsetFilter(self)
         filter.enable()
@@ -216,21 +264,55 @@ class ResultDetail(StatefulScene):
             for oy in offset_list:
                 filter.offset = (ox, oy)
                 img = filter.execute(context['engine']['frame'])
-                IkaUtils.matchWithMask(
-                    context['engine']['frame'], self.winlose_gray, 0.997, 0.22)
-                score = self.mask_win.match_score(img)
+                score = self.evaluate_image_accuracy(img)
 
-                if not score[0]:
-                    continue
+                if best_match[1] < score:
+                    best_match = (img, score, ox, oy)
 
-                if best_match[1] < score[1]:
-                    best_match = (img, score[1], ox, oy)
+                if 0:
+                    l.append({
+                        'frame': img,
+                        'score': score,
+                        'desc': 'Offset (%s, %s)' % (ox, oy),
+                    })
 
         if best_match[2] != 0 or best_match[3] != 0:
-            IkaUtils.dprint('%s: Offset detected. (%d, %d)' %
-                            (self, best_match[2], best_match[3]))
+            l.append({
+                'frame': best_match[0],
+                'score': score,
+                'desc': 'Offset (%s, %s)' % (best_match[2], best_match[3]),
+                'acceptable': True,
+            })
 
-        return best_match[0]
+    def adjust_image(self, context):
+        l = []
+        self.adjust_method_generic(context, l)
+        self.adjust_method_offset(context, l)
+
+
+        if len(l) > 0:
+            best = sorted(l, key=lambda x: x['score'], reverse=True)[0]
+            img = best['frame']
+
+            if best.get('desc', None):
+                IkaUtils.dprint(
+                    '%s: Capture setting might be wrong. %s (recover score=%f)' %
+                    (self, best['desc'], best['score']))
+                self._call_plugins_later(
+                    'on_result_detail_log',
+                    params={'desc': best['desc']}
+                )
+
+        else:
+            # Should not reach here
+            IkaUtils.dprint('%s: [BUG] Failed to normalize image' % self)
+            img = context['engine']['frame']
+
+        if 0:
+            for e in l:
+                print(e['score'], e.get('desc', '(none)'))
+
+        return img
 
     def async_recoginiton_worker(self, context):
         IkaUtils.dprint('%s: weapons recoginition started.' % self)
@@ -527,20 +609,7 @@ class ResultDetail(StatefulScene):
         entry_height = 45
         entry_top = [101, 166, 231, 296, 431, 496, 561, 626]
 
-        # auto_warp() or auto_offset() で画面位置の調整
-        # img = self.auto_warp(context)
-        img = None
-        if img is not None:
-            matched = IkaUtils.matchWithMask(
-                img,
-                self.winlose_gray, 0, 9969, 0.22
-            )
-            if not matched:
-                img = None
-
-        if img is None:
-            # IkaUtils.dprint('%s: Falling back to auto_offset()' % self)
-            img = self.auto_offset(context)
+        img = self.adjust_image(context)
 
         # インクリング一覧
         context['game']['players'] = []
@@ -601,8 +670,8 @@ class ResultDetail(StatefulScene):
         super(ResultDetail, self).reset()
 
         self._last_event_msec = - 100 * 1000
-
         self._match_start_msec = - 100 * 1000
+
         self._last_frame = None
         self._diff_pixels = []
 
@@ -618,7 +687,7 @@ class ResultDetail(StatefulScene):
         if frame is None:
             return False
 
-        matched = IkaUtils.matchWithMask(
+        matched = ImageUtils.match_with_mask(
             context['engine']['frame'], self.winlose_gray, 0.997, 0.22)
 
         if matched:
@@ -633,7 +702,7 @@ class ResultDetail(StatefulScene):
             return False
 
         # マッチ1: 既知のマスクでざっくり
-        matched = IkaUtils.matchWithMask(
+        matched = ImageUtils.match_with_mask(
             context['engine']['frame'], self.winlose_gray, 0.997, 0.22)
 
         # マッチ2: マッチ1を満たした場合は、白文字が安定するまで待つ
@@ -760,24 +829,44 @@ class ResultDetail(StatefulScene):
         self.mask_win = IkaMatcher(
             651, 47, 99, 33,
             img_file='result_detail.png',
-            threshold=0.950,
-            orig_threshold=0.05,
+            threshold=0.60,
+            orig_threshold=0.20,
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             label='result_detail:WIN',
-            call_plugins=self._call_plugins,
             debug=debug,
         )
 
-        base_dir = IkaUtils.baseDirectory()
+        self.mask_lose = IkaMatcher(
+            651, 378, 99, 33,
+            img_file='result_detail.png',
+            threshold=0.60,
+            orig_threshold=0.40,
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
+            label='result_detail:LOSE',
+            debug=debug,
+        )
+
+        self.mask_x = IkaMatcher(
+            1173, 101, 14, 40,
+            img_file='result_detail.png',
+            threshold=0.60,
+            orig_threshold=0.40,
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
+            label='result_detail:X',
+            debug=False,
+        )
+
         languages = Localization.get_game_languages()
         for lang in languages:
-            mask_file = os.path.join(base_dir, 'masks', lang, 'result_detail.png')
+            mask_file = IkaUtils.get_path('masks', lang, 'result_detail.png')
             if os.path.exists(mask_file):
                 break
 
         if not os.path.exists(mask_file):
-            mask_file = os.path.join(base_dir, 'masks', 'result_detail.png')
+            mask_file = IkaUtils.get_path('masks', 'result_detail.png')
         winlose = imread(mask_file)
         self.winlose_gray = cv2.cvtColor(winlose, cv2.COLOR_BGR2GRAY)
 
@@ -791,7 +880,7 @@ class ResultDetail(StatefulScene):
 
         self.load_akaze_model()
         self._client_local = APIClient(local_mode=True)
-        # APIClient(local_mode=False, base_uri='http://localhost:8000')
+#        self._client_remote =  APIClient(local_mode=False, base_uri='http://localhost:8000')
         self._client_remote = None
 
 if __name__ == "__main__":

@@ -125,3 +125,6 @@ msgstr "インタレース解除（普段は不要）"
 msgid "Select Input source:"
 msgstr "入力ソース："
 
+#: ikalog/ui/panel/preview.py:114
+msgid "The image seems to be 16x10. Perhaps the source is misconfigured."
+msgstr "入力画像のアスペクト比が 16x10 のようです。入力元（アマレコ？）の設定ミスの可能性があります。"

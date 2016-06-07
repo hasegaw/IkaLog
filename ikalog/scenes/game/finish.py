@@ -39,13 +39,16 @@ class GameFinish(Scene):
         if self.is_another_scene_matched(context, 'GameTimerIcon'):
             return False
 
-        if not self.find_scene_object('GameTimerIcon').matched_in(context, 10 * 1000):
+        if not self.find_scene_object('GameTimerIcon').matched_in(context, 20 * 1000):
             return False
 
         frame = context['engine']['frame']
 
         if not self.mask_finish.match(frame):
             return False
+
+        context['game']['end_time'] = IkaUtils.getTime(context)
+        context['game']['end_offset_msec'] = context['engine']['msec']
 
         self._call_plugins('on_game_finish')
         self._last_event_msec = context['engine']['msec']
@@ -59,8 +62,8 @@ class GameFinish(Scene):
         self.mask_finish = IkaMatcher(
             0, 0, 1280, 720,
             img_file='game_finish.png',
-            threshold=0.950,
-            orig_threshold=0.05,
+            threshold=0.90,
+            orig_threshold=0.20,
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_NOT_BLACK(),
             label='Finish',

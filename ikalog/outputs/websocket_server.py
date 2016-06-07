@@ -114,8 +114,8 @@ class WebSocketServer(object):
     def on_game_start(self, context):
         self._send_message({
             'event': 'on_game_start',
-            'stage': IkaUtils.map2id(context['game']['map'], 'unknown'),
-            'rule': IkaUtils.rule2id(context['game']['rule'], 'unknown'),
+            'stage': (context['game']['map'] or 'unknown'),
+            'rule': (context['game']['rule'] or 'unknown'),
         })
 
     def on_game_team_color(self, context):

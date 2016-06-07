@@ -115,7 +115,8 @@ class Screenshot(object):
 
         drawing = context['engine']['frame'][y1:y2, x1:x2, :]
 
-        timestr = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+        timestr = time.strftime("%Y%m%d_%H%M%S",
+                                time.localtime(IkaUtils.getTime(context)))
         destfile = os.path.join(self.dir, 'miiverse_%s.png' % timestr)
 
         IkaUtils.writeScreenshot(destfile, drawing)
@@ -127,7 +128,8 @@ class Screenshot(object):
     # @param context   IkaLog context
     #
     def on_result_detail_still(self, context):
-        timestr = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+        timestr = time.strftime("%Y%m%d_%H%M%S",
+                                time.localtime(IkaUtils.getTime(context)))
         destfile = os.path.join(self.dir, 'ikabattle_%s.png' % timestr)
 
         IkaUtils.writeScreenshot(destfile, context['engine']['frame'])

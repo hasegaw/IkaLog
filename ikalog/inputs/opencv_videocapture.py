@@ -31,15 +31,18 @@ from ikalog.inputs import VideoInput
 
 class CVCapture(VideoInput):
 
+    # override
     def _enumerate_sources_func(self):
         if IkaUtils.isWindows():
             return self._videoinput_wrapper.get_device_list()
         return ['Device Enumeration not supported']
 
+    # override
     def _initialize_driver_func(self):
         # OpenCV File doesn't need pre-initialization.
         self._cleanup_driver_func()
 
+    # override
     def _cleanup_driver_func(self):
         self.lock.acquire()
         try:
@@ -50,11 +53,13 @@ class CVCapture(VideoInput):
         finally:
             self.lock.release()
 
+    # override
     def _is_active_func(self):
         return \
             hasattr(self, 'video_capture') and \
             (self.video_capture is not None)
 
+    # override
     def _select_device_by_index_func(self, source):
         self.lock.acquire()
         try:
@@ -79,6 +84,7 @@ class CVCapture(VideoInput):
 
         return self.is_active()
 
+    # override
     def _select_device_by_name_func(self, source):
         IkaUtils.dprint('%s: Select device by name "%s"' % (self, source))
 
@@ -91,9 +97,11 @@ class CVCapture(VideoInput):
         IkaUtils.dprint('%s: "%s" -> %d' % (self, source, index))
         self._select_device_by_index_func(index)
 
+    # override
     def _get_current_timestamp_func(self):
         return int((time.time() - self.systime_base) * 1000)
 
+    # override
     def _read_frame_func(self):
         ret, frame = self.video_capture.read()
         if not ret:

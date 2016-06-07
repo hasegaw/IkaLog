@@ -19,16 +19,17 @@
 #
 from __future__ import print_function
 
+import copy
 import os
 import platform
 import re
 import sys
+import time
+from datetime import datetime
 
-import cv2
-import numpy as np
 from PIL import Image
 
-from ikalog.constants import stages, rules, gear_abilities
+from ikalog.constants import stages, rules, gear_abilities, lobby_types
 # Constants for death_reason2text
 from ikalog.constants import hurtable_objects, oob_reasons, special_weapons, sub_weapons, weapons
 from ikalog.utils.localization import Localization
@@ -49,16 +50,23 @@ class IkaUtils(object):
         print(text, file=sys.stderr)
 
     @staticmethod
-    def baseDirectory():
-        base_directory = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        base_directory = re.sub('[\\/]+$', '', base_directory)
+    def get_path(*dirs):
+        '''Returns the path prepended the top dir and appened subdirs.'''
+        path = ''
+        if dirs:
+            path = os.path.join(*dirs)
+            if os.path.isabs(path):
+                return path
 
-        if os.path.isfile(base_directory):
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        base_dir = re.sub('[\\/]+$', '', base_dir)
+
+        if os.path.isfile(base_dir):
             # In this case, this version of IkaLog is py2exe'd,
-            # and base_directory is still pointing at the executable.
-            base_directory = os.path.dirname(base_directory)
+            # and base_dir is still pointing at the executable.
+            base_dir = os.path.dirname(base_dir)
 
-        return base_directory
+        return os.path.abspath(os.path.join(base_dir, path))
 
     # Find the local player.
     #
@@ -66,6 +74,8 @@ class IkaUtils(object):
     # @return The player information (Directionary class) if found.
     @staticmethod
     def getMyEntryFromContext(context):
+        if not context['game'].get('players'):
+            return None
         for e in context['game']['players']:
             if e['me']:
                 return e
@@ -99,15 +109,7 @@ class IkaUtils(object):
         return languages
 
     @staticmethod
-    def map2id(map, unknown='?'):
-        if map is None:
-            return unknown
-        return map.id_
-
-    @staticmethod
-    def map2text(map, unknown='?', languages=None):
-        map_id = IkaUtils.map2id(map, unknown=None)
-
+    def map2text(map_id, unknown='?', languages=None):
         if map_id is None:
             return unknown
 
@@ -123,15 +125,7 @@ class IkaUtils(object):
         return map_id
 
     @staticmethod
-    def rule2id(rule, unknown='?'):
-        if rule is None:
-            return unknown
-        return rule.id_
-
-    @staticmethod
-    def rule2text(rule, unknown='?', languages=None):
-        rule_id = IkaUtils.rule2id(rule, unknown=None)
-
+    def rule2text(rule_id, unknown='?', languages=None):
         if rule_id is None:
             return unknown
 
@@ -163,6 +157,18 @@ class IkaUtils(object):
         return gear_ability_id
 
     @staticmethod
+    def weapon2text(weapon_id, unknown='?', languages=None):
+        weapon_dict = {}
+        if weapon_id in weapons:
+            weapon_dict = weapons[weapon_id]
+
+        for lang in IkaUtils.extend_languages(languages):
+            if lang in weapon_dict:
+                return weapon_dict[lang]
+
+        return unknown
+
+    @staticmethod
     def death_reason2text(reason, unknown='?', languages=None):
         reason_dict = {}
         if reason in weapons:
@@ -183,58 +189,16 @@ class IkaUtils(object):
         return unknown
 
     @staticmethod
-    def cropImageGray(img, left, top, width, height):
-        if len(img.shape) > 2 and img.shape[2] != 1:
-            return cv2.cvtColor(
-                img[top:top + height, left:left + width],
-                cv2.COLOR_BGR2GRAY
-            )
-        return img[top:top + height, left:left + width]
+    def lobby2text(lobby_type, unknown='?', languages=None):
+        lobby_dict = {}
+        if lobby_type in lobby_types:
+            lobby_dict = lobby_types[lobby_type]
 
-    @staticmethod
-    def matchWithMask(img, mask, threshold=99.0, orig_threshold=70.0, debug=False):
-        if len(img.shape) > 2 and img.shape[2] != 1:
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        for lang in IkaUtils.extend_languages(languages):
+            if lang in lobby_dict:
+                return lobby_dict[lang]
 
-        # Check false-positive
-        orig_hist = cv2.calcHist([img], [0], None, [3], [0, 256])
-        match2 = orig_hist[2] / np.sum(orig_hist)
-
-        if match2 > orig_threshold:
-            # False-Positive condition.
-            #print("original %f > orig_threshold %f" % (match2, orig_threshold))
-            return False
-
-        ret, thresh1 = cv2.threshold(img, 230, 255, cv2.THRESH_BINARY)
-        added = thresh1 + mask
-        hist = cv2.calcHist([added], [0], None, [3], [0, 256])
-
-        match = hist[2] / np.sum(hist)
-
-        if debug and (match > threshold):
-            print("match2 %f match %f > threshold %f" %
-                  (match2, match, threshold))
-            cv2.imshow('match_img', img)
-            cv2.imshow('match_mask', mask)
-            cv2.imshow('match_added', added)
-            # cv2.waitKey()
-
-        return match > threshold
-
-    @staticmethod
-    def loadMask(file, left, top, width, height):
-        mask = imread(file)
-        if mask is None:
-            print("マスクデータ %s のロードに失敗しました")
-            # raise a exception
-
-        mask = mask[top:top + height, left:left + width]
-
-        # BGR to GRAY
-        if mask.shape[2] > 1:
-            mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
-
-        return mask
+        return unknown
 
     @staticmethod
     def getWinLoseText(won, win_text="勝ち", lose_text="負け", unknown_text="不明"):
@@ -253,3 +217,48 @@ class IkaUtils(object):
             self.dprint("Screenshot: failed")
             return False
         return True
+
+    @staticmethod
+    def getTime(context):
+        """Returns the current time in sec considering the epoch time."""
+        epoch_time = context['engine']['epoch_time']
+        if epoch_time is None:
+            return time.time()
+        time_sec = context['engine']['msec'] / 1000.0
+        return epoch_time + time_sec
+
+    @staticmethod
+    def get_end_time(context):
+        unix_time = context['game'].get('end_time')
+        if unix_time:
+            return datetime.fromtimestamp(unix_time)
+        else:
+            return datetime.now()
+
+    @staticmethod
+    def get_file_name(filename, context):
+        """Returns filename modifying index and macro values."""
+        if not filename:
+            return filename
+
+        source_file = context['engine']['source_file']
+        filename = filename.replace('__INPUT_FILE__',
+                                    (source_file or '__INPUT_FILE__'))
+
+        index = context['game']['index']
+        if index == 0:
+            return filename
+
+        base, ext = os.path.splitext(filename)
+        return '%s-%d%s' % (base, index, ext)
+
+    @staticmethod
+    def copy_context(context):
+        """Copies context as deep copy without Python objects."""
+        context2 = context.copy()  # shallow copy
+        context2['engine'] = context['engine'].copy()  # shallow copy
+        # Because some Python objects cannot be copied as deepcopy,
+        # these values are replaced with None before deepcopy.
+        context2['engine']['engine'] = None  # IkaEngine
+        context2['engine']['service'] = {}  # functions of IkaEngine
+        return copy.deepcopy(context2)

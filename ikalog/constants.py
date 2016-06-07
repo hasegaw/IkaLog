@@ -47,10 +47,10 @@ rules = {
 }
 
 weapons = {
-    '52gal': {'ja': 'ガロン52', 'en': '.52 Gal'},
-    '52gal_deco': {'ja': 'ガロンデコ52', 'en': '.52 Gal Deco'},
-    '96gal': {'ja': 'ガロン96', 'en': '.96 Gal'},
-    '96gal_deco': {'ja': 'ガロンデコ96', 'en': '.96 Gal Deco'},
+    '52gal': {'ja': '.52ガロン', 'en': '.52 Gal'},
+    '52gal_deco': {'ja': '.52ガロンデコ', 'en': '.52 Gal Deco'},
+    '96gal': {'ja': '.96ガロン', 'en': '.96 Gal'},
+    '96gal_deco': {'ja': '.96ガロンデコ', 'en': '.96 Gal Deco'},
     'bold': {'ja': 'ボールドマーカー', 'en': 'Sploosh-o-matic'},
     'bold_neo': {'ja': 'ボールドマーカーネオ', 'en': 'Neo Sploosh-o-matic'},
     'dualsweeper': {'ja': 'デュアルスイーパー', 'en': 'Dual Squelcher'},
@@ -235,6 +235,13 @@ gear_brands = {
     'tentatek':   {'ja': 'アロメ', 'en': 'Tentatek', },
     'zekko':      {'ja': 'エゾッコ', 'en': 'Zekko', },
     'zink':       {'ja': 'アイロニック', 'en': 'Zink', },
+}
+
+lobby_types = {
+    'festa':    {'ja': 'フェス', 'en': 'Splatfest'},
+    'private':  {'ja': 'プライベートマッチ', 'en': 'Private Battle'},
+    'public':   {'ja': '通常マッチ', 'en': 'Standard Battle'},
+    'tag':      {'ja': 'タッグマッチ', 'en': 'Squad Battle'},
 }
 
 #

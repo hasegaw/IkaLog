@@ -53,6 +53,9 @@ class DebugLog(object):
     def on_game_killed(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
+    def on_game_chained_kill_combo(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
     def on_game_dead(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 

@@ -30,10 +30,12 @@ class CVFile(VideoInput):
 
     cap_recorded_video = True
 
+    # override
     def _initialize_driver_func(self):
         # OpenCV File doesn't need pre-initialization.
         self._cleanup_driver_func()
 
+    # override
     def _cleanup_driver_func(self):
         self.lock.acquire()
         try:
@@ -43,25 +45,47 @@ class CVFile(VideoInput):
         finally:
             self.lock.release()
 
+    # override
     def _is_active_func(self):
-        return \
-            hasattr(self, 'video_capture') and \
-            (self.video_capture is not None)
+        return (self.video_capture is not None)
 
+    # override
     def _select_device_by_index_func(self, source):
         raise Exception(
             '%s does not support selecting device by index.' % self)
 
+    # override
     def _select_device_by_name_func(self, source):
+        if isinstance(source, str):
+            self._source_files = [source]
+        elif isinstance(source, list):
+            self._source_files = source
+        else:
+            return False
+
+        return self._init_with_sources()
+
+    # override
+    def on_eof(self):
+        return self._init_with_sources()
+
+    def _init_with_sources(self):
+        if not self._source_files:
+            return False
+
         self.lock.acquire()
         try:
             if self.is_active():
                 self.video_capture.release()
 
             self.reset()
+
             # FIXME: Does it work with non-ascii path?
-            self.video_capture = cv2.VideoCapture(source)
-            if not self.video_capture.isOpened:
+            self._source_file = self._source_files.pop(0)
+            self.video_capture = cv2.VideoCapture(self._source_file)
+            if self.video_capture.isOpened():
+                self._epoch_time = self.get_start_time()
+            else:
                 self.video_capture = None
             self.reset_tick()
 
@@ -70,9 +94,11 @@ class CVFile(VideoInput):
 
         return self.is_active()
 
+    # override
     def _next_frame_func(self):
         pass
 
+    # override
     def _get_current_timestamp_func(self):
         video_msec = self.video_capture.get(cv2.CAP_PROP_POS_MSEC)
 
@@ -81,6 +107,7 @@ class CVFile(VideoInput):
 
         return video_msec
 
+    # override
     def _read_frame_func(self):
         ret, frame = self.video_capture.read()
         if not ret:
@@ -104,8 +131,44 @@ class CVFile(VideoInput):
 
         return frame
 
+    # override
+    def get_epoch_time(self):
+        if self._use_file_timestamp:
+           return self._epoch_time
+        else:
+            return None
+
+    def get_start_time(self):
+        """Returns the timestamp of the beginning of this video in sec."""
+        if (not self._source_file) or (not self.video_capture):
+            return None
+
+        last_modified_time = os.stat(self._source_file).st_mtime
+
+        frames = self.video_capture.get(cv2.CAP_PROP_FRAME_COUNT)
+        fps = self.video_capture.get(cv2.CAP_PROP_FPS)
+        duration = frames / fps
+
+        return last_modified_time - duration
+
+    # override
+    def set_pos_msec(self, pos_msec):
+        """Moves the video position to |pos_msec| in msec."""
+        self.video_capture.set(cv2.CAP_PROP_POS_MSEC, pos_msec)
+
+    # override
+    def get_source_file(self):
+        return self._source_file
+
+    def set_use_file_timestamp(self, use_file_timestamp=True):
+        self._use_file_timestamp = use_file_timestamp
+
     def __init__(self):
         self.video_capture = None
+        self._source_file = None
+        self._source_files = []
+        self._epoch_time = None
+        self._use_file_timestamp = True
         super(CVFile, self).__init__()
 
     # backward compatibility

@@ -25,7 +25,7 @@ class Certifi(object):
 
     @staticmethod
     def where():
-        cacert_pem = os.path.join(IkaUtils.baseDirectory(), 'cacert.pem')
+        cacert_pem = IkaUtils.get_path('cacert.pem')
         if os.path.exists(cacert_pem):
             return cacert_pem
 
