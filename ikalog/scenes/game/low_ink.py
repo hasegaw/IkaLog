@@ -59,7 +59,7 @@ class GameLowInk(Scene):
     def _analyze(self, context):
         pass
 
-    def _init_scene(self, debug=True):
+    def _init_scene(self, debug=False):
         self.mask_low_ink = IkaMatcher(
             597, 530, 118, 41,
             img_file='game_low_ink.png',
