@@ -772,6 +772,9 @@ class StatInk(object):
             self.last_dead_event['reason'] = reason
             self.last_dead_event = None
 
+    def on_game_low_ink(self, context):
+        self._add_event(context, {'type': 'low_ink'})
+
     def on_game_inkling_state_update(self, context):
         if not self.track_inklings_enabled:
             return
