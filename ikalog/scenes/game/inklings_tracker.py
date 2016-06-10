@@ -285,22 +285,15 @@ class InklingsTracker(StatefulScene):
         if vs_xpos is None:
             return False
 
-        if context['lobby'].get('type') in ['public', 'festa']:
-            # If lobby.type is 'public' or 'festa', the number of teams should
-            # be four.
-            my_team = [False, False, False, False]
-            counter_team = [False, False, False, False]
+        my_team = self._find_inklings(context, 0, vs_xpos - 35)
+        counter_team = self._find_inklings(
+            context, vs_xpos + 35, self.meter_width_half * 2)
 
-        else:
-            my_team = self._find_inklings(context, 0, vs_xpos - 35)
-            counter_team = self._find_inklings(
-                context, vs_xpos + 35, self.meter_width_half * 2)
+        for i in range(len(my_team)):
+            my_team[i] = {True: False, False: None}[my_team[i]]
 
-            for i in range(len(my_team)):
-                my_team[i] = {True: False, False: None}[my_team[i]]
-
-            for i in range(len(counter_team)):
-                counter_team[i] = {True: False, False: None}[counter_team[i]]
+        for i in range(len(counter_team)):
+            counter_team[i] = {True: False, False: None}[counter_team[i]]
 
         self.my_team = my_team
         self.counter_team = counter_team
