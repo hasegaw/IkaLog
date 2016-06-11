@@ -349,8 +349,10 @@ class ResultDetail(StatefulScene):
 
         IkaUtils.dprint('%s: weapons recoginition done.' % self)
 
-        context['game']['kills_per_weapon'] = \
-            self._analyze_kills_per_weapon(context)
+        self._detect_names_per_my_kill(context)
+
+        self._analyze_kills_per_weapon(context)
+        self._analyze_kills_per_player(context)
 
         self._call_plugins_later('on_result_detail')
         self._call_plugins_later('on_game_individual_result')
@@ -485,7 +487,7 @@ class ResultDetail(StatefulScene):
 
         return (my_team_color, counter_team_color)
 
-    def _analyze_kills_per_weapon(self, context):
+    def _detect_names_per_my_kill(self, context):
         all_players = context['game']['players']
         me = IkaUtils.getMyEntryFromContext(context)
 
@@ -495,26 +497,47 @@ class ResultDetail(StatefulScene):
         img_name_counter_team = \
             list(map(lambda e: e['img_name_normalized'], counter_team))
 
-        classifier = PlayerNameClassifier(img_name_counter_team)
-
-        r = {}
+        ct_name_classifier = PlayerNameClassifier(img_name_counter_team)
 
         for kill_index in range(len(context['game'].get('kill_list', []))):
             kill = context['game']['kill_list'][kill_index]
 
-            player_index = classifier.predict(kill['img_kill_hid'])
+            player_index = ct_name_classifier.predict(kill['img_kill_hid'])
 
             if player_index is None:
                 continue
 
-            # print('kill[%d] -> counter_team[%d], weapon: %s' %
-            #      (kill_index, player_index, counter_team[player_index]['weapon']))
+            if 1:
+                IkaUtils.dprint('%s: my kill %d -> player %d' %
+                                (self, kill_index, player_index))
 
-            weapon_killed = counter_team[player_index]['weapon']
+            kill['player'] = counter_team[player_index]
 
-            r[weapon_killed] = r.get(weapon_killed, 0) + 1
+    def _analyze_kills_per_weapon(self, context):
+        r = {}
+        for kill in context['game'].get('kill_list', []):
+            if 'player' in kill:
+                weapon = kill['player']['weapon']
+                r[weapon] = r.get(weapon, 0) + 1
+        context['game']['kills_per_weapon'] = r
+
+        IkaUtils.dprint('%s: _analyze_kills_per_weapon result: %s' % (self, r))
 
         return r
+
+    def _analyze_kills_per_player(self, context):
+        for kill in context['game'].get('kill_list', []):
+            if 'player' in kill:
+                player = kill['player']
+                player['my_kills'] = player.get('my_kills', 0) + 1
+
+                if 0:
+                    IkaUtils.dprint('%s: _analyze_kills_per_player' % self)
+                    for player in context['game']['players']:
+                        IkaUtils.dprint('   player %d: my_kills = %d' % (
+                            context['game']['players'].index(player),
+                            player['my_kills']
+                        ))
 
     def analyze_entry(self, img_entry):
         # 各プレイヤー情報のスタート左位置
