@@ -397,6 +397,7 @@ class IkaEngine:
             scenes.GameKill(self),
             scenes.GameKillCombo(self),
             scenes.GameDead(self),
+            scenes.GameLowInk(self),
             scenes.GameOutOfBound(self),
             scenes.GameFinish(self),
             scenes.GameSpecialGauge(self),
