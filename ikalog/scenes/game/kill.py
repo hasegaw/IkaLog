@@ -25,6 +25,7 @@ from ikalog.scenes.scene import Scene
 from ikalog.utils import *
 from ikalog.utils.character_recoginizer import *
 
+from ikalog.utils.player_name import normalize_player_name
 
 class GameKill(Scene):
 
@@ -62,6 +63,7 @@ class GameKill(Scene):
 
             # crop the name part.
             img_name = img_killed[:, 25:, :]
+
             img_name_w = matcher.MM_WHITE(sat=(0, 64), visibility=(128, 255))(img_name)
 
             img_name_x_hist = np.extract(
@@ -69,28 +71,16 @@ class GameKill(Scene):
                 np.arange(img_name_w.shape[1]),
             )
 
-            img_name_y_hist = np.extract(
-                np.sum(img_name_w, axis=1) > 128,
-                np.arange(img_name_w.shape[0]),
-            )
-
-
             img_name_left = np.min(img_name_x_hist)
             img_name_right = np.max(img_name_x_hist - 100)
-
-            img_name_top= np.min(img_name_y_hist)
-            img_name_bottom = np.max(img_name_y_hist)
 
             # Cropping error? should be handled gracefully.
             # assert img_name_left < img_name_right
 
-            img_name_w = img_name_w[img_name_top: img_name_bottom, img_name_left :img_name_right]
-
-            img_name_w_norm = np.zeros((15, 250), dtype=np.uint8)
-            img_name_w_norm[:, 0: img_name_w.shape[1]] = cv2.resize(img_name_w, (img_name_w.shape[1], 15))
+            img_name_norm = normalize_player_name(img_name[:, img_name_left :img_name_right])
 
             found.append({
-                'img_kill_hid': img_name_w_norm,
+                'img_kill_hid': img_name_norm,
                 'pos': n,
             })
 
