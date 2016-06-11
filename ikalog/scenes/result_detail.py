@@ -787,7 +787,7 @@ class ResultDetail(StatefulScene):
         analyzed = True
         won = IkaUtils.getWinLoseText(
             context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
-        fes = context['game']['is_fes']
+        fes = context['game'].get('is_fes', False)
         print("matched %s analyzed %s result %s fest %s" %
               (matched, analyzed, won, fes))
         print('--------')
