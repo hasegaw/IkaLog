@@ -29,13 +29,16 @@ import threading
 import traceback
 from datetime import datetime
 
+
 import cv2
 import numpy as np
 
+
 from ikalog.api import APIClient
 from ikalog.scenes.stateful_scene import StatefulScene
-from ikalog.utils import *
 from ikalog.inputs.filters import OffsetFilter
+from ikalog.utils import *
+from ikalog.utils.player_name import *
 
 
 class ResultDetail(StatefulScene):
@@ -49,7 +52,7 @@ class ResultDetail(StatefulScene):
         loss_lose = (1.0 - r_lose) ** 2
         loss_x = (1.0 - r_x) ** 2
 
-        return 1.0 - math.sqrt((loss_win + loss_lose + loss_x)/3)
+        return 1.0 - math.sqrt((loss_win + loss_lose + loss_x) / 3)
 
     #
     # AKAZE ベースのオフセット／サイズ調整
@@ -289,7 +292,6 @@ class ResultDetail(StatefulScene):
         self.adjust_method_generic(context, l)
         self.adjust_method_offset(context, l)
 
-
         if len(l) > 0:
             best = sorted(l, key=lambda x: x['score'], reverse=True)[0]
             img = best['frame']
@@ -346,6 +348,9 @@ class ResultDetail(StatefulScene):
             IkaUtils.dprint(traceback.format_exc())
 
         IkaUtils.dprint('%s: weapons recoginition done.' % self)
+
+        context['game']['kills_per_weapon'] = \
+            self._analyze_kills_per_weapon(context)
 
         self._call_plugins_later('on_result_detail')
         self._call_plugins_later('on_game_individual_result')
@@ -480,6 +485,37 @@ class ResultDetail(StatefulScene):
 
         return (my_team_color, counter_team_color)
 
+    def _analyze_kills_per_weapon(self, context):
+        all_players = context['game']['players']
+        me = IkaUtils.getMyEntryFromContext(context)
+
+        counter_team = \
+            list(filter(lambda x: x['team'] != me['team'], all_players))
+
+        img_name_counter_team = \
+            list(map(lambda e: e['img_name_normalized'], counter_team))
+
+        classifier = PlayerNameClassifier(img_name_counter_team)
+
+        r = {}
+
+        for kill_index in range(len(context['game'].get('kill_list', []))):
+            kill = context['game']['kill_list'][kill_index]
+
+            player_index = classifier.predict(kill['img_kill_hid'])
+
+            if player_index is None:
+                continue
+
+            # print('kill[%d] -> counter_team[%d], weapon: %s' %
+            #      (kill_index, player_index, counter_team[player_index]['weapon']))
+
+            weapon_killed = counter_team[player_index]['weapon']
+
+            r[weapon_killed] = r.get(weapon_killed, 0) + 1
+
+        return r
+
     def analyze_entry(self, img_entry):
         # 各プレイヤー情報のスタート左位置
         entry_left = 610
@@ -554,6 +590,7 @@ class ResultDetail(StatefulScene):
             "img_rank": img_rank,
             "img_weapon": img_weapon,
             "img_name": img_name,
+            "img_name_normalized": normalize_player_name(img_name),
             "img_score": img_score,
             "img_kills": img_kills,
             "img_deaths": img_deaths,
