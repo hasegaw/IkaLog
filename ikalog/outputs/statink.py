@@ -758,7 +758,7 @@ class StatInk(object):
     def on_game_session_abort(self, context):
         self._close_game_session(context)
 
-    def on_game_killed(self, context):
+    def on_game_killed(self, context, params):
         self._add_event(context, {'type': 'killed'})
 
     def on_game_dead(self, context):

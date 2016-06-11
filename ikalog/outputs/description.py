@@ -78,7 +78,7 @@ class Description(object):
         time = self.get_timestamp(context)
         self.append_description("ゲーム終了", time)
 
-    def on_game_killed(self, context):
+    def on_game_killed(self, context, params):
         time = self.get_timestamp(context)
         self.append_description("く8彡 プレイヤーをたおした！", time)
 

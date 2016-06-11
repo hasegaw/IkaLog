@@ -90,7 +90,7 @@ class WebSocketServer(object):
 
     # In-game basic events
 
-    def on_game_killed(self, context):
+    def on_game_killed(self, context, params):
         self._send_message({
             'event': 'on_game_killed'
         })

@@ -36,39 +36,76 @@ class GameKill(Scene):
         self._msec_last_kill = 0
         self._msec_last_decrease = 0
 
-    def countKills(self, context):
-        img_gray = cv2.cvtColor(context['engine']['frame'][
-                                :, 502:778], cv2.COLOR_BGR2GRAY)
-        ret, img_thresh = cv2.threshold(img_gray, 90, 255, cv2.THRESH_BINARY)
-
+    def find_kill_messages(self, context):
         killed_y = [652, 652 - 40, 652 - 80, 652 - 120]  # たぶん...。
-        killed = 0
 
-        list = []
+        found = []
         for n in range(len(killed_y)):
             y = killed_y[n]
-            box = img_thresh[y:y + 30, :]
-            r = self.mask_killed.match(box)
-            if r:
-                self._call_plugins(
-                    'on_mark_rect_in_preview',
-                    [ (502, y), (778, y + 30) ]
-                )
-                list.append(n)
-        return len(list)
+
+            # Detect kill
+
+            img_killed = context['engine']['frame'][y: y + 30, 502:778]
+            img_killed_gray = cv2.cvtColor(img_killed[:, 0:25, :], cv2.COLOR_BGR2GRAY)
+            ret, img_killed_thresh = cv2.threshold(img_killed_gray, 90, 255, cv2.THRESH_BINARY)
+
+            r = self.mask_killed.match(img_killed_thresh)
+            if not r:
+                continue
+                # or
+                return found
+
+            self._call_plugins(
+                'on_mark_rect_in_preview',
+                [ (502, y), (778, y + 30) ]
+            )
+
+            # crop the name part.
+            img_name = img_killed[:, 25:, :]
+            img_name_w = matcher.MM_WHITE(sat=(0, 64), visibility=(128, 255))(img_name)
+
+            img_name_x_hist = np.extract(
+                np.sum(img_name_w, axis=0) > 128,
+                np.arange(img_name_w.shape[1]),
+            )
+
+            img_name_left = np.min(img_name_x_hist)
+            img_name_right = np.max(img_name_x_hist - 100)
+
+            # Cropping error? should be handled gracefully.
+            # assert img_name_left < img_name_right
+
+            img_name_w = img_name_w[:, img_name_left :img_name_right]
+
+            img_name_w_norm = np.zeros((30, 250), dtype=np.uint8)
+            img_name_w_norm[:, 0: img_name_w.shape[1]] = img_name_w
+
+            found.append({
+                'img_kill_hid': img_name_w_normalized,
+                'pos': n,
+            })
+
+            if 0:
+                cv2.imshow('img_kill_hid', img_name_w_normalized)
+
+        return found
 
     def increment_kills(self, context, kills):
-        if self.last_kills < kills:
-            delta = kills - self.last_kills
+        num_current_kills = len(kills)
+        if self.last_kills < num_current_kills:
+            delta = num_current_kills - self.last_kills
             context['game']['kills'] = context['game'].get('kills', 0) + delta
             self.total_kills = context['game']['kills']
 
             for i in range(delta):
-                self._call_plugins('on_game_killed')
+                params = {
+                    'img_kill_hid': kills[i]['img_kill_hid']
+                }
+                self._call_plugins('on_game_killed', params=params)
 
             self._msec_last_kill = context['engine']['msec']
             self._msec_last_decrease = context['engine']['msec']
-            self.last_kills = kills
+            self.last_kills = num_current_kills
 
     def match_no_cache(self, context):
         if self.last_kills == 0 and (not self.is_another_scene_matched(context, 'GameTimerIcon')):
@@ -79,16 +116,16 @@ class GameKill(Scene):
         if frame is None:
             return False
 
-        current_kills = self.countKills(context)
+        current_kills = self.find_kill_messages(context)
         self.increment_kills(context, current_kills)
 
         # print('KILLS %d LAST_KILLS %d TOTAL %d' % (current_kills, self.last_kills, self.total_kills, ))
-        if current_kills >= self.last_kills:
+        if len(current_kills) >= self.last_kills:
             self._msec_last_decrease = context['engine']['msec']
 
         # 150ms のチャタリングは無視
         if not self.matched_in(context, 150, attr='_msec_last_decrease'):
-            self.last_kills = min(self.last_kills, current_kills)
+            self.last_kills = min(self.last_kills, len(current_kills))
  
 
         return self.last_kills > 0

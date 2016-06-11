@@ -50,7 +50,7 @@ class DebugLog(object):
 
     # In-game typical events
 
-    def on_game_killed(self, context):
+    def on_game_killed(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     def on_game_chained_kill_combo(self, context):
