@@ -46,7 +46,7 @@ class GameKillCombo(Scene):
         if frame is None:
             return False
 
-    def on_game_killed(self, context):
+    def on_game_killed(self, context, params):
         self.kill_streak += 1
         context['game']['kill_streak'] = self.kill_streak
         context['game']['max_kill_streak'] = max(self.kill_streak, context['game'].get('max_kill_streak', 0))

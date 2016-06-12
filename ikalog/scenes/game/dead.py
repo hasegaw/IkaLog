@@ -78,24 +78,24 @@ class GameDead(StatefulScene):
         votes = self._cause_of_death_votes
         if len(votes) == 0:
             return None
-        print('votes=%s' % votes)
 
-        most_possible_id = None
-        most_possible_count = 0
-        for weapon_id in votes.keys():
-            weapon_count = votes[weapon_id]
-            if most_possible_count < weapon_count:
-                most_possible_id = weapon_id
-                most_possible_count = weapon_count
+        key_list = list(map(lambda key: key, votes.keys()))
+        count_list = list(map(lambda key: votes[key], key_list))
 
-        if (most_possible_count == 0) or (most_possible_id is None):
-            return None
+        max_index = np.argmax(count_list)
+        key = key_list[max_index]
 
-        context['game']['last_death_reason'] = most_possible_id
-        context['game']['death_reasons'][most_possible_id] = \
-            context['game']['death_reasons'].get(most_possible_id, 0) + 1
+        # softmax
+        sum_votes_exp = np.sum(np.exp(count_list))
+        accuracy = np.exp(count_list[max_index]) / sum_votes_exp
 
-        return most_possible_id
+        print('votes=%s accuracy=%3.3f' % (votes, accuracy))
+
+        context['game']['last_death_reason'] = key
+        context['game']['death_reasons'][key] = \
+            context['game']['death_reasons'].get(key, 0) + 1
+
+        return key
 
     def reset(self):
         super(GameDead, self).reset()

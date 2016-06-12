@@ -243,7 +243,7 @@ class Commentator(object):
     def on_game_go_sign(self, context):
         self._read_event('go_sign')
 
-    def on_game_killed(self, context):
+    def on_game_killed(self, context, params):
         self._read_event('killed')
 
     def on_game_dead(self, context):

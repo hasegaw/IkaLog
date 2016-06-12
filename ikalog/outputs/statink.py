@@ -758,7 +758,7 @@ class StatInk(object):
     def on_game_session_abort(self, context):
         self._close_game_session(context)
 
-    def on_game_killed(self, context):
+    def on_game_killed(self, context, params):
         self._add_event(context, {'type': 'killed'})
 
     def on_game_dead(self, context):
@@ -771,6 +771,9 @@ class StatInk(object):
             reason = context['game']['last_death_reason']
             self.last_dead_event['reason'] = reason
             self.last_dead_event = None
+
+    def on_game_low_ink(self, context):
+        self._add_event(context, {'type': 'low_ink'})
 
     def on_game_inkling_state_update(self, context):
         if not self.track_inklings_enabled:
