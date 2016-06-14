@@ -502,7 +502,7 @@ class ResultDetail(StatefulScene):
         for kill_index in range(len(context['game'].get('kill_list', []))):
             kill = context['game']['kill_list'][kill_index]
 
-            if not kill.get('img_kill_hid', None):
+            if kill.get('img_kill_hid', None) is None:
                 continue
 
             player_index = ct_name_classifier.predict(kill['img_kill_hid'])
