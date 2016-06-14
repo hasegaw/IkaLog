@@ -74,10 +74,13 @@ class GameKill(Scene):
             img_name_left = np.min(img_name_x_hist)
             img_name_right = np.max(img_name_x_hist - 100)
 
-            # Cropping error? should be handled gracefully.
-            # assert img_name_left < img_name_right
+            if img_name_left >= img_name_right:
+                # Cropping error?
+                continue
 
-            img_name_norm = normalize_player_name(img_name[:, img_name_left :img_name_right])
+            img_name_norm = normalize_player_name(
+                img_name[:, img_name_left :img_name_right]
+            )
 
             found.append({
                 'img_kill_hid': img_name_norm,

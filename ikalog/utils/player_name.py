@@ -40,6 +40,10 @@ def normalize_player_name(img_name, debug=False):
         np.arange(img_name_w.shape[0]),
     )
 
+    if (len(img_name_x_hist) == 0) or (len(img_name_y_hist) == 0):
+        # In some cases, we can't find any pixels.
+        return None
+
     img_name_left = np.min(img_name_x_hist)
     img_name_right = np.max(img_name_x_hist)
 
@@ -47,7 +51,8 @@ def normalize_player_name(img_name, debug=False):
     img_name_bottom = np.max(img_name_y_hist)
 
     # Cropping error? should be handled gracefully.
-    # assert img_name_left < img_name_right
+    if not (img_name_left < img_name_right):
+        return None
 
     img_name_w = img_name_w[
         img_name_top:img_name_bottom, img_name_left:img_name_right]
