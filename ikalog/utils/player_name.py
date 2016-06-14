@@ -51,7 +51,7 @@ def normalize_player_name(img_name, debug=False):
     img_name_bottom = np.max(img_name_y_hist)
 
     # Cropping error? should be handled gracefully.
-    if not (img_left < img_right):
+    if not (img_name_left < img_name_right):
         return None
 
     img_name_w = img_name_w[
