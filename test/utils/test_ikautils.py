@@ -314,6 +314,29 @@ class TestIkaUtils(unittest.TestCase):
                          time.strftime("%Y%m%d_%H%M%S",
                                        time.localtime(time_actual)))
 
+    def test_get_game_offset_msec(self):
+        mock_context = {'game': {}, 'engine': {}}
+        self.assertIsNone(IkaUtils.get_game_offset_msec(mock_context))
+        mock_context['engine']['msec'] = 1234567
+        self.assertIsNone(IkaUtils.get_game_offset_msec(mock_context))
+        mock_context['game']['start_offset_msec'] = 1000000
+        self.assertEqual(234567, IkaUtils.get_game_offset_msec(mock_context))
+
+    def test_add_event(self):
+        mock_context = {'game': {'start_offset_msec': 100},
+                        'engine': {'msec': 101}}
+        IkaUtils.add_event(mock_context, 'key', 7)
+        self.assertEqual({'key': [[1, 7]]}, mock_context['game']['events'])
+        IkaUtils.add_event(mock_context, 'key', 11)
+        self.assertEqual({'key': [[1, 11]]}, mock_context['game']['events'])
+        IkaUtils.add_event(mock_context, 'key2', 13)
+        self.assertEqual({'key': [[1, 11]], 'key2': [[1, 13]]},
+                         mock_context['game']['events'])
+
+        mock_context['engine']['msec'] = 102
+        IkaUtils.add_event(mock_context, 'key', 7)
+        self.assertEqual({'key': [[1, 11], [2, 7]], 'key2': [[1, 13]]},
+                         mock_context['game']['events'])
 
     def test_get_file_name(self):
         mock_context = {'game': {'index': 0},

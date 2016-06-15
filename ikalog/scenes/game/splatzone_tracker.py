@@ -177,6 +177,9 @@ class SplatzoneTracker(Scene):
         context['game']['splatzone_counter_team_counter'] = self._counter2
 
         if (counter1[1] != 0) or (counter2[1] != 0) or (loss1[1] != 0) or (loss2[1] != 0):
+            IkaUtils.add_event(
+                context, 'splatzone', [self._counter1['value'],
+                                       self._counter2['value']])
             self._call_plugins('on_game_splatzone_counter_update')
 
     def _analyze(self, context):

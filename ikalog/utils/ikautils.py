@@ -236,6 +236,28 @@ class IkaUtils(object):
             return datetime.now()
 
     @staticmethod
+    def get_game_offset_msec(context):
+        """Returns the offset time in msec since the game start."""
+        if (context['engine'].get('msec') and
+            context['game'].get('start_offset_msec')):
+            return (context['engine']['msec'] -
+                    context['game']['start_offset_msec'])
+        return None
+
+    @staticmethod
+    def add_event(context, key, value):
+        events = context['game'].setdefault('events', {}).setdefault(key, [])
+        game_time = IkaUtils.get_game_offset_msec(context)
+
+        # events is a list of lists of [time, value].
+        if events and events[-1][0] == game_time:
+            event = events[-1]
+            event[1] = value
+        else:
+            event = [game_time, value]
+            events.append(event)
+
+    @staticmethod
     def get_file_name(filename, context):
         """Returns filename modifying index and macro values."""
         if not filename:

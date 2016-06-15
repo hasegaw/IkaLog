@@ -152,6 +152,7 @@ class IkaEngine:
         context['engine']['msec'] = t
         context['engine']['frame'] = frame
         context['engine']['preview'] = copy.deepcopy(frame)
+        context['game']['offset_msec'] = IkaUtils.get_game_offset_msec(context)
 
         self.call_plugins('on_debug_read_next_frame')
 
@@ -190,6 +191,11 @@ class IkaEngine:
 
             'inkling_state': [None, None],
 
+            # Dict mapping from event_name (e.g. objective) to lists of lists
+            # of msec time and value.
+            # e.g. 'events': {'objective': [[0, 0], [320, 99]]}
+            'events': {},
+
             # Float values of start and end times scince the epoch in second.
             # They are used with IkaUtils.GetTime.
             'start_time': None,
@@ -198,6 +204,8 @@ class IkaEngine:
             # They are used with context['engine']['msec']
             'start_offset_msec': None,
             'end_offset_msec': None,
+            # Time from start_offset_msec in msec.
+            'offset_msec': None,
         }
         self.call_plugins('on_game_reset')
         self._exception_log_init(self.context)
