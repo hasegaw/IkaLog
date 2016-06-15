@@ -263,6 +263,8 @@ class InklingsTracker(StatefulScene):
         if self._last_bitmap != bitmap:
             self._call_plugins('on_game_inkling_state_update')
             self._last_bitmap = bitmap
+            IkaUtils.add_event(
+                context, 'inklings', context['game']['inkling_state'])
 
         if 0:
             print(my_team, counter_team)

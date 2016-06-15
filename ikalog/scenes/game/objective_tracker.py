@@ -122,6 +122,7 @@ class ObjectiveTracker(Scene):
         context['game']['tower']['max'] = new_max
         if updated:
             self._call_plugins('on_game_objective_position_update')
+            IkaUtils.add_event(context, 'objective', new_pos)
 
         self._last_update_msec = context['engine']['msec']
         return True
