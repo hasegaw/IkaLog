@@ -341,7 +341,7 @@ class InklingsTracker(StatefulScene):
 
         return True
 
-    def _swtich_to_state_default(self, context):
+    def _switch_to_state_default(self, context):
         self.my_team = [False, False, False, False]
         self.counter_team = [False, False, False, False]
 
