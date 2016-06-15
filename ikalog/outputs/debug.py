@@ -50,7 +50,7 @@ class DebugLog(object):
 
     # In-game typical events
 
-    def on_game_killed(self, context):
+    def on_game_killed(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     def on_game_chained_kill_combo(self, context):
@@ -62,6 +62,10 @@ class DebugLog(object):
     def on_game_death_reason_identified(self, context):
         s = "weapon = %s" % (context['game']['last_death_reason'])
         self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
+
+    def on_game_low_ink(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context,
+            text="count=%d" % context['game']['low_ink_count'])
 
     def on_game_inkling_state_update(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context,

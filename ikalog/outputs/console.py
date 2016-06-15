@@ -41,7 +41,7 @@ class Console(object):
         rule = IkaUtils.rule2text(context['game']['rule'])
         print(_('Game Start. Stage: %(stage)s, Mode: %(rule)s') % {'rule': rule, 'stage':map})
 
-    def on_game_killed(self, context):
+    def on_game_killed(self, context, params):
         print(_('Splatted an enemy! (%(streak)d streak)') % {'streak' : context['game'].get('kill_streak', 1)})
 
     def on_game_chained_kill_combo(self, context):

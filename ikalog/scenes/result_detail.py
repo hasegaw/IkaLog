@@ -29,13 +29,16 @@ import threading
 import traceback
 from datetime import datetime
 
+
 import cv2
 import numpy as np
 
+
 from ikalog.api import APIClient
 from ikalog.scenes.stateful_scene import StatefulScene
-from ikalog.utils import *
 from ikalog.inputs.filters import OffsetFilter
+from ikalog.utils import *
+from ikalog.utils.player_name import *
 
 
 class ResultDetail(StatefulScene):
@@ -49,7 +52,7 @@ class ResultDetail(StatefulScene):
         loss_lose = (1.0 - r_lose) ** 2
         loss_x = (1.0 - r_x) ** 2
 
-        return 1.0 - math.sqrt((loss_win + loss_lose + loss_x)/3)
+        return 1.0 - math.sqrt((loss_win + loss_lose + loss_x) / 3)
 
     #
     # AKAZE ベースのオフセット／サイズ調整
@@ -289,7 +292,6 @@ class ResultDetail(StatefulScene):
         self.adjust_method_generic(context, l)
         self.adjust_method_offset(context, l)
 
-
         if len(l) > 0:
             best = sorted(l, key=lambda x: x['score'], reverse=True)[0]
             img = best['frame']
@@ -346,6 +348,11 @@ class ResultDetail(StatefulScene):
             IkaUtils.dprint(traceback.format_exc())
 
         IkaUtils.dprint('%s: weapons recoginition done.' % self)
+
+        self._detect_names_per_my_kill(context)
+
+        self._analyze_kills_per_weapon(context)
+        self._analyze_kills_per_player(context)
 
         self._call_plugins_later('on_result_detail')
         self._call_plugins_later('on_game_individual_result')
@@ -480,6 +487,61 @@ class ResultDetail(StatefulScene):
 
         return (my_team_color, counter_team_color)
 
+    def _detect_names_per_my_kill(self, context):
+        all_players = context['game']['players']
+        me = IkaUtils.getMyEntryFromContext(context)
+
+        counter_team = \
+            list(filter(lambda x: x['team'] != me['team'], all_players))
+
+        img_name_counter_team = \
+            list(map(lambda e: e['img_name_normalized'], counter_team))
+
+        ct_name_classifier = PlayerNameClassifier(img_name_counter_team)
+
+        for kill_index in range(len(context['game'].get('kill_list', []))):
+            kill = context['game']['kill_list'][kill_index]
+
+            if kill.get('img_kill_hid', None) is None:
+                continue
+
+            player_index = ct_name_classifier.predict(kill['img_kill_hid'])
+
+            if player_index is None:
+                continue
+
+            if 1:
+                IkaUtils.dprint('%s: my kill %d -> player %d' %
+                                (self, kill_index, player_index))
+
+            kill['player'] = counter_team[player_index]
+
+    def _analyze_kills_per_weapon(self, context):
+        r = {}
+        for kill in context['game'].get('kill_list', []):
+            if 'player' in kill:
+                weapon = kill['player']['weapon']
+                r[weapon] = r.get(weapon, 0) + 1
+        context['game']['kills_per_weapon'] = r
+
+        IkaUtils.dprint('%s: _analyze_kills_per_weapon result: %s' % (self, r))
+
+        return r
+
+    def _analyze_kills_per_player(self, context):
+        for kill in context['game'].get('kill_list', []):
+            if 'player' in kill:
+                player = kill['player']
+                player['my_kills'] = player.get('my_kills', 0) + 1
+
+                if 0:
+                    IkaUtils.dprint('%s: _analyze_kills_per_player' % self)
+                    for player in context['game']['players']:
+                        IkaUtils.dprint('   player %d: my_kills = %d' % (
+                            context['game']['players'].index(player),
+                            player['my_kills']
+                        ))
+
     def analyze_entry(self, img_entry):
         # 各プレイヤー情報のスタート左位置
         entry_left = 610
@@ -554,6 +616,7 @@ class ResultDetail(StatefulScene):
             "img_rank": img_rank,
             "img_weapon": img_weapon,
             "img_name": img_name,
+            "img_name_normalized": normalize_player_name(img_name),
             "img_score": img_score,
             "img_kills": img_kills,
             "img_deaths": img_deaths,
@@ -787,7 +850,7 @@ class ResultDetail(StatefulScene):
         analyzed = True
         won = IkaUtils.getWinLoseText(
             context['game']['won'], win_text="win", lose_text="lose", unknown_text="unknown")
-        fes = context['game']['is_fes']
+        fes = context['game'].get('is_fes', False)
         print("matched %s analyzed %s result %s fest %s" %
               (matched, analyzed, won, fes))
         print('--------')
