@@ -348,10 +348,10 @@ class InklingsTracker(StatefulScene):
         return self._switch_state(self._state_default)
 
     def on_game_start(self, context):
-        self._swtich_to_state_default(context)
+        self._switch_to_state_default(context)
 
     def on_game_go_sign(self, context):
-        self._swtich_to_state_default(context)
+        self._switch_to_state_default(context)
 
     def _analyze(self, context):
         pass
