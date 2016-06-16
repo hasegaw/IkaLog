@@ -27,8 +27,21 @@ import traceback
 from ikalog.utils import *
 from .preview import PreviewRequestHandler
 
+def _get_type_name(var):
+    return type(var).__name__
+
 
 class APIServer(object):
+
+    def _engine_context_game(self, request_handler, payload):
+        request_handler.send_response(200)
+        request_handler.send_header(
+            'Content-type', 'text/plain; charset=UTF-8')
+        request_handler.end_headers()
+        request_handler.wfile.write(bytearray(
+            json.dumps(request_handler.server.ikalog_context['game'],
+                       default=_get_type_name),
+            'utf-8'))
 
     def _engine_preview(self, request_handler, payload):
         handler = PreviewRequestHandler(request_handler)
@@ -38,6 +51,7 @@ class APIServer(object):
 
     def process_request(self, request_handler, path, payload):
         handler = {
+            '/api/v1/engine/context/game': self._engine_context_game,
             '/api/v1/engine/preview': self._engine_preview,
             '/api/v1/engine/stop': self._engine_stop,
         }.get(path, None)
