@@ -177,9 +177,9 @@ def _init_outputs(opts):
         OutputPlugins.append(outputs.Twitter(**args))
 
     # WebSocket サーバ
-    if 'WebSocket' in output_plugins:
-        args = _replace_vars(output_args['WebSocket'], vars)
-        OutputPlugins.append(outputs.WebSocket(**args))
+    if 'WebSocketServer' in output_plugins:
+        args = _replace_vars(output_args['WebSocketServer'], vars)
+        OutputPlugins.append(outputs.WebSocketServer(**args))
 
     # REST API Server
     if 'RESTAPIServer' in output_plugins:
