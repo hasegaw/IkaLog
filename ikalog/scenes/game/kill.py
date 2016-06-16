@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 import sys
+import uuid
 
 import cv2
 
@@ -103,12 +104,10 @@ class GameKill(Scene):
                 context['game']['kill_list'] = []
 
             for i in range(delta):
-                context['game']['kill_list'].append(kills[i])
-
-                params = {
-                    'img_kill_hid': kills[i]['img_kill_hid']
-                }
-                self._call_plugins('on_game_killed', params=params)
+                kill = kills[i]
+                kill['uuid'] = uuid.uuid1()
+                context['game']['kill_list'].append(kill)
+                self._call_plugins('on_game_killed', params=kill)
 
             self._msec_last_kill = context['engine']['msec']
             self._msec_last_decrease = context['engine']['msec']
