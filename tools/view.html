@@ -1,0 +1,174 @@
+<html>
+<body>
+
+<canvas id="graph" width="400" height="200"></canvas>
+
+<script>
+function draw(data) {
+  if (data == undefined) {
+    return;
+  }
+  var events = data.events;
+  var canvas = document.getElementById('graph');
+  if (events == undefined || canvas == undefined) {
+    return;
+  }
+  var context = canvas.getContext('2d');
+
+  // Current time indicator
+  if (data.offset_msec == undefined) {
+    return;
+  }
+  var current_sec = parseInt(data.offset_msec / 1000);
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.beginPath();
+  context.moveTo(current_sec, 0);
+  context.lineTo(current_sec, 200);
+  context.stroke();
+
+  var rule = data.rule;
+  if (rule == 'yagura' || rule == 'hoko') {
+    context.beginPath();
+    context.moveTo(0, 100);
+    context.lineTo(400, 100);
+    context.stroke();
+
+    var stroke = get_stroke_objective(events.objective, current_sec);
+    if (stroke.length > 0) {
+      context.beginPath();
+      context.moveTo(0, 100);
+      for (var i = 0; i < stroke.length; i++) {
+        context.lineTo(stroke[i][0], 100 - stroke[i][1]);
+      }
+      context.stroke();
+    }
+  } else if (rule == 'area') {
+    var stroke = get_stroke_splatzone(events.splatzone, current_sec);
+    for (var i = 1; i <= 2; i++) {
+      if (stroke.length > 0) {
+        context.beginPath();
+        context.moveTo(0, 200);
+        for (var j = 0; j < stroke.length; j++) {
+          context.lineTo(stroke[j][0], stroke[j][i] * 2);
+        }
+        context.stroke();
+      }
+    }
+  }
+
+  inklings_strokes = get_stroke_inklings(events.inklings, current_sec);
+  for (var i = 0; i < inklings_strokes.length; i++) {
+    var stroke = inklings_strokes[i];
+    for (var j = 0; j < stroke.length; j++) {
+      if (stroke[j][0] == stroke[j][1]) {
+        continue;
+      }
+      var y = 10 * i + 5;
+      context.beginPath();
+      context.moveTo(stroke[j][0], y);
+      context.lineTo(stroke[j][1], y);
+      context.stroke();
+    }
+  }
+}
+
+function get_stroke_objective(events, current_sec) {
+  var stroke = [];
+  if (events == undefined) {
+    return stroke;
+  }
+  var last_sec = 0;
+  var position = 0;
+  for (var i = 0; i < events.length; i++) {
+    var time = events[i][0];
+    position = events[i][1];
+    if (time > (last_sec * 1000)) {
+      last_sec++;
+      stroke.push([last_sec, position])
+    }
+  }
+  if (last_sec != current_sec) {
+    stroke.push([current_sec, position])
+  }
+  return stroke;
+}
+
+function get_stroke_splatzone(events, current_sec) {
+  var stroke = [];
+  if (events == undefined) {
+    return stroke;
+  }
+  var last_sec = 0;
+  var zone1 = 100;
+  var zone2 = 100;
+  for (var i = 0; i < events.length; i++) {
+    var time = events[i][0];
+    zone1 = events[i][1][0];
+    zone2 = events[i][1][1];
+    if (time > (last_sec * 1000)) {
+      last_sec++;
+      stroke.push([last_sec, zone1, zone2])
+    }
+  }
+  if (last_sec != current_sec) {
+    stroke.push([current_sec, zone1, zone2])
+  }
+  return stroke;
+}
+
+function get_stroke_inklings(events, current_sec) {
+  strokes = [[[0,0]], [[0,0]], [[0,0]], [[0,0]],
+             [[0,0]], [[0,0]], [[0,0]], [[0,0]]];
+  if (events == undefined) {
+    return strokes;
+  }
+
+  time_sec = 0;
+  prev_inklings = [true, true, true, true, true, true, true, true];
+
+  for (var i = 0; i < events.length; i++) {
+    var time = events[i][0];
+    time_sec = parseInt(time / 1000);
+    var inklings = events[i][1][0].concat(events[i][1][1]);
+    for (var j = 0; j < inklings.length; j++) {
+      var stroke = strokes[j];
+      if (prev_inklings[j]) {
+        stroke[stroke.length - 1][1] = time_sec;
+      } else if (inklings[j]) {
+        stroke.push([time_sec, time_sec]);
+      }
+    }
+    prev_inklings = inklings;
+  }
+
+  for (var j = 0; j < inklings.length; j++) {
+    if (prev_inklings[j]) {
+      var stroke = strokes[j];
+      stroke[stroke.length - 1][1] = current_sec;
+    }
+  }
+
+  return strokes;
+}
+
+function get_context() {
+  var url = "http://localhost:8888/api/v1/engine/context/game";
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", url, true);
+  xhr.addEventListener("load", function(ev) {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      var context = JSON.parse(xhr.responseText);
+      draw(context);
+    }
+  });
+  xhr.addEventListener("error", function(ev) {
+    // Do something.
+  });
+  xhr.send();
+}
+
+var interval = setInterval(get_context, 1000);
+</script>
+</body>
+</html>
