@@ -247,6 +247,10 @@ class DebugLog(object):
     def on_output_statink_submission_dryrun(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
+    def on_gear_select(self, context, params={}):
+        self.write_debug_log(sys._getframe().f_code.co_name, context, text=params)
+
+
     # UI support
 
     def on_option_tab_create(self, notebook):
