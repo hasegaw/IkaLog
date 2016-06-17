@@ -1,7 +1,19 @@
 <html>
+<head>
+<style>
+#graph {
+  width: 100%;
+  height: 100%;
+}
+.hidden {
+  visibility: hidden;
+}
+</style>
+</head>
 <body>
 
-<canvas id="graph" width="400" height="200"></canvas>
+<canvas id="graph" width="800" height="440"></canvas>
+<canvas id="meter" class="hidden" width="720" height="402"></canvas>
 
 <script>
 function draw(data) {
@@ -9,37 +21,71 @@ function draw(data) {
     return;
   }
   var events = data.events;
-  var canvas = document.getElementById('graph');
-  if (events == undefined || canvas == undefined) {
+  if (events == undefined) {
     return;
   }
-  var context = canvas.getContext('2d');
 
-  // Current time indicator
   if (data.offset_msec == undefined) {
     return;
   }
   var current_sec = parseInt(data.offset_msec / 1000);
 
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  var canvas_meter = document.getElementById('meter');
+  if (canvas_meter == undefined) {
+    return;
+  }
+  var context_meter = canvas_meter.getContext('2d');
+
+  draw_meter(context_meter, data);
+
+  var canvas_graph = document.getElementById('graph');
+  if (canvas_graph == undefined) {
+    return;
+  }
+  var context_graph = canvas_graph.getContext('2d');
+  var width = canvas_graph.width - 40;
+  var height = canvas_graph.height - 19;
+  context_graph.clearRect(20, 10, width, height);
+  context_graph.drawImage(canvas_meter,
+    0, 0, canvas_meter.width, canvas_meter.height,
+    20, 10, width, height);
+}
+
+function draw_meter(context, data) {
+  var events = data.events;
+  var current_sec = parseInt(data.offset_msec / 1000);
+  var width = context.canvas.width;
+  var height = context.canvas.height;
+  var x_scale = width / 360;
+  var y_scale = height / 201;
+  var mid_height = parseInt(height / 2) + (1 * y_scale);
+
+  context.clearRect(0, 0, width, height);
+
+  // Border
+  context.rect(0, 0, width, height);
+  context.stroke();
+
+  // Time indicator
   context.beginPath();
-  context.moveTo(current_sec, 0);
-  context.lineTo(current_sec, 200);
+  context.moveTo(current_sec * x_scale, 0);
+  context.lineTo(current_sec * y_scale, height);
   context.stroke();
 
   var rule = data.rule;
   if (rule == 'yagura' || rule == 'hoko') {
     context.beginPath();
-    context.moveTo(0, 100);
-    context.lineTo(400, 100);
+    context.moveTo(0, mid_height);
+    context.lineTo(width, mid_height);
     context.stroke();
 
     var stroke = get_stroke_objective(events.objective, current_sec);
     if (stroke.length > 0) {
       context.beginPath();
-      context.moveTo(0, 100);
+      context.moveTo(0, mid_height);
       for (var i = 0; i < stroke.length; i++) {
-        context.lineTo(stroke[i][0], 100 - stroke[i][1]);
+        context.lineTo(stroke[i][0] * x_scale,
+                       mid_height - stroke[i][1] * y_scale);
       }
       context.stroke();
     }
@@ -48,9 +94,10 @@ function draw(data) {
     for (var i = 1; i <= 2; i++) {
       if (stroke.length > 0) {
         context.beginPath();
-        context.moveTo(0, 200);
+        context.moveTo(0, height);
         for (var j = 0; j < stroke.length; j++) {
-          context.lineTo(stroke[j][0], stroke[j][i] * 2);
+          context.lineTo(stroke[j][0] * x_scale,
+                         stroke[j][i] * 2 * y_scale);
         }
         context.stroke();
       }
@@ -66,8 +113,8 @@ function draw(data) {
       }
       var y = 10 * i + 5;
       context.beginPath();
-      context.moveTo(stroke[j][0], y);
-      context.lineTo(stroke[j][1], y);
+      context.moveTo(stroke[j][0] * x_scale, y * y_scale);
+      context.lineTo(stroke[j][1] * x_scale, y * y_scale);
       context.stroke();
     }
   }
