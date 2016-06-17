@@ -11,7 +11,7 @@
 </style>
 </head>
 <body>
-  <canvas id="graph" width="800" height="440"></canvas>
+<canvas id="graph" width="800" height="440"></canvas>
 <canvas id="meter" class="hidden" width="720" height="402"></canvas>
 <script>
 function draw(data) {
@@ -89,6 +89,47 @@ function draw(data) {
     margin_left, margin_top, width, height);
 }
 
+function get_color(color, alpha, fallback) {
+  if (color == undefined || color.rgb == undefined) {
+    return fallback;
+  }
+  var rgb = color.rgb;
+  var color = 'rgba(' + rgb.join(', ') + ', ' + alpha + ')';
+  return color;
+}
+
+function get_colors(data) {
+  var colors = {}
+  // Deep Orange 200 of https://material.google.com/style/color.html
+  fb_my_team_inklings = 'rgba(128, 203, 196, 0.5)';
+  fb_my_team_splatzone = 'rgba(128, 203, 196, 1.0)';
+
+  // Deep Orange 200 of https://material.google.com/style/color.html
+  fb_counter_team_inklings = 'rgba(255, 171, 145, 0.5)';
+  fb_counter_team_splatzone = 'rgba(255, 171, 145, 1.0)';
+
+  if (data.my_team_color == undefined) {
+    colors['my_team_inklings'] = fb_my_team_inklings;
+    colors['my_team_splatzone'] = fb_my_team_splatzone;
+  } else {
+    colors['my_team_inklings'] = get_color(
+      data.my_team_color, '0.5', fb_my_team_inklings);
+    colors['my_team_splatzone'] = get_color(
+      data.my_team_color, '1.0', fb_my_team_splatzone);
+  }
+  if (data.counter_team_color == undefined) {
+    // Deep Orange 200 of https://material.google.com/style/color.html
+    colors['counter_team_inklings'] = fb_counter_team_inklings;
+    colors['counter_team_splatzone'] = fb_counter_team_splatzone;
+  } else {
+    colors['counter_team_inklings'] = get_color(
+      data.counter_team_color, '0.5', fb_counter_team_inklings);
+    colors['counter_team_splatzone'] = get_color(
+      data.counter_team_color, '1.0', fb_counter_team_splatzone);
+  }
+  return colors;
+}
+
 function draw_meter(context, data) {
   var events = data.events;
   var current_sec = parseInt(data.offset_msec / 1000);
@@ -129,13 +170,15 @@ function draw_meter(context, data) {
   context.lineTo(current_sec * y_scale, height);
   context.stroke();
 
+  var colors = get_colors(data);
+
   // Inklings alive states
   inklings_strokes = get_stroke_inklings(events.inklings, current_sec);
   context.lineWidth = 10;
-  context.strokeStyle = "#80CBC4";
+  context.strokeStyle = colors['my_team_inklings'];
   for (var i = 0; i < inklings_strokes.length; i++) {
     if (i == 4) {
-      context.strokeStyle = "#FFAB91";
+      context.strokeStyle = colors['counter_team_inklings'];
     }
     var stroke = inklings_strokes[i];
     for (var j = 0; j < stroke.length; j++) {
@@ -155,7 +198,7 @@ function draw_meter(context, data) {
 
   var rule = data.rule;
   if (rule == 'yagura' || rule == 'hoko') {
-    context.strokeStyle = "#303F9F";
+    context.strokeStyle = "#455A64";
     var stroke = get_stroke_objective(events.objective, current_sec);
     if (stroke.length > 0) {
       context.beginPath();
@@ -169,7 +212,8 @@ function draw_meter(context, data) {
   } else if (rule == 'area') {
     var stroke = get_stroke_splatzone(events.splatzone, current_sec);
     for (var i = 1; i <= 2; i++) {
-      context.strokeStyle = (i == 1) ? "#00695C" : "#D84315";
+      var color_key = (i == 1) ? "my_team_splatzone" : "counter_team_splatzone";
+      context.strokeStyle = colors[color_key];
       if (stroke.length > 0) {
         context.beginPath();
         context.moveTo(0, height);

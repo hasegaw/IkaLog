@@ -190,6 +190,43 @@ class InklingsTracker(StatefulScene):
         #   [ True, True, True, False ] ... 3 inklings are active.
         return team
 
+    def _detect_team_color(self, pixels):
+        criteria = \
+            (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+
+        pixels = np.array(pixels.reshape((-1, 3)), dtype=np.float32)
+
+        ret, label, center = cv2.kmeans(
+            pixels, 2, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+
+        # one is black, another is the team color.
+
+        colors = np.array(center, dtype=np.uint8).reshape((1, 2, 3))
+        colors_hsv = cv2.cvtColor(colors, cv2.COLOR_BGR2HSV)
+        x = np.argmax(colors_hsv[:, :, 2])
+        team_color_bgr = colors[0, x, :]
+        team_color_hsv = colors_hsv[0, x, :]
+
+        return {
+            'rgb': cv2.cvtColor(colors, cv2.COLOR_BGR2RGB).tolist()[0][x],
+            'hsv': cv2.cvtColor(colors, cv2.COLOR_BGR2HSV).tolist()[0][x],
+        }
+
+    def _detect_team_colors(self, context):
+        vs_xpos = self._get_vs_xpos(context)
+        if vs_xpos is None:
+            return False
+
+        img_body_my_team = context['engine']['frame'] \
+            [24 + 30: 24 + 34, self.meter_x1: self.meter_x1 + vs_xpos - 30, :]
+        img_body_counter_team = context['engine']['frame'] \
+            [24 + 30: 24 + 34, self.meter_x1 + vs_xpos + 30: self.meter_x2, :]
+
+        context['game']['my_team_color'] = \
+            self._detect_team_color(img_body_my_team)
+        context['game']['counter_team_color'] = \
+            self._detect_team_color(img_body_counter_team)
+
     def _list2bitmap(self, list1, list2):
         l = list1.copy()
         l.extend(list2)
@@ -334,9 +371,14 @@ class InklingsTracker(StatefulScene):
         for i in range(len(counter_team)):
             counter_team[i] = {True: False, False: None}[counter_team[i]]
 
+        vs_xpos = self._get_vs_xpos(context)
+        if vs_xpos is None:
+            return False
+
         self.my_team = my_team
         self.counter_team = counter_team
         self._last_bitmap = None
+        self._detect_team_colors(context)
 
         context['game']['inkling_state_at_start'] = [my_team, counter_team]
         self._switch_state(self._state_in_the_battle)
