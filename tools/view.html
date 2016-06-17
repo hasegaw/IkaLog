@@ -2,8 +2,8 @@
 <head>
 <style>
 #graph {
-  width: 640;
-  height: 360;
+  width: 960;
+  height: 540;
   position: absolute;
   bottom: 5px;
   right: 5px;
@@ -18,6 +18,20 @@
 <canvas id="graph" width="800" height="440"></canvas>
 <canvas id="meter" class="hidden" width="720" height="402"></canvas>
 <script>
+
+function drawText(context, string, x, y) {
+  var prev_line_width = context.lineWidth;
+  var prev_stroke_style = context.strokeStyle;
+
+  context.lineWidth = 2;
+  context.strokeStyle = 'white';
+  context.strokeText(string, x, y);
+  context.strokeStyle = 'black';
+  context.fillText(string, x, y);
+  context.lineWidth = prev_line_width;
+  context.strokeStyle = prev_stroke_style;
+}
+
 function draw(data) {
   if (data == undefined) {
     return;
@@ -61,29 +75,30 @@ function draw(data) {
   context_graph.textAlign = 'left';
   context_graph.textBaseline = 'top';
   var bottom = height + margin_top + 2;
-  context_graph.fillText('0:00', margin_left, bottom);
-  context_graph.fillText('1:00', margin_left + width / 6, bottom);
-  context_graph.fillText('2:00', margin_left + width / 6 * 2, bottom);
-  context_graph.fillText('3:00', margin_left + width / 6 * 3, bottom);
-  context_graph.fillText('4:00', margin_left + width / 6 * 4, bottom);
-  context_graph.fillText('5:00', margin_left + width / 6 * 5, bottom);
+
+  drawText(context_graph, '0:00', margin_left, bottom);
+  drawText(context_graph, '1:00', margin_left + width / 6, bottom);
+  drawText(context_graph, '2:00', margin_left + width / 6 * 2, bottom);
+  drawText(context_graph, '3:00', margin_left + width / 6 * 3, bottom);
+  drawText(context_graph, '4:00', margin_left + width / 6 * 4, bottom);
+  drawText(context_graph, '5:00', margin_left + width / 6 * 5, bottom);
 
   context_graph.textAlign = 'right';
   context_graph.textBaseline = 'middle';
   var left = margin_left - 2;
   var rule = data.rule;
   if (rule == 'yagura' || rule == 'hoko') {
-    context_graph.fillText('100', left, margin_top)
-    context_graph.fillText('50',  left, margin_top + height / 4);
-    context_graph.fillText('0',   left, margin_top + height / 4 * 2);
-    context_graph.fillText('50',  left, margin_top + height / 4 * 3);
-    context_graph.fillText('100', left, margin_top + height / 4 * 4);
+    drawText(context_graph, '100', left, margin_top)
+    drawText(context_graph, '50',  left, margin_top + height / 4);
+    drawText(context_graph, '0',   left, margin_top + height / 4 * 2);
+    drawText(context_graph, '50',  left, margin_top + height / 4 * 3);
+    drawText(context_graph, '100', left, margin_top + height / 4 * 4);
   } else if (rule == 'area') {
-    context_graph.fillText('100', left, margin_top)
-    context_graph.fillText('75',  left, margin_top + height / 4);
-    context_graph.fillText('50',  left, margin_top + height / 4 * 2);
-    context_graph.fillText('25',  left, margin_top + height / 4 * 3);
-    context_graph.fillText('0',   left, margin_top + height / 4 * 4);
+    drawText(context_graph, '100', left, margin_top)
+    drawText(context_graph, '75',  left, margin_top + height / 4);
+    drawText(context_graph, '50',  left, margin_top + height / 4 * 2);
+    drawText(context_graph, '25',  left, margin_top + height / 4 * 3);
+    drawText(context_graph, '0',   left, margin_top + height / 4 * 4);
   }
   context_graph.textAlign = prev_text_align;
   context_graph.textBaseline = prev_text_baseline;
@@ -178,18 +193,26 @@ function draw_meter(context, data) {
 
   // Inklings alive states
   inklings_strokes = get_stroke_inklings(events.inklings, current_sec);
-  context.lineWidth = 10;
-  context.strokeStyle = colors['my_team_inklings'];
+  var stroke_style = colors['my_team_inklings'];
   for (var i = 0; i < inklings_strokes.length; i++) {
     if (i == 4) {
-      context.strokeStyle = colors['counter_team_inklings'];
+      stroke_style = colors['counter_team_inklings'];
     }
     var stroke = inklings_strokes[i];
     for (var j = 0; j < stroke.length; j++) {
       if (stroke[j][0] == stroke[j][1]) {
         continue;
       }
-      var y = 10 * i + 5;
+      var y = 10 * i + 120;
+      context.lineWidth = 12;
+      context.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+      context.beginPath();
+      context.moveTo(stroke[j][0] * x_scale, y * y_scale);
+      context.lineTo(stroke[j][1] * x_scale, y * y_scale);
+      context.stroke();
+
+      context.lineWidth = 10;
+      context.strokeStyle = stroke_style;
       context.beginPath();
       context.moveTo(stroke[j][0] * x_scale, y * y_scale);
       context.lineTo(stroke[j][1] * x_scale, y * y_scale);
@@ -202,9 +225,20 @@ function draw_meter(context, data) {
 
   var rule = data.rule;
   if (rule == 'yagura' || rule == 'hoko') {
-    context.strokeStyle = "#455A64";
     var stroke = get_stroke_objective(events.objective, current_sec);
     if (stroke.length > 0) {
+      context.lineWidth = 7;
+      context.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+      context.beginPath();
+      context.moveTo(0, mid_height);
+      for (var i = 0; i < stroke.length; i++) {
+        context.lineTo(stroke[i][0] * x_scale,
+                       mid_height - stroke[i][1] * y_scale);
+      }
+      context.stroke();
+
+      context.lineWidth = 5;
+      context.strokeStyle = "#455A64";
       context.beginPath();
       context.moveTo(0, mid_height);
       for (var i = 0; i < stroke.length; i++) {
@@ -217,8 +251,19 @@ function draw_meter(context, data) {
     var stroke = get_stroke_splatzone(events.splatzone, current_sec);
     for (var i = 1; i <= 2; i++) {
       var color_key = (i == 1) ? "my_team_splatzone" : "counter_team_splatzone";
-      context.strokeStyle = colors[color_key];
       if (stroke.length > 0) {
+        context.lineWidth = 7;
+        context.strokeStyle = 'rgba(0, 0, 0, 0.9)';
+        context.beginPath();
+        context.moveTo(0, height);
+        for (var j = 0; j < stroke.length; j++) {
+          context.lineTo(stroke[j][0] * x_scale,
+                         stroke[j][i] * 2 * y_scale);
+        }
+        context.stroke();
+
+        context.lineWidth = 5;
+        context.strokeStyle = colors[color_key];
         context.beginPath();
         context.moveTo(0, height);
         for (var j = 0; j < stroke.length; j++) {
