@@ -423,6 +423,7 @@ class IkaEngine:
             scenes.ResultGears(self),
             scenes.ResultFesta(self),
 
+            scenes.GearSelect(self),
             scenes.Lobby(self),
             # scenes.Downie(self),
 
