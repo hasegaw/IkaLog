@@ -2,19 +2,17 @@
 <head>
 <style>
 #graph {
-  width: 100%;
-  height: 100%;
+  width: 95%;
+  height: 95%;
 }
 .hidden {
-  visibility: hidden;
+  display: none;
 }
 </style>
 </head>
 <body>
-
-<canvas id="graph" width="800" height="440"></canvas>
+  <canvas id="graph" width="800" height="440"></canvas>
 <canvas id="meter" class="hidden" width="720" height="402"></canvas>
-
 <script>
 function draw(data) {
   if (data == undefined) {
@@ -43,12 +41,43 @@ function draw(data) {
     return;
   }
   var context_graph = canvas_graph.getContext('2d');
-  var width = canvas_graph.width - 40;
-  var height = canvas_graph.height - 19;
-  context_graph.clearRect(20, 10, width, height);
+
+  var margin_left = 30;
+  var margin_right = 10;
+  var margin_top = 20;
+  var margin_bottom = 20;
+  var width = canvas_graph.width - (margin_left + margin_right);
+  var height = canvas_graph.height - (margin_top + margin_bottom);
+
+  context_graph.clearRect(0, 0, canvas_graph.width, canvas_graph.height);
+  context_graph.stroke();
+
+  var prev_text_align = context_graph.textAlign;
+  var prev_text_baseline = context_graph.textBaseline;
+  context_graph.textAlign = 'left';
+  context_graph.textBaseline = 'top';
+  var bottom = height + margin_top + 2;
+  context_graph.fillText('0:00', margin_left, bottom);
+  context_graph.fillText('1:00', margin_left + width / 6, bottom);
+  context_graph.fillText('2:00', margin_left + width / 6 * 2, bottom);
+  context_graph.fillText('3:00', margin_left + width / 6 * 3, bottom);
+  context_graph.fillText('4:00', margin_left + width / 6 * 4, bottom);
+  context_graph.fillText('5:00', margin_left + width / 6 * 5, bottom);
+
+  context_graph.textAlign = 'right';
+  context_graph.textBaseline = 'middle';
+  var left = margin_left - 2;
+  context_graph.fillText('100', left, margin_top)
+  context_graph.fillText('50',  left, margin_top + height / 4);
+  context_graph.fillText('0',   left, margin_top + height / 4 * 2);
+  context_graph.fillText('50',  left, margin_top + height / 4 * 3);
+  context_graph.fillText('100', left, margin_top + height / 4 * 4);
+  context_graph.textAlign = prev_text_align;
+  context_graph.textBaseline = prev_text_baseline;
+
   context_graph.drawImage(canvas_meter,
     0, 0, canvas_meter.width, canvas_meter.height,
-    20, 10, width, height);
+    margin_left, margin_top, width, height);
 }
 
 function draw_meter(context, data) {
