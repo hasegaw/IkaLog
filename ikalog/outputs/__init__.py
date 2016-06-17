@@ -32,6 +32,7 @@ from .preview_detected import PreviewDetected
 from .screenshot import Screenshot
 from .slack import Slack
 from .statink import StatInk
+from .switcher import Switcher
 from .twitter import Twitter
 from .videorecorder import OBS
 from .weapon_training import WeaponTraining
