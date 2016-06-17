@@ -216,6 +216,10 @@ def _init_outputs(opts):
         args = _replace_vars(output_args['PreviewDetected'], vars)
         OutputPlugins.append(outputs.PreviewDetected(**args))
 
+    if 'Switcher' in output_plugins:
+        args = _replace_vars(output_args['Switcher'], vars)
+        OutputPlugins.append(outputs.Switcher(**args))
+
     return OutputPlugins
 
 
