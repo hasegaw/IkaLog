@@ -40,7 +40,15 @@ class APIServer(object):
         request_handler.end_headers()
         with open(IkaUtils.get_path('tools', 'view.html')) as f:
             data = f.read()
-            print(data)
+            request_handler.wfile.write(bytearray(data, 'utf-8'))
+
+    def _graph_game(self, request_handler, payload):
+        request_handler.send_response(200)
+        request_handler.send_header(
+            'Content-type', 'text/html; charset=UTF-8')
+        request_handler.end_headers()
+        with open(IkaUtils.get_path('tools', 'graph.html')) as f:
+            data = f.read()
             request_handler.wfile.write(bytearray(data, 'utf-8'))
 
     def _engine_context_game(self, request_handler, payload):
@@ -62,6 +70,7 @@ class APIServer(object):
     def process_request(self, request_handler, path, payload):
         handler = {
             '/view': self._view_game,
+            '/graph': self._graph_game,
             '/api/v1/engine/context/game': self._engine_context_game,
             '/api/v1/engine/preview': self._engine_preview,
             '/api/v1/engine/stop': self._engine_stop,
