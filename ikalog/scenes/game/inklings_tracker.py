@@ -203,12 +203,17 @@ class InklingsTracker(StatefulScene):
 
         colors = np.array(center, dtype=np.uint8).reshape((1, 2, 3))
         colors_hsv = cv2.cvtColor(colors, cv2.COLOR_BGR2HSV)
+        colors_hsv2 = cv2.cvtColor(colors, cv2.COLOR_BGR2HSV)
+        colors_hsv2[:, :, 1] = colors_hsv2[:, :, 1] * 1.5
+        colors_hsv2[:, :, 1] = colors_hsv2[:, :, 2] * 1.5
+        colors_rgb2 = cv2.cvtColor(colors_hsv2, cv2.COLOR_HSV2RGB)
         x = np.argmax(colors_hsv[:, :, 2])
         team_color_bgr = colors[0, x, :]
         team_color_hsv = colors_hsv[0, x, :]
 
         return {
             'rgb': cv2.cvtColor(colors, cv2.COLOR_BGR2RGB).tolist()[0][x],
+            'rgb2': colors_rgb2.tolist()[0][x],
             'hsv': cv2.cvtColor(colors, cv2.COLOR_BGR2HSV).tolist()[0][x],
         }
 

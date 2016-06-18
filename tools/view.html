@@ -112,7 +112,7 @@ function get_color(color, alpha, fallback) {
   if (color == undefined || color.rgb == undefined) {
     return fallback;
   }
-  var rgb = color.rgb;
+  var rgb = color.rgb2;
   var color = 'rgba(' + rgb.join(', ') + ', ' + alpha + ')';
   return color;
 }
