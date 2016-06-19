@@ -4,7 +4,7 @@
 #  IkaLog
 #  ======
 #  Copyright (C) 2015 Takeshi HASEGAWA
-#  Copyright (C) 2015 Hiromochi Itoh
+#  Copyright (C) 2015 Hiromichi Itoh
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
