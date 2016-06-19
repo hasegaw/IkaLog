@@ -310,7 +310,7 @@ function get_stroke_inklings(events, current_sec) {
 }
 
 function get_context() {
-  var url = "http://localhost:8888/api/v1/engine/context/game";
+  var url = "/api/v1/engine/context/game";
   var xhr = new XMLHttpRequest();
   xhr.open("GET", url, true);
   xhr.addEventListener("load", function(ev) {
