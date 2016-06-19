@@ -28,6 +28,7 @@ _SVM_2_ZEROONE = {-1: 0, 1: 1}
 
 
 def normalize_player_name(img_name, debug=False):
+    img_name_w_norm = np.zeros((15, 250), dtype=np.uint8)
     img_name_w = matcher.MM_WHITE(sat=(0, 96), visibility=(48, 255))(img_name)
 
     img_name_x_hist = np.extract(
@@ -42,7 +43,7 @@ def normalize_player_name(img_name, debug=False):
 
     if (len(img_name_x_hist) == 0) or (len(img_name_y_hist) == 0):
         # In some cases, we can't find any pixels.
-        return None
+        return img_name_w_norm
 
     img_name_left = np.min(img_name_x_hist)
     img_name_right = np.max(img_name_x_hist)
@@ -57,7 +58,6 @@ def normalize_player_name(img_name, debug=False):
     img_name_w = img_name_w[
         img_name_top:img_name_bottom, img_name_left:img_name_right]
 
-    img_name_w_norm = np.zeros((15, 250), dtype=np.uint8)
     img_name_w_norm[:, 0: img_name_w.shape[1]] = cv2.resize(
         img_name_w, (img_name_w.shape[1], 15))
 
@@ -75,6 +75,9 @@ def train_svm_classifiers(img_name_list, debug=False):
 
     The images will be training with OpenCV Support Vector Machine functions.
     Returns list of SVM objects.
+
+    The array would have "None" for the entry that SVM was not properly
+    trained.
     """
     assert isinstance(img_name_list, list)
 
@@ -98,8 +101,59 @@ def train_svm_classifiers(img_name_list, debug=False):
         h.setType(cv2.ml.SVM_C_SVC)
 
         h.train(X, cv2.ml.ROW_SAMPLE, y)
+
+        # Test the model.
+        r, predicted = h.predict(X)
+        predicted_01 = None
+        if r == 0:
+            predicted_01 = map(lambda e: _SVM_2_ZEROONE[int(e)], predicted)
+            predicted_01 = list(predicted_01)
+            ok = (np.sum(predicted_01) == 1) and \
+                (np.argmax(y) == np.argmax(predicted_01))
+
+            if not ok:
+                h = None
+
+        else:
+            # SVM Classification failed.
+            h = None
+
         H.append(h)
+
+    print(H)
+    import time
+    time.sleep(3)
     return H
+
+
+def predict(self, H_list, img_name):
+    """
+    Predict the specified image.
+
+    Returns index number, or None if it is not certain.
+    """
+
+    features = np.array(img_name, dtype=np.float32).reshape((1, -1))
+
+    matched = 0
+    index = None
+
+    for h in H_list:
+        # Skip invalid hypothesises.
+        if h is None:
+            continue
+
+        r, predicted = h.predict(features)
+        if predicted[0] > 0:
+            matched = matched + 1
+            index = H_list.index(h)
+
+    # If there are more than two or no matches, return None.
+    if matched != 1:
+        return None
+
+    # If there is the exact match, return the index.
+    return index
 
 
 class PlayerNameClassifier(object):
@@ -113,14 +167,5 @@ class PlayerNameClassifier(object):
 
         Returns index number, or None if it is not certain.
         """
-        features = np.array(img_name, dtype=np.float32).reshape((1, -1))
 
-        r = list(map(lambda h: np.array(
-            h.predict(features)).reshape((-1)), self._models))
-        y2 = np.array(list(map(lambda e: _SVM_2_ZEROONE[e[1]], r)))
-
-        if np.sum(y2) == 1:  # Positive with one classifier
-            return np.argmax(y2)
-
-        # Otherwise... more than two, or no any are positive.
-        return None
+        return predict(self, self._models, img_name)
