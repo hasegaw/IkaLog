@@ -71,10 +71,6 @@ class GStreamer(VideoInput):
         return self.is_active()
 
     # override
-    def _next_frame_func(self):
-        pass
-
-    # override
     def _get_current_timestamp_func(self):
         video_msec = self.video_capture.get(cv2.CAP_PROP_POS_MSEC)
 
