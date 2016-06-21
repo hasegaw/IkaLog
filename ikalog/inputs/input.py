@@ -87,12 +87,6 @@ class VideoInput(object):
         raise
 
     ##
-    # _next_frame_func()
-    # @param self    the object
-    def _next_frame_func(self):
-        pass
-
-    ##
     # _read_frame_func()
     # @param self    the object
     # @return        the current frame of the input source.
@@ -178,22 +172,23 @@ class VideoInput(object):
     #
     # @return Image if capture succeeded. Otherwise None.
     def read_frame(self):
-        self.lock.acquire()
-        if not self.is_active():
-            self.lock.release()
-            return None
-
-        next_tick = None
-
         try:
-            if self.cap_recorded_video:
-                self._skip_frame_recorded()
-            else:
-                next_tick = self._skip_frame_realtime()
+            self.lock.acquire()
+            if not self.is_active():
+                return None
 
-            self._next_frame_func()
-
+            next_tick = None
             img = self._read_frame_func()
+
+            # Skip some frames for performance.
+            try:
+                if self.cap_recorded_video:
+                    self._skip_frame_recorded()
+                else:
+                    next_tick = self._skip_frame_realtime()
+            except EOFError:
+                pass  # EOFError should be captured by the next cycle.
+
         finally:
             self.lock.release()
 
