@@ -355,7 +355,7 @@ class IkaEngine:
                 if self.capture.on_eof():
                     self.reset_capture()
                 else:
-                    self._stop = True
+                    self.stop()
 
     def run(self):
         try:
