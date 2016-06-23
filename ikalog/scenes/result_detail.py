@@ -349,10 +349,11 @@ class ResultDetail(StatefulScene):
 
         IkaUtils.dprint('%s: weapons recoginition done.' % self)
 
-        self._detect_names_per_my_kill(context)
+        if 0:
+            self._detect_names_per_my_kill(context)
 
-        self._analyze_kills_per_weapon(context)
-        self._analyze_kills_per_player(context)
+            self._analyze_kills_per_weapon(context)
+            self._analyze_kills_per_player(context)
 
         self._call_plugins_later('on_result_detail')
         self._call_plugins_later('on_game_individual_result')
