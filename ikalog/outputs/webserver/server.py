@@ -61,6 +61,18 @@ class APIServer(object):
                        default=_get_type_name),
             'utf-8'))
 
+    def _engine_source(self, request_handler, payload):
+        engine = request_handler.server.ikalog_context['engine']['engine']
+        file_path = payload.get('file_path')
+        if (not file_path) or (not engine.put_source_file(file_path)):
+            file_path = 'error'
+
+        request_handler.send_response(200)
+        request_handler.send_header(
+            'Content-type', 'text/plain; charset=UTF-8')
+        request_handler.end_headers()
+        request_handler.wfile.write(bytearray(file_path, 'utf-8'))
+
     def _engine_preview(self, request_handler, payload):
         handler = PreviewRequestHandler(request_handler)
 
@@ -72,6 +84,7 @@ class APIServer(object):
             '/view': self._view_game,
             '/graph': self._graph_game,
             '/api/v1/engine/context/game': self._engine_context_game,
+            '/api/v1/engine/source': self._engine_source,
             '/api/v1/engine/preview': self._engine_preview,
             '/api/v1/engine/stop': self._engine_stop,
         }.get(path, None)

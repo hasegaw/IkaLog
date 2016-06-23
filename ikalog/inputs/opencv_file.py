@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 import os
+import queue
 import time
 import threading
 
@@ -57,20 +58,32 @@ class CVFile(VideoInput):
     # override
     def _select_device_by_name_func(self, source):
         if isinstance(source, str):
-            self._source_files = [source]
+            self._file_queue.put(source)
         elif isinstance(source, list):
-            self._source_files = source
+            for item in source:
+                self._file_queue.put(item)
         else:
             return False
 
         return self._init_with_sources()
 
     # override
+    def put_source_file(self, file_path):
+        self._file_queue.put(file_path)
+        return True
+
+    # override
     def on_eof(self):
         return self._init_with_sources()
 
     def _init_with_sources(self):
-        if not self._source_files:
+        while self._file_queue.empty():
+            if not self._keep_alive:
+                return False
+            time.sleep(1.0)
+
+        self._source_file = self._file_queue.get()
+        if self._source_file is None:
             return False
 
         self.lock.acquire()
@@ -81,7 +94,6 @@ class CVFile(VideoInput):
             self.reset()
 
             # FIXME: Does it work with non-ascii path?
-            self._source_file = self._source_files.pop(0)
             self.video_capture = cv2.VideoCapture(self._source_file)
             if self.video_capture.isOpened():
                 self._epoch_time = self.get_start_time()
@@ -159,12 +171,14 @@ class CVFile(VideoInput):
     def set_use_file_timestamp(self, use_file_timestamp=True):
         self._use_file_timestamp = use_file_timestamp
 
-    def __init__(self):
+    def __init__(self, keep_alive=False):
         self.video_capture = None
         self._source_file = None
-        self._source_files = []
+        self._file_queue = queue.Queue()
         self._epoch_time = None
         self._use_file_timestamp = True
+        # Whether exit or not when self._file_queue is empty.
+        self._keep_alive = keep_alive
         super(CVFile, self).__init__()
 
     # backward compatibility

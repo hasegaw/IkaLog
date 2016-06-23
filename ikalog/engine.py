@@ -161,6 +161,7 @@ class IkaEngine:
     def stop(self):
         if not self._stop:
             self.call_plugins('on_stop')
+            self.put_source_file(None)
         self._stop = True
 
     def is_stopped(self):
@@ -334,6 +335,9 @@ class IkaEngine:
         while len(self._event_queue) > 0:
             event = self._event_queue.pop(0)
             self.call_plugins(event_name=event[0], params=event[1], context=event[2])
+
+    def put_source_file(self, file_path):
+        return self.capture.put_source_file(file_path)
 
     def _main_loop(self):
         while not self._stop:
