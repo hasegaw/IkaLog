@@ -259,6 +259,11 @@ class VideoInput(object):
     def get_source_file(self):
         return None
 
+    # Puts file_path to be processed and returns True,
+    # otherwise returns False if the instance does not support this method.
+    def put_source_file(self, file_path):
+        return False
+
     # Callback on EOFError. Returns True if a next data source is available.
     def on_eof(self):
         return False

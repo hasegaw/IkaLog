@@ -65,6 +65,13 @@ class VideoCapture(object):
             return None
         return self.capture.get_source_file()
 
+    # Puts file_path to be processed and returns True,
+    # otherwise returns False if the instance does not support this method.
+    def put_source_file(self, file_path):
+        if self.capture is None:
+            return False
+        return self.capture.put_source_file(file_path)
+
     # Callback on EOFError. Returns True if a next data source is available.
     def on_eof(self):
         if self.capture is None:
