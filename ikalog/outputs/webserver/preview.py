@@ -41,7 +41,7 @@ class PreviewRequestHandler(object):
         self._plugin._listeners.append(self)
 
         while not self._stopped:
-            time.sleep(0.1)
+            time.sleep(0.05)
 
             if (self._frame is None):
                 continue
