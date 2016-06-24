@@ -1,6 +1,9 @@
 <html>
 <head>
 <style>
+#source {
+  width: 30em;
+}
 #graph {
   width: 960;
   height: 540;
@@ -14,10 +17,34 @@
 </style>
 </head>
 <body>
+File: <input id="source" type="text" value="/Users/komatsu/github/IkaLog_dev/test_data/normal.ts" />
+<input id="go" type="button" value="Go" />
+
 <iframe src="api/v1/engine/preview" width="1280" height="720"></iframe>
 <canvas id="graph" width="800" height="440"></canvas>
 <canvas id="meter" class="hidden" width="720" height="402"></canvas>
 <script>
+
+function sendSource() {
+  var source = document.getElementById("source");
+  var request = '{"file_path": "' + source.value + '"}';
+
+  var url = "/api/v1/engine/source";
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", url, true);
+  xhr.addEventListener("load", function(ev) {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      console.log(xhr.responseText);
+    }
+  });
+  xhr.addEventListener("error", function(ev) {
+    // Do something.
+  });
+  xhr.send(request);
+}
+
+var go_button = document.getElementById("go");
+go_button.addEventListener("click", sendSource);
 
 function drawText(context, string, x, y) {
   var prev_line_width = context.lineWidth;

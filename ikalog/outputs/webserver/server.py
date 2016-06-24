@@ -165,6 +165,7 @@ class RESTAPIServer(object):
         self._bind_addr = bind_addr
         self._port = port
         self._listeners = []
+        self._httpd = None
 
         self._worker_thread = None
 
@@ -189,15 +190,20 @@ class RESTAPIServer(object):
     def _worker_func(self, self2, context):
         IkaUtils.dprint('%s: serving at %s:%s' %
                         (self, self._bind_addr, self._port))
-        httpd = ThreadedHTTPServer(
+        self._httpd = ThreadedHTTPServer(
             (self._bind_addr, self._port), HTTPRequestHandler)
-        httpd.ikalog_context = context
-        httpd.parent = self
-        httpd.serve_forever()
+        self._httpd.ikalog_context = context
+        self._httpd.parent = self
+        self._httpd.serve_forever()
         IkaUtils.dprint('%s: finished serving' % self)
 
     def on_enable(self, context):
         self.initialize_server(context)
+
+    def on_game_reset(self, context):
+        # Update ikalog_context with the new context.
+        if self._httpd:
+            self._httpd.ikalog_context = context
 
     def on_uncaught_event(self, event_name, context, params=None):
         for listener in self._listeners:
