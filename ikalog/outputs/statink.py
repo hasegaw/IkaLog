@@ -694,6 +694,9 @@ class StatInk(object):
         self.last_dead_event = None
         self._called_close_game_session = False
 
+    def on_reset_capture(self, context):
+        self._open_game_session(context)
+
     def on_game_go_sign(self, context):
         self._open_game_session(context)
 
