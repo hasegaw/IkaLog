@@ -278,9 +278,6 @@ class VideoInput(object):
     # @param fps      frames per second to be read
     # @param realtime Realtime mode if True.
     def set_frame_rate(self, fps=None, realtime=False):
-        if not self.is_active():
-            return
-
         self.fps_requested = fps
         self.frame_skip_rt = realtime
 

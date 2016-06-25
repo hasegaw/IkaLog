@@ -70,6 +70,8 @@ class CVFile(VideoInput):
     # override
     def put_source_file(self, file_path):
         self._file_queue.put(file_path)
+        if not self.video_capture:
+            self._init_with_sources()
         return True
 
     # override
@@ -162,7 +164,8 @@ class CVFile(VideoInput):
     # override
     def set_pos_msec(self, pos_msec):
         """Moves the video position to |pos_msec| in msec."""
-        self.video_capture.set(cv2.CAP_PROP_POS_MSEC, pos_msec)
+        if self.video_capture:
+            self.video_capture.set(cv2.CAP_PROP_POS_MSEC, pos_msec)
 
     # override
     def get_source_file(self):
