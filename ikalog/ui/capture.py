@@ -44,6 +44,11 @@ class VideoCapture(object):
         r = self.capture.read_frame()
         return r
 
+    def is_active(self):
+        if self.capture is None:
+            return False
+        return self.capture.is_active()
+
     def get_current_timestamp(self):
         if self.capture is None:
             return None

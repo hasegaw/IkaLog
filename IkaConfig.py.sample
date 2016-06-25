@@ -67,8 +67,6 @@ INPUT_ARGS['CVFile'] = {
     'frame_rate': 10,
     # Use input file's timestamp instead of the current time.
     'use_file_timestamp': True,
-    # Whether exit or not when all input files are processed.
-    'keep_alive' = False,
 }
 
 # GStreamer: Read from GStreamer
