@@ -57,6 +57,8 @@ def get_args():
     parser.add_argument('--time', '-t', dest='time', type=str)
     parser.add_argument('--time_msec', dest='time_msec', type=int)
     parser.add_argument('--video_id', dest='video_id', type=str)
+    parser.add_argument('--keep_alive', action='store_true', default=False,
+                        help='Do not exit on EOFError with no next inputs.')
     parser.add_argument('--debug', dest='debug', action='store_true',
                         default=False)
 
@@ -80,7 +82,8 @@ if __name__ == "__main__":
     capture, output_plugins = config_loader.config(args)
     capture.set_pos_msec(get_pos_msec(args))
 
-    engine = IkaEngine(enable_profile=args.get('profile'))
+    engine = IkaEngine(enable_profile=args.get('profile'),
+                       keep_alive=args.get('keep_alive'))
     engine.pause(False)
     engine.set_capture(capture)
 

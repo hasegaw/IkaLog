@@ -79,14 +79,11 @@ class CVFile(VideoInput):
         return self._init_with_sources()
 
     def _init_with_sources(self):
-        while self._file_queue.empty():
-            if not self._keep_alive:
-                return False
-            time.sleep(1.0)
+        if self._file_queue.empty():
+            self.video_capture = None
+            return False
 
         self._source_file = self._file_queue.get()
-        if self._source_file is None:
-            return False
 
         self.lock.acquire()
         try:
@@ -174,14 +171,12 @@ class CVFile(VideoInput):
     def set_use_file_timestamp(self, use_file_timestamp=True):
         self._use_file_timestamp = use_file_timestamp
 
-    def __init__(self, keep_alive=False):
+    def __init__(self):
         self.video_capture = None
         self._source_file = None
         self._file_queue = queue.Queue()
         self._epoch_time = None
         self._use_file_timestamp = True
-        # Whether exit or not when self._file_queue is empty.
-        self._keep_alive = keep_alive
         super(CVFile, self).__init__()
 
     # backward compatibility

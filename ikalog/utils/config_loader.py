@@ -71,7 +71,7 @@ def _init_source(opts):
     # OpenCV が FFMPEG に対応していること
     # 直接ファイルを指定するか、コマンドラインから --input_file で指定可能
     if input_type == 'CVFile':
-        source = inputs.CVFile(keep_alive=input_args.get('keep_alive'))
+        source = inputs.CVFile()
         source.select_source(name=(opts.get('input_file') or
                                    input_args.get('source')))
         source.set_frame_rate(input_args.get('frame_rate'))

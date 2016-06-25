@@ -161,7 +161,6 @@ class IkaEngine:
     def stop(self):
         if not self._stop:
             self.call_plugins('on_stop')
-            self.put_source_file(None)
         self._stop = True
 
     def is_stopped(self):
@@ -340,10 +339,23 @@ class IkaEngine:
         return self.capture.put_source_file(file_path)
 
     def _main_loop(self):
+        need_reset_capture = False
         while not self._stop:
             if self._pause:
                 time.sleep(0.5)
                 continue
+
+            if not self.capture.is_active():
+                need_reset_capture = True
+                if self._keep_alive:
+                    time.sleep(0.5)
+                else:
+                    self.stop()
+                continue
+
+            if need_reset_capture:
+                self.reset_capture()
+                need_reset_capture = False
 
             try:
                 self.process_frame()
@@ -358,6 +370,8 @@ class IkaEngine:
 
                 if self.capture.on_eof():
                     self.reset_capture()
+                elif self._keep_alive:
+                    continue
                 else:
                     self.stop()
 
@@ -437,7 +451,8 @@ class IkaEngine:
     def __del__(self):
         self.call_plugins('on_engine_destroy')
 
-    def __init__(self, enable_profile=False, abort_at_scene_exception=False):
+    def __init__(self, enable_profile=False, abort_at_scene_exception=False,
+                 keep_alive=False):
         self._initialize_scenes()
 
         self.output_plugins = [self]
@@ -450,5 +465,7 @@ class IkaEngine:
         self.close_session_at_eof = False
         self._enable_profile = enable_profile
         self._abort_at_scene_exception = abort_at_scene_exception
+        # Whether exit on EOFError with no next inputs.
+        self._keep_alive = keep_alive
 
         self.create_context()
