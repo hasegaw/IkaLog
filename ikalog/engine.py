@@ -386,6 +386,8 @@ class IkaEngine:
         for scene in self.scenes:
             scene.reset()
 
+        self.call_plugins('on_reset_capture')
+
     def set_plugins(self, plugins):
         self.output_plugins = [self]
         self.output_plugins.extend(self.scenes)

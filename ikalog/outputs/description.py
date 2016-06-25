@@ -63,6 +63,9 @@ class Description(object):
         self._description += (message + "\n")
         self._print(self._description)
 
+    def on_reset_capture(self, context):
+        self.reset()
+
     def on_game_reset(self, context):
         self.reset()
 
