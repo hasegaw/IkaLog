@@ -74,7 +74,6 @@ class CVCapture(VideoInput):
                     '%s: cv2.VideoCapture() failed to open the device' % self)
                 self.video_capture = None
 
-            self.systime_base = time.time()
         except:
             self.dprint(traceback.format_exc())
             self.video_capture = None
@@ -82,6 +81,7 @@ class CVCapture(VideoInput):
         finally:
             self.lock.release()
 
+        self.systime_base = time.time()
         return self.is_active()
 
     # override
