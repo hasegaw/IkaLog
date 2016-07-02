@@ -20,6 +20,7 @@
 
 import gettext
 from ikalog import inputs
+from ikalog.ui.events import *
 from ikalog.utils import *
 import wx
 
@@ -111,6 +112,11 @@ class VideoCapture(object):
 
         print('----------------')
         print(self.source, self.source_device)
+
+        if self.capture:
+            # Send a signal to exit the waiting loop.
+            self.capture.put_source_file(None)
+
         if self.source == 'dshow_capture':
             self.capture = inputs.DirectShow()
             self.capture.select_source(name=self.source_device)
@@ -131,12 +137,13 @@ class VideoCapture(object):
 
         elif self.source == 'file':
             self.capture = inputs.CVFile()
-            self.capture.select_source(name=self.File)
 
         # ToDo reset context['engine']['msec']
         success = (self.capture is not None)
         if success:
             self.capture.set_frame_rate(10)
+            evt = InputInitializedEvent(source=self.source)
+            wx.PostEvent(self.panel, evt)
 
         return success
 
@@ -156,7 +163,6 @@ class VideoCapture(object):
             self.listCameras.GetItems()[self.listCameras.GetSelection()]
 
         print('source_device = ', self.source_device)
-        self.File = self.editFile.GetValue()
         self.deinterlace = self.checkDeinterlace.GetValue()
 
         # この関数は GUI 動作時にしか呼ばれない。カメラが開けなかった
@@ -197,11 +203,6 @@ class VideoCapture(object):
         except:
             IkaUtils.dprint('Current configured device is not in list')
 
-        if not self.File is None:
-            self.editFile.SetValue('')
-        else:
-            self.editFile.SetValue(self.File)
-
         self.checkDeinterlace.SetValue(self.deinterlace)
 
     def on_config_reset(self, context=None):
@@ -231,9 +232,6 @@ class VideoCapture(object):
                 # FIXME
                 self.source_device = 0
 
-        if 'File' in conf:
-            self.File = conf['File']
-
         if 'Deinterlace' in conf:
             self.deinterlace = conf['Deinterlace']
 
@@ -243,7 +241,6 @@ class VideoCapture(object):
     def on_config_save_to_context(self, context):
         context['config']['cvcapture'] = {
             'Source': self.source,
-            'File': self.File,
             'SourceDevice': self.source_device,
             'Deinterlace': self.deinterlace,
         }
@@ -295,7 +292,6 @@ class VideoCapture(object):
 
         self.radioFile = wx.RadioButton(
             self.panel, wx.ID_ANY, _('Read from pre-recorded video file (for testing)'))
-        self.editFile = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
         self.listCameras = wx.ListBox(self.panel, wx.ID_ANY, choices=cameras)
         self.listCameras.SetSelection(0)
         self.buttonReloadDevices = wx.Button(
@@ -316,7 +312,6 @@ class VideoCapture(object):
         buttons_layout.Add(self.buttonEntireDesktop)
         self.layout.Add(buttons_layout)
         self.layout.Add(self.radioFile)
-        self.layout.Add(self.editFile, flag=wx.EXPAND)
         self.layout.Add(self.checkDeinterlace)
 
         if is_windows:
