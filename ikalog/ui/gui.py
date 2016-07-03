@@ -136,6 +136,11 @@ class IkaLogGUI(object):
         self.frame.Destroy()
 
     def on_input_file_added(self, event):
+        input_file = event.input_file
+        if input_file in self._file_list:
+            wx.MessageBox(_('Already added.'), _('Error'))
+            return
+        self._file_list.append(input_file)
         self.engine.put_source_file(event.input_file)
 
     def on_input_initialized(self, event):
@@ -283,6 +288,9 @@ class IkaLogGUI(object):
                           self.on_options_load_default_click)
 
         self.switch_to_panel(self.button_preview)
+
+        # Video files processed and to be processed.
+        self._file_list = []
 
         # Ready.
         self.frame.Show()
