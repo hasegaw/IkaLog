@@ -214,7 +214,7 @@ class Boyomi(Commentator):
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, _('Boyomi'))
+        self.panel_name = _('Boyomi')
         self.layout = wx.BoxSizer(wx.VERTICAL)
 
         self.check_enable = wx.CheckBox(

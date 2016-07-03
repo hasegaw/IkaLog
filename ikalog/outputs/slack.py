@@ -94,7 +94,7 @@ class Slack(object):
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, _('Slack'))
+        self.panel_name = _('Slack')
         self.layout = wx.BoxSizer(wx.VERTICAL)
 
         self.checkEnable = wx.CheckBox(

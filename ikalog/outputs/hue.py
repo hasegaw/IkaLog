@@ -92,7 +92,7 @@ class Hue(object):
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY, size=(640, 360))
-        self.page = notebook.InsertPage(0, self.panel, 'Hue')
+        self.panel_name = 'Hue'
         self.layout = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.layout)
         self.checkEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'Hue と連携')
