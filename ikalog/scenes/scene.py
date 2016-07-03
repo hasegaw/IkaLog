@@ -74,10 +74,11 @@ class Scene(object):
 
     def matched_in(self, context, duration_msec, attr='_last_matched_msec'):
         last_matched_msec = getattr(self, attr)
-        if last_matched_msec is None:
+        msec = context['engine']['msec']
+
+        if (last_matched_msec is None) or (msec is None):
             return False
 
-        msec = context['engine']['msec']
         return (msec - duration_msec) < last_matched_msec
 
     def _analyze(self, context):

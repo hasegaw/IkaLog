@@ -107,12 +107,12 @@ class CVFile(VideoInput):
 
     # override
     def _get_current_timestamp_func(self):
-        video_msec = self.video_capture.get(cv2.CAP_PROP_POS_MSEC)
-
-        if video_msec is None:
+        if self.video_capture is None:
             return self.get_tick()
 
-        return video_msec
+        video_msec = self.video_capture.get(cv2.CAP_PROP_POS_MSEC)
+        return video_msec or self.get_tick()
+
 
     # override
     def _read_frame_func(self):

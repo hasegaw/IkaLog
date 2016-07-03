@@ -266,6 +266,10 @@ class IkaEngine:
     def process_scene(self, scene):
         context = self.context
 
+        # If input, don't run the scene
+        if context['engine'].get('frame') is None:
+            return False
+
         try:
             scene.new_frame(context)
             scene.match(context)
