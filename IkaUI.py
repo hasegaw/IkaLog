@@ -57,7 +57,6 @@ def IkaUI_main():
     # 各パネルをプラグインしてイベントを受信する
     plugins.append(gui.preview)
     plugins.append(gui.last_result)
-    plugins.append(gui.timeline)
 
     # 設定画面を持つ input plugin もイベントを受信する
     plugins.append(input_plugin)

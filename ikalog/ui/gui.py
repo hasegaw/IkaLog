@@ -85,11 +85,10 @@ class IkaLogGUI(object):
     #
     def switch_to_panel(self, activeButton):
 
-        for button in [self.button_preview, self.button_last_result, self.button_timeline, self.button_options]:
+        for button in [self.button_preview, self.button_last_result, self.button_options]:
             panel = {
                 self.button_preview: self.preview,
                 self.button_last_result: self.last_result,
-                self.button_timeline: self.timeline,
                 self.button_options: self.options,
             }[button]
 
@@ -147,7 +146,6 @@ class IkaLogGUI(object):
         panel = self.frame
         self.button_enable = wx.Button(panel, wx.ID_ANY, _('Enable'))
         self.button_preview = wx.Button(panel, wx.ID_ANY, _('Preview'))
-        self.button_timeline = wx.Button(panel, wx.ID_ANY, _('Timeline'))
         self.button_last_result = wx.Button(panel, wx.ID_ANY, _('Last Result'))
         self.button_options = wx.Button(panel, wx.ID_ANY, _('Options'))
         self.button_debug_log = wx.Button(panel, wx.ID_ANY, _('Debug Log'))
@@ -155,14 +153,12 @@ class IkaLogGUI(object):
         self.buttons_layout = wx.BoxSizer(wx.HORIZONTAL)
         self.buttons_layout.Add(self.button_enable)
         self.buttons_layout.Add(self.button_preview)
-        self.buttons_layout.Add(self.button_timeline)
         self.buttons_layout.Add(self.button_last_result)
         self.buttons_layout.Add(self.button_options)
         self.buttons_layout.Add(self.button_debug_log)
 
         self.button_preview.Bind(wx.EVT_BUTTON, self.on_switch_panel)
         self.button_last_result.Bind(wx.EVT_BUTTON, self.on_switch_panel)
-        self.button_timeline.Bind(wx.EVT_BUTTON, self.on_switch_panel)
         self.button_options.Bind(wx.EVT_BUTTON, self.on_switch_panel)
 
     def engine_thread_func(self):
@@ -192,7 +188,6 @@ class IkaLogGUI(object):
         self.preview.Bind(EVT_INPUT_FILE_ADDED, self.on_input_file_added)
 
         self.last_result = LastResultPanel(self.frame, size=(640, 360))
-        self.timeline = TimelinePanel(self.frame, size=(640, 200))
         self.options = OptionsPanel(self.frame)
 
         self.capture.on_option_tab_create(self.options.notebookOptions)
@@ -202,7 +197,6 @@ class IkaLogGUI(object):
         self.layout.Add(self.last_result, flag=wx.EXPAND)
         self.layout.Add(self.preview, flag=wx.EXPAND)
         self.layout.Add(self.options, flag=wx.EXPAND)
-        self.layout.Add(self.timeline, flag=wx.EXPAND)
 
         self.frame.SetSizer(self.layout)
 

@@ -21,4 +21,3 @@
 from .last_result import LastResultPanel
 from .options import OptionsPanel
 from .preview import PreviewPanel
-from .timeline import TimelinePanel
