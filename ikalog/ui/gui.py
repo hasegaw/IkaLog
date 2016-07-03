@@ -154,14 +154,12 @@ class IkaLogGUI(object):
         self.button_preview = wx.Button(panel, wx.ID_ANY, _('Preview'))
         self.button_last_result = wx.Button(panel, wx.ID_ANY, _('Last Result'))
         self.button_options = wx.Button(panel, wx.ID_ANY, _('Options'))
-        self.button_debug_log = wx.Button(panel, wx.ID_ANY, _('Debug Log'))
 
         self.buttons_layout = wx.BoxSizer(wx.HORIZONTAL)
         self.buttons_layout.Add(self.button_enable)
         self.buttons_layout.Add(self.button_preview)
         self.buttons_layout.Add(self.button_last_result)
         self.buttons_layout.Add(self.button_options)
-        self.buttons_layout.Add(self.button_debug_log)
 
         self.button_preview.Bind(wx.EVT_BUTTON, self.on_switch_panel)
         self.button_last_result.Bind(wx.EVT_BUTTON, self.on_switch_panel)
