@@ -23,10 +23,11 @@ import os
 import threading
 
 import wx
+import wx.lib.scrolledpanel
 import yaml
 
+import ikalog.outputs
 from ikalog.engine import *
-from ikalog import outputs
 from ikalog.ui.events import *
 from ikalog.ui.panel import *
 from ikalog.ui import VideoCapture
@@ -175,6 +176,75 @@ class IkaLogGUI(object):
         self.engine_thread.daemon = True
         self.engine_thread.start()
 
+    def init_outputs(self, outputs):
+        output_dict = {}
+        for output in outputs:
+            output_dict[output.__class__] = output
+
+        # Keys for outputs in the main page.
+        keys = [
+            ikalog.outputs.OBS,
+            ikalog.outputs.StatInk,
+            ikalog.outputs.Twitter
+        ]
+        # Keys for outputs combined into the misc tab.
+        misc_keys = [
+            ikalog.outputs.CSV,
+            ikalog.outputs.JSON,
+            ikalog.outputs.Screenshot,
+            ikalog.outputs.Boyomi,
+            ikalog.outputs.Slack,
+            ikalog.outputs.WebSocketServer,
+            ikalog.outputs.DebugVideoWriter,
+        ]
+        for key in output_dict.keys():
+            if key in misc_keys:
+                continue
+            if key not in keys:
+                keys.append(key)
+
+        # Main tabs
+        index = 1
+        for key in keys:
+            output = output_dict.get(key)
+            if not output:
+                continue
+
+            output.on_option_tab_create(self.options.notebookOptions)
+            self.options.notebookOptions.InsertPage(
+                index, output.panel, output.panel_name)
+            index += 1
+
+        # Misc tab
+        self.misc_panel = wx.lib.scrolledpanel.ScrolledPanel(
+            self.options.notebookOptions, wx.ID_ANY, size=(640, 360))
+        self.misc_panel_sizer = wx.BoxSizer(wx.VERTICAL)
+        default_font = self.misc_panel.GetFont()
+        title_font = wx.Font(default_font.GetPointSize(),
+                             wx.FONTFAMILY_DEFAULT,
+                             wx.FONTSTYLE_NORMAL,
+                             wx.FONTWEIGHT_BOLD)
+
+        for key in misc_keys:
+            output = output_dict.get(key)
+            if not output:
+                continue
+
+            output.on_option_tab_create(self.misc_panel)
+            title = wx.StaticText(self.misc_panel, wx.ID_ANY, output.panel_name)
+            title.SetFont(title_font)
+            self.misc_panel_sizer.Add(title)
+            self.misc_panel_sizer.Add(
+                output.panel, flag=wx.EXPAND | wx.ALL, border=10)
+            self.misc_panel_sizer.Add((-1, 25))
+
+        self.misc_panel.SetSizer(self.misc_panel_sizer)
+        self.misc_panel.SetupScrolling()
+
+        self.options.notebookOptions.InsertPage(
+            index, self.misc_panel, _('Misc.'))
+
+
     def __init__(self, capture):
         self.capture = capture
         self.frame = wx.Frame(None, wx.ID_ANY, "IkaLog GUI", size=(700, 500))
@@ -191,6 +261,8 @@ class IkaLogGUI(object):
         self.options = OptionsPanel(self.frame)
 
         self.capture.on_option_tab_create(self.options.notebookOptions)
+        self.options.notebookOptions.InsertPage(
+            0, capture.panel, capture.panel_name)
         self.capture.panel.Bind(EVT_INPUT_INITIALIZED,
                                 self.on_input_initialized)
 

@@ -66,23 +66,22 @@ def IkaUI_main():
 
     # 設定画面を持つ各種 Output Plugin
     # -> 設定画面の生成とプラグインリストへの登録
-    for plugin in [
-            outputs.CSV(),
-            # outputs.Fluentd(),
-            outputs.JSON(),
-            # outputs.Hue(),
-            outputs.OBS(),
-            outputs.Twitter(),
-            outputs.Screenshot(),
-            outputs.Boyomi(),
-            outputs.Slack(),
-            outputs.StatInk(),
-            outputs.DebugVideoWriter(),
-            outputs.WebSocketServer(),
-    ]:
-        print('Initializing %s' % plugin)
-        plugin.on_option_tab_create(gui.options.notebookOptions)
-        plugins.append(plugin)
+    outputs_with_gui = [
+        outputs.CSV(),
+        # outputs.Fluentd(),
+        outputs.JSON(),
+        # outputs.Hue(),
+        outputs.OBS(),
+        outputs.Twitter(),
+        outputs.Screenshot(),
+        outputs.Boyomi(),
+        outputs.Slack(),
+        outputs.StatInk(),
+        outputs.DebugVideoWriter(),
+        outputs.WebSocketServer(),
+    ]
+    gui.init_outputs(outputs_with_gui)
+    plugins.extend(outputs_with_gui)
 
     # 本当に困ったときのデバッグログ増加モード
     if 'IKALOG_DEBUG' in os.environ:

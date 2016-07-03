@@ -90,7 +90,7 @@ class Screenshot(object):
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.page = notebook.InsertPage(0, self.panel, _('Screenshot'))
+        self.panel_name = _('Screenshot')
         self.layout = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.layout)
         self.checkResultDetailEnable = wx.CheckBox(

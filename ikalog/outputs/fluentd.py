@@ -108,7 +108,7 @@ class Fluentd(object):
 
     def on_option_tab_create(self, notebook):
         self.panel = wx.Panel(notebook, wx.ID_ANY, size=(640, 360))
-        self.page = notebook.InsertPage(0, self.panel, 'Fluentd')
+        self.panel_name = 'Fluentd'
         self.layout = wx.BoxSizer(wx.VERTICAL)
 
         self.checkEnable = wx.CheckBox(
