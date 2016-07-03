@@ -93,7 +93,6 @@ class PreviewPanel(wx.Panel):
             self.lock.release()
             return
 
-        rect = self.preview_panel.GetRect()
         width, height = self.preview_size
 
         frame_rgb = cv2.cvtColor(self.latest_frame, cv2.COLOR_BGR2RGB)
@@ -104,10 +103,8 @@ class PreviewPanel(wx.Panel):
         except:
             bmp = wx.BitmapFromBuffer(width, height, frame_rgb)
 
-        dc = wx.BufferedPaintDC(self)
-        # dc.SetBackground(wx.Brush(wx.RED))
-
-        dc.DrawBitmap(bmp, rect.GetX(), rect.GetY())
+        dc = wx.ClientDC(self.preview_panel)
+        dc.DrawBitmap(bmp, 0, 0)
 
     # wx event
     def OnTimer(self, event):
@@ -150,8 +147,7 @@ class PreviewPanel(wx.Panel):
 
         # Preview
         self.preview_size = (640, 360)
-        # Spacer for the preview image.
-        # This does not actually contain the preview image.
+        # Preview image.
         self.preview_panel = wx.Panel(self, wx.ID_ANY, size=self.preview_size)
 
         # Video Input
