@@ -90,9 +90,6 @@ def IkaUI_main():
     # プラグインリストを登録
     engine.set_plugins(plugins)
 
-    # IkaLog GUI 起動時にキャプチャが enable 状態かどうか
-    gui.set_enable(True)
-
     # Loading config
     engine.call_plugins('on_config_reset', debug=True)
     gui.load_config(engine.context)

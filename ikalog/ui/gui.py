@@ -115,19 +115,10 @@ class IkaLogGUI(object):
         active_button = event.GetEventObject()
         self.switch_to_panel(active_button)
 
-    def update_enable_button(self):
-        color = '#00A000' if self.enable else '#C0C0C0'
-        label = _('Stop') if self.enable else _('Start')
-        self.button_enable.SetBackgroundColour(color)
-        self.button_enable.SetLabel(label)
-
-    def set_enable(self, enable):
-        self.enable = enable
-        self.engine.pause(not enable)
-        self.update_enable_button()
-
-    def on_enable_button_click(self, event):
-        self.set_enable(not self.enable)
+    def on_ikalog_pause(self, event):
+        self.engine.pause(event.pause)
+        # Propagate the event as the top level event.
+        wx.PostEvent(self.frame, event)
 
     def on_close(self, event):
         self.engine.stop()
@@ -150,13 +141,11 @@ class IkaLogGUI(object):
 
     def create_buttons_ui(self):
         panel = self.frame
-        self.button_enable = wx.Button(panel, wx.ID_ANY, _('Enable'))
         self.button_preview = wx.Button(panel, wx.ID_ANY, _('Preview'))
         self.button_last_result = wx.Button(panel, wx.ID_ANY, _('Last Result'))
         self.button_options = wx.Button(panel, wx.ID_ANY, _('Options'))
 
         self.buttons_layout = wx.BoxSizer(wx.HORIZONTAL)
-        self.buttons_layout.Add(self.button_enable)
         self.buttons_layout.Add(self.button_preview)
         self.buttons_layout.Add(self.button_last_result)
         self.buttons_layout.Add(self.button_options)
@@ -167,6 +156,7 @@ class IkaLogGUI(object):
 
     def engine_thread_func(self):
         IkaUtils.dprint('IkaEngine thread started')
+        self.engine.pause(False)
         self.engine.run()
         IkaUtils.dprint('IkaEngine thread terminated')
 
@@ -259,6 +249,7 @@ class IkaLogGUI(object):
 
         self.preview = PreviewPanel(self.frame, size=(640, 420))
         self.preview.Bind(EVT_INPUT_FILE_ADDED, self.on_input_file_added)
+        self.preview.Bind(EVT_IKALOG_PAUSE, self.on_ikalog_pause)
 
         self.last_result = LastResultPanel(self.frame, size=(640, 360))
         self.options = OptionsPanel(self.frame)
@@ -277,7 +268,6 @@ class IkaLogGUI(object):
 
         # Frame events
         self.frame.Bind(wx.EVT_CLOSE, self.on_close)
-        self.button_enable.Bind(wx.EVT_BUTTON, self.on_enable_button_click)
 
         # Set event handlers for options tab
         self.options.Bind('optionsApply', self.on_options_apply_click)
