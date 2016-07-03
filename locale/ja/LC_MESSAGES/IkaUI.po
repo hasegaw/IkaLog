@@ -45,7 +45,7 @@ msgstr "開始"
 
 #: IkaUI.py:120
 msgid "Stop"
-msgstr "終了"
+msgstr "中止"
 
 #: IkaUI.py:140
 msgid "Enable"
@@ -128,3 +128,7 @@ msgstr "入力ソース："
 #: ikalog/ui/panel/preview.py:114
 msgid "The image seems to be 16x10. Perhaps the source is misconfigured."
 msgstr "入力画像のアスペクト比が 16x10 のようです。入力元（アマレコ？）の設定ミスの可能性があります。"
+
+#: ikalog/ui/gui.py:249
+msgid "Misc."
+msgstr "その他"
