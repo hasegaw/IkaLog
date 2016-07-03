@@ -27,3 +27,6 @@ import wx.lib.newevent
 
 # New input source is initialized. (see: VideoCapture.initialize_input)
 (InputInitializedEvent, EVT_INPUT_INITIALIZED) = wx.lib.newevent.NewEvent()
+
+# Pause or play of IkaLog is intended. (see: PreviewPanel.on_ikalog_pause)
+(IkalogPauseEvent, EVT_IKALOG_PAUSE) = wx.lib.newevent.NewEvent()

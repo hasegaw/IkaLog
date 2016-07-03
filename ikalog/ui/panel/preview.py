@@ -65,6 +65,26 @@ class PreviewPanel(wx.Panel):
         evt = InputFileAddedEvent(input_file=file_path)
         wx.PostEvent(self, evt)
 
+    # wx event
+    def on_ikalog_pause(self, event):
+        self._pause = event.pause
+        self.draw_preview()
+
+    # wx event
+    def on_preview_click(self, event):
+        evt = IkalogPauseEvent(pause=(not self._pause))
+        wx.PostEvent(self, evt)
+
+    # wx event
+    def on_enter_preview(self, event):
+        self._enter = True
+        self.draw_preview()
+
+    # wx event
+    def on_leave_preview(self, event):
+        self._enter = False
+        self.draw_preview()
+
     source_message = {
         'amarec': _('Capture through AmarecTV'),
         'dshow_capture': _('HDMI Video input (DirectShow, recommended)'),
@@ -88,6 +108,8 @@ class PreviewPanel(wx.Panel):
             self.lock.acquire()
 
             if self.latest_frame is None:
+                if self._prev_bmp:
+                    dc.DrawBitmap(self._prev_bmp, 0, 0)
                 return False
 
             width, height = self.preview_size
@@ -106,6 +128,20 @@ class PreviewPanel(wx.Panel):
 
         dc = wx.ClientDC(self.preview_panel)
         dc.DrawBitmap(bmp, 0, 0)
+        self._prev_bmp = bmp
+
+        if self._enter:
+            ox = int(width / 2)
+            oy = int(height / 2)
+            if self._pause:
+                # Draw a triangle representing 'play'.
+                dc.DrawPolygon([(ox - 20, oy - 30),
+                                (ox - 20, oy + 30),
+                                (ox + 20, oy)])
+            else:
+                # Draw two rectangles representing 'pause'.
+                dc.DrawRectangle(ox - 20, oy - 30, 15, 60)
+                dc.DrawRectangle(ox + 10, oy - 30, 15, 60)
 
     # wx event
     def OnTimer(self, event):
@@ -129,6 +165,10 @@ class PreviewPanel(wx.Panel):
         self.refresh_at_next = False
 
     def __init__(self, *args, **kwargs):
+        self._prev_bmp = None
+        self._enter = False
+        self._pause = False
+
         self.refresh_at_next = False
         self.latest_frame = None
         self.lock = threading.Lock()
@@ -140,12 +180,16 @@ class PreviewPanel(wx.Panel):
 
         self.GetTopLevelParent().Bind(EVT_INPUT_INITIALIZED,
                                       self.on_input_initialized)
+        self.GetTopLevelParent().Bind(EVT_IKALOG_PAUSE, self.on_ikalog_pause)
 
 
         # Preview
         self.preview_size = (640, 360)
         # Preview image.
         self.preview_panel = wx.Panel(self, wx.ID_ANY, size=self.preview_size)
+        self.preview_panel.Bind(wx.EVT_LEFT_UP, self.on_preview_click)
+        self.preview_panel.Bind(wx.EVT_ENTER_WINDOW, self.on_enter_preview)
+        self.preview_panel.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave_preview)
 
         # Video Input
         self.video_input_title_text = wx.StaticText(
