@@ -43,13 +43,17 @@ class PreviewPanel(wx.Panel):
 
     # IkaLog event
     def on_show_preview(self, context):
-        self.lock.acquire()
-
         img = context['engine'].get('preview', context['engine']['frame'])
-        self.latest_frame = cv2.resize(img, self.preview_size)
+        if img is None:
+            return False
 
-        self.refresh_at_next = True
-        self.lock.release()
+        try:
+            self.lock.acquire()
+
+            self.latest_frame = cv2.resize(img, self.preview_size)
+            self.refresh_at_next = True
+        finally:
+            self.lock.release()
 
     # wx event
     def on_input_initialized(self, event):
