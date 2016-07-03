@@ -27,6 +27,7 @@ import yaml
 
 from ikalog.engine import *
 from ikalog import outputs
+from ikalog.ui.events import *
 from ikalog.ui.panel import *
 from ikalog.ui import VideoCapture
 from ikalog.utils import *
@@ -134,6 +135,14 @@ class IkaLogGUI(object):
             time.sleep(0.5)
         self.frame.Destroy()
 
+    def on_input_file_added(self, event):
+        self.engine.put_source_file(event.input_file)
+
+    def on_input_initialized(self, event):
+        self.engine.reset_capture()
+        # Propagate the event as the top level event.
+        wx.PostEvent(self.frame, event)
+
     def create_buttons_ui(self):
         panel = self.frame
         self.button_enable = wx.Button(panel, wx.ID_ANY, _('Enable'))
@@ -162,7 +171,7 @@ class IkaLogGUI(object):
         IkaUtils.dprint('IkaEngine thread terminated')
 
     def create_engine(self):
-        self.engine = IkaEngine()
+        self.engine = IkaEngine(keep_alive=True)
         return self.engine
 
     def start_engine(self):
@@ -170,7 +179,8 @@ class IkaLogGUI(object):
         self.engine_thread.daemon = True
         self.engine_thread.start()
 
-    def __init__(self):
+    def __init__(self, capture):
+        self.capture = capture
         self.frame = wx.Frame(None, wx.ID_ANY, "IkaLog GUI", size=(700, 500))
 
         self.layout = wx.BoxSizer(wx.VERTICAL)
@@ -178,10 +188,16 @@ class IkaLogGUI(object):
         self.create_buttons_ui()
         self.layout.Add(self.buttons_layout)
 
-        self.preview = PreviewPanel(self.frame, size=(640, 360))
+        self.preview = PreviewPanel(self.frame, size=(640, 420))
+        self.preview.Bind(EVT_INPUT_FILE_ADDED, self.on_input_file_added)
+
         self.last_result = LastResultPanel(self.frame, size=(640, 360))
         self.timeline = TimelinePanel(self.frame, size=(640, 200))
         self.options = OptionsPanel(self.frame)
+
+        self.capture.on_option_tab_create(self.options.notebookOptions)
+        self.capture.panel.Bind(EVT_INPUT_INITIALIZED,
+                                self.on_input_initialized)
 
         self.layout.Add(self.last_result, flag=wx.EXPAND)
         self.layout.Add(self.preview, flag=wx.EXPAND)
@@ -204,4 +220,3 @@ class IkaLogGUI(object):
 
         # Ready.
         self.frame.Show()
-

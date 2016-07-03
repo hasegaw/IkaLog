@@ -43,8 +43,7 @@ def IkaUI_main():
 
     application = wx.App()
     input_plugin = VideoCapture()
-    gui = IkaLogGUI()
-    input_plugin.on_option_tab_create(gui.options.notebookOptions)
+    gui = IkaLogGUI(input_plugin)
     gui.frame.Show()
 
     engine = gui.create_engine()
