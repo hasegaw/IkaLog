@@ -43,13 +43,17 @@ class PreviewPanel(wx.Panel):
 
     # IkaLog event
     def on_show_preview(self, context):
-        self.lock.acquire()
-
         img = context['engine'].get('preview', context['engine']['frame'])
-        self.latest_frame = cv2.resize(img, self.preview_size)
+        if img is None:
+            return False
 
-        self.refresh_at_next = True
-        self.lock.release()
+        try:
+            self.lock.acquire()
+
+            self.latest_frame = cv2.resize(img, self.preview_size)
+            self.refresh_at_next = True
+        finally:
+            self.lock.release()
 
     # wx event
     def on_input_initialized(self, event):
@@ -77,27 +81,24 @@ class PreviewPanel(wx.Panel):
         self.input_file_sizer.ShowItems(show=show)
         self.Layout()
 
-    # wx event
-    def OnResize(self, event):
-        w, h = self.GetClientSizeTuple()
-        new_height = int((w * 720) / 1280)
+    def draw_preview(self):
+        frame_rgb = None
 
-        orig_state = self.SetEventHandlerEnable(self, False)
-        self.SetSize((w, new_height))
-        self.SetEventHandlerEnable(self, orig_state)
+        try:
+            self.lock.acquire()
 
-    # wx event
-    def OnPaint(self, event):
-        self.lock.acquire()
-        if self.latest_frame is None:
+            if self.latest_frame is None:
+                return False
+
+            width, height = self.preview_size
+            frame_rgb = cv2.cvtColor(self.latest_frame, cv2.COLOR_BGR2RGB)
+        finally:
             self.lock.release()
-            return
 
-        width, height = self.preview_size
+        if frame_rgb is None:
+            return False
 
-        frame_rgb = cv2.cvtColor(self.latest_frame, cv2.COLOR_BGR2RGB)
-        self.lock.release()
-
+        # FIXME: Remove Python 2.x + wxPython 2.x support
         try:
             bmp = wx.Bitmap.FromBuffer(width, height, frame_rgb)
         except:
@@ -124,7 +125,7 @@ class PreviewPanel(wx.Panel):
             { True: label.Show, False: label.Hide }[self._amarec16x10_warning]()
             self._amarec16x10_warning = None
 
-        self.Refresh()
+        self.draw_preview()
         self.refresh_at_next = False
 
     def __init__(self, *args, **kwargs):
@@ -135,15 +136,11 @@ class PreviewPanel(wx.Panel):
         wx.Panel.__init__(self, *args, **kwargs)
         self.timer = wx.Timer(self)
         self.timer.Start(100)
-        self.Bind(wx.EVT_PAINT, self.OnPaint)
-        # self.Bind(wx.EVT_SIZE, self.OnResize)
         self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
 
         self.GetTopLevelParent().Bind(EVT_INPUT_INITIALIZED,
                                       self.on_input_initialized)
 
-        self.label_amarec16x10_warning = wx.StaticText(
-            self, wx.ID_ANY, _('The image seems to be 16x10. Perhaps the source is misconfigured.'), pos=(0, 0))
 
         # Preview
         self.preview_size = (640, 360)
@@ -185,6 +182,9 @@ class PreviewPanel(wx.Panel):
         self.top_sizer.Add(self.preview_panel)
         self.SetSizer(self.top_sizer)
 
+        # AmaRec 16x10 warning should always on top layer
+        self.label_amarec16x10_warning = wx.StaticText(
+            self, wx.ID_ANY, _('The image seems to be 16x10. Perhaps the source is misconfigured.'), pos=(0, 0))
         self.label_amarec16x10_warning.Hide();
         self._amarec16x10_warning = None
 
