@@ -55,12 +55,16 @@ class Screenshot(object):
             self.editDir.SetValue('')
 
     def on_config_reset(self, context=None):
+        self.config_reset()
+        self.refresh_ui()
+
+    def config_reset(self):
         self.result_detail_enabled = False
         self.miiverse_drawing_enabled = False
         self.dir = os.path.join(os.getcwd(), 'screenshots')
 
     def on_config_load_from_context(self, context):
-        self.on_config_reset(context)
+        self.config_reset()
         try:
             conf = context['config']['screenshot']
         except:

@@ -61,13 +61,17 @@ class OBS(object):
             self.editDir.SetValue('')
 
     def on_config_reset(self, context=None):
+        self.config_reset()
+        self.refresh_ui()
+
+    def config_reset(self):
         self.enabled = False
         self.auto_rename_enabled = False
         self.control_obs = os.path.join(os.getcwd(), 'tools', 'ControlOBS.au3')
         self.dir = ''
 
     def on_config_load_from_context(self, context):
-        self.on_config_reset(context)
+        self.config_reset()
         try:
             conf = context['config']['obs']
         except:

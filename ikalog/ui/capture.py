@@ -206,11 +206,15 @@ class VideoCapture(object):
         self.checkDeinterlace.SetValue(self.deinterlace)
 
     def on_config_reset(self, context=None):
+        self.config_reset()
+        self.refresh_ui()
+
+    def config_reset(self):
         # さすがにカメラはリセットしたくないな
         pass
 
     def on_config_load_from_context(self, context):
-        self.on_config_reset(context)
+        self.config_reset()
         try:
             conf = context['config']['cvcapture']
         except:

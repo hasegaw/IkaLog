@@ -91,9 +91,7 @@ def IkaUI_main():
     engine.set_plugins(plugins)
 
     # Loading config
-    engine.call_plugins('on_config_reset', debug=True)
     gui.load_config(engine.context)
-    engine.call_plugins('on_config_load_from_context', debug=True)
 
     gui.start_engine()
     application.MainLoop()
