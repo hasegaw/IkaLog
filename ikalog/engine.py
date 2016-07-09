@@ -211,6 +211,7 @@ class IkaEngine:
         self._exception_log_init(self.context)
 
     def create_context(self):
+        prev_context = self.context
         self.context = {
             'engine': {
                 'engine': self,
@@ -229,8 +230,8 @@ class IkaEngine:
             },
             'scenes': {
             },
-            'config': {
-            },
+            # config should be nonvolatite.
+            'config': prev_context.get('config', {}),
             'lobby': {
             }
         }
@@ -474,4 +475,5 @@ class IkaEngine:
         # Whether exit on EOFError with no next inputs.
         self._keep_alive = keep_alive
 
+        self.context = {}
         self.create_context()
