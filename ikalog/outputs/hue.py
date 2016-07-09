@@ -57,12 +57,16 @@ class Hue(object):
             self.editHueUsername.SetValue('')
 
     def on_config_reset(self, context=None):
+        self.config_reset()
+        self.refresh_ui()
+
+    def config_reset(self):
         self.enabled = False
         self.hueHost = ''
         self.hueUsername = ''
 
     def on_config_load_from_context(self, context):
-        self.on_config_reset(context)
+        self.config_reset()
         try:
             conf = context['config']['hue']
         except:

@@ -170,12 +170,16 @@ class Boyomi(Commentator):
         self._internal_update = False
 
     def on_config_reset(self, context=None):
+        self.config_reset()
+        self.refresh_ui()
+
+    def config_reset(self):
         self._enabled = False
         self._host = '127.0.0.1'
         self._port = '50001'
 
     def on_config_load_from_context(self, context):
-        self.on_config_reset(context)
+        self.config_reset()
 
         try:
             conf = context['config']['boyomi']

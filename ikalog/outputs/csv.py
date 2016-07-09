@@ -53,12 +53,16 @@ class CSV(object):
         else:
             self.editCsvFilename.SetValue('')
 
-    def on_config_reset(self, context=None):
+    def on_config_reset(self, context):
+        self.config_reset()
+        self.refresh_ui()
+
+    def config_reset(self):
         self.enabled = False
         self.csv_filename = os.path.join(os.getcwd(), 'ika.csv')
 
     def on_config_load_from_context(self, context):
-        self.on_config_reset(context)
+        self.config_reset()
         try:
             conf = context['config']['csv']
         except:

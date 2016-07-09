@@ -83,6 +83,10 @@ class StatInk(object):
             self.editApiKey.SetValue('')
 
     def on_config_reset(self, context=None):
+        self.config_reset()
+        self.refresh_ui()
+
+    def config_reset(self):
         self.enabled = False
         self.show_response_enabled = False
         self.track_inklings_enabled = False
@@ -95,7 +99,7 @@ class StatInk(object):
         self.api_key = None
 
     def on_config_load_from_context(self, context):
-        self.on_config_reset(context)
+        self.config_reset()
         try:
             conf = context['config']['stat.ink']
         except:

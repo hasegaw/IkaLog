@@ -43,18 +43,21 @@ class IkaLogGUI(object):
         time.sleep(0.01)
 
     def on_options_apply_click(self, sender):
+        '''Applies the current changes, and saves them to the file.'''
         self.engine.call_plugins('on_config_apply', debug=True)
         self.engine.call_plugins('on_config_save_to_context', debug=True)
         self.save_current_config(self.engine.context)
 
     def on_options_reset_click(self, sender):
+        '''Cancels the current changes, and reloads the saved changes.'''
         self.engine.call_plugins('on_config_load_from_context', debug=True)
-        self.engine.call_plugins('on_config_reset', debug=True)
 
     def on_options_load_default_click(self, sender):
+        '''Resets the changes to the default, but not save them.'''
         r = wx.MessageDialog(
             None,
-            _('IkaLog preferences will be reset to default. Continue?'),
+            _('IkaLog preferences will be reset to default. Continue?') + '\n' +
+            _('The change will be updated when the apply button is pressed.'),
             _('Confirm'),
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION
         ).ShowModal()
@@ -63,8 +66,6 @@ class IkaLogGUI(object):
             return
 
         self.engine.call_plugins('on_config_reset', debug=True)
-        self.engine.call_plugins('on_config_save_to_context', debug=True)
-        self.save_current_config(self.engine.context)
 
     # 現在の設定値をYAMLファイルからインポート
     #
@@ -73,6 +74,7 @@ class IkaLogGUI(object):
             yaml_file = open(filename, 'r')
             self.engine.context['config'] = yaml.load(yaml_file)
             yaml_file.close()
+            self.engine.call_plugins('on_config_load_from_context', debug=True)
         except:
             pass
 
