@@ -32,6 +32,7 @@ Localization.print_language_settings()
 
 # from ikalog.engine import *
 from ikalog import outputs
+from ikalog.engine import *
 from ikalog.ui.panel import *
 from ikalog.ui import VideoCapture, IkaLogGUI
 
@@ -43,26 +44,10 @@ def IkaUI_main():
 
     application = wx.App()
     input_plugin = VideoCapture()
-    gui = IkaLogGUI(input_plugin)
-    gui.frame.Show()
 
-    engine = gui.create_engine()
+    engine = IkaEngine(keep_alive=True)
     engine.close_session_at_eof = True
     engine.set_capture(input_plugin)
-    plugins = []
-
-    # とりあえずデバッグ用にコンソールプラグイン
-    plugins.append(outputs.Console())
-
-    # 各パネルをプラグインしてイベントを受信する
-    plugins.append(gui.preview)
-    plugins.append(gui.last_result)
-
-    # 設定画面を持つ input plugin もイベントを受信する
-    plugins.append(input_plugin)
-
-    # UI 自体もイベントを受信
-    plugins.append(gui)
 
     # 設定画面を持つ各種 Output Plugin
     # -> 設定画面の生成とプラグインリストへの登録
@@ -80,7 +65,23 @@ def IkaUI_main():
         outputs.DebugVideoWriter(),
         outputs.WebSocketServer(),
     ]
-    gui.init_outputs(outputs_with_gui)
+    gui = IkaLogGUI(engine, outputs_with_gui)
+
+    plugins = []
+
+    # とりあえずデバッグ用にコンソールプラグイン
+    plugins.append(outputs.Console())
+
+    # 各パネルをプラグインしてイベントを受信する
+    plugins.append(gui.preview)
+    plugins.append(gui.last_result)
+
+    # 設定画面を持つ input plugin もイベントを受信する
+    plugins.append(input_plugin)
+
+    # UI 自体もイベントを受信
+    plugins.append(gui)
+
     plugins.extend(outputs_with_gui)
 
     # 本当に困ったときのデバッグログ増加モード
@@ -90,10 +91,7 @@ def IkaUI_main():
     # プラグインリストを登録
     engine.set_plugins(plugins)
 
-    # Loading config
-    gui.load_config(engine.context)
-
-    gui.start_engine()
+    gui.run()
     application.MainLoop()
 
     IkaUtils.dprint(_('Bye!'))

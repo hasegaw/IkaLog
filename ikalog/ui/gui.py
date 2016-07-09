@@ -28,7 +28,6 @@ import wx.lib.scrolledpanel
 import yaml
 
 import ikalog.outputs
-from ikalog.engine import *
 from ikalog.ui.events import *
 from ikalog.ui.panel import *
 from ikalog.ui import VideoCapture
@@ -163,14 +162,14 @@ class IkaLogGUI(object):
         self.engine.run()
         IkaUtils.dprint('IkaEngine thread terminated')
 
-    def create_engine(self):
-        self.engine = IkaEngine(keep_alive=True)
-        return self.engine
-
-    def start_engine(self):
+    def run(self):
         self.engine_thread = threading.Thread(target=self.engine_thread_func)
         self.engine_thread.daemon = True
         self.engine_thread.start()
+
+        self.load_config(self.engine.context)
+
+        self.frame.Show()
 
     def init_outputs(self, outputs):
         output_dict = {}
@@ -241,8 +240,10 @@ class IkaLogGUI(object):
             index, self.misc_panel, _('Misc.'))
 
 
-    def __init__(self, capture):
-        self.capture = capture
+    def __init__(self, engine, outputs):
+        self.engine = engine
+        self.capture = engine.capture
+        self.outputs = outputs
         self.frame = wx.Frame(None, wx.ID_ANY, "IkaLog GUI", size=(700, 500))
 
         self.layout = wx.BoxSizer(wx.VERTICAL)
@@ -259,9 +260,10 @@ class IkaLogGUI(object):
 
         self.capture.on_option_tab_create(self.options.notebookOptions)
         self.options.notebookOptions.InsertPage(
-            0, capture.panel, capture.panel_name)
+            0, self.capture.panel, self.capture.panel_name)
         self.capture.panel.Bind(EVT_INPUT_INITIALIZED,
                                 self.on_input_initialized)
+        self.init_outputs(self.outputs)
 
         self.layout.Add(self.last_result, flag=wx.EXPAND)
         self.layout.Add(self.preview, flag=wx.EXPAND)
@@ -282,6 +284,3 @@ class IkaLogGUI(object):
 
         # Video files processed and to be processed.
         self._file_list = []
-
-        # Ready.
-        self.frame.Show()
