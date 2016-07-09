@@ -21,6 +21,7 @@
 import gettext
 import os
 import threading
+import time
 
 import wx
 import wx.lib.scrolledpanel
@@ -80,7 +81,7 @@ class IkaLogGUI(object):
     def save_current_config(self, context, filename='IkaConfig.yaml'):
         yaml_file = open(filename, 'w')
         yaml_file.write(yaml.dump(context['config']))
-        yaml_file.close
+        yaml_file.close()
 
     # パネル切り替え時の処理
     #
