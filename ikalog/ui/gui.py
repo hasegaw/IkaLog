@@ -38,8 +38,22 @@ _ = Localization.gettext_translation('IkaUI', fallback=True).gettext
 class OptionsGUI(object):
     def __init__(self, ikalog_gui):
         self.ikalog_gui = ikalog_gui
+        self.frame = None
+        self._init_frame()
 
-        self.options = OptionsPanel(ikalog_gui.frame)
+    def _init_frame(self):
+        if self.frame:
+            return
+
+        self.frame = wx.Frame(
+            self.ikalog_gui.frame, wx.ID_ANY, _("Options"), size=(640, 500))
+
+        self.top_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.options = OptionsPanel(self.frame)
+
+        self.top_sizer.Add(self.options)
+        self.frame.SetSizer(self.top_sizer)
 
         # Set event handlers for options tab
         self.options.Bind('optionsApply', self.on_options_apply_click)
@@ -58,6 +72,12 @@ class OptionsGUI(object):
         # Refresh UI of each plugin.
         self.ikalog_gui.engine.call_plugins(
             'on_config_load_from_context', debug=True)
+
+    def show(self):
+        if not self.frame:
+            self._init_frame()
+        self.frame.Show()
+        self.frame.Raise()
 
     def on_options_apply_click(self, sender):
         self.ikalog_gui.on_options_apply_click(sender)
@@ -191,11 +211,10 @@ class IkaLogGUI(object):
     #
     def switch_to_panel(self, activeButton):
 
-        for button in [self.button_preview, self.button_last_result, self.button_options]:
+        for button in [self.button_preview, self.button_last_result]:
             panel = {
                 self.button_preview: self.preview,
                 self.button_last_result: self.last_result,
-                self.button_options: self.options_gui.options,
             }[button]
 
             if button == activeButton:
@@ -219,6 +238,9 @@ class IkaLogGUI(object):
     def on_switch_panel(self, event):
         active_button = event.GetEventObject()
         self.switch_to_panel(active_button)
+
+    def on_click_button_options(self, event):
+        self.options_gui.show()
 
     def on_ikalog_pause(self, event):
         self.engine.pause(event.pause)
@@ -257,7 +279,7 @@ class IkaLogGUI(object):
 
         self.button_preview.Bind(wx.EVT_BUTTON, self.on_switch_panel)
         self.button_last_result.Bind(wx.EVT_BUTTON, self.on_switch_panel)
-        self.button_options.Bind(wx.EVT_BUTTON, self.on_switch_panel)
+        self.button_options.Bind(wx.EVT_BUTTON, self.on_click_button_options)
 
     def engine_thread_func(self):
         IkaUtils.dprint('IkaEngine thread started')
@@ -294,7 +316,6 @@ class IkaLogGUI(object):
 
         self.layout.Add(self.last_result, flag=wx.EXPAND)
         self.layout.Add(self.preview, flag=wx.EXPAND)
-        self.layout.Add(self.options_gui.options, flag=wx.EXPAND)
 
         self.frame.SetSizer(self.layout)
 
