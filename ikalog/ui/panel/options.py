@@ -20,6 +20,9 @@
 
 from .last_result import *
 
+from ikalog.utils import *
+_ = Localization.gettext_translation('IkaUI', fallback=True).gettext
+
 
 class OptionsPanel(wx.Panel):
     # コールバックハンドラを設定
@@ -64,11 +67,17 @@ class OptionsPanel(wx.Panel):
 
         buttonsLayout = wx.BoxSizer(wx.HORIZONTAL)
         self.buttonOptionApply = wx.Button(
-            self.panelOptions, wx.ID_ANY, u'Apply')
+            self.panelOptions, wx.ID_ANY, _(u'Apply'))
+
+        # Use a bold font.
+        apply_font = self.buttonOptionApply.GetFont()
+        apply_font.SetWeight(wx.FONTWEIGHT_BOLD)
+        self.buttonOptionApply.SetFont(apply_font)
+
         self.buttonOptionReset = wx.Button(
-            self.panelOptions, wx.ID_ANY, u'Reset')
+            self.panelOptions, wx.ID_ANY, _(u'Cancel'))
         self.buttonOptionLoadDefault = wx.Button(
-            self.panelOptions, wx.ID_ANY, u'Load default')
+            self.panelOptions, wx.ID_ANY, _(u'Load default'))
 
         buttonsLayout.Add(self.buttonOptionApply)
         buttonsLayout.Add(self.buttonOptionReset)
@@ -79,6 +88,7 @@ class OptionsPanel(wx.Panel):
         self.buttonOptionLoadDefault.Bind(
             wx.EVT_BUTTON, self.on_option_button_click)
 
-        self.layoutOptions.Add(buttonsLayout, flag=wx.EXPAND)
+        self.layoutOptions.Add(
+            buttonsLayout, flag=wx.EXPAND | wx.ALL, border=5)
 
         self.SetSizer(self.layoutOptions)
