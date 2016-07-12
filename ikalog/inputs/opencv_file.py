@@ -19,6 +19,7 @@
 #
 import os
 import queue
+import re
 import time
 import threading
 
@@ -171,7 +172,22 @@ class CVFile(VideoInput):
     def set_use_file_timestamp(self, use_file_timestamp=True):
         self._use_file_timestamp = use_file_timestamp
 
+    def _check_opencv_config(self):
+        build_info = cv2.getBuildInformation()
+        ffmpeg_line = re.search(r'FFMPEG\:\s+(.*)', build_info)
+
+        if (ffmpeg_line and ffmpeg_line.group(1) == 'YES'):
+            IkaUtils.dprint('%s: OpenCV misconfiguration detected.\n'
+                '  - IkaLog may experience serious performance degradation.\n'
+                '  - IkaLog may not able to read several video formats.\n'
+                '  Please review your OpenCV Configuration.\n'
+                '  %s' % (self, ffmpeg_line.group(0))
+            )
+            time.sleep(5)
+
     def __init__(self):
+        self._check_opencv_config()
+
         self.video_capture = None
         self._source_file = None
         self._file_queue = queue.Queue()
