@@ -24,157 +24,34 @@ import threading
 import time
 
 import wx
-import wx.lib.scrolledpanel
 import yaml
 
-import ikalog.outputs
 from ikalog.ui.events import *
+from ikalog.ui.options import *
 from ikalog.ui.panel import *
-from ikalog.ui import VideoCapture
 from ikalog.utils import *
 
 _ = Localization.gettext_translation('IkaUI', fallback=True).gettext
 
-class OptionsGUI(object):
-    def __init__(self, ikalog_gui):
-        self.ikalog_gui = ikalog_gui
-        self.frame = None
-        self._init_frame()
-
-    def _init_frame(self):
-        if self.frame:
-            return
-
-        self.frame = wx.Frame(
-            self.ikalog_gui.frame, wx.ID_ANY, _("Options"), size=(640, 500))
-
-        self.top_sizer = wx.BoxSizer(wx.VERTICAL)
-
-        self.options = OptionsPanel(self.frame)
-
-        self.top_sizer.Add(self.options)
-        self.frame.SetSizer(self.top_sizer)
-
-        # Set event handlers for options tab
-        self.options.Bind('optionsApply', self.on_options_apply_click)
-        self.options.Bind('optionsReset', self.on_options_reset_click)
-        self.options.Bind('optionsLoadDefault',
-                          self.on_options_load_default_click)
-
-        outputs = [self.ikalog_gui.capture] + self.ikalog_gui.outputs
-        self.init_outputs(outputs)
-
-        # self.capture.panel is a part of self.frame. This Bind propagates
-        # capture's source change to the preview.
-        self.ikalog_gui.capture.panel.Bind(
-            EVT_INPUT_INITIALIZED, self.ikalog_gui.on_input_initialized)
-
-        # Refresh UI of each plugin.
-        self.ikalog_gui.engine.call_plugins(
-            'on_config_load_from_context', debug=True)
-
-    def show(self):
-        if not self.frame:
-            self._init_frame()
-        self.frame.Show()
-        self.frame.Raise()
-
-    def on_options_apply_click(self, sender):
-        self.ikalog_gui.on_options_apply_click(sender)
-
-    def on_options_reset_click(self, sender):
-        self.ikalog_gui.on_options_reset_click(sender)
-
-    def on_options_load_default_click(self, sender):
-        self.ikalog_gui.on_options_load_default_click(sender)
-
-    def init_outputs(self, outputs):
-        output_dict = {}
-        for output in outputs:
-            output_dict[output.__class__] = output
-
-        # Keys for outputs in the main page.
-        keys = [
-            ikalog.ui.VideoCapture,
-            ikalog.outputs.OBS,
-            ikalog.outputs.StatInk,
-            ikalog.outputs.Twitter
-        ]
-        # Keys for outputs combined into the misc tab.
-        misc_keys = [
-            ikalog.outputs.CSV,
-            ikalog.outputs.JSON,
-            ikalog.outputs.Screenshot,
-            ikalog.outputs.Boyomi,
-            ikalog.outputs.Slack,
-            ikalog.outputs.WebSocketServer,
-            ikalog.outputs.DebugVideoWriter,
-        ]
-        for key in output_dict.keys():
-            if key in misc_keys:
-                continue
-            if key not in keys:
-                keys.append(key)
-
-        # Main tabs
-        index = 0
-        for key in keys:
-            output = output_dict.get(key)
-            if not output:
-                continue
-
-            output.on_option_tab_create(self.options.notebookOptions)
-            self.options.notebookOptions.InsertPage(
-                index, output.panel, output.panel_name)
-            index += 1
-
-        # Misc tab
-        self.misc_panel = wx.lib.scrolledpanel.ScrolledPanel(
-            self.options.notebookOptions, wx.ID_ANY, size=(640, 360))
-        self.misc_panel_sizer = wx.BoxSizer(wx.VERTICAL)
-        default_font = self.misc_panel.GetFont()
-        title_font = wx.Font(default_font.GetPointSize(),
-                             wx.FONTFAMILY_DEFAULT,
-                             wx.FONTSTYLE_NORMAL,
-                             wx.FONTWEIGHT_BOLD)
-
-        for key in misc_keys:
-            output = output_dict.get(key)
-            if not output:
-                continue
-
-            output.on_option_tab_create(self.misc_panel)
-            title = wx.StaticText(self.misc_panel, wx.ID_ANY, output.panel_name)
-            title.SetFont(title_font)
-            self.misc_panel_sizer.Add(title)
-            self.misc_panel_sizer.Add(
-                output.panel, flag=wx.EXPAND | wx.ALL, border=10)
-            self.misc_panel_sizer.Add((-1, 25))
-
-        self.misc_panel.SetSizer(self.misc_panel_sizer)
-        self.misc_panel.SetupScrolling()
-
-        self.options.notebookOptions.InsertPage(
-            index, self.misc_panel, _('Misc.'))
-
-
 class IkaLogGUI(object):
-
     def on_next_frame(self, context):
         # This IkaEngine thread a bit, so that GUI thread can process events.
         time.sleep(0.01)
 
-    def on_options_apply_click(self, sender):
+    # wx event
+    def on_options_apply(self, event):
         '''Applies the current changes, and saves them to the file.'''
         self.engine.call_plugins('on_config_apply', debug=True)
         self.engine.call_plugins('on_config_save_to_context', debug=True)
         self.save_current_config(self.engine.context)
 
-    def on_options_reset_click(self, sender):
+    # wx event
+    def on_options_cancel(self, event):
         '''Cancels the current changes, and reloads the saved changes.'''
         self.engine.call_plugins('on_config_load_from_context', debug=True)
 
-    def on_options_load_default_click(self, sender):
+    # wx event
+    def on_options_load_default(self, event):
         '''Resets the changes to the default, but not save them.'''
         r = wx.MessageDialog(
             None,
