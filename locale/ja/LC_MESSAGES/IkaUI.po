@@ -36,7 +36,7 @@ msgid "IkaLog preferences will be reset to default. Continue?"
 msgstr "設定がすべてリセットされます。よろしいですか？"
 
 msgid "The change will be updated when the apply button is pressed."
-msgstr "変更は、Apply ボタンを押した時に更新されます。"
+msgstr "変更は、適用ボタンを押した時に更新されます。"
 
 #: IkaUI.py:56
 msgid "Confirm"
