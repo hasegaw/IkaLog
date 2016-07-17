@@ -469,7 +469,7 @@ class StatInk(object):
                 if weapon:
                     player['weapon'] = weapon
 
-            if payload.get('rule', 'nawabari') != 'nawabari':
+            if payload.get('rule') != 'nawabari':
                 if 'udemae_pre' in e:
                     player['rank'] = str(e['udemae_pre']).lower()
 
@@ -524,7 +524,7 @@ class StatInk(object):
 
         # ResultUdemae
 
-        if payload.get('rule', 'nawabari') != 'nawabari':
+        if payload.get('rule') != 'nawabari':
             self._set_values(
                 [  # 'type', 'stat.ink Field', 'IkaLog Field'
                     ['str_lower', 'rank', 'result_udemae_str_pre'],
@@ -534,7 +534,7 @@ class StatInk(object):
                 ], payload, context['game'])
 
         knockout = context['game'].get('knockout', None)
-        if (payload.get('rule', 'nawabari') != 'nawabari') and (knockout is not None):
+        if (payload.get('rule') != 'nawabari') and (knockout is not None):
             payload['knock_out'] = {True: 'yes', False: 'no'}[knockout]
 
         # ResultGears
