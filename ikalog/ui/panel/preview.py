@@ -19,6 +19,7 @@
 #
 
 import copy
+import os.path
 import threading
 
 import wx
@@ -29,14 +30,28 @@ from ikalog.ui.events import *
 
 _ = Localization.gettext_translation('IkaUI', fallback=True).gettext
 
+class FileDropTarget(wx.FileDropTarget):
+    def __init__(self, observer):
+        wx.FileDropTarget.__init__(self)
+        self.observer = observer
+
+    def OnDropFiles(self, x, y, filenames):
+        self.observer.on_drop_files(x, y, filenames)
+        return True
+
 class InputFilePanel(wx.Panel):
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
 
         # Textbox for input file
         self.text_ctrl = wx.TextCtrl(self, wx.ID_ANY, '')
-        self.button = wx.Button(self, wx.ID_ANY, _('Go'))
+        self.text_ctrl.Bind(wx.EVT_TEXT, self.on_text_input)
+        self.button = wx.Button(self, wx.ID_ANY, _('Browse'))
         self.button.Bind(wx.EVT_BUTTON, self.on_button_click)
+
+        # Drag and drop
+        drop_target = FileDropTarget(self)
+        self.text_ctrl.SetDropTarget(drop_target)
 
         top_sizer = wx.BoxSizer(wx.HORIZONTAL)
         top_sizer.Add(self.text_ctrl, proportion=1)
@@ -45,12 +60,34 @@ class InputFilePanel(wx.Panel):
         self.SetSizer(top_sizer)
 
     # wx event
+    def on_text_input(self, event):
+        file_path = self.text_ctrl.GetValue()
+        if os.path.isfile(file_path):
+            self.button.SetLabel(_('Open'))
+        else:
+            self.button.SetLabel(_('Browse'))
+
+    # wx event
     def on_button_click(self, event):
         file_path = self.text_ctrl.GetValue()
-        if not file_path:
+        if os.path.isfile(file_path):
+            evt = InputFileAddedEvent(input_file=file_path)
+            wx.PostEvent(self, evt)
             return
-        evt = InputFileAddedEvent(input_file=file_path)
-        wx.PostEvent(self, evt)
+
+        # file_path is invalid. Open a file dialog.
+        file_dialog = wx.FileDialog(self, _('Select a video file'))
+        if file_dialog.ShowModal() != wx.ID_OK:
+            return
+        file_path = file_dialog.GetPath()
+        self.text_ctrl.SetValue(file_path)
+
+
+    # Callback from wx.FileDropTarget.OnDropFiles
+    def on_drop_files(self, x, y, filenames):
+        if not filenames:
+            return
+        self.text_ctrl.SetValue(filenames[0])
 
 
 class PreviewPanel(wx.Panel):

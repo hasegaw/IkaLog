@@ -140,7 +140,19 @@ msgstr "キャンセル"
 msgid "Load default"
 msgstr "初期値を読込"
 
-#: ikalog/ui/panel/preview.py:114
+#: ikalog/ui/panel/preview.py:49
+msgid "Browse"
+msgstr "参照"
+
+#: ikalog/ui/panel/preview.py:66
+msgid "Open"
+msgstr "開く"
+
+#: ikalog/ui/panel/preview.py:79
+msgid "Select a video file"
+msgstr "動画ファイルを選択"
+
+#: ikalog/ui/panel/preview.py:285
 msgid "The image seems to be 16x10. Perhaps the source is misconfigured."
 msgstr "入力画像のアスペクト比が 16x10 のようです。入力元（アマレコ？）の設定ミスの可能性があります。"
 
