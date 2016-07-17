@@ -29,6 +29,30 @@ from ikalog.ui.events import *
 
 _ = Localization.gettext_translation('IkaUI', fallback=True).gettext
 
+class InputFilePanel(wx.Panel):
+    def __init__(self, *args, **kwargs):
+        wx.Panel.__init__(self, *args, **kwargs)
+
+        # Textbox for input file
+        self.text_ctrl = wx.TextCtrl(self, wx.ID_ANY, '')
+        self.button = wx.Button(self, wx.ID_ANY, _('Go'))
+        self.button.Bind(wx.EVT_BUTTON, self.on_button_click)
+
+        top_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        top_sizer.Add(self.text_ctrl, proportion=1)
+        top_sizer.Add(self.button)
+
+        self.SetSizer(top_sizer)
+
+    # wx event
+    def on_button_click(self, event):
+        file_path = self.text_ctrl.GetValue()
+        if not file_path:
+            return
+        evt = InputFileAddedEvent(input_file=file_path)
+        wx.PostEvent(self, evt)
+
+
 class PreviewPanel(wx.Panel):
 
     def SetEventHandlerEnable(self, obj, enable):
@@ -60,12 +84,6 @@ class PreviewPanel(wx.Panel):
         self.show_header(event.source)
 
     # wx event
-    def on_input_file_button_click(self, event):
-        file_path = self.input_file_text_ctrl.GetValue()
-        evt = InputFileAddedEvent(input_file=file_path)
-        wx.PostEvent(self, evt)
-
-    # wx event
     def on_ikalog_pause(self, event):
         self._pause = event.pause
         self.draw_preview()
@@ -85,6 +103,11 @@ class PreviewPanel(wx.Panel):
         self._enter = False
         self.draw_preview()
 
+    # wx event
+    def on_input_file_added(self, event):
+        # Propagate the event to the upper level.
+        wx.PostEvent(self, event)
+
     source_message = {
         'amarec': _('Capture through AmarecTV'),
         'dshow_capture': _('HDMI Video input (DirectShow, recommended)'),
@@ -98,7 +121,7 @@ class PreviewPanel(wx.Panel):
         self.show_input_file((source == 'file'))
 
     def show_input_file(self, show):
-        self.input_file_sizer.ShowItems(show=show)
+        self.input_file_panel.Show(show)
         self.Layout()
 
     def draw_preview(self):
@@ -196,22 +219,16 @@ class PreviewPanel(wx.Panel):
             self, wx.ID_ANY, _('Video Input'))
         self.video_input_source_text = wx.StaticText(self, wx.ID_ANY, '')
 
-        # Textbox for input file
-        self.input_file_text_ctrl = wx.TextCtrl(self, wx.ID_ANY, '')
-        self.input_file_button = wx.Button(self, wx.ID_ANY, _('Go'))
-        self.input_file_button.Bind(wx.EVT_BUTTON,
-                                    self.on_input_file_button_click)
+        self.input_file_panel = InputFilePanel(self, wx.ID_ANY)
+        self.input_file_panel.Bind(EVT_INPUT_FILE_ADDED,
+                                   self.on_input_file_added)
 
-        # Sizer for input file, which is hidden by default.
-        self.input_file_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.input_file_sizer.Add(self.input_file_text_ctrl, proportion=1)
-        self.input_file_sizer.Add(self.input_file_button)
         self.show_input_file(False)
 
         self.video_input_source_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.video_input_source_sizer.Add(
             self.video_input_source_text, flag=wx.LEFT, border=10)
-        self.video_input_source_sizer.Add(self.input_file_sizer, proportion=1)
+        self.video_input_source_sizer.Add(self.input_file_panel, proportion=1)
 
         # Sizer to set the width of the text box to 640.
         self.video_input_sizer = wx.BoxSizer(wx.VERTICAL)
