@@ -23,10 +23,13 @@ import wx
 import wx.lib.newevent
 
 # New input file is entered. (see: PreviewPanel.on_input_file_button_click)
+# Args: input_file (string)
 (InputFileAddedEvent, EVT_INPUT_FILE_ADDED) = wx.lib.newevent.NewEvent()
 
 # New input source is initialized. (see: VideoCapture.initialize_input)
+# Args: source (string)
 (InputInitializedEvent, EVT_INPUT_INITIALIZED) = wx.lib.newevent.NewEvent()
 
 # Pause or play of IkaLog is intended. (see: PreviewPanel.on_ikalog_pause)
+# Args: pause (bool)
 (IkalogPauseEvent, EVT_IKALOG_PAUSE) = wx.lib.newevent.NewEvent()
