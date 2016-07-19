@@ -794,6 +794,12 @@ class StatInk(object):
                 'his_team': context['game']['inkling_state'][1],
             })
 
+    def on_game_situation_update(self, context, params):
+        self._add_event(context, {
+            'type': 'situation',
+            'situation': params['situation'],
+        })
+
     def on_game_paint_score_update(self, context):
         score = context['game'].get('paint_score', 0)
         event_msec = self._get_offset_msec(context)
