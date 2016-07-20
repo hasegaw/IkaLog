@@ -40,6 +40,7 @@ class InklingsTracker(StatefulScene):
         self.my_team = [False, False, False, False]
         self.counter_team = [False, False, False, False]
         self._last_bitmap = None
+        self._last_game_status = None
 
     def _match_in_the_battle(self, context):
         img = self._crop_frame(
@@ -317,6 +318,21 @@ class InklingsTracker(StatefulScene):
             cv2.imshow('frame', frame)
             cv2.waitKey(100)
 
+        # game_status
+        vs_xpos2 = vs_xpos - 210
+        if abs(vs_xpos2 < 20):
+            game_status = 'neutral'
+        elif vs_xpos2 > 0:
+            game_status = 'advantage'
+        else:
+            game_status = 'disadvantage'
+
+        if game_status != self._last_game_status:
+            self._call_plugins(
+                'on_game_game_status_update',
+                params={'game_status': game_status})
+            self._last_game_status = game_status
+
         return True
 
     ##
@@ -378,6 +394,7 @@ class InklingsTracker(StatefulScene):
         self.my_team = my_team
         self.counter_team = counter_team
         self._last_bitmap = None
+        self._last_game_status = None
         self._detect_team_colors(context)
 
         context['game']['inkling_state_at_start'] = [my_team, counter_team]
