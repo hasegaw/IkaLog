@@ -794,10 +794,10 @@ class StatInk(object):
                 'his_team': context['game']['inkling_state'][1],
             })
 
-    def on_game_situation_update(self, context, params):
+    def on_game_game_status_update(self, context, params):
         self._add_event(context, {
-            'type': 'situation',
-            'situation': params['situation'],
+            'type': 'game_status',
+            'game_status': params['game_status'],
         })
 
     def on_game_paint_score_update(self, context):
