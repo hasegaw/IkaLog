@@ -320,7 +320,7 @@ class InklingsTracker(StatefulScene):
 
         # game_status
         vs_xpos2 = vs_xpos - 210
-        if abs(vs_xpos2 < 20):
+        if abs(vs_xpos2) < 20:
             game_status = 'neutral'
         elif vs_xpos2 > 0:
             game_status = 'advantage'
