@@ -84,33 +84,6 @@ class IkaLogGUI(object):
         yaml_file.write(yaml.dump(context['config']))
         yaml_file.close()
 
-    # パネル切り替え時の処理
-    #
-    def switch_to_panel(self, activeButton):
-
-        for button in [self.button_preview]:
-            panel = {
-                self.button_preview: self.preview,
-            }[button]
-
-            if button == activeButton:
-                button.Disable()
-                panel.Show()
-                # print('%s is shown' % panel)
-            else:
-                button.Enable()
-                panel.Hide()
-                # print('%s is hidden' % panel)
-
-        # リサイズイベントが発生しないと画面レイアウトが正しくならないので
-        try:
-            # Project Phoenix
-            self.layout.Layout()
-        except:
-            # If it doesn't work... for old wxPython
-            w, h = self.frame.GetClientSizeTuple()
-            self.frame.SetSizeWH(w, h)
-
     def on_switch_panel(self, event):
         active_button = event.GetEventObject()
         self.switch_to_panel(active_button)
@@ -147,16 +120,13 @@ class IkaLogGUI(object):
 
     def create_buttons_ui(self):
         panel = self.frame
-        self.button_preview = wx.Button(panel, wx.ID_ANY, _('Preview'))
         self.button_last_result = wx.Button(panel, wx.ID_ANY, _('Last Result'))
         self.button_options = wx.Button(panel, wx.ID_ANY, _('Options'))
 
         self.buttons_layout = wx.BoxSizer(wx.HORIZONTAL)
-        self.buttons_layout.Add(self.button_preview)
         self.buttons_layout.Add(self.button_last_result)
         self.buttons_layout.Add(self.button_options)
 
-        self.button_preview.Bind(wx.EVT_BUTTON, self.on_switch_panel)
         self.button_last_result.Bind(wx.EVT_BUTTON, self.on_button_results)
         self.button_options.Bind(wx.EVT_BUTTON, self.on_click_button_options)
 
@@ -181,6 +151,7 @@ class IkaLogGUI(object):
         self.outputs = outputs
         self.frame = wx.Frame(None, wx.ID_ANY, "IkaLog GUI", size=(700, 500))
         self.options_gui = OptionsGUI(self)
+        self.last_result = ResultsGUI(self)
 
         self.layout = wx.BoxSizer(wx.VERTICAL)
 
@@ -191,16 +162,11 @@ class IkaLogGUI(object):
         self.preview.Bind(EVT_INPUT_FILE_ADDED, self.on_input_file_added)
         self.preview.Bind(EVT_IKALOG_PAUSE, self.on_ikalog_pause)
 
-        self.last_result = ResultsGUI(self)
-
         self.layout.Add(self.preview, flag=wx.EXPAND)
-
         self.frame.SetSizer(self.layout)
 
         # Frame events
         self.frame.Bind(wx.EVT_CLOSE, self.on_close)
-
-        self.switch_to_panel(self.button_preview)
 
         # Video files processed and to be processed.
         self._file_list = []
