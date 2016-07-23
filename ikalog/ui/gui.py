@@ -88,10 +88,9 @@ class IkaLogGUI(object):
     #
     def switch_to_panel(self, activeButton):
 
-        for button in [self.button_preview, self.button_last_result]:
+        for button in [self.button_preview]:
             panel = {
                 self.button_preview: self.preview,
-                self.button_last_result: self.last_result,
             }[button]
 
             if button == activeButton:
@@ -115,6 +114,9 @@ class IkaLogGUI(object):
     def on_switch_panel(self, event):
         active_button = event.GetEventObject()
         self.switch_to_panel(active_button)
+
+    def on_button_results(self, event):
+        self.last_result.show()
 
     def on_click_button_options(self, event):
         self.options_gui.show()
@@ -155,7 +157,7 @@ class IkaLogGUI(object):
         self.buttons_layout.Add(self.button_options)
 
         self.button_preview.Bind(wx.EVT_BUTTON, self.on_switch_panel)
-        self.button_last_result.Bind(wx.EVT_BUTTON, self.on_switch_panel)
+        self.button_last_result.Bind(wx.EVT_BUTTON, self.on_button_results)
         self.button_options.Bind(wx.EVT_BUTTON, self.on_click_button_options)
 
     def engine_thread_func(self):
@@ -189,9 +191,8 @@ class IkaLogGUI(object):
         self.preview.Bind(EVT_INPUT_FILE_ADDED, self.on_input_file_added)
         self.preview.Bind(EVT_IKALOG_PAUSE, self.on_ikalog_pause)
 
-        self.last_result = LastResultPanel(self.frame, size=(640, 360))
+        self.last_result = ResultsGUI(self)
 
-        self.layout.Add(self.last_result, flag=wx.EXPAND)
         self.layout.Add(self.preview, flag=wx.EXPAND)
 
         self.frame.SetSizer(self.layout)

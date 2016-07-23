@@ -21,33 +21,44 @@
 import wx
 import cv2
 
+from ikalog.utils import *
 
-class LastResultPanel(wx.Panel):
+_ = Localization.gettext_translation('IkaUI', fallback=True).gettext
+
+class ResultsGUI(object):
+    def __init__(self, ikalog_gui):
+        self.ikalog_gui = ikalog_gui
+        self.frame = None
+        self.result_image = None
+        self.size = (640, 360)
+        self._init_frame()
+
+    def _init_frame(self):
+        if self.frame:
+            return
+
+        self.frame = wx.Frame(
+            self.ikalog_gui.frame, wx.ID_ANY, _("Last Result"), size=self.size)
+        self.draw_image()
+
+    def show(self):
+        if not self.frame:
+            self._init_frame()
+        self.frame.Show()
+        self.frame.Raise()
+
+    def draw_image(self):
+        if not self.result_image or not self.frame:
+            return
+        wx.StaticBitmap(self.frame, wx.ID_ANY, self.result_image,
+                        (0, 0), self.size)
 
     def on_game_individual_result(self, context):
-        self.latest_frame = cv2.resize(context['engine']['frame'], (640, 360))
-        self.Refresh()
-
-    def OnPaint(self, event):
-        if self.latest_frame is None:
-            return
-        width = 640
-        height = 360
-
-        frame_rgb = cv2.cvtColor(self.latest_frame, cv2.COLOR_BGR2RGB)
+        cv_frame = cv2.resize(context['engine']['frame'], self.size)
+        frame_rgb = cv2.cvtColor(cv_frame, cv2.COLOR_BGR2RGB)
 
         try:
-            self.bmp = wx.Bitmap.FromBuffer(width, height, frame_rgb)
+            self.result_image = wx.Bitmap.FromBuffer(*self.size, frame_rgb)
         except:
-            self.bmp = wx.BitmapFromBuffer(width, height, frame_rgb)
-
-        dc = wx.BufferedPaintDC(self)
-        dc.SetBackground(wx.Brush(wx.RED))
-        dc.Clear()
-        dc.DrawBitmap(self.bmp, 0, 0)
-
-    def __init__(self, *args, **kwargs):
-        self.latest_frame = None
-        wx.Panel.__init__(self, *args, **kwargs)
-        self.Bind(wx.EVT_PAINT, self.OnPaint)
-        # self.Bind(wx.EVT_SIZE, self.OnResize)
+            self.result_image = wx.BitmapFromBuffer(*self.size, frame_rgb)
+        self.draw_image()
