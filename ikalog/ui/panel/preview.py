@@ -43,6 +43,9 @@ class InputFilePanel(wx.Panel):
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
 
+        # This is used to determine if a file dialog is open or not.
+        self.prev_file_path = ''
+
         # Textbox for input file
         self.text_ctrl = wx.TextCtrl(self, wx.ID_ANY, '')
         self.text_ctrl.Bind(wx.EVT_TEXT, self.on_text_input)
@@ -59,20 +62,28 @@ class InputFilePanel(wx.Panel):
 
         self.SetSizer(top_sizer)
 
-    # wx event
-    def on_text_input(self, event):
+    def should_open_file(self, file_path):
+       return os.path.isfile(file_path) and self.prev_file_path != file_path
+
+    def update_button_label(self):
         file_path = self.text_ctrl.GetValue()
-        if os.path.isfile(file_path):
+        if self.should_open_file(file_path):
             self.button.SetLabel(_('Open'))
         else:
             self.button.SetLabel(_('Browse'))
 
     # wx event
+    def on_text_input(self, event):
+        self.update_button_label()
+
+    # wx event
     def on_button_click(self, event):
         file_path = self.text_ctrl.GetValue()
-        if os.path.isfile(file_path):
+        if self.should_open_file(file_path):
             evt = InputFileAddedEvent(input_file=file_path)
             wx.PostEvent(self, evt)
+            self.prev_file_path = file_path
+            self.update_button_label()
             return
 
         # file_path is invalid. Open a file dialog.
