@@ -44,6 +44,7 @@ def max_pooling_2d(self, img, xy=(2, 2)):
 
 
 def sub_average(img):
+    return img
     img_f = np.asarray(img, dtype=np.float32)
     for i in range(img_f.shape[2]):
         avg = np.average(img_f[:, :, i])
@@ -70,11 +71,10 @@ class WeaponRecoginizer(IconRecoginizer):
         img_gray = cv2.cvtColor(img_subavg, cv2.COLOR_BGR2GRAY)
         img_gray_laplacian = cv2.Laplacian(img_gray, cv2.CV_64F)
         img_laplacian_abs = cv2.convertScaleAbs(img_gray_laplacian)
-        a, img_laplacian_abs_thres = cv2.threshold(
-            img_laplacian_abs, laplacian_threshold, 255, 0)
 
-        img_gray_custom = get_img_custom(None, img_gray)
-        img_gray_custom = max_pooling_2d(None, img_gray, (4, 4))
+        img_gray_custom = get_img_custom(None, img_laplacian_abs)
+        img_gray_custom = max_pooling_2d(None, img_laplacian_abs, (4, 4))
+        img_gray_custom = self.apply_min_max(img_gray_custom)
         return np.array(img_gray_custom, dtype=np.float32)
 
     # Define weapon classification specific features.

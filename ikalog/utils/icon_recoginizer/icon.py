@@ -28,6 +28,12 @@ import numpy as np
 
 class IconRecoginizer(object):
 
+    def apply_min_max(self, features):
+        max_value = np.amax(features)
+        if max_value > 0:
+            features = ((features * 1.0) / max_value)
+        return features
+
     def down_sample_2d(self, src, w, h):
         sy, sx = src.shape[0:2]
 
@@ -39,10 +45,6 @@ class IconRecoginizer(object):
                 x2 = int(((x + 1) / w) * sx)
                 y2 = int(((y + 1) / h) * sy)
                 out_img[y, x] = np.amax(src[y1:y2, x1:x2])
-
-        max_value = np.amax(out_img)
-        if max_value > 0:
-            out_img = ((out_img * 1.0) / max_value)
 
         if 0:
             cv2.imshow('orig', cv2.resize(src, (128, 128),
@@ -71,9 +73,10 @@ class IconRecoginizer(object):
         img_laplacian_abs = cv2.convertScaleAbs(img_laplacian)
         img_laplacian_gray = \
             cv2.cvtColor(img_laplacian_abs, cv2.COLOR_BGR2GRAY)
-        ret, img_laplacian_mask = \
-            cv2.threshold(img_laplacian_gray, laplacian_threshold, 255, 0)
-        out_img = self.down_sample_2d(img_laplacian_mask, 12, 12)
+        #ret, img_laplacian_mask = \
+        #    cv2.threshold(img_laplacian_gray, laplacian_threshold, 255, 0)
+        out_img = self.down_sample_2d(img_laplacian_gray, 12, 12)
+        out_img = self.apply_min_max(out_img)
 
         if False:
             cv2.imshow('orig', cv2.resize(img, (160, 160)))
