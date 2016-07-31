@@ -19,8 +19,15 @@
 #
 
 import platform
+import os
 import re
+import sys
+import urllib3
 from subprocess import Popen, PIPE
+
+# Append the Ikalog root dir to sys.path to import Certifi.
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from ikalog.utils import Certifi
 
 def __get_ikalog_revision():
     try:
@@ -35,9 +42,30 @@ def __get_ikalog_revision():
 def __get_ikalog_version():
     return '%s (%s)' % (__get_ikalog_revision(), platform.system())
 
+def get_latest_versions():
+    '''Returns the latest downloadable versions from the web site.'''
+    version_dict = {}
+
+    url = 'http://dl.dropboxusercontent.com/u/14421778/IkaLog/download.html'
+    pool = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
+                               ca_certs=Certifi.where(),
+                               timeout=120.0)
+
+    lines = pool.urlopen('GET', url).data.decode('utf-8').split('\n')
+    for line in lines:
+        if 'IKALOG_VERSION' not in line:
+            continue
+        items = line.split(' ')
+        for i in range(len(items) - 1):
+            if 'IKALOG_VERSION' in items[i]:
+                version_dict[items[i]] = items[i + 1]
+
+    return version_dict
+
 IKALOG_VERSION =  __get_ikalog_version()
 GAME_VERSION = '2.8.0'
 GAME_VERSION_DATE = '2016-06-08_04'
 
 if __name__ == '__main__':
     print(IKALOG_VERSION)
+    print(get_latest_versions())
