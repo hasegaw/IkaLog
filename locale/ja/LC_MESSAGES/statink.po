@@ -59,3 +59,8 @@ msgstr "stat.ink からの応答メッセージをコンソールに表示"
 msgid "API Key"
 msgstr "APIキー"
 
+msgid "Confirm API key"
+msgstr "API キーを確認"
+
+msgid "Anonymizer (Hide player names)"
+msgstr "匿名化 (プレーヤー名を隠す)"

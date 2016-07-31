@@ -25,6 +25,7 @@ import threading
 import time
 import traceback
 import uuid
+import webbrowser
 
 import cv2
 import umsgpack
@@ -144,6 +145,11 @@ class StatInk(object):
         self.panel.SetSizer(self.layout)
         self.checkEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Post game results to stat.ink'))
+        self.editApiKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'API key')
+        self.button_statink = wx.Button(
+            self.panel, wx.ID_ANY, _('Confirm API key'))
+        self.button_statink.Bind(wx.EVT_BUTTON, self.on_click_button_statink)
+
         self.checkShowResponseEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Show stat.ink response in console'))
         self.checkTrackSpecialGaugeEnable = wx.CheckBox(
@@ -156,7 +162,6 @@ class StatInk(object):
             self.panel, wx.ID_ANY, _('Include Splat Zone counters (experimental)'))
         self.checkTrackInklingStateEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Include inkling status (experimental)'))
-        self.editApiKey = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
         self.radio_anon_disable = wx.RadioButton(
             self.panel, wx.ID_ANY, _('Disabled'))
@@ -166,6 +171,13 @@ class StatInk(object):
             self.panel, wx.ID_ANY, _('All players'))
 
         self.layout.Add(self.checkEnable)
+        self.api_key_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.api_key_sizer.Add(wx.StaticText(
+            self.panel, wx.ID_ANY, _('API Key')))
+        self.api_key_sizer.Add(self.editApiKey, -1, flag=wx.EXPAND)
+        self.api_key_sizer.Add(self.button_statink)
+        self.layout.Add(self.api_key_sizer, flag=wx.EXPAND)
+        self.layout.Add((20, 20))
         self.layout.Add(self.checkShowResponseEnable)
         self.layout.Add(self.checkTrackInklingStateEnable)
         self.layout.Add(self.checkTrackSpecialGaugeEnable)
@@ -176,11 +188,12 @@ class StatInk(object):
         self.layout.Add(self.radio_anon_disable)
         self.layout.Add(self.radio_anon_others)
         self.layout.Add(self.radio_anon_all)
-        self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, _('API Key')))
-        self.layout.Add(self.editApiKey, flag=wx.EXPAND)
 
         self.panel.SetSizer(self.layout)
+
+    # wx event
+    def on_click_button_statink(self, event):
+        webbrowser.open('https://stat.ink/profile')
 
     def encode_stage_name(self, context):
         return context['game']['map']
