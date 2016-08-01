@@ -65,6 +65,11 @@ class GameKillCombo(Scene):
     def on_game_dead(self, context):
         self.resetParams()
 
+    def on_game_reset(self, context):
+        self.resetParams()
+        self.max_kill_streak = 0
+        self.max_kill_combo = 0
+
     def _analyze(self, context):
         pass
 
