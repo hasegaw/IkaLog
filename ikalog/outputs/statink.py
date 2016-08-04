@@ -708,6 +708,7 @@ class StatInk(object):
         self.events = []
         self.time_last_score_msec = None
         self.time_last_objective_msec = None
+        self.time_last_special_gauge_msec = None 
         self.last_dead_event = None
         self._called_close_game_session = False
 
