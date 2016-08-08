@@ -450,7 +450,9 @@ class IkaEngine:
 
             scenes.GearSelect(self),
             scenes.Lobby(self),
+
             scenes.SpikeReroll(self),
+            scenes.SpikeUnlock(self),
 
             scenes.Blank(self),
             scenes.Amarec16x10Warning(self),
