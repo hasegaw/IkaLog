@@ -45,6 +45,6 @@ from .gear_select import GearSelect
 from .lobby import Lobby
 from .plaza_user_stat import PlazaUserStat
 
-from .downie import Downie
+from .spike.reroll import SpikeReroll
 from .blank import Blank
 from .misc.amarec_16x10 import Amarec16x10Warning

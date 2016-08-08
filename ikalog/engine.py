@@ -450,7 +450,7 @@ class IkaEngine:
 
             scenes.GearSelect(self),
             scenes.Lobby(self),
-            # scenes.Downie(self),
+            scenes.SpikeReroll(self),
 
             scenes.Blank(self),
             scenes.Amarec16x10Warning(self),

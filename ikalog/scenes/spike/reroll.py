@@ -28,10 +28,10 @@ from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 
 
-class Downie(StatefulScene):
+class SpikeReroll(StatefulScene):
 
     def reset(self):
-        super(Downie, self).reset()
+        super(SpikeReroll, self).reset()
         self._last_lottery_start_msec = - 100 * 1000
 
     def _analyze(self, context):
@@ -321,4 +321,4 @@ class Downie(StatefulScene):
         self._client_local = APIClient(local_mode=True)
 
 if __name__ == "__main__":
-    Downie.main_func()
+    SpikeReroll.main_func()
