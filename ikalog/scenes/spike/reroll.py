@@ -27,6 +27,8 @@ from ikalog.api import APIClient
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 
+from .spike import *
+
 
 class SpikeReroll(StatefulScene):
 
@@ -37,121 +39,14 @@ class SpikeReroll(StatefulScene):
     def _analyze(self, context):
         pass
 
-    # Brand
-
-    def _extract_brand_image(self, frame):
-        return frame[228:228 + 44, 954:954 + 44, :]
-
-    def _detect_gear_brand(self, gear_brand_image):
-        # FIXME
-        try:
-            gear_brands_knn = GearBrandRecoginizer()
-            gear_brands_knn.load_model_from_file()
-            gear_brands_knn.knn_train()
-            result, distance = gear_brands_knn.predict(gear_brand_image)
-            return result
-        except:
-            return None
-
-    # Gear Model
-
-    def _extract_gear_image(self, frame):
-        return frame[289:289 + 110, 547:547 + 120, :]
-
-    # Gear Level
-
-    def _extract_gear_level_image(self, frame):
-        return frame[408:408 + 18, 579:579 + 60, :]
-
-    def _detect_gear_level(self, gear_level_image):
-        img_level = matcher.MM_COLOR_BY_HUE(
-            hue=(30 - 5, 30 + 5), visibility=(200, 255))(gear_level_image)
-        cv2.imshow('level', img_level)
-        img_level_hist = np.sum(img_level / 255, axis=0)
-        img_level_x = np.extract(img_level_hist > 3, np.arange(1024))
-
-        level_width = np.amax(img_level_x) - np.amin(img_level_x)
-
-        if level_width < 10:
-            return 1
-
-        elif level_width < 40:
-            return 2
-
-        return 3
-
-    # Sub abilities
-
-    def _extract_sub_images(self, frame):
-        img_subs = []
-        for x in (718, 791, 864):
-            img_sub = np.array(frame[389: 389 + 53, x:x + 55, :])
-            img_sub = cv2.resize(img_sub, (52, 50))
-            img_subs.append(img_sub)
-        return img_subs
-
-    def _detect_gear_abilities(self, img_subs):
-        # FIXME: Exception handling
-        return self._client_local.recoginize_abilities(img_subs)
-
-    ##
-    # Detect constant gear parameters from the screenshot.
-    # Constant parameters: img_brand, img_gear, level
-    #
-    def _detect_gear_info(self, context):
-        img_brand = self._extract_brand_image(context['engine']['frame'])
-        img_gear = self._extract_gear_image(context['engine']['frame'])
-        img_level = self._extract_gear_level_image(context['engine']['frame'])
-        img_subs = self._extract_sub_images(context['engine']['frame'])
-
-        brand = self._detect_gear_brand(img_brand)
-        level = self._detect_gear_level(img_level)
-
-        context['game']['downie'] = {
-            'img_brand': img_brand,
-            'img_gear': img_gear,
-            'img_level': img_level,
-            'img_subs': img_subs,
-
-            'level': level,
-            'brand': brand,
-        }
-
-    ##
-    # Detect lottery results from the screenshots.
-    # 3X Sub abilitiees
-    #
     def _detect_gear_lottery_result(self, context):
         img_subs = context['game'].get('downie', {}).get('img_subs', None)
         if img_subs is None:
             return False
 
-        sub_abilities = self._detect_gear_abilities(img_subs)
+        sub_abilities = detect_gear_abilities(img_subs)
         context['game']['downie']['sub_abilities'] = sub_abilities
         return True
-
-    def _detect_sazae_and_cash(self, frame):
-        img_num_sazae = frame[137:137 + 30, 936:936 + 75]
-        img_cash = frame[137:137 + 30, 1054:1052 + 175]
-
-        cash = None
-        sazae = None
-        if 1:  # try:
-            cash = self.number_recoginizer.match_digits(
-                img_cash,
-                num_digits=(7, 7),
-                char_width=(5, 20),
-                char_height=(16, 24),
-            )
-
-        if 1:
-            sazae = self.number_recoginizer.match_digits(
-                img_num_sazae,
-                num_digits=(3, 3),
-                char_width=(5, 20),
-                char_height=(16, 24),
-            )
-        return {'cash': cash, 'sazae': sazae}
 
     def _state_default(self, context):
         if self.is_another_scene_matched(context, 'GameTimerIcon'):
@@ -168,11 +63,9 @@ class SpikeReroll(StatefulScene):
             return False
 
         if not self.mask_run.match(frame):
-            r = self._detect_sazae_and_cash(frame)
-            context['game']['downie'] = {
-                'cash': r['cash'],
-                'sazae': r['sazae'],
-            }
+            context['game']['downie'] = {}
+            context['game']['downie']['cash'] = detect_cash(frame)
+            context['game']['downie']['snails'] = detect_snails(frame)
             return False
 
         if self.matched_in(context, 5000, attr='_last_lottery_start_msec'):
@@ -240,12 +133,11 @@ class SpikeReroll(StatefulScene):
             if 0:
                 cv2.imwrite('gacha_done.png', context['engine']['frame'])
 
-            self._detect_gear_info(context)
+            detect_gear_info(context)
             self._detect_gear_lottery_result(context)
-            r = self._detect_sazae_and_cash(frame)
-            context['game']['downie']['sazae'] = r['sazae']
-            context['game']['downie']['cash'] = r['cash']
-            self._call_plugins('on_inkopolis_lottery_done')
+            context['game']['downie']['cash'] = detect_cash(frame)
+            context['game']['downie']['snails'] = detect_snails(frame)
+            self._call_plugins('on_spike_reroll_done')
 
             self._switch_state(self._state_default)
             return True
@@ -257,7 +149,7 @@ class SpikeReroll(StatefulScene):
         return True
 
     def dump(self, context):
-        self._detect_gear_info(context)
+        detect_gear_info(context)
         self._detect_gear_lottery_result(context)
 
         for key in context['game']['downie'].keys():
