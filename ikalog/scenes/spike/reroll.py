@@ -178,7 +178,7 @@ class SpikeReroll(StatefulScene):
     def _init_scene(self, debug=False):
         self.mask_gear_window = IkaMatcher(
             430, 165, 640, 90,
-            img_file='downie_lottery.png',
+            img_file='spike_reroll.png',
             threshold=0.9,
             orig_threshold=0.100,
             bg_method=matcher.MM_NOT_BLACK(),
@@ -189,7 +189,7 @@ class SpikeReroll(StatefulScene):
 
         self.mask_cancel = IkaMatcher(
             562, 569, 73, 20,
-            img_file='downie_lottery.png',
+            img_file='spike_reroll.png',
             threshold=0.9,
             orig_threshold=0.100,
             bg_method=matcher.MM_NOT_WHITE(),
@@ -200,7 +200,7 @@ class SpikeReroll(StatefulScene):
 
         self.mask_run = IkaMatcher(
             814, 569, 123, 42,
-            img_file='downie_lottery.png',
+            img_file='spike_reroll.png',
             threshold=0.9,
             orig_threshold=0.100,
             bg_method=matcher.MM_NOT_WHITE(),
