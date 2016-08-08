@@ -22,6 +22,7 @@ import sys
 import time
 
 from ikalog.utils import *
+from ikalog import constants
 
 
 # IkaLog Output Plugin: Write debug logs.
