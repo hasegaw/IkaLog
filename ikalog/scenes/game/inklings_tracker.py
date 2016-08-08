@@ -323,9 +323,9 @@ class InklingsTracker(StatefulScene):
         if abs(vs_xpos2) < 20:
             game_status = 'neutral'
         elif vs_xpos2 > 0:
-            game_status = 'advantage'
+            game_status = 'winning'
         else:
-            game_status = 'disadvantage'
+            game_status = 'losing'
 
         if game_status != self._last_game_status:
             self._call_plugins(
