@@ -70,6 +70,17 @@ class TestConstants(unittest.TestCase):
 
         return self._statink_v1_rules
 
+    def _get_statink_v1_gears(self, gear_type):
+        return self._fetch_statink_v1_gears(gear_type)
+
+    def _fetch_statink_v1_gears(self, gear_type):
+        assert gear_type in ['headgear', 'clothing', 'shoes']
+        url = 'https://stat.ink/api/v1/gear?type=%s' % gear_type
+        pool = urllib3.PoolManager()
+
+        req = pool.urlopen('GET', url)
+        return json.loads(req.data.decode('utf-8'))
+
     #
     # Test Cases
     #
@@ -84,9 +95,10 @@ class TestConstants(unittest.TestCase):
             statink_key = statink_weapon['key']
 
             found = (statink_key in weapons)
-            if not found: 
+            if not found:
                 if not (statink_key in upcoming_weapons):
-                    error_list.append('IkaLog does not have key %s' % statink_key)
+                    error_list.append(
+                        'IkaLog does not have key %s' % statink_key)
 
         assert len(error_list) == 0, '\n'.join(error_list)
 
@@ -104,6 +116,80 @@ class TestConstants(unittest.TestCase):
 
         assert len(error_list) == 0, '\n'.join(error_list)
 
+    def _test_statink_gears_lookup(self, gear_type, d):
+        statink_gears = self._get_statink_v1_gears(gear_type)
+        statink_keys = list(map(lambda g: g['key'], statink_gears))
+        ikalog_keys = list(d.keys())
+
+        assert len(statink_keys) > 1
+        assert len(ikalog_keys) > 1
+
+        all_keys = []
+        all_keys.extend(statink_keys)
+        all_keys.extend(ikalog_keys)
+
+        error_list = []
+        for key in all_keys:
+            if (key in statink_keys) and (key in ikalog_keys):
+                continue
+
+            if not (key in statink_keys):
+                error_list.append('stat.ink doesn''t have key %s' % key)
+
+            if not (key in ikalog_keys):
+                error_list.append('IkaLog doesn''t have key %s' % key)
+
+        if len(error_list) > 0:
+            print(error_list)
+            raise Exception()
+
+    def test_statink_gears_lookup(self):
+        from ikalog import constants
+        self._test_statink_gears_lookup('headgear', constants.gear_headgear)
+        self._test_statink_gears_lookup('clothing', constants.gear_clothing)
+        self._test_statink_gears_lookup('shoes', constants.gear_shoes)
+
+    def _test_classifier_gears_lookup(self, classifier, d):
+        constant_keys = list(d.keys())
+        classifier_keys = list(classifier.icon_names)
+        all_keys = []
+        all_keys.extend(constant_keys)
+        all_keys.extend(classifier_keys)
+
+        error_list = []
+        for key in all_keys:
+            if (key in classifier_keys) and (key in constant_keys):
+                continue
+
+            if not (key in classifier_keys):
+                error_list.append('the classifier doesn''t have key %s' % key)
+
+            if not (key in constant_keys):
+                error_list.append('IkaLog doesn''t have key %s' % key)
+
+        if len(error_list) > 0:
+            print(error_list)
+            raise Exception()
+
+    def test_classifier_gears_lookup(self):
+        from ikalog.utils.icon_recoginizer import GearRecoginizer
+        from ikalog import constants
+
+        headgear_classifier = GearRecoginizer('data/gears_head.knn.data')
+        headgear_classifier.load_model_from_file()
+        headgear_classifier.knn_train()
+
+        clothing_classifier = GearRecoginizer('data/gears_clothing.knn.data')
+        clothing_classifier.load_model_from_file()
+        clothing_classifier.knn_train()
+
+        shoes_classifier = GearRecoginizer('data/gears_shoes.knn.data')
+        shoes_classifier.load_model_from_file()
+        shoes_classifier.knn_train()
+
+        self._test_classifier_gears_lookup(
+            headgear_classifier, constants.gear_headgear)
+
     def test_death_reason_lookup_by_weapon_key(self):
         from ikalog.utils.character_recoginizer.deadly_weapon import DeadlyWeaponRecoginizer
         deadly_weapons = DeadlyWeaponRecoginizer()
@@ -114,7 +200,8 @@ class TestConstants(unittest.TestCase):
         death_reasons.extend(self._load_constants_module().deadly_sub_weapons)
         death_reasons.extend(
             self._load_constants_module().deadly_special_weapons)
-        death_reasons.extend(['hoko_shot', 'hoko_barrier', 'hoko_inksplode', 'propeller'])
+        death_reasons.extend(
+            ['hoko_shot', 'hoko_barrier', 'hoko_inksplode', 'propeller'])
 
         error_list = []
         # 順方向
