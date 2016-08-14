@@ -96,7 +96,9 @@ class SpikeUnlock(StatefulScene):
         if frame is None:
             return False
 
-        cv2.imshow('a', context['engine']['frame'])
+        if 0:
+            cv2.imshow('a', context['engine']['frame'])
+
         if not self.mask_gear_window.match(frame):
             # FIXME
             # not self.matched_in(context, 15000,
