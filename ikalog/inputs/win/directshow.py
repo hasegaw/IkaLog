@@ -148,4 +148,8 @@ if __name__ == "__main__":
         frame = obj.read_frame()
         if frame is not None:
             cv2.imshow(obj.__class__.__name__, frame)
-        cv2.waitKey(1)
+        k = cv2.waitKey(1)
+
+        if k == ord('s'):
+            import time
+            cv2.imwrite('screenshot_%d.png' % int(time.time()), frame)
