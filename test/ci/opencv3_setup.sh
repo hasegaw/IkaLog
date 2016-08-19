@@ -30,16 +30,32 @@ cd opencv/build
 
 git checkout 3.1.0
 
-# Fixme: hard-coded path
+ls -l /opt/python/
+ls -l /opt/python/3.?.?/lib/libpython*m.so
+ls -l /opt/python/3.?.?/lib/libpython*m.so
+
+PYTHON3_MAJOR_MINOR=3.4
+PYTHON3_LIBRARY=`ls -1d /opt/python/${PYTHON3_MAJOR_MINOR}.?/lib/libpython?.?m.so`
+PYTHON3_LIBRARIES=`ls -1d /opt/python/${PYTHON3_MAJOR_MINOR}.?/lib/libpython?.?m.so`
+PYTHON3_EXECUTABLE=`ls -1d /home/travis/virtualenv/python${PYTHON3_MAJOR_MINOR}.?/bin/python`
+PYTHON3_INCLUDE_DIR=`ls -1d /home/travis/virtualenv/python${PYTHON3_MAJOR_MINOR}.?/include/python?.?m`
+VERSION_STRING_REGEXP="libpython([0-9]+\.[0-9]+m)\.so"
+if [[ $PYTHON3_LIBRARY =~ $VERSION_STRING_REGEXP  ]]; then
+    PYTHON3LIBS_VERSION_STRING=${BASH_REMATCH[1]}
+else
+    echo Failed to detect python version.
+    exit 1
+fi
+
 cmake \
  -D CMAKE_INSTALL_PREFIX=${BASEDIR}/local \
  -D BUILD_opencv_python2=OFF \
  -D BUILD_opencv_python3=ON \
- -D PYTHON3LIBS_VERSION_STRING=3.4m \
- -D PYTHON3_LIBRARY=/opt/python/3.4.2/lib/libpython3.4m.so \
- -D PYTHON3_LIBRARIES=/opt/python/3.4.2/lib/libpython3.4m.so \
- -D PYTHON3_EXECUTABLE=/home/travis/virtualenv/python3.4.2/bin/python \
- -D PYTHON3_INCLUDE_DIR=/home/travis/virtualenv/python3.4.2/include/python3.4m \
+ -D PYTHON3LIBS_VERSION_STRING=$PYTHON3LIB_VERSION_STRING \
+ -D PYTHON3_LIBRARY=$PYTHON3_LIBRARY \
+ -D PYTHON3_LIBRARIES=$PYTHON3_LIBRARY \
+ -D PYTHON3_EXECUTABLE=$PYTHON3_EXECUTABLE \
+ -D PYTHON3_INCLUDE_DIR=$PYTHON3_INCLUDE_DIR \
  -D CMAKE_BUILD_TYPE=RELEASE \
  -D WITH_CUDA=OFF -D WITH_OPENCL=OFF -D WITH_OPENNI=OFF -D BUILD_TESTS=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_EXAMPLES=OFF -D WITH_VTK=OFF -D WITH_1394=OFF ..
 
