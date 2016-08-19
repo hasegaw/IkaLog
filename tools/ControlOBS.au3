@@ -36,6 +36,13 @@
 #include <FileConstants.au3>
 #include <StringConstants.au3>
 
+
+;環境と好みに合わせて値を設定してください。
+Const $STARTsleepSec = 0    ;録画開始の待機時間（秒で指定）
+Const $STOPsleepSec = 10    ;録画終了の待機時間（秒で指定）
+Const $RENAMEsleepSec = 3   ;録画終了後リネーム処理までの待機時間（秒で指定）
+
+
 Func RenameFile($source)
 	Local $dest = EnvGet('IKALOG_MP4_DESTNAME')
 	$dest = StringReplace($dest, "/", "\")
@@ -110,18 +117,51 @@ Func ControlOBS($stop)
 
 	If $click Then
 		If $stop Then
-			Sleep(1000 * 20)
+			; 録画終了待機
+			Sleep(1000 * $STOPsleepSec)
+		Else
+			; 録画開始待機
+			Sleep(1000 * $STARTsleepSec)
 		EndIf
 
 		ControlClick($hWnd, '', 'Button5')
 
 		If $stop Then
-			Sleep(1000 * 10)
+			Sleep(1000 * $RENAMEsleepSec)
 			Local $file  = FindRecentRecording()
 			RenameFile($file)
 		EndIf
 	EndIf
 EndFunc
 
-$stop = StringCompare($CmdLine[1], 'stop') == 0
-ControlOBS($stop)
+
+Func DetectOBSMultiPlatform()
+    Local $hWnd = WinWait('[CLASS:Qt5QWindowIcon;REGEXPTITLE:OBS\s]', '', 1)
+
+	If $hWnd == 0 Then
+		Return False
+	EndIf
+
+    Return True
+EndFunc
+
+
+
+if ($CmdLine[0] = 0) Then	;exeにコンバートした時 確認に便利かなと考え追加
+   Local $msg = StringFormat("%s%s",     "--- 起動オプション---", @LF)
+   $msg = StringFormat("%s%s%s%s%s",$msg, "録画開始:", @ScriptName, " start", @LF)
+   $msg = StringFormat("%s%s%s%s", $msg, "録画終了:", @ScriptName, " stop" & @LF & @LF)
+   $msg = StringFormat("%s%s%s",    $msg, "--- 現在の設定 --- ", @LF)
+   $msg = StringFormat("%s録画開始の待機時間 %s秒%s", $msg, $STARTsleepSec, @LF)
+   $msg = StringFormat("%s録画終了の待機時間 %s秒%s", $msg, $STOPsleepSec,  @LF)
+   $msg = StringFormat("%sリネームの待機時間 %s秒%s", $msg, $RENAMEsleepSec, @LF)
+   MsgBox(64, "起動オプション & 現在の設定", $msg)
+
+   if (DetectOBSMultiPlatform()) Then
+       MsgBox(64, "Detected OBS Multiplatform", "This script supports OBS Classic only")
+   EndIf
+
+Else
+   $stop = StringCompare($CmdLine[1], 'stop') == 0
+   ControlOBS($stop)
+EndIf
