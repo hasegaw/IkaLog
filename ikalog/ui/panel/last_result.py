@@ -58,7 +58,7 @@ class ResultsGUI(object):
         frame_rgb = cv2.cvtColor(cv_frame, cv2.COLOR_BGR2RGB)
 
         try:
-            self.result_image = wx.Bitmap.FromBuffer(*self.size, frame_rgb)
+            self.result_image = wx.Bitmap.FromBuffer(frame_rgb)
         except:
-            self.result_image = wx.BitmapFromBuffer(*self.size, frame_rgb)
+            self.result_image = wx.BitmapFromBuffer(frame_rgb)
         self.draw_image()
