@@ -20,7 +20,6 @@
 
 import time
 import os
-import subprocess
 import traceback
 import threading
 
@@ -148,9 +147,7 @@ class OBS(object):
         cmd = '%s %s' % (self.control_obs, mode)
         print('Running %s' % cmd)
         try:
-            args = [self.control_obs, mode]
-            if subprocess.call(args, shell=True) != 0:
-                print('%s: Subprocess returned non-zero value' % self)
+            os.system(cmd)
         except:
             print(traceback.format_exc())
 
