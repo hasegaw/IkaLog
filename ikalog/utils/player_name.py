@@ -55,6 +55,9 @@ def normalize_player_name(img_name, debug=False):
     if not (img_name_left < img_name_right):
         return None
 
+    if not (img_name_top < img_name_bottom):
+        return None
+
     img_name_w = img_name_w[
         img_name_top:img_name_bottom, img_name_left:img_name_right]
 
