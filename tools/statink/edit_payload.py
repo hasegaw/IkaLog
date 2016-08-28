@@ -29,7 +29,7 @@ import umsgpack
 
 # Append the Ikalog root dir to sys.path to import IkaUtils.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-from ikalog.constants import rules, stages, udemae_strings, weapons
+from ikalog.constants import gear_abilities, rules, stages, udemae_strings, weapons
 
 LOBBY_LIST = [
   'DELETE',
@@ -42,6 +42,7 @@ LOBBY_LIST = [
 ]
 RESULT_LIST = ['DELETE', 'win', 'lose']
 
+GEAR_LIST = ['DELETE'] + list(gear_abilities.keys())
 RULE_LIST = ['DELETE'] + list(rules.keys())
 MAP_LIST = ['DELETE'] + list(stages.keys())
 WEAPON_LIST = ['DELETE'] + list(weapons.keys())
@@ -66,6 +67,9 @@ def get_args():
     parser.add_argument('--rank_exp_after', type=int,
                         choices=range(0, 100), metavar='[0 - 99]')
     parser.add_argument('--link_url', type=str)
+    parser.add_argument('--clothing', choices=GEAR_LIST)
+    parser.add_argument('--headgear', choices=GEAR_LIST)
+    parser.add_argument('--shoes', choices=GEAR_LIST)
 
     return vars(parser.parse_args())
 
@@ -86,6 +90,19 @@ def main():
         else:
             prev_value = payload.get(key, '')
             payload[key] = args[key]
+        print('Modified %s : %s -> %s' % (key, str(prev_value), str(value)))
+
+    # Gears. Primary ability is only supported.
+    gear_keys = ['clothing', 'headgear', 'shoes']
+    for key in gear_keys:
+        value = args.get(key)
+        if not value:
+            continue
+        if value == 'DELETE':
+            prev_value = payload['gears'].pop(key)
+        else:
+            prev_value = payload['gears'][key].get('primary_ability', '')
+            payload['gears'][key]['primary_ability'] = args[key]
         print('Modified %s : %s -> %s' % (key, str(prev_value), str(value)))
 
     output = args.get('output') or args['input']
