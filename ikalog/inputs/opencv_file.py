@@ -176,7 +176,10 @@ class CVFile(VideoInput):
         build_info = cv2.getBuildInformation()
         ffmpeg_line = re.search(r'FFMPEG\:\s+(.*)', build_info)
 
-        if not (ffmpeg_line and ffmpeg_line.group(1) == 'YES'):
+        is_osx = IkaUtils.isOSX()
+        is_ffmpeg_enabled = (ffmpeg_line and ffmpeg_line.group(1) == 'YES')
+
+        if (is_osx and not is_ffmpeg_enabled):
             IkaUtils.dprint('%s: OpenCV misconfiguration detected.\n'
                 '  - IkaLog may experience serious performance degradation.\n'
                 '  - IkaLog may not able to read several video formats.\n'
