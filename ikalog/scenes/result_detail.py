@@ -664,7 +664,10 @@ class ResultDetail(StatefulScene):
 
         return entry
 
-    def analyze(self, context):
+    def extract_entries(self, context, img=None):
+        if img is None:
+            img = self.adjust_image(context)
+
         # 各プレイヤー情報のスタート左位置
         entry_left = 610
         # 各プレイヤー情報の横幅
@@ -673,19 +676,26 @@ class ResultDetail(StatefulScene):
         entry_height = 45
         entry_top = [101, 166, 231, 296, 431, 496, 561, 626]
 
-        img = self.adjust_image(context)
-
-        # インクリング一覧
-        context['game']['players'] = []
-        weapon_list = []
-        entry_id = 0
+        img_entries = []
 
         for entry_id in range(len(entry_top)):  # 0..7
             top = entry_top[entry_id]
 
             img_entry = img[top:top + entry_height,
                             entry_left:entry_left + entry_width]
+            img_entries.append(img_entry)
 
+        return img_entries
+
+    def analyze(self, context):
+        context['game']['players'] = []
+        weapon_list = []
+
+        img = self.adjust_image(context)
+        img_entries = self.extract_entries(context, img)
+
+        for entry_id in range(len(img_entries)):
+            img_entry = img_entries[entry_id]
             e = self.analyze_entry(img_entry)
 
             if e.get('rank', None) is None:
