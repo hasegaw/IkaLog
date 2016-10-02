@@ -722,6 +722,15 @@ class ResultDetail(StatefulScene):
         img = self.adjust_image(context)
         img_entries = self.extract_entries(context, img)
 
+        # Adjust img_entries rect using result of
+        # self.is_entries_still_sliding().
+        # This allows more accurate weapon classification.
+        diff_x = self.is_entries_still_sliding(img_entries)
+        if diff_x > 0:
+            img_entry = img_entries[7]
+            w = img_entry.shape[1] - diff_x
+            img_entries[7][:, 0: w] = img_entry[:, diff_x: w + diff_x]
+
         for entry_id in range(len(img_entries)):
             img_entry = img_entries[entry_id]
             e = self.analyze_entry(img_entry)
