@@ -698,7 +698,10 @@ class ResultDetail(StatefulScene):
 
             img_XX_hist_x = np.extract(img_XX_hist > 0, array0to14[
                                        0:img_XX_hist.shape[0]])
-            # FIXME: 8人揃っていないときに死ぬ
+
+            if img_XX_hist_x.shape[0] == 0:
+                continue
+
             img_XX_hist_x_avg = np.average(img_XX_hist_x)
             x_pos_list.append(img_XX_hist_x_avg)
 
