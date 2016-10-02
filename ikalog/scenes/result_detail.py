@@ -706,7 +706,7 @@ class ResultDetail(StatefulScene):
         x_avg_max = np.amax(x_pos_list)
         x_diff = int(x_avg_max - x_avg_min)
 
-        if 1:  # debug
+        if 0:  # debug
             print('is_entries_still_sliding: x_pos_list %s min %f max %f diff %d' %
                   (x_pos_list, x_avg_min, x_avg_max, x_diff))
 
