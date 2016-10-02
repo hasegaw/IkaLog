@@ -671,7 +671,7 @@ class ResultDetail(StatefulScene):
         # 各プレイヤー情報のスタート左位置
         entry_left = 610
         # 各プレイヤー情報の横幅
-        entry_width = 610
+        entry_width = 630
         # 各プレイヤー情報の高さ
         entry_height = 45
         entry_top = [101, 166, 231, 296, 431, 496, 561, 626]
@@ -727,9 +727,25 @@ class ResultDetail(StatefulScene):
         # This allows more accurate weapon classification.
         diff_x = self.is_entries_still_sliding(img_entries)
         if diff_x > 0:
-            img_entry = img_entries[7]
-            w = img_entry.shape[1] - diff_x
-            img_entries[7][:, 0: w] = img_entry[:, diff_x: w + diff_x]
+            white_filter = matcher.MM_WHITE()
+            index = 7
+
+            # Find the last player's index.
+            while (0 < index) and \
+                    (np.sum(white_filter(img_entries[index])) < 1000):
+                index -= 1
+
+            # adjust the player's rect 3 times.
+            for i in range(3):
+                diff_x = self.is_entries_still_sliding(img_entries)
+                img_entry = img_entries[index]
+                w = img_entry.shape[1] - diff_x
+                img_entries[index][:, 0: w] = img_entry[:, diff_x: w + diff_x]
+
+            if 0:
+                cv2.imshow('a', img_entries[0])
+                cv2.imshow('b', img_entries[index])
+                cv2.waitKey(0)
 
         for entry_id in range(len(img_entries)):
             img_entry = img_entries[entry_id]
