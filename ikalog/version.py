@@ -33,7 +33,7 @@ def __get_ikalog_revision():
         return 'unknown'
 
 def __get_ikalog_version():
-    return '%s (%s)' % (__get_ikalog_revision(), platform.system())
+    return '%s (%s %s)' % (__get_ikalog_revision(), platform.system(), platform.machine())
 
 IKALOG_VERSION =  __get_ikalog_version()
 GAME_VERSION = '2.8.0'
