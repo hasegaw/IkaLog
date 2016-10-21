@@ -172,582 +172,585 @@
       <h2>
         <span class="fa fa-tags fa-fw"></span>更新履歴 / Changelog
       </h2>
+<pre id="changelog-md">
+### WinIkaLog20160723_174727_8667dd4.zip
 
-      <p>WinIkaLog20160723_174727_8667dd4.zip</p>
-      <ul>
-      <li>Finish! の帯の検出方法を元に戻した</li>
-      <li>ゲーム中のピンチ！を記録するようにした。 stat.ink ではナワバリバトルの際にタイムラインに表示されるようです</li>
-      <li>Now "danger!" is logged in events. In stat.ink, the status will be shown in timelline.</li>
-      </ul>
-
-      <p>WinIkaLog20160719_002248_ae9f82d.zip</p>
-      <ul>
-      <li>ボタンを押すのではなくプレビュー自体を押すとポーズされるよう仕様が変わった</li>
-      <li>設定ウインドウのデザイン変更、サブウインドウ化</li>
-      <li>使用インプットが表示され、ファイル入力モードの場合はプレビュー上部分からファイル指定可能に。ただしOpenCVの都合により2バイト文字を含むファイル名が通らない可能性があります</li>
-      <li>Finish! の帯の検出方法が変わった</li>
-      <li>Pause button is not deprecated. Click preview image to enable/disable.</li>
-      <li>Configuration panel is now renewed and splitted from the main window.</li>
-      <li>The main window now shows your input type. You can select file using the panel above the preview.</li>
-      <li>Finish tape will be detected using new features. (JA only, as of today)</li>
-      </ul>
-
-      <p>WinIkaLog20160623_092226_dc23547.zip</p>
-      <ul>
-      <li>プレイ中に IkaLog 内で例外が発生した場合に stat.ink に送信がされない問題を修正</li>
-      <li>敵を倒したときの名前認識コードが不安定かつ精度が出ていないようなので無効化</li>
-      <li>ギアパワー認識のモデルを更新</li>
-      <li>Fixed a bug stat.ink submission fails if any expcetions occured in the battle</li>
-      <li>Disabled detecting names when splatted someone; due to low accuracy and unstable behavior</li>
-      <li>Updated ML model for accurate gear ability recognition</li>
-      </ul>
-
-      <p>WinIkaLog20160615_225126_8ad43d8</p>
-      <ul>
-      <li>インクリング追跡を更新し、ゲーム中、散歩中などを見分けるようなった（がそれ以上の変更はなし）</li>
-      <li>敵を倒したときの名前を認識するコードを追加した（がまだ外から使えない）</li>
-      <li>インク切れ警告の認識を追加。 stat.ink 対応済</li>
-      <li>ボールドマーカー7がバレルスピナーリミックスになってしまう問題を解消</li>
-      <li>Inkling Tracking update</li>
-      <li>detect names of inklings when splatted someone</li>
-      <li>Low ink detection</li>
-      <li>Updated ML model to fix bold7 detection issue</li>
-      </ul>
-
-      <p>WinIkaLog20160610_105425_b1915d2</p>
-      <ul>
-      <li>Sheldon's Picks Vol. 2 Update for NA and EU users. Thanks for Clovervidia!</li>
-      <li>Fixed detecting of active squids at the beginning of the
-      <li>Other majorr changes made in 579408a:</li>
-      <ul>
-      <li>Updates for JSON log file operation<l/li>
-      <li>Sheldon's Picks Vol. 2 for Japanese players</li>
-      </ul>
-      </ul>
-
-      <p>WinIkaLog20160609_005508_579408a</p>
-      <ul>
-      <li>stat.ink: IkaLog が対応するゲームのバージョンや更新内容などを通知する機能を追加</li>
-      <li>JSON: ファイル操作方法を改善</li>
-      <li>ゲーム開始・終了時刻の取得方法の改善</li>
-      <li>内部で持つブキ ID を日本語名から stat.ink キーに完全変更</li>
-      <li>コンボ数／ストリーク数のカウントを行うようになった  (Thanks for southws!)</li>
-      <li>ブキチコレクション Vol. 2 対応（日本語のみ）</li>
-      <li>ほか細かな内部変更多数</li>
-      </ul>
-
-      <p>WinIkaLog20160508_191517_64309ed</p>
-      <ul>
-      <li>stat.ink: Fixed invalid link_url submission</li>
-      <li>stat.ink: link_url にゴミが入るのを修正</li>
-      </ul>
-
-      <p>WinIkaLog20160508_141345_69aa9b4</p>
-      <ul>
-      <li>IkaLog engine: continue running in case of any excptions in scene detection classes. The exception will be logged in agent variables table.</li>
-      <li>Reduced CPU load in result_gears scene.</li>
-      <li>Load DLL once at startup.</li>
-      <li>stat.ink: Post img_gear screenshot. It will be used for machine learning.</li>
-      <li>Detect and warn for 16x10 image from AmaRecTV.</li><br />
-      <li>シーン認識クラスでの例外で止まらないようにしました。なお例外は stat.ink の追加データ欄に記録されます。（ユーザ環境でもバグ発生状況調査用）</li>
-      <li>リザルト画面（ギア、オカネ）処理時の CPU 負荷を低減</li>
-      <li>画面キャプチャ DLL の読み込みを起動毎1回だけ行うよう修正</li>
-      <li>stat.ink: リザルト画面（ギア、オカネ）を 送信します。戦績画面には表示されません。機械学習の強化目的につかわれます。</li>
-      <li>アマレコTVで16x10のアスペクト比になっているっぽい時に警告</li>
-      </ul>
-
-      <p>WinIkaLog20160427_200401_a9a255c</p>
-      <ul>
-      <li>English:  English Sheldon's Picks Vol. 1 and Special Weapons</li>
-      <li>Game Finish &amp; Judge scene detection update for specific video capture devices.</li>
-      <li>Extended timeout value to avoid the game being "aborted" due to network connectivity issue at the end of the match.</li>
-      <li>Fixed UnicodeDecodeError when enumerating capture devices that have non-ASCII characters.
-      <li>英語版ブキチコレクション、スペシャルウエポン検出を追加</li>
-      <li>ゲームのフィニッシュテープ、その後のジャッジ君シーンが特定ビデオキャプチャデバイスで検出できない場合があったため調整</li>
-      <li>ゲームのフィニッシュテープが出た状態で固まった場合にゲームを見失いにくくした</li>
-      <li>起動時、ビデオキャプチャデバイス名に非ASCII文字が含まれると UnicodeDecodeError が出て起動しない問題を修正</li>
-      </ul>
-
-      <p>WinIkaLog20160416_035918_dcbf39d</p>
-      <ul>
-      <li>stat.ink: 投稿完了イベント(プラグイン、 WebSocket) 追加。<a href="http://umezawa.dyndns.info/wordpress/?p=5877">IkaLog の stat.ink 投稿の URL を Slack に自動で貼る</a> に対応した最初の WinIkaLog です</li>
-      <li>stat.ink: video_url は無駄に投稿される問題を修正</li>
-      <li>ブキ機械学習データのアップデート</li>
-      </ul>
-
-      <p>WinIkaLog20160413_145309_16bb777</p>
-      <ul>
-      <li>Supports 8 weapons unlocked today. Full support in Japanese. Some machine learning stuff is still incomplete for other languages.</li>
-      <li>Now Stage/Mode detection is activated once per evey 1.5 seconds. It reduces CPU usage but also may reduces its accuracy.</li>
-      <li>ブキチコレクション対応</li>
-      <li>ゲーム開始認識（ステージ名、ルール名）を1.5秒毎に変更。負荷は軽くなるものの認識失敗リスクはあがります</li>
-      </ul>
-
-      <p>WinIkaLog20160410_035503_af41f83</p>
-      <ul>
-      <li>IkaLog now detects aborted games (Thanks!)</li>
-      <li>stat.ink: Send agent_variables (extra information in the battle record)</li>
-      <li>stat.ink: IkaLog now send uuid for the each games; to avoid duplicated registration.</li>
-      <li>stat.ink: Modified timeout.</li>
-      <li>Gear Recognition now detects the icons properly, even in offseted video input.</li>
-      <li>Video Recording: AmaRecTV & OBS script updated. (Thanks, sodoko-san!)</li>
-      <li>Fixed false lobby "matched" event (Thanks syptn-san!)</li>
-      <li>Increased stability of objet tracking codes in ranked games.</li>
-      <li>stat.ink: Fixed protocol violation in SplatFest.</li>
-      <li>New weapon detection code introduced to support the upcoming weapons.</li>
-      <li>ゲームの中断を検出するようになった</li>
-      <li>stat.ink: IkaLog独自の追加情報を送信するようになった</li>
-      <li>stat.ink: stat.ink 側が重複投稿を検出するための uuid を送信するようになった。</li>
-      <li>stat.ink: 通信タイムアウトを変更した</li>
-      <li>ギア認識を強化。画面がオフセットされている場合の認識率が向上</li>
-      <li>アマレコ/OBS制御スクリプトのアップデート(Thanks そどこさん)</li>
-      <li>ロビーマッチ成立イベントが想定外に発生することがある問題を修正(Thanks syptnさん)</li>
-      <li>入力画質が悪い場合にホコ／ヤグラ、イカ生死の検出コードで落ちたりしそうなところを安全よりに修正</li>
-      <li>stat.ink:フェス中に「スーパー」が遅れない不具合を修正</li>
-      <li>ブキ認識時の特徴量のとりかたを変更した。今後の追加ブキ対策。実質精度はまだ未検証</li>
-      <li>そのほか WinIkaLog の利用では影響がないところでも色々変更</li>
-      </ul>
-
-      <p>WinIkaLog20160216_204749_4d96cb4 - in-development snapshot</p>
-      <ul>
-      <li>Added more metrics: Inklings live tracking, Special gauage tracking, and Special Weapon detection.</li>
-      <li>Fixed reading from movie file caused an exception.</li>
-      <li>Fixed an exception in the case no any sources are comfigured.</li>
-      <li>Downie's sub-abilities lottery detection (in JA only yet)</li>
-      <li>Several performance tunings.</li>
-      <li>stat.ink: Shows time taken and amount of bytes when finished communication with stat.Ink. </li>
-      <li>stat.ink: Ajdusted "Dead" event timing.</li>
-      <li>イカの生死状況トラッキング、スペシャルゲージのトラッキング、スペシャル発動の検出を追加</li>
-      <li>（常用されることは想定していないが） ムービー読み込みができなくなっていた問題を修正</li>
-      <li>キャプチャデバイスが設定されていない状態で起動されるとエンジンが中でクラッシュしていた問題を修正</li>
-      <li>ダウニーガチャへの実験的対応。サブパワーガチャを検出すると WebSocket にイベントが出ます</li>
-      <li>stat.ink: 死亡イベントのタイミングを補正</li>
-      <li>stat.ink: 送信時に所要時間および送信データ量を表示</li>
-      <li>負荷低減のためのチューニング</li>
-      </ul>
-
-      <p>WinIkaLog20160128_220730_da38180</p>
-      <ul>
-      <li>Most of video capture part is rewritten. </li>
-      <li>Fixed GUI layout issues</li>
-      <li>Update JA localization</li>
-      <li>ビデオ入力まわりの書き直し</li>
-      <li>GUI レイアウトの修正</li>
-      <li>日本語のGUIメッセージ翻訳のアップデート</li>
-      </ul>
-
-      <p>WinIkaLog20160127_020136_1244c8b</p>
-      <ul>
-      <li>Most of video capture part is rewritten. (still WIP)</li>
-      <li>The new input allows frame-skip. This version processes up to 10 frames per a second. In some systems, this behavior improves system performance.</li>
-      <lI>Now IkaLog in non-ASCII named folders can be run.</li>
-      <li>Several image recogniton updates for en, and fr</li>
-      <li>ビデオ入力まわりの書き直し</li>
-      <li>ビデオ入力まわりのアップデートにより、より賢いフレームスキップがつきました。環境によっては負荷が低減する場合があります。本バージョンでは秒間10フレームを上限に処理します。</li>
-      <li>日本語名がついたフォルダの中にIkaLogがあると起動しない問題への対処 (OpenCVライブラリの不具合っぽい)</li>
-      <li>海外版用マスクデータの更新</li>
-      </ul>
-
-      <p>WinIkaLog20160122_153142_f2a9c82</p>
-      <ul>
-      <li>Added a new stage: Ancho-V Games. (ja, en_NA)</li>
-      <li>Added and trained a deadly_weapons key propeller.</li>
-      <li>Cause of Death detected is now enabled only for ja, and en_NA.</li>
-      <li>Added en_EU support.</li>
-      <li>新ステージ アンチョビットゲームズを追加</li<br />
-      <li>新しい死因 プロペラを追加</li>
-      <li>死因認識未対応の言語では死因認識しないようにした</li>
-      <li>欧州版のデータおよび起動スクリプトを追加</li>
-      </ul>
-
-      <p>WinIkaLog20160119_232120_33bf400</p>
-      <ul>
-      <li>Workaround for IndexErrror on deadly weapon detection. The issue seemed to be happend in en_NA locale only..</li>
-      </ul>
-
-      <p>WinIkaLog20160118_204315_eda55d5</p>
-      <ul>
-      <li>en_NA版死因データを追加（作業途中だけど、ないと落ちるので）<br>Added en_NA version of deadly_weapons ML data, to prevent app crash.</li>
-      </ul>
-
-      <p>WinIkaLog20160116_175430_defce34</p>
-      <ul>
-      <li>足りなかったファイルを追加</li>
-      </ul>
-
-      <p>WinIkaLog20160117_191333_541eb9e</p>
-      <ul>
-      <li>ブキ・死因認識にハイドラントカスタムを追加</li>
-      <li>ブキ認識データを全体的に更新</li>
-      <li>日本語モードでのみフェス称号認識をトライするよう変更</li>
-      </ul>
-
-      <p>WinIkaLog20160115_224220_db6470f</p>
-      <ul>
-      <lI>起動時に言語設定をコンソールに表示するようにした</li>
-      <li>IkaUI 内部の一部リファクタリング</li>
-      <li>DirectShow インプットを追加。 MonsterX U3.0R, BlackMagic Design Intensity Shuttle USB3.0 の初期化などを確認</li>
-      <li>英語版の死因分析対応（機械学習は未）</li>
-      <li>WiiU ホーム画面のAKAZE特徴データを言語で切り替え可能に。 ja/en に対応</li>
-      <lI>ScreenCapture を国際語化（日本語リソースがないので英語になってる）</li>
-      </ul>
-
-      <p>WinIkaLog20160112_131458_1e2e85e</p>
-      <ul>
-      <li>stat.ink: ギア画面が送信が正しく行われない問題を修正</li>
-      </ul>
-
-      <p>WinIkaLog20160112_131458_1e2e85e</p>
-      <ul>
-      <li>stat.ink: ギア画面が送信が正しく行われない問題を修正</li>
-      </ul>
-
-      <p>WinIkaLog20160112_095352_bc354e6</p>
-      <ul>
-      <li>Twitter に送信できない問題を修正（したつもりでテストはしていない）</li>
-      <li>ギア画面が表示されないゲームモード（プライベート）で stat.ink 送信に失敗する問題を修正</li>
-      </ul>
-
-      <p>WinIkaLog20160111_203352_710c6db</p>
-      <ul>
-      <li>WinIkaLog を起動するときは WinIkaLog_ja.BAT を実行してください。日本版として動作します。</li>
-      <li>ゴーサインが認識されていなかった問題を修正</li>
-      <li>死因 スクリュースロッシャー、ヒッセン・ヒューを追加</li>
-      <li>ギア認識結果を stat.ink に送信 (thanks hina!)</li>
-      <li>環境変数 LANG を見て UI の言語切り替えを行うようにした。 ja で日本語</li>
-      <li>環境変数 IKALOG_LANG を見て使用するマスクの切り替えを行うようにした。とりあえず ja で日本版、 en_NA で北米版</li>
-      <li>海外版スプラトゥーン対応のためディレクトリ構造を整理</li>
-      <li>北米版スプラトゥーン対応マスクを追加 (thanks eli, and clovervidia!)</li>
-      <li>WebSocketサーバ: IkaUI.exe に追加</li>
-      <li>stat.ink: 送信処理を非同期化</li>
-      <li>IkaUI 設定画面でボタンが見えなくなることがある問題を修正 (Thanks gleenta!)
-      <li>そのほか細かい変更</li>
-      </ul>
-
-      <p>WinIkaLog20151230_215706_44444bb</p>
-      <ul>
-      <li>ブキ認識にホクサイ・ヒューを追加　（死因認識は未）
-      </ul>
-
-      <p>WinIkaLog20151230_215706_44444bb</p>
-      <ul>
-      <li>旅行先なので一切テストしていません</li>
-      <li>シュッツル鉱山に対応 (thanks to deathmetalland)</li>
-      </ul>
-
-      <p>WinIkaLog20151227_172426_f58fce2</p>
-      <ul>
-      <li>ヒッセン・ヒュー、Rブラスタ—エリートデコのブキ認識データを追加</li>
-      <li>ブキ名を基本的に stat.ink ID ベースで扱うよう変更</li>
-      <li>ブキ画像の特徴抽出方法、学習量を調整。stat.inkユーザのブキ画像をベースに全体的に再学習させた</li>
-      <li>プライベートマッチで４人揃っていないチームではその人数の情報がリザルトとして返されるようになった（これまでは８人分のデータが出ていた）</li>
-      <li>あまり塗っていないとナワバリバトルのグラフ＠stat.inkが短くなりそうな問題に対策</li>
-      <li>ギア認識コード追加 ((thanks to hrhtspr)</li>
-      </ul>
-
-      <p>WinIkaLog20151213_015731_10d4501</p>
-      <ul>
-      <li>スプラスピナーコラボ、バレルスピナーデコ、スクイックリンβのブキ認識データを追加</li>
-      </ul>
-
-      <p>WinIkaLog20151205_032948_6a5543b</p>
-      <ul>
-      <li>マヒマヒリゾート対応(Thanks to deathmetalland!)</li>
-      <li>棒読みちゃん対応の改良(thanks to hina!)</li>
-      </ul>
-
-      <p>WinIkaLog20151201_011646_12fbbfa</p>
-      <ul>
-      <li>ギア・オカネのリザルト画面が終わった時点でTwitter投稿やstat.ink送信を開始するように変更</li>
-      <li>倒したときの認識アルゴリズムを一部変更</li>
-      <li>CVFileによる読み込み時、フレームをおよそ100ms単位でスキップするようにした</li>
-      した</li>
-      <li>stat.ink: ゲーム中の時系列情報を送信。ガチエリア、ガチホコ／ガチヤグラのカウントをある程度認識して送信します。</li>
-      <ul>
-      <li>ガチエリアの場合は残りカウント数（ロスタイムは無視）を認識しています。</li>
-      <li>ガチホコ／ガチヤグラはホコ／ヤグラの位置を画面上のバーから認識しています。<br>
-      夏に試作したアルゴリズムをそのままつかっており、 H.264/MPEG ブロックノイズへの耐性はなく、画面ズレが生じているビデオキャプチャデバイスへの対応は行っていません。オプション設定としていますので、使えるなら使って、使えないなら現時点ではあきらめてください。</li>
-      <li>ゲーム内のヤグラ／ホコのカウント値と IkaLog から得られるカウント値は一致しません。あくまでも、ある程度の精度で画面上のバーから画像解析した結果です。</li>
-      </ul>
-      </ul>
-
-      <p>WinIkaLog20151128_195748_1bb14c8</p>
-      <ul>
-      <li>静止画が安定しないごく一部のキャプチャボードにて戦績画面の静止点を見つけられない問題に対処</li>
-      <li>CVFile にフレームスキップ機能を追加 (Thanks Shinichiro Hamaji)</li>
-      <li>ロビーがまったく検出できていないと stat.ink に送信されない問題を修正</li>
-      <li>バケットスロッシャーデコ、スクリュースロッシャーを追加 (バケデコ死因は未）</li>
-      <li>リザルト画面でギア／お金情報が検出できた時点でセッションクローズするよう変更</li>
-      <li>その他内部変更あり</li>
-      </ul>
-
-      <p>WinIkaLog20151122_231217_97f1e68</p>
-      <ul>
-      <li>静止画が安定しないごく一部のキャプチャボードにて戦績画面の静止点を見つけられない問題に暫定対処</li>
-      <li>ブキ情報を更新</li>
-      <li>一部リファクタリング</li>
-      </ul>
-
-      <p>WinIkaLog20151121_163008_c9500c3</p>
-      <ul>
-      <li>stat.ink に fest_title_after としてカリスマボーイ／ガールを送信できない問題を修正</li>
-      </ul>
-
-      <p>WinIkaLog20151121_142855_fc27041</p>
-      <ul>
-      <li>stat.ink に fest_title_after を送り忘れることがある問題を修正</li>
-      </ul>
-
-      <p>WinIkaLog20151121_082852_00160cf</p>
-      <ul>
-      <li>stat.ink に<a href="https://github.com/fetus-hina/stat.ink/commit/2ca37c7fdff3c30c0090b31601fa5b7d1c9911ef">フェス経験値</a>を送信するようにした</li>
-      <li>stat.ink にナワバリスコアを送信する (thanks to hina!)</li>
-      <li>もしクラッシュするようであればフェス経験値認識が入る前の 48cd5a4 を試してください。</li>
-      </ul>
-
-      <p>WinIkaLog20151120_165122_48cd5a4</p>
-      <ul>
-      <li>リザルト画面で８人目のプレイヤーを誤認識しづらいようにしてみた</li>
-      <li>最近、投稿されないケースがあると聞いていますが、手元(IvyBridge 3.2GHzぐらい）の環境では動いています。切り分けられるほどの情報が集まっていません</li>
-      </ul>
-
-      <p>WinIkaLog20151116_001028_9c6ca2f</p>
-      <ul>
-      <li>stat.ink: H3リールガンDが送信できない問題の修正(Thanks to deathmetalland)</li>
-      </ul>
-
-      <p>WinIkaLog20151114_230912_d49437d</p>
-      <ul>
-      <li>キンメダイ美術館サポート(Thanks to deathmetalland)</li>
-      </ul>
-
-      <p>WinIkaLog20151112_032843_d7be1b8 (開発版のアップデート - 問題がなければこちらが最終的にメインになります)</p>
-      <ul>
-      <li>ボールドマーカーネオを追加（死因以外）</li>
-      <li>開発版でノックアウトが検出できていなかった問題を修正</li>
-      <li>stat.ink: 全プレイヤーの情報を送信 (Thanks to featus_hina)</li>
-      </ul>
-
-      <p>WinIkaLog20151109_021326_02d69ae_dev (開発版。色々いじったので、もしいままで発生していなかった問題がおきている場合は教えてください)</p>
-      <ul>
-      <li>ビデオキャプチャまわりの変更・改善点</li>
-      <ul>
-      <li>スクリーンキャプチャ機能を搭載　<a href="https://www.youtube.com/watch?v=SAdkOp9vMUE">説明動画</a>@YouTube</li>
-      <li>アマレコ経由などで720p/1080p以外の変な解像度で入力し誤認識したデータを stat.ink に送信している例が多数あることがわかったので、正しい解像度の入力のみを受け付けるようにした</li>
-      <li>ビデオファイル入力時のフレームスキップはこの版にははいっていません。録画済みファイルの解析に時間がかかります</li>
-      </ul>
-      <li>画面認識まわりの変更・改善点</li>
-      <ul>
-      <li>認識処理関連クラスをほぼ全部書き直して整理</li>
-      <li>場外（落下・水没）を死因として認識</li>
-      </ul>
-      <li>そのほか色々</li>
-      </ul>
-
-      <p>WinIkaLog20151109_021326_d762115 - 開発版が動かない場合用（旧バージョンにブキ追加したもの）</p>
-      <ul>
-      <li>リザルト画面のオフセット検出でオフセットなしが疑われる場合はオフセットなしを優先するようにした</li>
-      <li>ノヴァブラスターネオ、H3リールガンDの死因認識に対応</li>
-      <li>バレルスピナーデコのブキ、死因認識に対応</li>
-      </ul>
-
-      <p>WinIkaLog20151104_061027_752103f</p>
-      <ul>
-      <li><del>アマレコ経由などで720p/1080p以外の変な解像度で入力し誤認識したデータを stat.ink に送信している例が多数あることがわかったので、正しい解像度の入力のみを受け付けるようにした</del></li>
-      <li>戦績画面のブキ画像認識にノヴァブラスターネオ、H3リールガンDを追加</li>
-      <li>wxPython が落ちそうな処理をドロップ</li>
-      <li>Twitter 投稿時に @_ikalog_ 宛リプライとして投稿する機能を追加。@_ikalog_ をフォローしているユーザのTLにのみ投稿内容が表示されます。オフにするとフォロワー全員に投稿内容が表示されます</li>
-      <li>S 0 など数値がゼロになるウデマエを認識するようにした</li>
-      <li>stat.ink からのフィードバックをもとにブキ認識の機械学習内容をちょっとだけ更新</li>
-      </ul>
-
-      <p>デスクトップキャプチャ機能を搭載した実験版
-      <a href="WinIkaLog20151101_185559_158b52f.zip">WinIkaLog20151101_185559_158b52f.zip</a></p>
-      <p>キャプチャデバイスを直接認識できない場合に使用します。キャプチャモード Realtime Capture from Desktop が増えていますのでこれを選択すると画面全体を WiiU 画面として処理しますので、ハードウェア付属のプレビューツールなどを組み合わせてください。<a href="https://www.youtube.com/watch?v=SAdkOp9vMUE">説明動画</a>@YouTube</p>
-
-      <p>WinIkaLog20151029_074357_588bfd2</p>
-      <ul>
-      <li>ビルド環境に tornado が入っておらず起動できないファイルができていたのを修正</li>
-      </ul>
-
-      <p>WinIkaLog20151029_074357_588bfd2</p>
-      <ul>
-      <li>race condition の修正</li>
-      <li>ガチマッチのウデマ（プレイ前後）の認識</li>
-      <li>ガチマッチプレイ後にナワバリバトルをプレイするとウデマエ情報だけ引き継がれる問題を修正</li>
-      <li>stat.ink からのフィードバックをもとにブキ認識の機械学習内容をちょっとだけ更新</li>
-      </ul>
-
-      <p>WinIkaLog20151025_111145_056d7bc</p>
-      <ul>
-      <li>入力画面が本来から数ドットずれている HDMI キャプチャに対してズレを補正する処理を追加</li>
-      </ul>
-
-      <p>WinIkaLog20151022_065159_43e0ca0</p>
-      <ul>
-      <li>tools/ControlAmarecTV.au3: 録画状態を認識した上で操作できるようになった (Thanks XenonAbe)</li>
-      <li>棒読みちゃんが止まらない問題を修正 (Thanks gleentea)
-      <li>スクリーンショット保存先ディレクトリへのパスに非ASCII文字が混じっているとファイルの書き込みに失敗するらしい件に対策</li>
-      <li>stat.ink: 上記問題に関連しユーザ名に非ASCII文字が入っているユーザプロファイルを使っていると stat.ink 送信用一時スクリーンショットファイルの生成に失敗していたであろう問題が解消したはず</li>
-      </ul>
-
-      <p>WinIkaLog20151020_062114_12db292</p>
-      <ul>
-      <li>棒読みちゃんがステージ名、ルールを実況してくれない問題を修正</li>
-      <li>Twitter 連携の利用者が増えたので使用するハッシュタグを #IkaLog から #IkaLogResult に変えた</li>
-      <li>OBS/アマレコTVの録画リネーム処理で録画フォルダにスラッシュ、バックスラッシュがついていなくても大丈夫なようコード修正</li>
-      <li>ゲーム終了後に IkaUI が落ちているようなので、落ち始めた頃に入れたジャッジくん画面でのスコア解析を外した。これで改善したかどうか教えてください( #IkaLog ハッシュタグで)
-      </ul>
-
-      <p>WinIkaLog20151018_211652_7303767</p>
-      <p>棒読みちゃんプラグインを IkaUI に実装</p>
-
-      <p>WinIkaLog20151018_182509_b280ada</p>
-      <p>stat.ink への送信ペイロードの修正</p>
-
-      <p>WinIkaLog20151018_172826_ded53be</p>
-      <ul>
-      <li>Rブラスターエリートに対応</li>
-      <li>もしかしたらジャッジ画面で落ちるかもしれない問題を修正</li>
-      <li>stat.ink: 不完全にタッグマッチと認識されるとリザルトを送信できない問題を修正</li>
-      <li>その他細かい変更</li>
-      </ul>
-
-      <p>WinIkaLog20151014_084920_3092b24</p>
-      <ul>
-      <li>K/Dよりも大きな数字の文字認識の改善</li>
-      <li>死因認識の学習内容に3Kスコープカスタムを追加</li>
-      </ul>
-
-      <p>WinIkaLog20151012_010723_339aecd - 特定環境でのデバッグ対応用マイナーアップデート</p>
-      <ul>
-      <li>環境変数 IKALOG_DEBUG に何か設定しておくと内部イベントがコンソールに出力される</li>
-      <li>stat.ink: デバッグメッセージを追加</li>
-      <li>stat.ink: レスポンスを標準では表示せず、設定次第で表示するよう変更</li>
-      </ul>
-
-      <p>WinIkaLog20151011_145542_f979473</p>
-      <ul>
-      <li>ブキ画像認識に3Kスコープカスタム、ロングブラスターカスタムを追加 (まだ機械学習甘め)</li>
-      <li>死亡認識にロングブラスターカスタムを追加</li>
-      <li>リッター3K系のブキの名称を「3k」→「3K」で統一</li>
-      <li>フェスで自動録画が開始されない問題を改善するためロビー検出時の閾値スコアを変更</li>
-      <li>4人タッグを3人タッグだと誤認識するバグを修正</li>
-      <li>stat.ink: ブキIDの変換に失敗すると送信処理が走らないバグを修正</li>
-      <li>stat.ink: 設定項目「ブキ認識結果を送信する」を削除しデフォルトで送信するように変更</li>
-      </ul>
-      <p>最近、内部的な認識処理を大幅におきかえたので環境次第でうまく動いたりしないかもしれません。動いてないな？と思ったら 720p の動画（マッチング中〜ゲーム完全終了まで）を、目で劣化が感じられない程度の画質で提供してください。</p>
-
-      <p>WinIkaLog20151010_053835_260d399</p>
-      <ul>
-      <li>タグマッチロビーで内部イベントが繰り返し発生するバグの修正</li>
-      <li>野良をフェスマッチと誤認識するバグを修正</li>
-      <li>オクタシューターレプリカ、ヒーローローラーレプリカが送信できないバグを修正</li>
-      </ul>
-
-      <p>WinIkaLog20151009_213452_064b91c</p>
-      <ul>
-      <li>プライベートロビー認識を追加</li>
-      <li>オカネが認識できなくなっていた問題を修正</li>
-      <li>ゲーム終了直前に殺されると認識できなかったのを、できるだけ認識できるよう修正</li>
-      <li>キャプチャ環境などによってのノックアウト検出に失敗する問題を修正</li>
-      <li>タグマッチで味方チームの人数を検出</li>
-      <li>ガチバトルでウデマエが上下したときに新しいウデマエが認識できなかった問題を修正</li>
-      <li>死因の機械学習モデルを更新</li>
-      <li>stat.ink プラグインのクラッシュをいくつか修正</li>
-      <li>stat.ink と互換性がなかった死因 ID を stat.ink にあわせた</li>
-      <li>stat.ink にロビー種別、敵・味方の色情報、フェスの称号を送るようにしてみた</li>
-      <li>繰り返し死亡と誤認識される環境があるようなので時間あたりの死亡数を制限した（ちょっとましになるぐらい？）</li>
-      </ul>
-
-      <p>WinIkaLog20151008_030558_09f8f94</p>
-      <ul>
-      <li>ブキ認識を新アルゴリズムに変更。 (Thanks @itoooon さん！)</li>
-      <li>死因認識のトレーニングデータで不足していたものを追加。でも精度上げはこれからです</li>
-      <li>WinIkaLog20151007_185314_9d8226f のバイナリが運悪く壊れていたけども今回は大丈夫だと思われる</li>
-      </ul>
-
-      <p>WinIkaLog20151007_185314_9d8226f</p>
-      <ul>
-      <li>キル／デス場面の認識コードを更新</li>
-      <li>新しいグラフィックス検出コードを導入</li>
-      <li>ステージ／ルールで画像が荒れているときの認識率向上?</li>
-      <li>メガホンやトルネードの強い光で GO! サインが誤検出されていたのを改善</li>
-      <li>stat.ink に L3リールガン系がに送信できない問題を解消</li>
-      <li>stat.ink に死因リストを送信開始 (stat.ink 側の対応は未定)</li>
-      <li>キル／デス情報をコンソールに出力</li>
-      <li>ギア画面、ウデマエ変化画面などでの数字認識の安定性が向上し誤認識が減った</li>
-      <li>ステージ／ルールを本来以外のタイミングで検出したときの安定性を向上</li>
-      <li>タグマッチ ロビー画面の認識がおかしかったので修正</li>
-      <li>死亡理由を（水死・ガチホコのバリア）以外　だいたい検出できるようになった。<br>
-      ※ 機械学習が開発用の最小限の実装なので間違えることも多々あります</li>
-      <li>ナワバリバトルの塗りスコアをリアルタイム認識できるようになった（がまだ利用用途がない）</li>
-      </ul>
-
-      <p>WinIkaLog20151005_005424_9ba7758</p>
-      <ul>
-        <li>stat.ink のログ出力が多すぎたのを修正</li>
-      </ul>
-
-      <p>WinIkaLog20151004_233435_f37cb01</p>
-      <ul>
-        <li>ブキの認識率がたぶん 99% 超えた</li>
-        <li>stat.ink にジャッジ君画面を送信できるようになった</li>
-        <li>stat.ink でカーボンローラーを送信できるように修正</li>
-        <li>フェス時にデバッグ用ウインドウが開いてしまう問題を修正</li>
-      </ul>
-
-      <p>WinIkaLog20151003_231245_940d354</p>
-      <ul>
-        <li>ブキの認識率向上</li>
-        <li>カーボンローラーデコを追加</li>
-        <li>フェス称号認識コードの改善</li>
-      </ul>
-
-      <p>WinIkaLog20151003_041127_94a59a1</p>
-      <ul>
-        <li>安定性向上</li>
-        <li>ゲーム終了後のギア・オカネ画面が検出できなくても Twitter/Slack などへの連携が行われるよう修正</li>
-        <li>うまく動かないときに IkaLog が処理したビデオフレームをビデオファイルに出力する機能を追加</li>
-      </ul>
-
-      <p>20151002b_f6b97f5</p>
-      <ul>
-      <li>一部の環境でゲーム終了時の判定が動作せず CSV, JSON, Twitter, Slack, Stat.ink が利用できない問題の修正（をしてみたが...？</li>
-      <li>一部デバッグモードがオンになっていてサブウインドウが表示されますが気にしないでください</li>
-      </ul>
-
-      <p>20151001a_2719455</p>
-      <ul>
-      <li>ゲーム開始時のステージ／ルール認識性能を向上</li>
-      <li>戦績画面以後のウデマエ変化・おカネの認識に対応</li>
-      <li>様々な画面がロビー画面として誤認識される問題に対応</li>
-      <li>数値認識の範囲を拡大</li>
-      <li>ブキ認識を追加（誤認識が多いためご注意ください）</li>
-      <li>スプラトゥーン戦績 SNS <a href="https://stat.ink">stat.ink</a> に対応</li>
-      <li>ウデマエ S が B と認識される問題、 - が + と認識される問題を修正</li>
-      <li>などなど</li>
-      </ul>
-
-      <p>20150928a</p>
-      <ul>
-      <li>stat.ink対応など</li>
-      </ul>
-
-      <p>20150927a</p>
-      <ul>
-      <li>リザルト画面のナワバリ／ガチ判定が甘かったので修正</li>
-      </ul>
-
-      <p>20150926b</p>
-      <ul>
-      <li>ナワバリスコアの認識など</li>
-      </ul>
-
-      <p>20150922b</p>
-      <ul>
-      <li>K/Dの認識など</li>
-      </ul>
+- Finish! の帯の検出方法を元に戻した
+- ゲーム中のピンチ！を記録するようにした。 stat.ink ではナワバリバトルの際にタイムラインに表示されるようです
+- Now "danger!" is logged in events. In stat.ink, the status will be shown in timelline.
+
+
+### WinIkaLog20160719_002248_ae9f82d.zip
+
+- ボタンを押すのではなくプレビュー自体を押すとポーズされるよう仕様が変わった</li>
+- 設定ウインドウのデザイン変更、サブウインドウ化</li>
+- 使用インプットが表示され、ファイル入力モードの場合はプレビュー上部分からファイル指定可能に。ただしOpenCVの都合により2バイト文字を含むファイル名が通らない可能性があります</li>
+- Finish! の帯の検出方法が変わった</li>
+- Pause button is not deprecated. Click preview image to enable/disable.</li>
+- Configuration panel is now renewed and splitted from the main window.</li>
+- The main window now shows your input type. You can select file using the panel above the preview.</li>
+- Finish tape will be detected using new features. (JA only, as of today)</li>
+
+
+### WinIkaLog20160623_092226_dc23547.zip
+- プレイ中に IkaLog 内で例外が発生した場合に stat.ink に送信がされない問題を修正
+- 敵を倒したときの名前認識コードが不安定かつ精度が出ていないようなので無効化
+- ギアパワー認識のモデルを更新
+- Fixed a bug stat.ink submission fails if any expcetions occured in the battle
+- Disabled detecting names when splatted someone; due to low accuracy and unstable behavior
+- Updated ML model for accurate gear ability recognition
+
+
+### WinIkaLog20160615_225126_8ad43d8
+
+- インクリング追跡を更新し、ゲーム中、散歩中などを見分けるようなった（がそれ以上の変更はなし）
+- 敵を倒したときの名前を認識するコードを追加した（がまだ外から使えない）
+- インク切れ警告の認識を追加。 stat.ink 対応済
+- ボールドマーカー7がバレルスピナーリミックスになってしまう問題を解消
+- Inkling Tracking update
+- detect names of inklings when splatted someone
+- Low ink detection
+- Updated ML model to fix bold7 detection issue
+
+
+### WinIkaLog20160610_105425_b1915d2
+
+- Sheldon's Picks Vol. 2 Update for NA and EU users. Thanks for Clovervidia!
+- Fixed detecting of active squids at the beginning of the
+- Other major changes made in `579408a`:
+  - Updates for JSON log file operation
+  - Sheldon's Picks Vol. 2 for Japanese players
+
+
+### WinIkaLog20160609_005508_579408a
+
+- stat.ink: IkaLog が対応するゲームのバージョンや更新内容などを通知する機能を追加
+- JSON: ファイル操作方法を改善
+- ゲーム開始・終了時刻の取得方法の改善
+- 内部で持つブキ ID を日本語名から stat.ink キーに完全変更
+- コンボ数／ストリーク数のカウントを行うようになった  (Thanks for southws!)
+- ブキチコレクション Vol. 2 対応（日本語のみ）
+- ほか細かな内部変更多数
+
+
+### WinIkaLog20160508_191517_64309ed
+
+- stat.ink: Fixed invalid link_url submission
+- stat.ink: link_url にゴミが入るのを修正
+
+
+### WinIkaLog20160508_141345_69aa9b4
+
+- IkaLog engine: continue running in case of any excptions in scene detection classes. The exception will be logged in agent variables table.
+- Reduced CPU load in result_gears scene.
+- Load DLL once at startup.
+- stat.ink: Post img_gear screenshot. It will be used for machine learning.
+- Detect and warn for 16x10 image from AmaRecTV.
+- シーン認識クラスでの例外で止まらないようにしました。なお例外は stat.ink の追加データ欄に記録されます。（ユーザ環境でもバグ発生状況調査用）
+- リザルト画面（ギア、オカネ）処理時の CPU 負荷を低減
+- 画面キャプチャ DLL の読み込みを起動毎1回だけ行うよう修正
+- stat.ink: リザルト画面（ギア、オカネ）を 送信します。戦績画面には表示されません。機械学習の強化目的につかわれます。
+- アマレコTVで16x10のアスペクト比になっているっぽい時に警告
+
+
+### WinIkaLog20160427_200401_a9a255c
+
+- English:  English Sheldon's Picks Vol. 1 and Special Weapons
+- Game Finish &amp; Judge scene detection update for specific video capture devices.
+- Extended timeout value to avoid the game being "aborted" due to network connectivity issue at the end of the match.
+- Fixed UnicodeDecodeError when enumerating capture devices that have non-ASCII characters.
+- 英語版ブキチコレクション、スペシャルウエポン検出を追加
+- ゲームのフィニッシュテープ、その後のジャッジ君シーンが特定ビデオキャプチャデバイスで検出できない場合があったため調整
+- ゲームのフィニッシュテープが出た状態で固まった場合にゲームを見失いにくくした
+- 起動時、ビデオキャプチャデバイス名に非ASCII文字が含まれると UnicodeDecodeError が出て起動しない問題を修正
+
+
+### WinIkaLog20160416_035918_dcbf39d
+
+- stat.ink: 投稿完了イベント(プラグイン、 WebSocket) 追加。[IkaLog の stat.ink 投稿の URL を Slack に自動で貼る](http://umezawa.dyndns.info/wordpress/?p=5877)に対応した最初の WinIkaLog です
+- stat.ink: video_url は無駄に投稿される問題を修正
+- ブキ機械学習データのアップデート
+
+
+### WinIkaLog20160413_145309_16bb777
+- Supports 8 weapons unlocked today. Full support in Japanese. Some machine learning stuff is still incomplete for other languages.
+- Now Stage/Mode detection is activated once per evey 1.5 seconds. It reduces CPU usage but also may reduces its accuracy.
+- ブキチコレクション対応
+- ゲーム開始認識（ステージ名、ルール名）を1.5秒毎に変更。負荷は軽くなるものの認識失敗リスクはあがります
+
+
+### WinIkaLog20160410_035503_af41f83
+
+- IkaLog now detects aborted games (Thanks!)
+- stat.ink: Send agent_variables (extra information in the battle record)
+- stat.ink: IkaLog now send uuid for the each games; to avoid duplicated registration.
+- stat.ink: Modified timeout.
+- Gear Recognition now detects the icons properly, even in offseted video input.
+- Video Recording: AmaRecTV &amp; OBS script updated. (Thanks, sodoko-san!)
+- Fixed false lobby "matched" event (Thanks syptn-san!)
+- Increased stability of objet tracking codes in ranked games.
+- stat.ink: Fixed protocol violation in SplatFest.
+- New weapon detection code introduced to support the upcoming weapons.
+- ゲームの中断を検出するようになった
+- stat.ink: IkaLog独自の追加情報を送信するようになった
+- stat.ink: stat.ink 側が重複投稿を検出するための uuid を送信するようになった。
+- stat.ink: 通信タイムアウトを変更した
+- ギア認識を強化。画面がオフセットされている場合の認識率が向上
+- アマレコ/OBS制御スクリプトのアップデート(Thanks そどこさん)
+- ロビーマッチ成立イベントが想定外に発生することがある問題を修正(Thanks syptnさん)
+- 入力画質が悪い場合にホコ／ヤグラ、イカ生死の検出コードで落ちたりしそうなところを安全よりに修正
+- stat.ink:フェス中に「スーパー」が遅れない不具合を修正
+- ブキ認識時の特徴量のとりかたを変更した。今後の追加ブキ対策。実質精度はまだ未検証
+- そのほか WinIkaLog の利用では影響がないところでも色々変更
+
+
+### WinIkaLog20160216_204749_4d96cb4 - in-development snapshot
+
+- Added more metrics: Inklings live tracking, Special gauage tracking, and Special Weapon detection.
+- Fixed reading from movie file caused an exception.
+- Fixed an exception in the case no any sources are comfigured.
+- Downie's sub-abilities lottery detection (in JA only yet)
+- Several performance tunings.
+- stat.ink: Shows time taken and amount of bytes when finished communication with stat.Ink. 
+- stat.ink: Ajdusted "Dead" event timing.
+- イカの生死状況トラッキング、スペシャルゲージのトラッキング、スペシャル発動の検出を追加
+- （常用されることは想定していないが） ムービー読み込みができなくなっていた問題を修正
+- キャプチャデバイスが設定されていない状態で起動されるとエンジンが中でクラッシュしていた問題を修正
+- ダウニーガチャへの実験的対応。サブパワーガチャを検出すると WebSocket にイベントが出ます
+- stat.ink: 死亡イベントのタイミングを補正
+- stat.ink: 送信時に所要時間および送信データ量を表示
+- 負荷低減のためのチューニング
+
+
+### WinIkaLog20160128_220730_da38180
+
+- Most of video capture part is rewritten. 
+- Fixed GUI layout issues
+- Update JA localization
+- ビデオ入力まわりの書き直し
+- GUI レイアウトの修正
+- 日本語のGUIメッセージ翻訳のアップデート
+
+
+### WinIkaLog20160127_020136_1244c8b
+
+- Most of video capture part is rewritten. (still WIP)
+- The new input allows frame-skip. This version processes up to 10 frames per a second. In some systems, this behavior improves system performance.
+- Now IkaLog in non-ASCII named folders can be run.
+- Several image recogniton updates for en, and fr
+- ビデオ入力まわりの書き直し
+- ビデオ入力まわりのアップデートにより、より賢いフレームスキップがつきました。環境によっては負荷が低減する場合があります。本バージョンでは秒間10フレームを上限に処理します。
+- 日本語名がついたフォルダの中にIkaLogがあると起動しない問題への対処 (OpenCVライブラリの不具合っぽい)
+- 海外版用マスクデータの更新
+
+
+### WinIkaLog20160122_153142_f2a9c82
+
+- Added a new stage: Ancho-V Games. (ja, en_NA)
+- Added and trained a deadly_weapons key propeller.
+- Cause of Death detected is now enabled only for ja, and en_NA.
+- Added en_EU support.
+- 新ステージ アンチョビットゲームズを追加
+- 新しい死因 プロペラを追加
+- 死因認識未対応の言語では死因認識しないようにした
+- 欧州版のデータおよび起動スクリプトを追加
+
+
+### WinIkaLog20160119_232120_33bf400
+
+- Workaround for IndexErrror on deadly weapon detection. The issue seemed to be happend in en_NA locale only..
+
+
+### WinIkaLog20160118_204315_eda55d5
+
+- en_NA版死因データを追加（作業途中だけど、ないと落ちるので）
+- Added en_NA version of deadly_weapons ML data, to prevent app crash.
+
+
+### WinIkaLog20160116_175430_defce34
+
+- 足りなかったファイルを追加
+
+
+### WinIkaLog20160117_191333_541eb9e
+
+- ブキ・死因認識にハイドラントカスタムを追加
+- ブキ認識データを全体的に更新
+- 日本語モードでのみフェス称号認識をトライするよう変更
+
+
+### WinIkaLog20160115_224220_db6470f
+
+- 起動時に言語設定をコンソールに表示するようにした
+- IkaUI 内部の一部リファクタリング
+- DirectShow インプットを追加。 MonsterX U3.0R, BlackMagic Design Intensity Shuttle USB3.0 の初期化などを確認
+- 英語版の死因分析対応（機械学習は未）
+- WiiU ホーム画面のAKAZE特徴データを言語で切り替え可能に。 ja/en に対応
+- ScreenCapture を国際語化（日本語リソースがないので英語になってる）
+
+
+### WinIkaLog20160112_131458_1e2e85e
+
+- stat.ink: ギア画面が送信が正しく行われない問題を修正
+
+
+### WinIkaLog20160112_095352_bc354e6
+
+- Twitter に送信できない問題を修正（したつもりでテストはしていない）
+- ギア画面が表示されないゲームモード（プライベート）で stat.ink 送信に失敗する問題を修正
+
+
+### WinIkaLog20160111_203352_710c6db
+
+- WinIkaLog を起動するときは WinIkaLog_ja.BAT を実行してください。日本版として動作します。
+- ゴーサインが認識されていなかった問題を修正
+- 死因 スクリュースロッシャー、ヒッセン・ヒューを追加
+- ギア認識結果を stat.ink に送信 (thanks hina!)
+- 環境変数 LANG を見て UI の言語切り替えを行うようにした。 ja で日本語
+- 環境変数 IKALOG_LANG を見て使用するマスクの切り替えを行うようにした。とりあえず ja で日本版、 en_NA で北米版
+- 海外版スプラトゥーン対応のためディレクトリ構造を整理
+- 北米版スプラトゥーン対応マスクを追加 (thanks eli, and clovervidia!)
+- WebSocketサーバ: IkaUI.exe に追加
+- stat.ink: 送信処理を非同期化
+- IkaUI 設定画面でボタンが見えなくなることがある問題を修正 (Thanks gleenta!)
+- そのほか細かい変更
+
+
+### WinIkaLog20151230_215706_44444bb
+
+- ブキ認識にホクサイ・ヒューを追加（死因認識は未）
+- シュッツル鉱山に対応 (thanks to deathmetalland)
+- 旅行先なので一切テストしていません
+
+
+### WinIkaLog20151227_172426_f58fce2
+
+- ヒッセン・ヒュー、Rブラスタ—エリートデコのブキ認識データを追加
+- ブキ名を基本的に stat.ink ID ベースで扱うよう変更
+- ブキ画像の特徴抽出方法、学習量を調整。stat.inkユーザのブキ画像をベースに全体的に再学習させた
+- プライベートマッチで４人揃っていないチームではその人数の情報がリザルトとして返されるようになった（これまでは８人分のデータが出ていた）
+- あまり塗っていないとナワバリバトルのグラフ＠stat.inkが短くなりそうな問題に対策
+- ギア認識コード追加 (thanks to hrhtspr)
+
+
+### WinIkaLog20151213_015731_10d4501
+
+- スプラスピナーコラボ、バレルスピナーデコ、スクイックリンβのブキ認識データを追加
+
+
+### WinIkaLog20151205_032948_6a5543b
+
+- マヒマヒリゾート対応(Thanks to deathmetalland!)
+- 棒読みちゃん対応の改良(thanks to hina!)
+
+
+### WinIkaLog20151201_011646_12fbbfa
+
+- ギア・オカネのリザルト画面が終わった時点でTwitter投稿やstat.ink送信を開始するように変更
+- 倒したときの認識アルゴリズムを一部変更
+- CVFileによる読み込み時、フレームをおよそ100ms単位でスキップするようにした
+- stat.ink: ゲーム中の時系列情報を送信。ガチエリア、ガチホコ／ガチヤグラのカウントをある程度認識して送信します。
+  - ガチエリアの場合は残りカウント数（ロスタイムは無視）を認識しています。
+  - ガチホコ／ガチヤグラはホコ／ヤグラの位置を画面上のバーから認識しています。夏に試作したアルゴリズムをそのままつかっており、 H.264/MPEG ブロックノイズへの耐性はなく、画面ズレが生じているビデオキャプチャデバイスへの対応は行っていません。オプション設定としていますので、使えるなら使って、使えないなら現時点ではあきらめてください。
+  - ゲーム内のヤグラ／ホコのカウント値と IkaLog から得られるカウント値は一致しません。あくまでも、ある程度の精度で画面上のバーから画像解析した結果です。
+
+### WinIkaLog20151128_195748_1bb14c8
+
+- 静止画が安定しないごく一部のキャプチャボードにて戦績画面の静止点を見つけられない問題に対処
+- CVFile にフレームスキップ機能を追加 (Thanks Shinichiro Hamaji)
+- ロビーがまったく検出できていないと stat.ink に送信されない問題を修正
+- バケットスロッシャーデコ、スクリュースロッシャーを追加 (バケデコ死因は未）
+- リザルト画面でギア／お金情報が検出できた時点でセッションクローズするよう変更
+- その他内部変更あり
+
+
+### WinIkaLog20151122_231217_97f1e68
+
+- 静止画が安定しないごく一部のキャプチャボードにて戦績画面の静止点を見つけられない問題に暫定対処
+- ブキ情報を更新
+- 一部リファクタリング
+
+
+### WinIkaLog20151121_163008_c9500c3
+
+- stat.ink に fest_title_after としてカリスマボーイ／ガールを送信できない問題を修正
+
+
+### WinIkaLog20151121_142855_fc27041
+
+- stat.ink に fest_title_after を送り忘れることがある問題を修正
+
+
+### WinIkaLog20151121_082852_00160cf
+
+- stat.ink に[フェス経験値](https://github.com/fetus-hina/stat.ink/commit/2ca37c7fdff3c30c0090b31601fa5b7d1c9911ef)を送信するようにした
+- stat.ink にナワバリスコアを送信する (thanks to hina!)
+- もしクラッシュするようであればフェス経験値認識が入る前の `48cd5a4` を試してください。
+
+
+### WinIkaLog20151120_165122_48cd5a4
+
+- リザルト画面で８人目のプレイヤーを誤認識しづらいようにしてみた
+- 最近、投稿されないケースがあると聞いていますが、手元(IvyBridge 3.2GHzぐらい）の環境では動いています。切り分けられるほどの情報が集まっていません
+
+
+### WinIkaLog20151116_001028_9c6ca2f
+
+- stat.ink: H3リールガンDが送信できない問題の修正(Thanks to deathmetalland)
+
+
+### WinIkaLog20151114_230912_d49437d
+
+- キンメダイ美術館サポート(Thanks to deathmetalland)
+
+
+### WinIkaLog20151112_032843_d7be1b8
+
+開発版のアップデート - 問題がなければこちらが最終的にメインになります
+
+- ボールドマーカーネオを追加（死因以外）
+- 開発版でノックアウトが検出できていなかった問題を修正
+- stat.ink: 全プレイヤーの情報を送信 (Thanks to featus_hina)
+
+
+### WinIkaLog20151109_021326_02d69ae_dev
+
+開発版。色々いじったので、もしいままで発生していなかった問題がおきている場合は教えてください
+
+- ビデオキャプチャまわりの変更・改善点
+  - スクリーンキャプチャ機能を搭載 [説明動画](https://www.youtube.com/watch?v=SAdkOp9vMUE)@YouTube
+  - アマレコ経由などで720p/1080p以外の変な解像度で入力し誤認識したデータを stat.ink に送信している例が多数あることがわかったので、正しい解像度の入力のみを受け付けるようにした
+  - ビデオファイル入力時のフレームスキップはこの版にははいっていません。録画済みファイルの解析に時間がかかります
+- 画面認識まわりの変更・改善点
+  - 認識処理関連クラスをほぼ全部書き直して整理
+  - 場外（落下・水没）を死因として認識
+- そのほか色々
+
+
+### WinIkaLog20151109_021326_d762115
+
+開発版が動かない場合用（旧バージョンにブキ追加したもの）
+
+- リザルト画面のオフセット検出でオフセットなしが疑われる場合はオフセットなしを優先するようにした
+- ノヴァブラスターネオ、H3リールガンDの死因認識に対応
+- バレルスピナーデコのブキ、死因認識に対応
+
+
+### WinIkaLog20151104_061027_752103f
+
+- ~~アマレコ経由などで720p/1080p以外の変な解像度で入力し誤認識したデータを stat.ink に送信している例が多数あることがわかったので、正しい解像度の入力のみを受け付けるようにした~~
+- 戦績画面のブキ画像認識にノヴァブラスターネオ、H3リールガンDを追加
+- wxPython が落ちそうな処理をドロップ
+- Twitter 投稿時に @\_ikalog\_ 宛リプライとして投稿する機能を追加。@\_ikalog\_ をフォローしているユーザのTLにのみ投稿内容が表示されます。オフにするとフォロワー全員に投稿内容が表示されます
+- S 0 など数値がゼロになるウデマエを認識するようにした
+- stat.ink からのフィードバックをもとにブキ認識の機械学習内容をちょっとだけ更新
+
+
+### デスクトップキャプチャ機能を搭載した実験版
+
+[WinIkaLog20151101_185559_158b52f.zip](WinIkaLog20151101_185559_158b52f.zip)
+
+キャプチャデバイスを直接認識できない場合に使用します。キャプチャモード Realtime Capture from Desktop が増えていますのでこれを選択すると画面全体を WiiU 画面として処理しますので、ハードウェア付属のプレビューツールなどを組み合わせてください。[説明動画](https://www.youtube.com/watch?v=SAdkOp9vMUE)@YouTube
+
+
+### WinIkaLog20151029_074357_588bfd2
+
+- ビルド環境に tornado が入っておらず起動できないファイルができていたのを修正
+
+
+### WinIkaLog20151029_074357_588bfd2
+
+- race condition の修正
+- ガチマッチのウデマ（プレイ前後）の認識
+- ガチマッチプレイ後にナワバリバトルをプレイするとウデマエ情報だけ引き継がれる問題を修正
+- stat.ink からのフィードバックをもとにブキ認識の機械学習内容をちょっとだけ更新
+
+
+### WinIkaLog20151025_111145_056d7bc
+
+- 入力画面が本来から数ドットずれている HDMI キャプチャに対してズレを補正する処理を追加
+
+
+### WinIkaLog20151022_065159_43e0ca0
+
+- tools/ControlAmarecTV.au3: 録画状態を認識した上で操作できるようになった (Thanks XenonAbe)
+- 棒読みちゃんが止まらない問題を修正 (Thanks gleentea)
+- スクリーンショット保存先ディレクトリへのパスに非ASCII文字が混じっているとファイルの書き込みに失敗するらしい件に対策
+- stat.ink: 上記問題に関連しユーザ名に非ASCII文字が入っているユーザプロファイルを使っていると stat.ink 送信用一時スクリーンショットファイルの生成に失敗していたであろう問題が解消したはず
+
+### WinIkaLog20151020_062114_12db292
+
+- 棒読みちゃんがステージ名、ルールを実況してくれない問題を修正
+- Twitter 連携の利用者が増えたので使用するハッシュタグを #IkaLog から #IkaLogResult に変えた
+- OBS/アマレコTVの録画リネーム処理で録画フォルダにスラッシュ、バックスラッシュがついていなくても大丈夫なようコード修正
+- ゲーム終了後に IkaUI が落ちているようなので、落ち始めた頃に入れたジャッジくん画面でのスコア解析を外した。これで改善したかどうか教えてください( #IkaLog ハッシュタグで)
+
+
+### WinIkaLog20151018_211652_7303767
+
+- 棒読みちゃんプラグインを IkaUI に実装
+
+
+### WinIkaLog20151018_182509_b280ada
+
+- stat.ink への送信ペイロードの修正
+
+
+### WinIkaLog20151018_172826_ded53be
+
+- Rブラスターエリートに対応
+- もしかしたらジャッジ画面で落ちるかもしれない問題を修正
+- stat.ink: 不完全にタッグマッチと認識されるとリザルトを送信できない問題を修正
+- その他細かい変更
+
+
+### WinIkaLog20151014_084920_3092b24
+
+- K/Dよりも大きな数字の文字認識の改善
+- 死因認識の学習内容に3Kスコープカスタムを追加
+
+
+### WinIkaLog20151012_010723_339aecd - 特定環境でのデバッグ対応用マイナーアップデート
+
+- 環境変数 IKALOG_DEBUG に何か設定しておくと内部イベントがコンソールに出力される
+- stat.ink: デバッグメッセージを追加
+- stat.ink: レスポンスを標準では表示せず、設定次第で表示するよう変更
+
+
+### WinIkaLog20151011_145542_f979473
+
+- ブキ画像認識に3Kスコープカスタム、ロングブラスターカスタムを追加 (まだ機械学習甘め)
+- 死亡認識にロングブラスターカスタムを追加
+- リッター3K系のブキの名称を「3k」→「3K」で統一
+- フェスで自動録画が開始されない問題を改善するためロビー検出時の閾値スコアを変更
+- 4人タッグを3人タッグだと誤認識するバグを修正
+- stat.ink: ブキIDの変換に失敗すると送信処理が走らないバグを修正
+- stat.ink: 設定項目「ブキ認識結果を送信する」を削除しデフォルトで送信するように変更
+
+最近、内部的な認識処理を大幅におきかえたので環境次第でうまく動いたりしないかもしれません。動いてないな？と思ったら 720p の動画（マッチング中〜ゲーム完全終了まで）を、目で劣化が感じられない程度の画質で提供してください。
+
+
+### WinIkaLog20151010_053835_260d399
+
+- タグマッチロビーで内部イベントが繰り返し発生するバグの修正
+- 野良をフェスマッチと誤認識するバグを修正
+- オクタシューターレプリカ、ヒーローローラーレプリカが送信できないバグを修正
+
+
+### WinIkaLog20151009_213452_064b91c
+
+- プライベートロビー認識を追加
+- オカネが認識できなくなっていた問題を修正
+- ゲーム終了直前に殺されると認識できなかったのを、できるだけ認識できるよう修正
+- キャプチャ環境などによってのノックアウト検出に失敗する問題を修正
+- タグマッチで味方チームの人数を検出
+- ガチバトルでウデマエが上下したときに新しいウデマエが認識できなかった問題を修正
+- 死因の機械学習モデルを更新
+- stat.ink プラグインのクラッシュをいくつか修正
+- stat.ink と互換性がなかった死因 ID を stat.ink にあわせた
+- stat.ink にロビー種別、敵・味方の色情報、フェスの称号を送るようにしてみた
+- 繰り返し死亡と誤認識される環境があるようなので時間あたりの死亡数を制限した（ちょっとましになるぐらい？）
+
+
+### WinIkaLog20151008_030558_09f8f94
+
+- ブキ認識を新アルゴリズムに変更。 (Thanks @itoooon さん！)
+- 死因認識のトレーニングデータで不足していたものを追加。でも精度上げはこれからです
+- WinIkaLog20151007_185314_9d8226f のバイナリが運悪く壊れていたけども今回は大丈夫だと思われる
+
+
+### WinIkaLog20151007_185314_9d8226f
+
+- キル／デス場面の認識コードを更新
+- 新しいグラフィックス検出コードを導入
+- ステージ／ルールで画像が荒れているときの認識率向上?
+- メガホンやトルネードの強い光で GO! サインが誤検出されていたのを改善
+- stat.ink に L3リールガン系がに送信できない問題を解消
+- stat.ink に死因リストを送信開始 (stat.ink 側の対応は未定)
+- キル／デス情報をコンソールに出力
+- ギア画面、ウデマエ変化画面などでの数字認識の安定性が向上し誤認識が減った
+- ステージ／ルールを本来以外のタイミングで検出したときの安定性を向上
+- タグマッチ ロビー画面の認識がおかしかったので修正
+- 死亡理由を（水死・ガチホコのバリア）以外　だいたい検出できるようになった。 ※機械学習が開発用の最小限の実装なので間違えることも多々あります
+- ナワバリバトルの塗りスコアをリアルタイム認識できるようになった（がまだ利用用途がない）
+
+
+### WinIkaLog20151005_005424_9ba7758
+
+- stat.ink のログ出力が多すぎたのを修正
+
+
+### WinIkaLog20151004_233435_f37cb01
+
+- ブキの認識率がたぶん 99% 超えた
+- stat.ink にジャッジ君画面を送信できるようになった
+- stat.ink でカーボンローラーを送信できるように修正
+- フェス時にデバッグ用ウインドウが開いてしまう問題を修正
+
+
+### WinIkaLog20151003_231245_940d354
+
+- ブキの認識率向上
+- カーボンローラーデコを追加
+- フェス称号認識コードの改善
+
+
+### WinIkaLog20151003_041127_94a59a1
+
+- 安定性向上
+- ゲーム終了後のギア・オカネ画面が検出できなくても Twitter/Slack などへの連携が行われるよう修正
+- うまく動かないときに IkaLog が処理したビデオフレームをビデオファイルに出力する機能を追加
+
+
+### 20151002b_f6b97f5
+
+- 一部の環境でゲーム終了時の判定が動作せず CSV, JSON, Twitter, Slack, Stat.ink が利用できない問題の修正（をしてみたが...？
+- 一部デバッグモードがオンになっていてサブウインドウが表示されますが気にしないでください
+
+
+### 20151001a_2719455
+
+- ゲーム開始時のステージ／ルール認識性能を向上
+- 戦績画面以後のウデマエ変化・おカネの認識に対応
+- 様々な画面がロビー画面として誤認識される問題に対応
+- 数値認識の範囲を拡大
+- ブキ認識を追加（誤認識が多いためご注意ください）
+- スプラトゥーン戦績 SNS [stat.ink](https://stat.ink/) に対応
+- ウデマエ S が B と認識される問題、 - が + と認識される問題を修正
+- などなど
+
+
+### 20150928a
+
+- stat.ink対応など
+
+
+### 20150927a
+
+- リザルト画面のナワバリ／ガチ判定が甘かったので修正
+
+
+### 20150926b
+
+- ナワバリスコアの認識など
+
+
+### 20150922b
+- K/Dの認識など
+</pre>
     </div>
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js" crossorigin="anonymous"></script>
+    <script>
+      (function ($) {
+        "use strict";
+        $(function () {
+          var $md = $('#changelog-md');
+          $md.replaceWith(
+            $('<div id="changelog">').html(marked($md.text()))
+          );
+        });
+      })(jQuery);
+    </script>
   </body>
 </html>
