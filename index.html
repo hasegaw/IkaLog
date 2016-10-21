@@ -12,6 +12,8 @@
     <style>
       body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,Meiryo,sans-serif}
       #logo{width:300px;height:auto;max-width:100%}
+      .not-yet{text-decoration:line-through}
+      .not-yet a{cursor:not-allowed}
     </style>
   </head>
   <body>
@@ -27,58 +29,145 @@
         <span class="fa fa-download fa-fw"></span>ダウンロード / download
       </h2>
 
-      <table border>
-      <tr><td>人柱版 (Dev version, not tested)</td><td><a href="WinIkaLog20160723_174727_8667dd4.zip">WinIkaLog20160723_174727_8667dd4.zip</a></td></tr>
-      <tr><td>最新版 (Latest version)</td><td><a href="WinIkaLog20160610_105425_b1915d2.zip">WinIkaLog20160610_105425_b1915d2.zip</a></td></tr>
-      <tr><td>安定版 (Stable version)</td><td><a href="WinIkaLog20160609_005508_579408a.zip">WinIkaLog20160609_005508_579408a.zip</a></td></tr>
+      <table class="table table-striped">
+        <tbody>
+          <tr>
+            <th>人柱版 (Dev version, not tested)</th>
+            <td><a href="WinIkaLog20160723_174727_8667dd4.zip">WinIkaLog20160723_174727_8667dd4.zip</a></td>
+          </tr>
+          <tr>
+            <th>最新版 (Latest version)</th>
+            <td><a href="WinIkaLog20160610_105425_b1915d2.zip">WinIkaLog20160610_105425_b1915d2.zip</a></td>
+          </tr>
+          <tr>
+            <th>安定版 (Stable version)</th>
+            <td><a href="WinIkaLog20160609_005508_579408a.zip">WinIkaLog20160609_005508_579408a.zip</a></td>
+          </tr>
+        </tbody>
       </table>
 
       <h2>
         <span class="fa fa-wrench fa-fw"></span>その他ダウンロード / Small fixes
       </h2>
-      <table border>
-      <!-- tr><td>ブキチコレクションの認識精度向上用モデルファイル（スピコラ／リペア、ロンタム／ネクロの判別がまだ苦手）<br>Updated model for weapon classification, after Sheldon's Picks</td><td><a href="https://github.com/hasegaw/IkaLog/raw/7e5e307e3380efa9693b47caa216693b4328f6d6/data/weapons.knn.data">https://github.com/hasegaw/IkaLog/raw/7e5e307e3380efa9693b47caa216693b4328f6d6/data/weapons.knn.data</a></td></tr -->
-      <tr><td>20160623 以前でギア認識の精度を向上させるためのモデルファイル<br>Updated model for gear ability classification, before version 20160623</td><td><a href="https://github.com/hasegaw/IkaLog/blob/c64c271e5d787a9dcadedb123f0a8665cdfa1254/data/gearpowers.knn.data">https://github.com/hasegaw/IkaLog/blob/c64c271e5d787a9dcadedb123f0a8665cdfa1254/data/gearpowers.knn.data</a></td></tr>
-      <tr><td>20160610 以前でボールドマーカー7 が認識できない問題を修正するための最新モデルファイル<br>Updated model for Sheldon's Pick Vol. 2, , before version 20160610</td><td><a href="https://github.com/hasegaw/IkaLog/blob/c91c20b003dc8937f67eba5d3f1d10388c733bf6/data/weapons.knn.data">https://github.com/hasegaw/IkaLog/blob/c91c20b003dc8937f67eba5d3f1d10388c733bf6/data/weapons.knn.data</a></td></tr>
-      </table>
+      <ul>
+<!--
+        <li>
+          <a href="https://github.com/hasegaw/IkaLog/raw/7e5e307e3380efa9693b47caa216693b4328f6d6/data/weapons.knn.data">
+            ブキチコレクションの認識精度向上用モデルファイル（スピコラ／リペア、ロンタム／ネクロの判別がまだ苦手）<br>
+            Updated model for weapon classification, after Sheldon's Picks<br>
+            <code>data/weapons.knn.data</code>
+          </a>
+        </li>
+-->
+        <li>
+          <a href="https://github.com/hasegaw/IkaLog/blob/c64c271e5d787a9dcadedb123f0a8665cdfa1254/data/gearpowers.knn.data">
+            20160623 以前でギア認識の精度を向上させるためのモデルファイル<br>
+            Updated model for gear ability classification, before version 20160623<br>
+            <code>data/gearpowers.knn.data</code>
+          </a>
+        </li>
+        <li>
+          <a href="https://github.com/hasegaw/IkaLog/blob/c91c20b003dc8937f67eba5d3f1d10388c733bf6/data/weapons.knn.data">
+            20160610 以前でボールドマーカー7 が認識できない問題を修正するための最新モデルファイル<br>
+            Updated model for Sheldon's Pick Vol. 2, before version 20160610<br>
+            <code>data/weapons.knn.data</code>
+          </a>
+        </li>
+      </ul>
 
       <h2>
         <span class="fa fa-leaf fa-fw"></span>読んでね / Must Read
       </h2>
-      <p>WinIkaLog を目的の言語向けで起動させるために、以下に示すバッチファイルを使用してください。<br>Use the batch file below to Run WinIkaLog in your region mode.</p>
-      <table >
-      <tr><td>日本語版 (Japanese)</td><td>WinIkaLog_ja.BAT</td></tr>
-      <tr><td>北米版 (North America)</td><td>WinIkaLog_NA.BAT</td></tr>
-      <tr><td>ヨーロッパ版 (EU)</td><td>WinIkaLog_EU.BAT</td></tr>
-      </table>
-
-      <p>MSVCRT100.DLL がなくて IkaLog が起動しない場合は次のランタイムをインストールしてください。<br>
-      If you don't have  MSVCRT100.DLL, try install the runtime below.<br>
-      <table>
-      <tr><td>Microsoft Visual C++ 2010 Redistributable Package (x86) </td><td><a href="https://www.microsoft.com/ja-jp/download/details.aspx?id=5555">(日本語; Japanese)</a></td></tr>
-      <tr><td>Microsoft Visual C++ 2010 Redistributable Package (x86) </td><td><a href="https://www.microsoft.com/en-US/download/details.aspx?id=5555">(英語; US English)</a></td></tr>
-      </table>
-
-      <p>最近のバージョンでアマレコからの入力がうまくいかないケースがあるようです。この場合でも、入力方法を DirectShow に設定し、 AmaRec Video Capture を手動選択すると動くようです。</p>
+      <ul>
+        <li>
+          <strong>
+            WinIkaLog を目的の言語向けで起動させるために、以下に示すバッチファイルを使用してください。<br>
+            Use the batch file below to Run WinIkaLog in your region mode.
+          </strong>
+          <table class="table table-striped">
+            <tbody>
+              <tr>
+                <th>日本語版 (Japanese)</th>
+                <td><code>WinIkaLog_ja.BAT</code></td>
+              </tr>
+              <tr>
+                <th>北米版 (English: North America)</th>
+                <td><code>WinIkaLog_en_NA.BAT</code></td>
+              </tr>
+              <tr>
+                <th>ヨーロッパ版 (English: Europe and Oceania)</th>
+                <td><code>WinIkaLog_en_EU.BAT</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+        <li>
+          <strong>
+            MSVCRT100.DLL がなくて IkaLog が起動しない場合は次のランタイムをインストールしてください。<br>
+            If you don't have  MSVCRT100.DLL, try install the runtime below.
+          </strong>
+          <ul>
+            <li>
+              <a href="https://www.microsoft.com/ja-jp/download/details.aspx?id=5555">[日本語; Japanese] Microsoft Visual C++ 2010 再頒布可能パッケージ (x86)</a>
+            </li>
+            <li>
+              <a href="https://www.microsoft.com/en-US/download/details.aspx?id=5555">[英語; English] Microsoft Visual C++ 2010 Redistributable Package (x86)</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>
+            最近のバージョンでアマレコからの入力がうまくいかないケースがあるようです。この場合でも、入力方法を DirectShow に設定し、 AmaRec Video Capture を手動選択すると動くようです。
+          </strong>
+        </li>
+      </ul>
 
       <h2>
         <span class="fa fa-info-circle fa-fw"></span>ドキュメントなどへのリンク / Documentation
       </h2>
-      <table width="100%" border>
-      <tr><td width="45%" >日本語; Japanese </td><td width="45%">英語; English</td></tr>
-      <tr><td><a href="https://github.com/hasegaw/IkaLog/wiki/ja_WinIkaLog">はじめてのWinIkaLog</a></td>
-      <td><a href="https://github.com/hasegaw/IkaLog/wiki/en_WinIkaLog">WinIkaLog Starting Guide</a><br>
-      <a href="http://squidboards.com/guides/how-to-set-up-ikalog-and-stat-ink-for-battle-result-tracking.217/">How to set up IkaLog and stat.ink for battle result tracking! </a></td></tr>
-      <tr><td><a href="https://github.com/hasegaw/IkaLog/wiki/ja_FAQ">FAQ</a></td>
-      <td><a href="https://github.com/hasegaw/IkaLog/wiki/en_FAQ">FAQ - not yet</a></td></tr>
-      <tr><td><a href="https://github.com/hasegaw/IkaLog/wiki/CaptureDevices">HDMI キャプチャデバイスの選び方</a></td>
-      <td><a href="https://github.com/hasegaw/IkaLog/wiki/en_CaptureDevices">Capture Devices reported to work</a></td></tr>
-      <tr><td><a href="https://docs.google.com/forms/d/1sUUvfAoTlLNmQN03PWD31LAcdPHAkhwZWK1vLcc7WAg/viewform">不具合フィードバックはこちらから</a></td><td>To feedback in English, write to @hasegaw on Twitter.</td></tr>
-      </table>
-
-
-
-
+      <div class="row">
+        <div class="col-xs-12 col-sm-6">
+          <h3>
+            日本語; Japanese
+          </h3>
+          <ul>
+            <li>
+              <a href="https://github.com/hasegaw/IkaLog/wiki/ja_WinIkaLog">はじめてのWinIkaLog</a>
+            </li>
+            <li>
+              <a href="https://github.com/hasegaw/IkaLog/wiki/ja_FAQ">FAQ</a>
+            </li>
+            <li>
+              <a href="https://github.com/hasegaw/IkaLog/wiki/CaptureDevices">HDMI キャプチャデバイスの選び方</a>
+            </li>
+            <li>
+              <a href="https://docs.google.com/forms/d/1sUUvfAoTlLNmQN03PWD31LAcdPHAkhwZWK1vLcc7WAg/viewform">不具合フィードバックはこちらから</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <h3>
+            英語; English
+          </h3>
+          <ul>
+            <li>
+              <a href="https://github.com/hasegaw/IkaLog/wiki/en_WinIkaLog">WinIkaLog Starting Guide</a>
+            </li>
+            <li>
+              <a href="http://squidboards.com/guides/how-to-set-up-ikalog-and-stat-ink-for-battle-result-tracking.217/">How to set up IkaLog and stat.ink for battle result tracking!</a>
+            </li>
+            <li class="not-yet">
+              <a href="https://github.com/hasegaw/IkaLog/wiki/en_FAQ">FAQ</a> - not yet
+            </li>
+            <li>
+              <a href="https://github.com/hasegaw/IkaLog/wiki/en_CaptureDevices">Capture Devices reported to work</a>
+            </li>
+            <li>
+              To feedback in English, write to @hasegaw on Twitter.
+            </li>
+          </ul>
+        </div>
+      </div>
 
       <h2>
         <span class="fa fa-tags fa-fw"></span>更新履歴 / Changelog
