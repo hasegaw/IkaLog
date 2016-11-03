@@ -110,9 +110,9 @@ class WeaponClassifier(object):
         return self._weapons_keys[y_id[0]], 0
 
 if __name__ == '__main__':
+    import sys
     obj = WeaponClassifier()
     obj.load_model_from_file()
 
-    img = cv2.imread(
-        '/Users/hasegaw/work/IkaLogDNN/weapons20160910/weapons/sshooter/1915748-result.3.png', 1)
-    obj.predict(img)
+    img = cv2.imread(sys.argv[1], 1)
+    print(obj.predict(img)[0])
