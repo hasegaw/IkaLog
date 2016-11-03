@@ -22,7 +22,9 @@ import os
 
 import cv2
 import numpy as np
+import time
 
+from ikalog.utils import IkaUtils
 from ikalog.utils.neuralnet.functions import relu, forward_mlp
 
 
@@ -96,6 +98,7 @@ class WeaponClassifier(object):
         return np.reshape(img_weapon_hsv_f32, (1, -1))
 
     def predict(self, img_weapon):
+        t1 = time.time()
         feat_weapon = self.image_to_feature(img_weapon)
         # print(feat_weapon.shape)
 
@@ -106,6 +109,10 @@ class WeaponClassifier(object):
         # print(y_id)
         # print(self._weapons_keys[y_id[0]])
         # print(self._weapons_keys.index('sshooter'))
+
+        t2 = time.time()
+
+        IkaUtils.dprint('%s: predict %s took %s seconds' % (self, self._weapons_keys[y_id[0]], t2-t1))
 
         return self._weapons_keys[y_id[0]], 0
 
