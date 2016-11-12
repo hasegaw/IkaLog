@@ -140,7 +140,7 @@ class VideoInputWrapper(object):
         )
 
         assert buf_size > 0
-        bpp = buf_size / w / h
+        bpp = buf_size // (w * h)
         assert bpp == int(bpp)
         return (h, w, bpp)
 
