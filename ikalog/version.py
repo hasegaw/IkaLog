@@ -46,7 +46,7 @@ def get_latest_versions():
     '''Returns the latest downloadable versions from the web site.'''
     version_dict = {}
 
-    url = 'http://dl.dropboxusercontent.com/u/14421778/IkaLog/download.html'
+    url = 'http://hasegaw.github.io/IkaLog/'
     pool = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
                                ca_certs=Certifi.where(),
                                timeout=120.0)
