@@ -4,7 +4,6 @@ from ikalog.utils.ikautils import IkaUtils
 from ikalog.utils.localization import Localization
 
 def find_image_file(img_file=None, languages=None):
-    print('find_image_file: img_file %s languages %s' % (img_file, languages))
     if languages is None:
         languages = Localization.get_game_languages()
 
