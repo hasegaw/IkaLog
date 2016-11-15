@@ -19,5 +19,5 @@
 #
 
 from ikalog.utils.image_filters import *
-from ikalog.utils.ikamatcher1 import IkaMatcher1 as IkaMatcher
-#from ikalog.utils.ikamatcher2.matcher import IkaMatcher2 as IkaMatcher
+#from ikalog.utils.ikamatcher1 import IkaMatcher1 as IkaMatcher
+from ikalog.utils.ikamatcher2.matcher import IkaMatcher2 as IkaMatcher

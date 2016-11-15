@@ -27,8 +27,9 @@ from ikalog.utils.ikautils import IkaUtils
 from ikalog.utils.image_filters.filters import *
 
 from ikalog.utils.ikamatcher2.reference import Numpy_uint8_fast
+from ikalog.utils.ikamatcher2.x86 import SSE42
 
-default_kernel = Numpy_uint8_fast
+default_kernel = SSE42
 
 
 class IkaMatcher2(object):
