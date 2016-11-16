@@ -26,16 +26,13 @@ import time
 import ikalog.constants
 from ikalog.utils import *
 from ikalog.utils.character_recoginizer import DeadlyWeaponRecoginizer
-
+from ikalog.utils.neuralnet.weapon import WeaponClassifier
 import cv2
 import numpy as np
 import umsgpack
 
-# weapons.load_model()
-
-weapons = WeaponRecoginizer()
+weapons = WeaponClassifier()
 weapons.load_model_from_file()
-weapons.knn_train()
 
 abilities = GearPowerRecoginizer()
 abilities.load_model_from_file()
