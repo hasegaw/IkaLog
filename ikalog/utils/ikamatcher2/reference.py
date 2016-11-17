@@ -21,6 +21,7 @@
 import ctypes
 import numpy as np
 import time
+import cv2
 
 from ikalog.utils.ikamatcher2.kernel import Kernel
 
@@ -62,9 +63,8 @@ class Numpy_uint8(Kernel):
         return r
 
     def popcnt(self, img):
-        img_8b_1d = np.reshape(img, (-1))
-        pixels_matched = np.extract(img_8b_1d, img_8b_1d)
-        return len(pixels_matched)
+        hist = cv2.calcHist([img], [0], None, [3], [0, 256])
+        return hist[2]
 
 
 class Numpy_uint8_fast(Numpy_uint8):
