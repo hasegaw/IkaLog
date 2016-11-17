@@ -206,6 +206,17 @@ OUTPUT_ARGS['Twitter'] = {
 OUTPUT_PLUGINS.append('WebSocketServer')
 OUTPUT_ARGS['WebSocketServer'] = {'enabled': True}
 
+# VideoRecorder
+# - This plugin starts/stops automatically video recording.
+# - This plugin works with AmarecTV and OBS.
+# - This plugin requires Windows and Autoit.
+#
+#OUTPUT_PLUGINS.append('VideoRecorder')
+OUTPUT_ARGS['VideoRecorder'] = {
+    'control_obs': 'C:/IkaLog/tools/ControlAmarecTV.au3',
+    'dir': 'C:/IkaLog/videos',
+}
+
 # Description: Video description for YouTube.
 # - It is expected to be used with input.CVFile.
 # - Streaming mode, or Multiple matches in a video is not tested.
