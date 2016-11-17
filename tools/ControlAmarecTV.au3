@@ -102,7 +102,12 @@ Func FindRecentRecording()
 EndFunc
 
 Func ControlAmarecTV($stop)
-    Local $hWnd = WinWait('[CLASS:AmaRecTV; INSTANCE:2]', '', 1)
+    Local $hWnd = 0
+    If WinExists('[CLASS:AmaRecTV; INSTANCE:2]') Then
+        $hWnd = WinWait('[CLASS:AmaRecTV; INSTANCE:2]', '', 1)
+    Else
+        $hWnd = WinWait('[CLASS:AmaRecTV4; INSTANCE:2]', '', 1)
+    EndIf
 
     If $hWnd = 0 Then
         MsgBox(0, "Error", "Could not find AmarecTV")
@@ -168,7 +173,7 @@ Func GetAmaRecHandleFromList()
     For $i = 1 to $var[0][0]
         ; 可視で名前のあるウィンドウのみ
         If $var[$i][0] <> "" AND IsVisible($var[$i][1]) Then
-            If StringInStr($var[$i][0], "AmaRecTV") Then
+            If StringInStr($var[$i][0], "AmaRecTV") Or StringInStr($var[$i][0], "AmaRecTV4") Then
                 If (StringInStr(WinGetClassList($var[$i][0]), "Display")) Then
                     $retValue = $var[$i][1]
                     Return $retValue
