@@ -55,10 +55,8 @@ class ResultsGUI(object):
 
     def on_game_individual_result(self, context):
         cv_frame = cv2.resize(context['engine']['frame'], self.size)
-        frame_rgb = cv2.cvtColor(cv_frame, cv2.COLOR_BGR2RGB)
+        img_frame_rgb = cv2.cvtColor(cv_frame, cv2.COLOR_BGR2RGB)
+        height, width = img_frame_rgb.shape[0:2]
 
-        try:
-            self.result_image = wx.Bitmap.FromBuffer(frame_rgb)
-        except:
-            self.result_image = wx.BitmapFromBuffer(frame_rgb)
+        self.result_image = wx.BitmapFromBuffer(width, height, img_frame_rgb)
         self.draw_image()
