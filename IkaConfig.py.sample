@@ -228,3 +228,19 @@ OUTPUT_ARGS['DebugVideoWriter'] = {'dir': './debug_videos/'}
 #
 # OUTPUT_PLUGINS.append('PreviewDetected')
 OUTPUT_ARGS['PreviewDetected'] = {}
+
+# Boyomi: Narration by Boyomichan, Japanese text speech app.
+#
+# OUTPUT_PLUGINS.append('Boyomi')
+OUTPUT_ARGS['Boyomi'] = {
+    'host': '127.0.0.1',
+    'port': 50001,
+}
+
+# MikuMikuMouth: Narration by Miku Miku Mouth
+#
+# OUTPUT_PLUGINS.append('MikuMikuMouth')
+OUTPUT_ARGS['MikuMikuMouth'] = {
+    'host': '127.0.0.1',
+    'port': 50082,
+}
