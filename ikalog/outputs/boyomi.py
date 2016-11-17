@@ -118,8 +118,13 @@ class Boyomi(Commentator):
     Boyomi-chan is Japnanese speech server.
     '''
 
-    def __init__(self, host='127.0.0.1', port=50001, dictionary={}):
-        super(Boyomi, self).__init__(dictionary)
+    def __init__(self,
+                 host='127.0.0.1',
+                 port=50001,
+                 dictionary={},
+                 dictionary_csv=None,
+                 custom_read_csv=None):
+        super(Boyomi, self).__init__(dictionary, dictionary_csv, custom_read_csv)
         self._client = BoyomiClient(host, port)
         self._read_event('initialize')
 

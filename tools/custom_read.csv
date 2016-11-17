@@ -1,0 +1,29 @@
+# 実況アプリ用 ブキ名（死因）調整ファイル（変な読み方をするブキを修正）,
+#,
+# ブキキーの一覧: https://stat.ink/api-info/weapon,
+# サブ・スペシャル: https://github.com/fetus-hina/stat.ink/blob/master/API.md#death_reasons,
+# ブキキー,読み方
+52gal,ごーにーガロン
+52gal_deco,ごーにーガロンデコ
+96gal,きゅーろくガロン
+96gal_deco,きゅーろくガロンデコ
+bold_7,ボールドマーカーセブン
+nzap83,エヌザップ83
+nzap85,エヌザップ85
+nzap89,エヌザップ89
+promodeler_mg,プロモデラーエムジー
+promodeler_pg,プロモデラーピージー
+promodeler_rg,プロモデラーアールジー
+rapid_elite,ラピッドブラスターエリート
+rapid_elite_deco,ラピッドブラスターエリートデコ
+bamboo14mk1,ひとよん式竹筒じゅう・こう
+bamboo14mk2,ひとよん式竹筒じゅう・おつ
+bamboo14mk3,ひとよん式竹筒じゅう・へい
+liter3k,リッター3ケー
+liter3k_custom,リッター3ケーカスタム
+liter3k_scope,3ケースコープ
+liter3k_scope_custom,3ケースコープカスタム
+squiclean_a,スクイックリンアルファ
+squiclean_b,スクイックリンベータ
+squiclean_g,スクイックリンガンマ
+unknown,未知の武器

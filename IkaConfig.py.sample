@@ -246,6 +246,8 @@ OUTPUT_ARGS['PreviewDetected'] = {}
 OUTPUT_ARGS['Boyomi'] = {
     'host': '127.0.0.1',
     'port': 50001,
+    # 'dictionary_csv': 'C:/IkaLog/tools/commentator.csv',
+    # 'custom_read_csv': 'C:/IkaLog/tools/custom_read.csv',
 }
 
 # MikuMikuMouth: Narration by Miku Miku Mouth
@@ -254,4 +256,6 @@ OUTPUT_ARGS['Boyomi'] = {
 OUTPUT_ARGS['MikuMikuMouth'] = {
     'host': '127.0.0.1',
     'port': 50082,
+    # 'dictionary_csv': 'C:/IkaLog/tools/commentator.csv',
+    # 'custom_read_csv': 'C:/IkaLog/tools/custom_read.csv',
 }
