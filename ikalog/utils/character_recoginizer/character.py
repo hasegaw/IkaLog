@@ -94,14 +94,14 @@ class CharacterRecoginizer(object):
         # フェスの検出の場合は黄色文字を抽出。
         yellow = cv2.inRange(img_fes_title_hsv[:, :, 0], 32 - 2, 32 + 2)
         yellow2 = cv2.inRange(img_fes_title_hsv[:, :, 2], 240, 255)
-        img_fes_title_mask = np.minimum(yellow, yellow2)
+        img_fes_title_mask = yellow & yellow2
         return fes_yellow_mask
 
     def WHITE_STRING(self, img_hsv):
         # そうでなければ白だよね。
         white_mask_s = cv2.inRange(img_hsv[:, :, 1], 0, 48)
         white_mask_v = cv2.inRange(img_hsv[:, :, 2], 224, 256)
-        white_mask = np.minimum(white_mask_s, white_mask_v)
+        white_mask = white_mask_s & white_mask_v
         return white_mask
 
     def save_model_to_file(self, file):

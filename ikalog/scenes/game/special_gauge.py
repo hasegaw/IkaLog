@@ -46,7 +46,7 @@ class GameSpecialGauge(Scene):
         img_filtered[img_hsv[:, :, 1] > 64] = 255
         img_filtered[img_hsv[:, :, 2] > 64] = 255
         img_filtered[img_filtered <= 64] = 0
-        img_masked = np.minimum(img_filtered, self._mask_gauge[:, :, 0])
+        img_masked = img_filtered & self._mask_gauge[:, :, 0]
         # cv2.imshow('gauge', img_masked)
 
         pixels = np.sum(img_masked) / 255
@@ -57,7 +57,7 @@ class GameSpecialGauge(Scene):
         charged = False
         if value > 95:
             img_white = matcher.MM_WHITE()(frame[34:34+102, 1117:1117+102, :])
-            img_white_masked = np.minimum(img_white, self._mask_gauge[:, :, 0])
+            img_white_masked = img_white & self._mask_gauge[:, :, 0]
             white_score = np.sum(img_white_masked / 255)
             charged = (white_score > 0)
 

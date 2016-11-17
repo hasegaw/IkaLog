@@ -118,8 +118,9 @@ class ResultUdemae(StatefulScene):
         # 文字認識が白専用なので、ウデマエ文字列が黄色であれば
         # 文字が白色の画像に置き換えて文字認識させる
         if udemae_str_changed:
-            img_udemae = cv2.cvtColor(np.maximum(img_udemae_white, img_udemae_yellow),
-                                      cv2.COLOR_GRAY2BGR)
+            img_udemae = cv2.cvtColor(
+                img_udemae_white | img_udemae_yellow,
+                cv2.COLOR_GRAY2BGR)
 
         # ウデマエ(文字部分)
         if self.udemae_recoginizer:

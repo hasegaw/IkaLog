@@ -382,7 +382,7 @@ class ResultDetail(StatefulScene):
         img_fest_title_hsv = cv2.cvtColor(img_fest_title, cv2.COLOR_BGR2HSV)
         yellow = cv2.inRange(img_fest_title_hsv[:, :, 0], 32 - 2, 32 + 2)
         yellow2 = cv2.inRange(img_fest_title_hsv[:, :, 2], 240, 255)
-        img_fest_title_mask = np.minimum(yellow, yellow2)
+        img_fest_title_mask = yellow & yellow2
         is_fes = np.sum(img_fest_title_mask) > img_fest_title_mask.shape[
             0] * img_fest_title_mask.shape[1] * 16
 
@@ -598,7 +598,7 @@ class ResultDetail(StatefulScene):
         img_fes_title_hsv = cv2.cvtColor(img_fes_title, cv2.COLOR_BGR2HSV)
         yellow = cv2.inRange(img_fes_title_hsv[:, :, 0], 32 - 2, 32 + 2)
         yellow2 = cv2.inRange(img_fes_title_hsv[:, :, 2], 240, 255)
-        img_fes_title_mask = np.minimum(yellow, yellow2)
+        img_fes_title_mask = yellow & yellow2
         is_fes = np.sum(img_fes_title_mask) > img_fes_title_mask.shape[
             0] * img_fes_title_mask.shape[1] * 16
 
