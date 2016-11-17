@@ -132,6 +132,9 @@ class Screenshot(object):
     # @param context   IkaLog context
     #
     def on_result_detail_still(self, context):
+        if not self.result_detail_enabled:
+            return
+
         timestr = time.strftime("%Y%m%d_%H%M%S",
                                 time.localtime(IkaUtils.getTime(context)))
         destfile = os.path.join(self.dir, 'ikabattle_%s.png' % timestr)
