@@ -54,6 +54,9 @@ class ResultsGUI(object):
                         (0, 0), self.size)
 
     def on_game_individual_result(self, context):
+        # FIXME
+        return
+
         cv_frame = cv2.resize(context['engine']['frame'], self.size)
         img_frame_rgb = cv2.cvtColor(cv_frame, cv2.COLOR_BGR2RGB)
         height, width = img_frame_rgb.shape[0:2]
