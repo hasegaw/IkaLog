@@ -114,8 +114,8 @@ class Screenshot(object):
                                 time.localtime(IkaUtils.getTime(context)))
         destfile = os.path.join(self.dir, 'ikabattle_%s.png' % timestr)
 
-        IkaUtils.writeScreenshot(destfile, context['engine']['frame'])
-        print(_('Saved a screenshot %s') % destfile)
+        if IkaUtils.writeScreenshot(destfile, context['engine']['frame']):
+            print(_('Saved a screenshot %s') % destfile)
 
     def on_key_press(self, context, key):
         if not (key == 0x53 or key == 0x73):
