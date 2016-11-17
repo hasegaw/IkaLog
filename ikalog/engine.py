@@ -151,7 +151,7 @@ class IkaEngine:
         t = self.capture.get_current_timestamp()
         context['engine']['msec'] = t
         context['engine']['frame'] = frame
-        context['engine']['preview'] = copy.deepcopy(frame)
+#        context['engine']['preview'] = copy.deepcopy(frame)
         context['game']['offset_msec'] = IkaUtils.get_game_offset_msec(context)
 
         self.call_plugins('on_debug_read_next_frame')
