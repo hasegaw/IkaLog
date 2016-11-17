@@ -46,4 +46,3 @@ from .plaza_user_stat import PlazaUserStat
 
 from .downie import Downie
 from .blank import Blank
-from .misc.amarec_16x10 import Amarec16x10Warning

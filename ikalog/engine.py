@@ -452,7 +452,6 @@ class IkaEngine:
             # scenes.Downie(self),
 
             scenes.Blank(self),
-            scenes.Amarec16x10Warning(self),
         ]
 
     def __del__(self):
