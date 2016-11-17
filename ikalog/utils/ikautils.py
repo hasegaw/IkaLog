@@ -214,7 +214,7 @@ class IkaUtils(object):
             img_pil.save(destfile)
             assert os.path.isfile(destfile)
         except:
-            self.dprint("Screenshot: failed")
+            IkaUtils.dprint("Screenshot: failed")
             return False
         return True
 
