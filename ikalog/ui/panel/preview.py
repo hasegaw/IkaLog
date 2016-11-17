@@ -108,11 +108,6 @@ class PreviewPanel(wx.Panel):
         obj.SetEvtHandlerEnabled(enable)
         return orig_state
 
-
-    # IkaLog event
-    def on_amarec16x10_warning(self, context, params):
-        self._amarec16x10_warning = params['enabled']
-
     # IkaLog event
     def on_show_preview(self, context):
         img = context['engine'].get('preview', context['engine']['frame'])
@@ -227,11 +222,6 @@ class PreviewPanel(wx.Panel):
         if not self.refresh_at_next:
             return
 
-        if self._amarec16x10_warning is not None:
-            label = self.label_amarec16x10_warning
-            { True: label.Show, False: label.Hide }[self._amarec16x10_warning]()
-            self._amarec16x10_warning = None
-
         self.draw_preview()
         self.refresh_at_next = False
 
@@ -291,11 +281,6 @@ class PreviewPanel(wx.Panel):
         self.top_sizer.Add(self.preview_panel)
         self.SetSizer(self.top_sizer)
 
-        # AmaRec 16x10 warning should always on top layer
-        self.label_amarec16x10_warning = wx.StaticText(
-            self, wx.ID_ANY, _('The image seems to be 16x10. Perhaps the source is misconfigured.'), pos=(0, 0))
-        self.label_amarec16x10_warning.Hide();
-        self._amarec16x10_warning = None
 
 if __name__ == "__main__":
     import sys
