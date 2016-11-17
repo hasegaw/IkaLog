@@ -41,13 +41,11 @@ class Screenshot(object):
 
     def apply_ui(self):
         self.result_detail_enabled = self.checkResultDetailEnable.GetValue()
-        self.miiverse_drawing_enabled = self.checkMiiverseDrawingEnable.GetValue()
         self.dir = self.editDir.GetValue()
 
     def refresh_ui(self):
         self._internal_update = True
         self.checkResultDetailEnable.SetValue(self.result_detail_enabled)
-        self.checkMiiverseDrawingEnable.SetValue(self.miiverse_drawing_enabled)
 
         if not self.dir is None:
             self.editDir.SetValue(self.dir)
@@ -60,7 +58,6 @@ class Screenshot(object):
 
     def config_reset(self):
         self.result_detail_enabled = False
-        self.miiverse_drawing_enabled = False
         self.dir = os.path.join(os.getcwd(), 'screenshots')
 
     def on_config_load_from_context(self, context):
@@ -73,9 +70,6 @@ class Screenshot(object):
         if 'ResultDetailEnable' in conf:
             self.result_detail_enabled = conf['ResultDetailEnable']
 
-        if 'MiiverseDrawingEnable' in conf:
-            self.miiverse_drawing_enabled = conf['MiiverseDrawingEnable']
-
         if 'Dir' in conf:
             self.dir = conf['Dir']
 
@@ -85,7 +79,6 @@ class Screenshot(object):
     def on_config_save_to_context(self, context):
         context['config']['screenshot'] = {
             'ResultDetailEnable': self.result_detail_enabled,
-            'MiiveseDrawingEnable': self.miiverse_drawing_enabled,
             'Dir': self.dir,
         }
 
@@ -99,32 +92,14 @@ class Screenshot(object):
         self.panel.SetSizer(self.layout)
         self.checkResultDetailEnable = wx.CheckBox(
             self.panel, wx.ID_ANY, _('Save screenshots of game results'))
-        self.checkMiiverseDrawingEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, _('Save drawings in Inkopolis'))
         self.editDir = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
 
         self.layout.Add(wx.StaticText(
             self.panel, wx.ID_ANY, _('Folder to save screenshots')))
         self.layout.Add(self.editDir, flag=wx.EXPAND)
         self.layout.Add(self.checkResultDetailEnable)
-        self.layout.Add(self.checkMiiverseDrawingEnable)
 
         self.panel.SetSizer(self.layout)
-
-    def save_drawing(self, context):
-        x1 = 241
-        x2 = x1 + 367
-        y1 = 528
-        y2 = y1 + 142
-
-        drawing = context['engine']['frame'][y1:y2, x1:x2, :]
-
-        timestr = time.strftime("%Y%m%d_%H%M%S",
-                                time.localtime(IkaUtils.getTime(context)))
-        destfile = os.path.join(self.dir, 'miiverse_%s.png' % timestr)
-
-        IkaUtils.writeScreenshot(destfile, drawing)
-        print(_('Saved a screenshot %s') % destfile)
 
     ##
     # on_result_detail_still Hook
@@ -156,5 +131,4 @@ class Screenshot(object):
     #
     def __init__(self, dest_dir=None):
         self.result_detail_enabled = (not dest_dir is None)
-        self.miiverse_drawing_enabled = False
         self.dir = dest_dir
