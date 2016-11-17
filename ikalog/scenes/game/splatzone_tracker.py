@@ -95,10 +95,9 @@ class SplatzoneTracker(Scene):
         counter['img_injury_i16'] = img_injury_i16
         diff_pixels = None
         if img_last_injury_i16 is not None:
-            img_white = np.maximum(
-                self._white_filter(img_injury),
-                self._white_filter(img_last_injury),
-            )
+            img_white = \
+                self._white_filter(img_injury) | \
+                self._white_filter(img_last_injury)
             img_diff = abs(img_injury_i16 - img_last_injury_i16)
             img_diff_u8 = np.array(img_diff, np.uint8)
             img_diff_u8[img_diff_u8 < 16] = 0

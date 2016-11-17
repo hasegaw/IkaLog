@@ -3,7 +3,7 @@
 #
 #  IkaLog
 #  ======
-#  Copyright (C) 2015 Takeshi HASEGAWA, Junki MIZUSHIMA
+#  Copyright (C) 2015-2016 Takeshi HASEGAWA
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -18,6 +18,4 @@
 #  limitations under the License.
 #
 
-from ikalog.utils.image_filters import *
-#from ikalog.utils.ikamatcher1 import IkaMatcher1 as IkaMatcher
-from ikalog.utils.ikamatcher2.matcher import IkaMatcher2 as IkaMatcher
+from ikalog.utils.ikamatcher2.matcher import IkaMatcher2

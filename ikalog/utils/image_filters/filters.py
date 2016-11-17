@@ -78,7 +78,7 @@ class MM_WHITE(ImageFilter):
         img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
         img_match_s = cv2.inRange(img_hsv[:, :, 1], sat_min, sat_max)
         img_match_v = cv2.inRange(img_hsv[:, :, 2], vis_min, vis_max)
-        img_match = np.minimum(img_match_s, img_match_v)
+        img_match = img_match_s & img_match_v
         return img_match
 
     def __init__(self, sat=(0, 32), visibility=(230, 256)):
@@ -161,7 +161,7 @@ class MM_COLOR_BY_HUE(ImageFilter):
             #print('vis_min %d vis_max %d hue_min %d hue_max %d' % (vis_min, vis_max, hue_min, hue_max))
             img_match_h = cv2.inRange(img_hsv[:, :, 0], hue_min, hue_max)
             img_match_v = cv2.inRange(img_hsv[:, :, 2], vis_min, vis_max)
-            img_match = np.minimum(img_match_h, img_match_v)
+            img_match = img_match_h & img_match_v
         return img_match
 
     def __init__(self, hue=None, visibility=None):
