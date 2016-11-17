@@ -231,6 +231,14 @@ def _init_outputs(opts):
         args = _replace_vars(output_args['Switcher'], vars)
         OutputPlugins.append(outputs.Switcher(**args))
 
+    if 'Boyomi' in output_plugins:
+        args = _replace_vars(output_args['Boyomi'], vars)
+        OutputPlugins.append(outputs.Boyomi(**args))
+
+    if 'MikuMikuMouth' in output_plugins:
+        args = _replace_vars(output_args['MikuMikuMouth'], vars)
+        OutputPlugins.append(outputs.MikuMikuMouth(**args))
+
     return OutputPlugins
 
 
