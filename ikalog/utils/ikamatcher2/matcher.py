@@ -26,9 +26,9 @@ from ikalog.utils.find_image_file import find_image_file
 from ikalog.utils.ikautils import IkaUtils
 from ikalog.utils.image_filters.filters import *
 
-from ikalog.utils.ikamatcher2.reference import Numpy_uint8_fast
-
-default_kernel = Numpy_uint8_fast
+#from ikalog.utils.ikamatcher2.reference import Numpy_uint8_fast as default_kernel
+from ikalog.utils.ikamatcher2.arm_neon import NEON as default_kernel
+#from ikalog.utils.ikamatcher2.x86 import SSE42 as default_kernel
 
 
 class IkaMatcher2(object):
