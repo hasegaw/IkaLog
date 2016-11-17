@@ -175,6 +175,7 @@ class OffsetFilter(Filter):
         return True
 
     def execute(self, frame):
+        return frame
         if not (self.enabled and self.pre_execute(frame)):
             return frame
 
