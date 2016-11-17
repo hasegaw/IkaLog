@@ -84,8 +84,13 @@ class MikuMikuMouth(Commentator):
     '''
     みくみくまうすサーバー
     '''
-    def __init__(self, host='127.0.0.1', port=50082, dictionary={}):
-        super(MikuMikuMouth, self).__init__(dictionary)
+    def __init__(self,
+                 host='127.0.0.1',
+                 port=50082,
+                 dictionary={},
+                 dictionary_csv=None,
+                 custom_read_csv=None):
+        super(MikuMikuMouth, self).__init__(dictionary, dictionary_csv, custom_read_csv)
         self._server = MikuMikuMouthServer(host, port)
         self._server.listen()
         self._read_event('initialize');
