@@ -191,11 +191,7 @@ class PreviewPanel(wx.Panel):
         if frame_rgb is None:
             return False
 
-        # FIXME: Remove Python 2.x + wxPython 2.x support
-        try:
-            bmp = wx.Bitmap.FromBuffer(width, height, frame_rgb)
-        except:
-            bmp = wx.BitmapFromBuffer(width, height, frame_rgb)
+        bmp = wx.BitmapFromBuffer(width, height, frame_rgb)
 
         dc = wx.ClientDC(self.preview_panel)
         dc.DrawBitmap(bmp, 0, 0)
