@@ -27,6 +27,7 @@ from ikalog.constants import special_weapons
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 from ikalog.utils.character_recoginizer import *
+from ikalog.utils.ikamatcher2.matcher import MultiClassIkaMatcher2 as MultiClassIkaMatcher
 
 
 ##
@@ -54,16 +55,6 @@ from ikalog.utils.character_recoginizer import *
 #      "special_weapon" array in ikalog/constants.py.
 #
 class GameSpecialWeapon(StatefulScene):
-
-    def find_best_match(self, frame, matchers_list):
-        most_possible = (0, None)
-
-        for matcher in matchers_list:
-            matched, fg_score, bg_score = matcher.match_score(frame)
-            if matched and (most_possible[0] < fg_score):
-                most_possible = (fg_score, matcher)
-
-        return most_possible[1]
 
     # Called per Engine's reset.
     def reset(self):
@@ -137,7 +128,8 @@ class GameSpecialWeapon(StatefulScene):
         white_filter = matcher.MM_WHITE()
         img_sp_text = white_filter(img_special_bgr[:, 0:150])
 
-        special = self.find_best_match(img_special_bgr, self.masks)
+        special = self._masks.match_best(img_special_bgr)[1]
+
         if self.write_samples:
             cv2.imwrite('training/_special_%s.png' %
                         time.time(), 255 - img_sp_text)
@@ -169,7 +161,7 @@ class GameSpecialWeapon(StatefulScene):
         if img_last_special is None:
             return False
 
-        special = self.find_best_match(img_special_bgr, self.masks)
+        special = self._masks.match_best(img_special_bgr)[1]
         if special is not None:
             self._call_plugins(
                 'on_mark_rect_in_preview',
@@ -201,7 +193,7 @@ class GameSpecialWeapon(StatefulScene):
         self.write_samples = False
 
         # Load mask files.
-        self.masks = []
+        self._masks = MultiClassIkaMatcher()
         for special_weapon in special_weapons.keys():
             try:
                 mask = IkaMatcher(
@@ -216,7 +208,7 @@ class GameSpecialWeapon(StatefulScene):
                     debug=debug,
                 )
                 mask._id = special_weapon
-                self.masks.append(mask)
+                self._masks.add_mask(mask)
             except:
                 IkaUtils.dprint('%s: Failed to load mask for %s' %
                                 (self, special_weapon))
