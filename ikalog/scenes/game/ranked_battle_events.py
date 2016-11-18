@@ -135,7 +135,7 @@ class GameRankedBattleEvents(StatefulScene):
 
     def _load_splatzone_masks(self, debug=False):
         mask_we_got = IkaMatcher(
-            452, 177, 361, 39,
+            473, 177, 273, 36,
             img_file='splatzone_we_got.png',
             threshold=0.9,
             orig_threshold=0.1,
@@ -147,7 +147,7 @@ class GameRankedBattleEvents(StatefulScene):
         )
 
         mask_we_lost = IkaMatcher(
-            432, 176, 404, 40,
+            473, 177, 273, 36,
             img_file='splatzone_we_lost.png',
             threshold=0.9,
             orig_threshold=0.1,
@@ -159,7 +159,7 @@ class GameRankedBattleEvents(StatefulScene):
         )
 
         mask_they_got = IkaMatcher(
-            452, 177, 361, 39,
+            473, 177, 273, 36,
             img_file='splatzone_they_got.png',
             threshold=0.9,
             orig_threshold=0.1,
@@ -171,7 +171,7 @@ class GameRankedBattleEvents(StatefulScene):
         )
 
         mask_they_lost = IkaMatcher(
-            432, 176, 404, 40,
+            473, 177, 273, 36,
             img_file='splatzone_they_lost.png',
             threshold=0.9,
             orig_threshold=0.1,
@@ -191,7 +191,7 @@ class GameRankedBattleEvents(StatefulScene):
 
     def _load_rainmaker_masks(self, debug=False):
         mask_we_got = IkaMatcher(
-            452, 177, 361, 39,
+            473, 177, 273, 36,
             img_file='rainmaker_we_got.png',
             threshold=0.9,
             orig_threshold=0.1,
@@ -203,7 +203,7 @@ class GameRankedBattleEvents(StatefulScene):
         )
 
         mask_we_lost = IkaMatcher(
-            432, 176, 404, 40,
+            473, 177, 273, 36,
             img_file='rainmaker_we_lost.png',
             threshold=0.9,
             orig_threshold=0.1,
@@ -215,7 +215,7 @@ class GameRankedBattleEvents(StatefulScene):
         )
 
         mask_they_got = IkaMatcher(
-            452, 177, 361, 39,
+            473, 177, 273, 36,
             img_file='rainmaker_they_got.png',
             threshold=0.9,
             orig_threshold=0.1,
@@ -227,7 +227,7 @@ class GameRankedBattleEvents(StatefulScene):
         )
 
         mask_they_lost = IkaMatcher(
-            432, 176, 404, 40,
+            473, 177, 273, 36,
             img_file='rainmaker_they_lost.png',
             threshold=0.9,
             orig_threshold=0.1,
@@ -247,7 +247,7 @@ class GameRankedBattleEvents(StatefulScene):
 
     def _load_towercontrol_masks(self, debug=False):
         mask_we_took = IkaMatcher(
-            452, 177, 361, 39,
+            473, 177, 273, 36,
             img_file='towercontrol_we_took.png',
             threshold=0.9,
             orig_threshold=0.1,
@@ -259,7 +259,7 @@ class GameRankedBattleEvents(StatefulScene):
         )
 
         mask_we_lost = IkaMatcher(
-            432, 176, 404, 40,
+            473, 177, 273, 36,
             img_file='towercontrol_we_lost.png',
             threshold=0.9,
             orig_threshold=0.1,
@@ -271,7 +271,7 @@ class GameRankedBattleEvents(StatefulScene):
         )
 
         mask_they_took = IkaMatcher(
-            452, 177, 361, 39,
+            473, 177, 273, 36,
             img_file='towercontrol_they_took.png',
             threshold=0.9,
             orig_threshold=0.1,
@@ -283,7 +283,7 @@ class GameRankedBattleEvents(StatefulScene):
         )
 
         mask_they_lost = IkaMatcher(
-            432, 176, 404, 40,
+            473, 177, 273, 36,
             img_file='towercontrol_they_lost.png',
             threshold=0.9,
             orig_threshold=0.1,
@@ -308,7 +308,7 @@ class GameRankedBattleEvents(StatefulScene):
         self._load_towercontrol_masks(debug=debug)
 
         self.mask_we_lead = IkaMatcher(
-            473, 173, 322, 40,
+            473, 177, 273, 36,
             img_file='ranked_we_lead.png',
             threshold=0.9,
             orig_threshold=0.1,
@@ -320,7 +320,7 @@ class GameRankedBattleEvents(StatefulScene):
         )
 
         self.mask_they_lead = IkaMatcher(
-            473, 173, 322, 40,
+            473, 177, 273, 36,
             img_file='ranked_they_lead.png',
             threshold=0.9,
             orig_threshold=0.1,
