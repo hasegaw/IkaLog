@@ -44,34 +44,7 @@ class IkaMatcher2(object):
             (img.shape[1] == self._width)
         return cropped
 
-    def crop(self, img, x, y, w, h, align=128):
-        img_cropped = img[y: y + h, x: x + w]
-        img_reshaped = img_cropped.reshaped(1, -1)
-        padding_length = img_reshaped.shape[1] % align
-        img_padded = np.append(img_reshaped, zeros[0: padding_length])
-        assert len(img_padded) % align == 0
-        return img_padded
-
-    def match(self, img, debug=None):
-        matched, fg_score, bg_score = self.match_score(img, debug)
-        return matched
-
-    def match_score(self, img, debug=None):
-        debug = debug or self._debug
-
-        bg_pixels = 0
-        bg_ratio = 0.0
-        bg_matched = False
-
-        fg_pixels = 0
-        fg_ratio = 0.0
-        fg_matched = False
-
-        # Phase 1: Crop the rect from img, if needed
-        cropped = \
-            (img.shape[0] == self._height) and \
-            (img.shape[1] == self._width)
-
+    def get_img_object(self, img):
         if not self._is_cropped(img):
             img = img[self._top: self._top + self._height,
                       self._left: self._left + self._width]
@@ -83,12 +56,34 @@ class IkaMatcher2(object):
             img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             img_bgr = img
 
+        return { 'bgr': img_bgr, 'gray': img_gray, 'bg': None, 'fg': None }
+
+    def match(self, img, debug=None):
+        matched, fg_score, bg_score = self.match_score(img, debug)
+        return matched
+
+    def match_score(self, img, debug=None):
+        img_obj = self.get_img_object(img)
+        return self.match_score_internal(img_obj, debug=debug)
+
+    def match_score_internal(self, img_obj, debug=None):
+        debug = debug or self._debug
+
+        bg_pixels = 0
+        bg_ratio = 0.0
+        bg_matched = False
+
+        fg_pixels = 0
+        fg_ratio = 0.0
+        fg_matched = False
+
         # Phase 2: Background check
         try:
-            img_bg = 255 - \
-                self._bg_method(img_bgr=img_bgr, img_gray=img_gray)
-            img_bg_kernel = self._kernel.encode(img_bg)
-            bg_pixels = self._kernel.logical_and_popcnt(img_bg_kernel)
+            if img_obj['bg'] is None:
+                img_bg = 255 - \
+                    self._bg_method(img_bgr=img_obj['bgr'], img_gray=img_obj['gray'])
+                img_obj['bg'] = self._kernel.encode(img_bg)
+            bg_pixels = self._kernel.logical_and_popcnt(img_obj['bg'])
 
             # fixme: zero division
             bg_ratio = bg_pixels / (self._width * self._height)
@@ -100,9 +95,11 @@ class IkaMatcher2(object):
 
         # Phase 3: Foreground check
         if bg_matched:
-            img_fg = self._fg_method(img_bgr=img_bgr, img_gray=img_gray)
-            img_fg_kernel = self._kernel.encode(img_fg)
-            fg_pixels = self._kernel.logical_or_popcnt(img_fg_kernel)
+            if img_obj['fg'] is None:
+                img_fg = self._fg_method(img_bgr=img_obj['bgr'], img_gray=img_obj['gray'])
+                img_obj['fg'] = self._kernel.encode(img_fg)
+            fg_pixels = self._kernel.logical_or_popcnt(img_obj['fg'])
+
             # fixme: zero division
             fg_ratio = fg_pixels / (self._width * self._height)
             fg_matched = (fg_ratio > self._threshold)
@@ -171,3 +168,33 @@ class IkaMatcher2(object):
         kernel_class = kernel_class or default_kernel
         self._kernel = kernel_class(self._width, self._height)
         self._kernel.load_mask(img)
+
+
+class MultiClassIkaMatcher2(object):
+    def __init__(self):
+        self._masks = []
+
+    def add_mask(self, mask):
+        if len(self._masks) > 0:
+            pass
+            # ToDo: compatibility check
+
+        self._masks.append(mask)
+
+    def match_best(self, img, debug=None):
+        if len(self._masks) == 0:
+            return 0.0, None
+
+        img_obj = self._masks[0].get_img_object(img)
+
+        results = []
+        for mask in self._masks:
+            fg_matched, fg_ratio, bg_ratio = mask.match_score_internal(img_obj, debug)
+            if fg_matched:
+                results.append([fg_ratio, mask])
+
+        if len(results) == 0:
+            return 0.0, None
+
+        best = sorted(results, key=lambda x:-x[0])[0]
+        return best
