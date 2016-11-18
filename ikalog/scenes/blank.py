@@ -34,11 +34,9 @@ class Blank(Scene):
 
         self._last_event_msec = - 100 * 1000
 
-
     def _is_black(self, img):
-        maxval = img.shape[0] * img.shape[1] * img.shape[2]
-        score  = np.sum(img)
-        return score < maxval * 16
+        maxval = np.amax(img)
+        return maxval < 16
 
     def match_no_cache(self, context):
         if self.matched_in(context, 5 * 1000):
@@ -49,11 +47,12 @@ class Blank(Scene):
 
         frame = context['engine']['frame']
 
-        matched = \
-            self._is_black(frame[230:230 + 350, :, :]) and \
-            self._is_black(frame[230 + 150:, :frame.shape[1] - 190, :])
+        matched1 = self._is_black(frame[230 + 150:, :frame.shape[1] - 190, :])
+        if not matched1:
+            return matched1
 
-        return matched
+        matched2 = self._is_black(frame[230:230 + 350, :, :])
+        return matched2
 
     def _analyze(self, context):
         pass
