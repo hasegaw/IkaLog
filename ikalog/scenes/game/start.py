@@ -25,6 +25,7 @@ import numpy as np
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 from ikalog.constants import stages, rules
+from ikalog.utils.ikamatcher2.matcher import MultiClassIkaMatcher2 as MultiClassIkaMatcher
 
 
 class GameStart(StatefulScene):
@@ -50,23 +51,6 @@ class GameStart(StatefulScene):
         self._last_event_msec = - 100 * 1000
         self._last_run_msec = - 100 * 1000
 
-    def find_best_match(self, frame, matchers_list):
-        """
-        Return stat.ink id (e.g. arowana) or None
-        """
-
-        if len(matchers_list) == 0:
-            return None
-
-        results = list(map(lambda e:e.match_score(frame), matchers_list))
-        match_scores = list(map(lambda e:e[1], results))
-        index = np.argmax(match_scores)
-
-        if results[index][0]:
-            return  matchers_list[index].id_
-        return None
-
-
     def elect(self, context, votes):
         # Discard too old data.
         election_start = context['engine']['msec'] - self.election_period
@@ -87,6 +71,22 @@ class GameStart(StatefulScene):
 
         return sorted_keys[0]
 
+    def _detect_stage_and_rule(self, context):
+        frame = context['engine']['frame']
+
+        stage = None
+        rule = None
+
+        best_stage = self.stage_matchers.match_best(frame)
+        best_rule = self.rule_matchers.match_best(frame)
+
+        if best_stage[1] is not None:
+            stage = best_stage[1].id_
+        if best_rule[1] is not None:
+            rule = best_rule[1].id_
+
+        return stage, rule
+
     def _state_default(self, context):
         timer_icon = self.find_scene_object('GameTimerIcon')
         if (timer_icon is not None) and timer_icon.matched_in(context, 3000):
@@ -103,8 +103,7 @@ class GameStart(StatefulScene):
             self._last_run_msec = context['engine']['msec']
 
         # Get the best matched stat.ink key
-        stage = self.find_best_match(frame, self.stage_matchers)
-        rule = self.find_best_match(frame, self.rule_matchers)
+        stage, rule = self._detect_stage_and_rule(context)
 
         if stage or rule:
             self.stage_votes = []
@@ -122,9 +121,7 @@ class GameStart(StatefulScene):
         if frame is None:
             return False
 
-        stage = self.find_best_match(frame, self.stage_matchers)
-        rule = self.find_best_match(frame, self.rule_matchers)
-
+        stage, rule = self._detect_stage_and_rule(context)
         matched = (stage or rule)
 
         # 画面が続いているならそのまま
@@ -173,8 +170,8 @@ class GameStart(StatefulScene):
     def _init_scene(self, debug=False):
         self.election_period = 5 * 1000  # msec
 
-        self.stage_matchers = []
-        self.rule_matchers = []
+        self.stage_matchers = MultiClassIkaMatcher()
+        self.rule_matchers = MultiClassIkaMatcher()
 
         for stage_id in stages.keys():
             stage = IkaMatcher(
@@ -188,8 +185,8 @@ class GameStart(StatefulScene):
                 call_plugins=self._call_plugins,
                 debug=debug,
             )
-            self.stage_matchers.append(stage)
             setattr(stage, 'id_', stage_id)
+            self.stage_matchers.add_mask(stage)
 
         for rule_id in rules.keys():
             rule = IkaMatcher(
@@ -204,7 +201,7 @@ class GameStart(StatefulScene):
                 debug=debug,
             )
             setattr(rule, 'id_', rule_id)
-            self.rule_matchers.append(rule)
+            self.rule_matchers.add_mask(rule)
 
 if __name__ == "__main__":
     GameStart.main_func()
