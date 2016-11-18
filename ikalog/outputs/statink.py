@@ -759,6 +759,14 @@ class StatInk(object):
         if (not self.enabled) and (not self.dry_run):
             return False
 
+        cond = \
+            (context['game'].get('map', None) != None) or \
+            (context['game'].get('rule', None) != None) or \
+            (context['game'].get('won', None) != None)
+
+        if not cond:
+            return
+
         payload = self.composite_payload(context)
 
         self.print_payload(payload)
