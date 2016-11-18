@@ -23,6 +23,7 @@ import cv2
 
 from ikalog.utils import *
 from ikalog.scenes.stateful_scene import StatefulScene
+from ikalog.utils.ikamatcher2.matcher import MultiClassIkaMatcher2 as MultiClassIkaMatcher
 
 
 class GameRankedBattleEvents(StatefulScene):
@@ -35,41 +36,40 @@ class GameRankedBattleEvents(StatefulScene):
         self._last_mask_matched = None
         self._last_mask_triggered_msec = - 100 * 1000
         self._masks_active = {}
-
-    def find_best_match(self, frame, matchers_list):
-        most_possible = (0, None)
-
-        for matcher in matchers_list:
-            matched, fg_score, bg_score = matcher.match_score(frame)
-            if matched and (most_possible[0] < fg_score):
-                most_possible = (fg_score, matcher)
-
-        return most_possible[1]
+        self._masks_active2 = MultiClassIkaMatcher()
 
     def on_game_reset(self, context):
         self._masks_active = {}
+        self._masks_active2 = MultiClassIkaMatcher()
 
     def on_game_start(self, context):
         rule_id = context['game']['rule']
+        masks_active = self._masks_ranked.copy()
         if rule_id == 'area':
-            self._masks_active = self._masks_splatzone.copy()
-            self._masks_active.update(self._masks_ranked)
+            masks_active.update(self._masks_splatzone)
+
         elif rule_id == 'hoko':
-            self._masks_active = self._masks_rainmaker.copy()
-            self._masks_active.update(self._masks_ranked)
+            masks_active.update(self._masks_rainmaker)
+
         elif rule_id == 'yagura':
-            self._masks_active = self._masks_towercontrol.copy()
-            self._masks_active.update(self._masks_ranked)
+            masks_active.update(self._masks_towercontrol)
+
         else:
-            self._masks_active = {}
+            masks_active = []
+
+        self._masks_active = masks_active
+
+        # Initialize Multi-Class IkaMatcher
+        self._masks_active2 = MultiClassIkaMatcher()
+        for mask in masks_active.keys():
+            self._masks_active2.add_mask(mask)
 
     def _state_triggered(self, context):
         frame = context['engine']['frame']
         if frame is None:
             return False
 
-        most_possible = self.find_best_match(
-            frame, list(self._masks_active.keys()))
+        most_possible = self._masks_active2.match_best(frame)[1]
         if most_possible is None:
             self._switch_state(self._state_default)
 
@@ -87,8 +87,8 @@ class GameRankedBattleEvents(StatefulScene):
         if frame is None:
             return False
 
-        most_possible = self.find_best_match(
-            frame, list(self._masks_active.keys()))
+        most_possible = self._masks_active2.match_best(frame)[1]
+
         if most_possible is None:
             self._switch_state(self._state_default)
 
@@ -111,16 +111,14 @@ class GameRankedBattleEvents(StatefulScene):
         self._switch_state(self._state_triggered)
 
     def _state_default(self, context):
-        if 0:
-            if self.is_another_scene_matched(context, 'GameTimerIcon'):
-                return False
+        # if self.is_another_scene_matched(context, 'GameTimerIcon'):
+        #     return False
 
         frame = context['engine']['frame']
         if frame is None:
             return False
 
-        most_possible = self.find_best_match(
-            frame, list(self._masks_active.keys()))
+        most_possible = self._masks_active2.match_best(frame)[1]
 
         if most_possible is None:
             return False
