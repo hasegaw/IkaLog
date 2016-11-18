@@ -1,29 +1,29 @@
-# À‹µƒAƒvƒŠ—p ƒuƒL–¼i€ˆöj’²®ƒtƒ@ƒCƒ‹i•Ï‚È“Ç‚İ•û‚ğ‚·‚éƒuƒL‚ğC³j,
+ï»¿# å®Ÿæ³ã‚¢ãƒ—ãƒªç”¨ ãƒ–ã‚­åï¼ˆæ­»å› ï¼‰èª¿æ•´ãƒ•ã‚¡ã‚¤ãƒ«ï¼ˆå¤‰ãªèª­ã¿æ–¹ã‚’ã™ã‚‹ãƒ–ã‚­ã‚’ä¿®æ­£ï¼‰,
 #,
-# ƒuƒLƒL[‚Ìˆê——: https://stat.ink/api-info/weapon,
-# ƒTƒuEƒXƒyƒVƒƒƒ‹: https://github.com/fetus-hina/stat.ink/blob/master/API.md#death_reasons,
-# ƒuƒLƒL[,“Ç‚İ•û
-52gal,‚²[‚É[ƒKƒƒ“
-52gal_deco,‚²[‚É[ƒKƒƒ“ƒfƒR
-96gal,‚«‚ã[‚ë‚­ƒKƒƒ“
-96gal_deco,‚«‚ã[‚ë‚­ƒKƒƒ“ƒfƒR
-bold_7,ƒ{[ƒ‹ƒhƒ}[ƒJ[ƒZƒuƒ“
-nzap83,ƒGƒkƒUƒbƒv83
-nzap85,ƒGƒkƒUƒbƒv85
-nzap89,ƒGƒkƒUƒbƒv89
-promodeler_mg,ƒvƒƒ‚ƒfƒ‰[ƒGƒ€ƒW[
-promodeler_pg,ƒvƒƒ‚ƒfƒ‰[ƒs[ƒW[
-promodeler_rg,ƒvƒƒ‚ƒfƒ‰[ƒA[ƒ‹ƒW[
-rapid_elite,ƒ‰ƒsƒbƒhƒuƒ‰ƒXƒ^[ƒGƒŠ[ƒg
-rapid_elite_deco,ƒ‰ƒsƒbƒhƒuƒ‰ƒXƒ^[ƒGƒŠ[ƒgƒfƒR
-bamboo14mk1,‚Ğ‚Æ‚æ‚ñ®’|“›‚¶‚ã‚¤E‚±‚¤
-bamboo14mk2,‚Ğ‚Æ‚æ‚ñ®’|“›‚¶‚ã‚¤E‚¨‚Â
-bamboo14mk3,‚Ğ‚Æ‚æ‚ñ®’|“›‚¶‚ã‚¤E‚Ö‚¢
-liter3k,ƒŠƒbƒ^[3ƒP[
-liter3k_custom,ƒŠƒbƒ^[3ƒP[ƒJƒXƒ^ƒ€
-liter3k_scope,3ƒP[ƒXƒR[ƒv
-liter3k_scope_custom,3ƒP[ƒXƒR[ƒvƒJƒXƒ^ƒ€
-squiclean_a,ƒXƒNƒCƒbƒNƒŠƒ“ƒAƒ‹ƒtƒ@
-squiclean_b,ƒXƒNƒCƒbƒNƒŠƒ“ƒx[ƒ^
-squiclean_g,ƒXƒNƒCƒbƒNƒŠƒ“ƒKƒ“ƒ}
-unknown,–¢’m‚Ì•Ší
+# ãƒ–ã‚­ã‚­ãƒ¼ã®ä¸€è¦§: https://stat.ink/api-info/weapon,
+# ã‚µãƒ–ãƒ»ã‚¹ãƒšã‚·ãƒ£ãƒ«: https://github.com/fetus-hina/stat.ink/blob/master/API.md#death_reasons,
+# ãƒ–ã‚­ã‚­ãƒ¼,èª­ã¿æ–¹
+52gal,ã”ãƒ¼ã«ãƒ¼ã‚¬ãƒ­ãƒ³
+52gal_deco,ã”ãƒ¼ã«ãƒ¼ã‚¬ãƒ­ãƒ³ãƒ‡ã‚³
+96gal,ãã‚…ãƒ¼ã‚ãã‚¬ãƒ­ãƒ³
+96gal_deco,ãã‚…ãƒ¼ã‚ãã‚¬ãƒ­ãƒ³ãƒ‡ã‚³
+bold_7,ãƒœãƒ¼ãƒ«ãƒ‰ãƒãƒ¼ã‚«ãƒ¼ã‚»ãƒ–ãƒ³
+nzap83,ã‚¨ãƒŒã‚¶ãƒƒãƒ—83
+nzap85,ã‚¨ãƒŒã‚¶ãƒƒãƒ—85
+nzap89,ã‚¨ãƒŒã‚¶ãƒƒãƒ—89
+promodeler_mg,ãƒ—ãƒ­ãƒ¢ãƒ‡ãƒ©ãƒ¼ã‚¨ãƒ ã‚¸ãƒ¼
+promodeler_pg,ãƒ—ãƒ­ãƒ¢ãƒ‡ãƒ©ãƒ¼ãƒ”ãƒ¼ã‚¸ãƒ¼
+promodeler_rg,ãƒ—ãƒ­ãƒ¢ãƒ‡ãƒ©ãƒ¼ã‚¢ãƒ¼ãƒ«ã‚¸ãƒ¼
+rapid_elite,ãƒ©ãƒ”ãƒƒãƒ‰ãƒ–ãƒ©ã‚¹ã‚¿ãƒ¼ã‚¨ãƒªãƒ¼ãƒˆ
+rapid_elite_deco,ãƒ©ãƒ”ãƒƒãƒ‰ãƒ–ãƒ©ã‚¹ã‚¿ãƒ¼ã‚¨ãƒªãƒ¼ãƒˆãƒ‡ã‚³
+bamboo14mk1,ã²ã¨ã‚ˆã‚“å¼ç«¹ç­’ã˜ã‚…ã†ãƒ»ã“ã†
+bamboo14mk2,ã²ã¨ã‚ˆã‚“å¼ç«¹ç­’ã˜ã‚…ã†ãƒ»ãŠã¤
+bamboo14mk3,ã²ã¨ã‚ˆã‚“å¼ç«¹ç­’ã˜ã‚…ã†ãƒ»ã¸ã„
+liter3k,ãƒªãƒƒã‚¿ãƒ¼3ã‚±ãƒ¼
+liter3k_custom,ãƒªãƒƒã‚¿ãƒ¼3ã‚±ãƒ¼ã‚«ã‚¹ã‚¿ãƒ 
+liter3k_scope,3ã‚±ãƒ¼ã‚¹ã‚³ãƒ¼ãƒ—
+liter3k_scope_custom,3ã‚±ãƒ¼ã‚¹ã‚³ãƒ¼ãƒ—ã‚«ã‚¹ã‚¿ãƒ 
+squiclean_a,ã‚¹ã‚¯ã‚¤ãƒƒã‚¯ãƒªãƒ³ã‚¢ãƒ«ãƒ•ã‚¡
+squiclean_b,ã‚¹ã‚¯ã‚¤ãƒƒã‚¯ãƒªãƒ³ãƒ™ãƒ¼ã‚¿
+squiclean_g,ã‚¹ã‚¯ã‚¤ãƒƒã‚¯ãƒªãƒ³ã‚¬ãƒ³ãƒ
+unknown,æœªçŸ¥ã®æ­¦å™¨

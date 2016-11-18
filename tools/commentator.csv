@@ -1,55 +1,55 @@
-# À‹µƒAƒvƒŠ—p«‘ƒtƒ@ƒCƒ‹,,
+ï»¿# å®Ÿæ³ã‚¢ãƒ—ãƒªç”¨è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«,,
 #,,
-# emotion‚É‚ÍMikuMikuMouth‚Ìemotion‚ğw’è‚µ‚Ü‚·B http://mikumikumouth.net/json.html,,
-# ƒCƒxƒ“ƒg,“Ç‚İã‚°ƒeƒLƒXƒg,emotion
-initialize,ƒCƒJA‚æ‚ë‚µ‚­````I,salute
-lobby_matching,‚µ‚Î‚ç‚­‘Ò‚¿‚Ü‚µ‚å‚¤,response
-lobby_matched,ƒƒ“ƒo[‚ª‘µ‚¢‚Ü‚µ‚½,hakushu
-start,{map}‚Å{rule}‚ªn‚Ü‚è‚Ü‚·,greeting
-go_sign,ƒQ[ƒ€ƒXƒ^[ƒgI,meirei
-killed,“|‚µ‚½I,warai
-killed,‚â‚Á‚½‚Ÿ,wktk
-dead,‚¬‚á‚ ‚ ‚ ‚ ‚ ,no
-dead,‚ ‚ ‚ ‚ ‚ ‚ ‚ ,cry
-dead,‚¤‚í‚ ‚ ‚ ‚ ‚ ,bikkuri
-death_reason_identified,{reason}‚Å“|‚³‚ê‚½,none
-death_reason_oob,êŠO‚É—‚¿‚½,bikkuri
-finish,ƒQ[ƒ€I—¹I,greeting
-individual_result_win,Ÿ‚Á‚½I,happy
-individual_result_win,‚â‚Á‚½‚Ÿ,shy
-individual_result_lose,•‰‚¯‚½I,no
-individual_result_lose,‚­‚â‚µ‚¢,cry
-individual_result_unknown,‚æ‚­‚í‚©‚ç‚È‚¢,question
-individual_result_unknown,‚Ç‚¤‚¢‚¤‚±‚ÆH,tsukkomi
-individual_kill_death,{kill}ƒLƒ‹{death}ƒfƒX,none
-session_end,‚¨‚Â‚©‚ê‚³‚Ü‚Å‚µ‚½,byebye
-session_abort,ƒQ[ƒ€‚ğŒ©¸‚¢‚Ü‚µ‚½,byebye
-ranked_we_lead,ƒJƒEƒ“ƒgƒŠ[ƒh‚µ‚½,hakushu
-ranked_we_lead,‚±‚Ì‚Ü‚Üs‚¯‚ÎŸ‚Ä‚é‚¼,wktk
-ranked_they_lead,ƒJƒEƒ“ƒgƒŠ[ƒh‚³‚ê‚½,cry
-ranked_they_lead,‚±‚Ì‚Ü‚Ü‚Å‚Í•‰‚¯‚é‚¼,no
-splatzone_we_got,ƒGƒŠƒAŠm•Û‚µ‚½,hakushu
-splatzone_we_got,ƒGƒŠƒAŠm•ÛI,wktk
-splatzone_we_lost,ƒJƒEƒ“ƒgƒXƒgƒbƒv‚³‚ê‚½,bikkuri
-splatzone_we_lost,ƒGƒŠƒA‚ğ¸‚Á‚½,notsay
-splatzone_they_got,ƒGƒŠƒAŠm•Û‚³‚ê‚½,bikkuri
-splatzone_they_got,ƒGƒŠƒA‚ğæ‚ç‚ê‚½,notsay
-splatzone_they_lost,ƒJƒEƒ“ƒgƒXƒgƒbƒv‚µ‚½,warai
-splatzone_they_lost,H‚¢~‚ß‚½I,happy
-tower_we_got,ƒ„ƒOƒ‰ƒQƒbƒg,hakushu
-tower_we_got,ƒ„ƒOƒ‰‚í‰ä‚ç‚Ì‚à‚Ì,response
-tower_we_got,ƒ\ƒCƒ„I,wktk
-tower_we_lost,ƒ„ƒOƒ‰‚ª‚â‚ç‚ê‚½,bikkuri
-tower_we_lost,ƒ„ƒOƒ‰‚ğ¸‚Á‚½,notsay
-tower_they_got,ƒ„ƒOƒ‰‚ğ‚Æ‚ç‚ê‚½,cry
-tower_they_lost,ƒ„ƒOƒ‰‚ğ‚Æ‚ß‚½,hakushu
-tower_they_lost,ƒ„ƒOƒ‰‚ğƒXƒgƒbƒv‚µ‚½,warai
-tower_they_lost,H‚¢~‚ß‚½I,happy
-rainmaker_we_got,‚Ù‚±ƒQƒbƒg,hakushu
-rainmaker_we_got,ƒzƒR‚í‰ä‚ç‚Ì‚à‚Ì,wktk
-rainmaker_we_lost,ƒzƒR‚ª‚â‚ç‚ê‚½,bikkuri
-rainmaker_we_lost,ƒzƒR‚ğ¸‚Á‚½,notsay
-rainmaker_they_got,ƒzƒR‚ğ‚Æ‚ç‚ê‚½,cry
-rainmaker_they_lost,ƒzƒR‚ğ‚Æ‚ß‚½,hakushu
-rainmaker_they_lost,ƒzƒR‚ğƒXƒgƒbƒv‚µ‚½,warai
-rainmaker_they_lost,H‚¢~‚ß‚½I,happy
+# emotionã«ã¯MikuMikuMouthã®emotionã‚’æŒ‡å®šã—ã¾ã™ã€‚ http://mikumikumouth.net/json.html,,
+# ã‚¤ãƒ™ãƒ³ãƒˆ,èª­ã¿ä¸Šã’ãƒ†ã‚­ã‚¹ãƒˆ,emotion
+initialize,ã‚¤ã‚«ã€ã‚ˆã‚ã—ãï½ï½ï½ï½ï¼,salute
+lobby_matching,ã—ã°ã‚‰ãå¾…ã¡ã¾ã—ã‚‡ã†,response
+lobby_matched,ãƒ¡ãƒ³ãƒãƒ¼ãŒæƒã„ã¾ã—ãŸ,hakushu
+start,{map}ã§{rule}ãŒå§‹ã¾ã‚Šã¾ã™,greeting
+go_sign,ã‚²ãƒ¼ãƒ ã‚¹ã‚¿ãƒ¼ãƒˆï¼,meirei
+killed,å€’ã—ãŸï¼,warai
+killed,ã‚„ã£ãŸã,wktk
+dead,ãã‚ƒã‚ã‚ã‚ã‚ã‚,no
+dead,ã‚ã‚ã‚ã‚ã‚ã‚ã‚,cry
+dead,ã†ã‚ã‚ã‚ã‚ã‚ã‚,bikkuri
+death_reason_identified,{reason}ã§å€’ã•ã‚ŒãŸ,none
+death_reason_oob,å ´å¤–ã«è½ã¡ãŸ,bikkuri
+finish,ã‚²ãƒ¼ãƒ çµ‚äº†ï¼,greeting
+individual_result_win,å‹ã£ãŸï¼,happy
+individual_result_win,ã‚„ã£ãŸã,shy
+individual_result_lose,è² ã‘ãŸï¼,no
+individual_result_lose,ãã‚„ã—ã„,cry
+individual_result_unknown,ã‚ˆãã‚ã‹ã‚‰ãªã„,question
+individual_result_unknown,ã©ã†ã„ã†ã“ã¨ï¼Ÿ,tsukkomi
+individual_kill_death,{kill}ã‚­ãƒ«{death}ãƒ‡ã‚¹,none
+session_end,ãŠã¤ã‹ã‚Œã•ã¾ã§ã—ãŸ,byebye
+session_abort,ã‚²ãƒ¼ãƒ ã‚’è¦‹å¤±ã„ã¾ã—ãŸ,byebye
+ranked_we_lead,ã‚«ã‚¦ãƒ³ãƒˆãƒªãƒ¼ãƒ‰ã—ãŸ,hakushu
+ranked_we_lead,ã“ã®ã¾ã¾è¡Œã‘ã°å‹ã¦ã‚‹ã,wktk
+ranked_they_lead,ã‚«ã‚¦ãƒ³ãƒˆãƒªãƒ¼ãƒ‰ã•ã‚ŒãŸ,cry
+ranked_they_lead,ã“ã®ã¾ã¾ã§ã¯è² ã‘ã‚‹ã,no
+splatzone_we_got,ã‚¨ãƒªã‚¢ç¢ºä¿ã—ãŸ,hakushu
+splatzone_we_got,ã‚¨ãƒªã‚¢ç¢ºä¿ï¼,wktk
+splatzone_we_lost,ã‚«ã‚¦ãƒ³ãƒˆã‚¹ãƒˆãƒƒãƒ—ã•ã‚ŒãŸ,bikkuri
+splatzone_we_lost,ã‚¨ãƒªã‚¢ã‚’å¤±ã£ãŸ,notsay
+splatzone_they_got,ã‚¨ãƒªã‚¢ç¢ºä¿ã•ã‚ŒãŸ,bikkuri
+splatzone_they_got,ã‚¨ãƒªã‚¢ã‚’å–ã‚‰ã‚ŒãŸ,notsay
+splatzone_they_lost,ã‚«ã‚¦ãƒ³ãƒˆã‚¹ãƒˆãƒƒãƒ—ã—ãŸ,warai
+splatzone_they_lost,é£Ÿã„æ­¢ã‚ãŸï¼,happy
+tower_we_got,ãƒ¤ã‚°ãƒ©ã‚²ãƒƒãƒˆ,hakushu
+tower_we_got,ãƒ¤ã‚°ãƒ©ã‚æˆ‘ã‚‰ã®ã‚‚ã®,response
+tower_we_got,ã‚½ã‚¤ãƒ¤ï¼,wktk
+tower_we_lost,ãƒ¤ã‚°ãƒ©ãŒã‚„ã‚‰ã‚ŒãŸ,bikkuri
+tower_we_lost,ãƒ¤ã‚°ãƒ©ã‚’å¤±ã£ãŸ,notsay
+tower_they_got,ãƒ¤ã‚°ãƒ©ã‚’ã¨ã‚‰ã‚ŒãŸ,cry
+tower_they_lost,ãƒ¤ã‚°ãƒ©ã‚’ã¨ã‚ãŸ,hakushu
+tower_they_lost,ãƒ¤ã‚°ãƒ©ã‚’ã‚¹ãƒˆãƒƒãƒ—ã—ãŸ,warai
+tower_they_lost,é£Ÿã„æ­¢ã‚ãŸï¼,happy
+rainmaker_we_got,ã»ã“ã‚²ãƒƒãƒˆ,hakushu
+rainmaker_we_got,ãƒ›ã‚³ã‚æˆ‘ã‚‰ã®ã‚‚ã®,wktk
+rainmaker_we_lost,ãƒ›ã‚³ãŒã‚„ã‚‰ã‚ŒãŸ,bikkuri
+rainmaker_we_lost,ãƒ›ã‚³ã‚’å¤±ã£ãŸ,notsay
+rainmaker_they_got,ãƒ›ã‚³ã‚’ã¨ã‚‰ã‚ŒãŸ,cry
+rainmaker_they_lost,ãƒ›ã‚³ã‚’ã¨ã‚ãŸ,hakushu
+rainmaker_they_lost,ãƒ›ã‚³ã‚’ã‚¹ãƒˆãƒƒãƒ—ã—ãŸ,warai
+rainmaker_they_lost,é£Ÿã„æ­¢ã‚ãŸï¼,happy
