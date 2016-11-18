@@ -55,7 +55,7 @@ class GameRankedBattleEvents(StatefulScene):
             masks_active.update(self._masks_towercontrol)
 
         else:
-            masks_active = []
+            masks_active = {}
 
         self._masks_active = masks_active
 
