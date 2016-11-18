@@ -57,7 +57,7 @@ class CommentatorDictionary(object):
             IkaUtils.dprint(
                 'Commentator(Boyomi/MikuMikuMouth): Dictionary load from csv {path}'.format(path=path)
             )
-            with open(path, 'r', encoding="cp932") as fh:
+            with open(path, 'r', encoding="utf_8_sig") as fh:
                 reader = csv.reader(fh)
                 for row in reader:
                     if len(row) < 2:
@@ -111,7 +111,7 @@ class Commentator(object):
             IkaUtils.dprint(
                 'Commentator(Boyomi/MikuMikuMouth): Custom-read data load from csv {path}'.format(path=path)
             )
-            with open(path, 'r', encoding="cp932") as fh:
+            with open(path, 'r', encoding="utf_8_sig") as fh:
                 reader = csv.reader(fh)
                 for row in reader:
                     if len(row) < 2:
