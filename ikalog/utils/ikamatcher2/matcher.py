@@ -168,3 +168,33 @@ class IkaMatcher2(object):
         kernel_class = kernel_class or default_kernel
         self._kernel = kernel_class(self._width, self._height)
         self._kernel.load_mask(img)
+
+
+class MultiClassIkaMatcher2(object):
+    def __init__(self):
+        self._masks = []
+
+    def add_mask(self, mask):
+        if len(self._masks) > 0:
+            pass
+            # ToDo: compatibility check
+
+        self._masks.append(mask)
+
+    def match_best(self, img, debug=None):
+        if len(self._masks) == 0:
+            return 0.0, None
+
+        img_obj = self._masks[0].get_img_object(img)
+
+        results = []
+        for mask in self._masks:
+            fg_matched, fg_ratio, bg_ratio = mask.match_score_internal(img_obj, debug)
+            if fg_matched:
+                results.append([fg_ratio, mask])
+
+        if len(results) == 0:
+            return 0.0, None
+
+        best = sorted(results, key=lambda x:-x[0])[0]
+        return best
