@@ -125,8 +125,7 @@ uint32_t logical_and_popcount(uint8_t *image, uint8_t *mask, uint32_t pixels)
     uint32_t *image_u32 = (uint32_t *)image;
     uint32_t *mask_u32 = (uint32_t *)mask;
     uint32_t popcnt = 0;
-
-
+    pixels = pixels / 8;
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
@@ -161,6 +160,7 @@ uint32_t logical_and_popcount(uint8_t *image, uint8_t *mask, uint32_t pixels)
 uint32_t logical_and_popcount_neon_128(uint8_t *image, uint8_t *mask, uint32_t pixels)
 {
     uint64x2_t popcnt0 = {0};
+    pixels = pixels / 8;
     for (uint32_t i = 0; i < pixels; i+=(16 * 1)) {
         // process 128bit at once
         // load
@@ -182,7 +182,7 @@ uint32_t logical_and_popcount_neon_256(uint8_t *image, uint8_t *mask, uint32_t p
 {
     uint64x2_t popcnt0 = {0};
     uint64x2_t popcnt1 = {0};
-
+    pixels = pixels / 8;
 
     uint32_t pre = pixels % (16 * 2); // get 16 or 0
     pixels = pixels - pre;
@@ -226,6 +226,7 @@ uint32_t logical_and_popcount_neon_512(uint8_t *image, uint8_t *mask, uint32_t p
     uint64x2_t popcnt1 = {0};
     uint64x2_t popcnt2 = {0};
     uint64x2_t popcnt3 = {0};
+    pixels = pixels / 8;
 
     uint32_t pre = pixels % (16 * 2); // get 16 or 0
     pixels = pixels - pre;
@@ -292,7 +293,7 @@ uint32_t logical_or_popcount(uint8_t *image, uint8_t *mask, uint32_t pixels)
     uint32_t *image_u32 = (uint32_t *)image;
     uint32_t *mask_u32 = (uint32_t *)mask;
     uint32_t popcnt = 0;
-
+    pixels = pixels / 8;
 
 #ifdef _OPENMP
 #pragma omp parallel for
@@ -328,6 +329,7 @@ uint32_t logical_or_popcount(uint8_t *image, uint8_t *mask, uint32_t pixels)
 uint32_t logical_or_popcount_neon_128(uint8_t *image, uint8_t *mask, uint32_t pixels)
 {
     uint64x2_t popcnt0 = {0};
+    pixels = pixels / 8;
     for (uint32_t i = 0; i < pixels; i+=(16 * 1)) {
         // process 128bit at once
         // load
