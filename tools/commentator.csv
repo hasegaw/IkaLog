@@ -22,6 +22,7 @@ individual_result_lose,くやしい,cry
 individual_result_unknown,よくわからない,question
 individual_result_unknown,どういうこと？,tsukkomi
 individual_kill_death,{kill}キル{death}デス,none
+individual_score,{inked}ポイント塗った,none
 session_end,おつかれさまでした,byebye
 session_abort,ゲームを見失いました,byebye
 ranked_we_lead,カウントリードした,hakushu

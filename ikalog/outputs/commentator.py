@@ -208,12 +208,29 @@ class Commentator(object):
             unknown_text=self._get_message('individual_result_unknown')
         )
         self._read(won)
+
         me = IkaUtils.getMyEntryFromContext(context)
         kill = me['kills']
         death = me['deaths']
         data = self._get_message('individual_kill_death')
-        data['text'] = data['text'].format(kill=kill, death=death)
-        self._read(data)
+        if data['text'] != '':
+            data['text'] = data['text'].format(kill=kill, death=death)
+            self._read(data)
+
+        if (me['score'] is not None) and (context['game']['won'] is not None):
+            # 判定のしようもないので、300pt時代のことは考えない
+            bonus = 1000 if context['game']['won'] else 0
+            score = int(me['score'])
+            inked = score - bonus
+            if inked > 0:
+                data = self._get_message('individual_score')
+                if data['text'] != '':
+                    data['text'] = data['text'].format(
+                        score=score,
+                        inked=inked,
+                        bonus=bonus
+                    )
+                    self._read(data)
 
     def on_game_session_end(self, context):
         self._read_event('session_end')
