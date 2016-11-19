@@ -44,6 +44,12 @@ class IkaMatcher2(object):
             (img.shape[1] == self._width)
         return cropped
 
+    def generate_grayscale_image(self, img_obj):
+        if img_obj['gray'] is not None:
+            return
+
+        img_obj['gray'] = cv2.cvtColor(img_obj['bgr'], cv2.COLOR_BGR2GRAY)
+
     def get_img_object(self, img):
         if not self._is_cropped(img):
             img = img[self._top: self._top + self._height,
@@ -53,7 +59,7 @@ class IkaMatcher2(object):
             img_gray = img
             img_bgr = None
         else:
-            img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            img_gray = None
             img_bgr = img
 
         return { 'bgr': img_bgr, 'gray': img_gray, 'bg': None, 'fg': None }
@@ -80,6 +86,9 @@ class IkaMatcher2(object):
         # Phase 2: Background check
         try:
             if img_obj['bg'] is None:
+                if self._bg_method.want_grayscale_image and (img_obj['gray'] is None):
+                    self.generate_grayscale_image(img_obj)
+
                 img_bg = 255 - \
                     self._bg_method(img_bgr=img_obj['bgr'], img_gray=img_obj['gray'])
                 img_obj['bg'] = self._kernel.encode(img_bg)
@@ -96,6 +105,9 @@ class IkaMatcher2(object):
         # Phase 3: Foreground check
         if bg_matched:
             if img_obj['fg'] is None:
+                if self._fg_method.want_grayscale_image and (img_obj['gray'] is None):
+                    self.generate_grayscale_image(img_obj)
+
                 img_fg = self._fg_method(img_bgr=img_obj['bgr'], img_gray=img_obj['gray'])
                 img_obj['fg'] = self._kernel.encode(img_fg)
             fg_pixels = self._kernel.logical_or_popcnt(img_obj['fg'])
