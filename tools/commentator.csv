@@ -14,6 +14,7 @@ dead,あああああああ,cry
 dead,うわあああああ,bikkuri
 death_reason_identified,{reason}で倒された,none
 death_reason_oob,場外に落ちた,bikkuri
+# low_ink,インクが足りない！,bikkuri
 finish,ゲーム終了！,greeting
 individual_result_win,勝った！,happy
 individual_result_win,やったぁ,shy

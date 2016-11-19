@@ -195,6 +195,9 @@ class Commentator(object):
         return IkaUtils.death_reason2text(
             reason, self.custom_read['unknown'], 'ja')
 
+    def on_game_low_ink(self, context):
+        self._read_event('low_ink')
+
     def on_game_finish(self, context):
         self._read_event('finish')
 
