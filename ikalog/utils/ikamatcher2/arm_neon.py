@@ -138,6 +138,7 @@ class NEON(Kernel):
 
         dest = np.zeros(img_8b_1d_p.shape[0], dtype=np.uint8)
         dll.IkaMatcher2_encode(dest, img_8b_1d_p, (self._h * self._w))
+        dest = np.empty(img_8b_1d_p.shape[0], dtype=np.uint8)
         return dest
 
     def decode(self, img):
