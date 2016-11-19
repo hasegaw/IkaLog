@@ -198,6 +198,26 @@ class Commentator(object):
     def on_game_low_ink(self, context):
         self._read_event('low_ink')
 
+    def on_game_special_weapon(self, context):
+        special_weapon = context['game'].get('special_weapon', None)
+        if special_weapon not in special_weapons.keys():
+            return
+
+        my_event = context['game'].get('special_weapon_is_mine', False)
+        data = self._get_message(
+            'my_special_weapon' if my_event else 'mate_special_weapon'
+        )
+        if data['text'] == '':
+            return
+
+        data['text'] = data['text'].format(
+            weapon=self._special_weapon_name(special_weapon)
+        )
+        self._read(data)
+
+    def _special_weapon_name(self, special):
+        return self._death_reason_label(special)
+
     def on_game_finish(self, context):
         self._read_event('finish')
 
