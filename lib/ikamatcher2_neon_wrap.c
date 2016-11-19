@@ -144,27 +144,36 @@ logical_and_popcount_neon_512_wrap(PyObject* self, PyObject* args)
 {
   // get numpy.array([], numpy.uint8)
   PyArrayObject *image_pyobj, *mask_pyobj;
-  char *image, *mask;
-  PyArray_Descr *descr;
-  npy_intp dims[1];
+  char *image = NULL, *mask = NULL;
+  PyArray_Descr *descr, *descr2;
+  npy_intp image_dims[3], mask_dims[3];
   int pixels;
-
   if (!PyArg_ParseTuple(args, "O!O!i", 
               &PyArray_Type, &image_pyobj, 
               &PyArray_Type, &mask_pyobj,
               &pixels)){
       return NULL;
   }
+  npy_intp i, j;
 
   descr = PyArray_DescrFromType(NPY_UINT8);
+  descr2 = PyArray_DescrFromType(NPY_UINT8);
 
-  if (PyArray_AsCArray((PyObject **) &image_pyobj, (void *)&image, dims, 1, descr) < 0 ||
-          PyArray_AsCArray((PyObject **) &mask_pyobj, (void *)&mask, dims, 1, descr) < 0) {
+  if (PyArray_AsCArray((PyObject **) &image_pyobj, (void *)&image, image_dims, 1, descr) < 0) {
       PyErr_SetString(PyExc_TypeError, "error converting to c array");
       return NULL;
   }
+  if (PyArray_AsCArray((PyObject **) &mask_pyobj, (void *)&mask, mask_dims, 1, descr2) < 0) {
+      PyErr_SetString(PyExc_TypeError, "error converting to c array");
+      return NULL;
+  }
+
   
+#if 1
   uint32_t popcnt = logical_and_popcount_neon_512(image, mask, pixels);
+#endif
+  PyArray_Free((PyObject *) image_pyobj, (void *) image);
+  PyArray_Free((PyObject *) mask_pyobj, (void *) mask);
 
   return Py_BuildValue("i", popcnt);
 }
@@ -269,8 +278,8 @@ logical_or_popcount_neon_512_wrap(PyObject* self, PyObject* args)
   // get numpy.array([], numpy.uint8)
   PyArrayObject *image_pyobj, *mask_pyobj;
   char *image, *mask;
-  PyArray_Descr *descr;
-  npy_intp dims[1];
+  PyArray_Descr *descr1, *descr2;
+  npy_intp dims1[3], dims2[3];
   int pixels;
 
   if (!PyArg_ParseTuple(args, "O!O!i", 
@@ -280,15 +289,19 @@ logical_or_popcount_neon_512_wrap(PyObject* self, PyObject* args)
       return NULL;
   }
 
-  descr = PyArray_DescrFromType(NPY_UINT8);
+  descr1 = PyArray_DescrFromType(NPY_UINT8);
+  descr2 = PyArray_DescrFromType(NPY_UINT8);
 
-  if (PyArray_AsCArray((PyObject **) &image_pyobj, (void *)&image, dims, 1, descr) < 0 ||
-          PyArray_AsCArray((PyObject **) &mask_pyobj, (void *)&mask, dims, 1, descr) < 0) {
+  if (PyArray_AsCArray((PyObject **) &image_pyobj, (void *)&image, dims1, 1, descr1) < 0 ||
+          PyArray_AsCArray((PyObject **) &mask_pyobj, (void *)&mask, dims2, 1, descr2) < 0) {
       PyErr_SetString(PyExc_TypeError, "error converting to c array");
       return NULL;
   }
   
   uint32_t popcnt = logical_or_popcount_neon_512(image, mask, pixels);
+
+  PyArray_Free((PyObject *) image_pyobj, (void *) image);
+  PyArray_Free((PyObject *) mask_pyobj, (void *) mask);
 
   return Py_BuildValue("i", popcnt);
 }

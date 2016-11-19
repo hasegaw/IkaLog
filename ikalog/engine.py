@@ -427,7 +427,7 @@ class IkaEngine:
             scenes.GameTimerIcon(self),
             scenes.GameStart(self),
             scenes.GameGoSign(self),
-            scenes.GameKill(self),
+#            scenes.GameKill(self),
             scenes.GameKillCombo(self),
             scenes.GameDead(self),
             scenes.GameLowInk(self),
