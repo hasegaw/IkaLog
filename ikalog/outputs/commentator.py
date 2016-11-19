@@ -198,6 +198,9 @@ class Commentator(object):
     def on_game_low_ink(self, context):
         self._read_event('low_ink')
 
+    def on_game_special_gauge_charged(self, context):
+        self._read_event('special_charged')
+
     def on_game_special_weapon(self, context):
         special_weapon = context['game'].get('special_weapon', None)
         if special_weapon not in special_weapons.keys():

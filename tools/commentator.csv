@@ -15,6 +15,7 @@ dead,うわあああああ,bikkuri
 death_reason_identified,{reason}で倒された,none
 death_reason_oob,場外に落ちた,bikkuri
 # low_ink,インクが足りない！,bikkuri
+# special_charged,スペシャル満タン！,happy
 # my_special_weapon,{weapon}発動！,warai
 # mate_special_weapon,仲間が{weapon}を発動！,hakushu
 finish,ゲーム終了！,greeting
