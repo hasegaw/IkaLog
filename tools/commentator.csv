@@ -14,6 +14,10 @@ dead,あああああああ,cry
 dead,うわあああああ,bikkuri
 death_reason_identified,{reason}で倒された,none
 death_reason_oob,場外に落ちた,bikkuri
+# low_ink,インクが足りない！,bikkuri
+# special_charged,スペシャル満タン！,happy
+# my_special_weapon,{weapon}発動！,warai
+# mate_special_weapon,仲間が{weapon}を発動！,hakushu
 finish,ゲーム終了！,greeting
 individual_result_win,勝った！,happy
 individual_result_win,やったぁ,shy
@@ -22,6 +26,7 @@ individual_result_lose,くやしい,cry
 individual_result_unknown,よくわからない,question
 individual_result_unknown,どういうこと？,tsukkomi
 individual_kill_death,{kill}キル{death}デス,none
+individual_score,{inked}ポイント塗った,none
 session_end,おつかれさまでした,byebye
 session_abort,ゲームを見失いました,byebye
 ranked_we_lead,カウントリードした,hakushu

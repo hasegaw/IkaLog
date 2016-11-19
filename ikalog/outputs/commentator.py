@@ -164,8 +164,8 @@ class Commentator(object):
         self._read_event('lobby_matched')
 
     def on_game_start(self, context):
-        map_text = IkaUtils.map2text(context['game']['map'], unknown='スプラトゥーン')
-        rule_text = IkaUtils.rule2text(context['game']['rule'], unknown='ゲーム')
+        map_text = IkaUtils.map2text(context['game']['map'], unknown='スプラトゥーン', languages='ja')
+        rule_text = IkaUtils.rule2text(context['game']['rule'], unknown='ゲーム', languages='ja')
         data = self._get_message('start')
         data['text'] = data['text'].format(map=map_text, rule=rule_text)
         self._read(data)
@@ -195,6 +195,32 @@ class Commentator(object):
         return IkaUtils.death_reason2text(
             reason, self.custom_read['unknown'], 'ja')
 
+    def on_game_low_ink(self, context):
+        self._read_event('low_ink')
+
+    def on_game_special_gauge_charged(self, context):
+        self._read_event('special_charged')
+
+    def on_game_special_weapon(self, context):
+        special_weapon = context['game'].get('special_weapon', None)
+        if special_weapon not in special_weapons.keys():
+            return
+
+        my_event = context['game'].get('special_weapon_is_mine', False)
+        data = self._get_message(
+            'my_special_weapon' if my_event else 'mate_special_weapon'
+        )
+        if data['text'] == '':
+            return
+
+        data['text'] = data['text'].format(
+            weapon=self._special_weapon_name(special_weapon)
+        )
+        self._read(data)
+
+    def _special_weapon_name(self, special):
+        return self._death_reason_label(special)
+
     def on_game_finish(self, context):
         self._read_event('finish')
 
@@ -208,12 +234,29 @@ class Commentator(object):
             unknown_text=self._get_message('individual_result_unknown')
         )
         self._read(won)
+
         me = IkaUtils.getMyEntryFromContext(context)
         kill = me['kills']
         death = me['deaths']
         data = self._get_message('individual_kill_death')
-        data['text'] = data['text'].format(kill=kill, death=death)
-        self._read(data)
+        if data['text'] != '':
+            data['text'] = data['text'].format(kill=kill, death=death)
+            self._read(data)
+
+        if (me['score'] is not None) and (context['game']['won'] is not None):
+            # 判定のしようもないので、300pt時代のことは考えない
+            bonus = 1000 if context['game']['won'] else 0
+            score = int(me['score'])
+            inked = score - bonus
+            if inked > 0:
+                data = self._get_message('individual_score')
+                if data['text'] != '':
+                    data['text'] = data['text'].format(
+                        score=score,
+                        inked=inked,
+                        bonus=bonus
+                    )
+                    self._read(data)
 
     def on_game_session_end(self, context):
         self._read_event('session_end')
