@@ -164,8 +164,8 @@ class Commentator(object):
         self._read_event('lobby_matched')
 
     def on_game_start(self, context):
-        map_text = IkaUtils.map2text(context['game']['map'], unknown='スプラトゥーン')
-        rule_text = IkaUtils.rule2text(context['game']['rule'], unknown='ゲーム')
+        map_text = IkaUtils.map2text(context['game']['map'], unknown='スプラトゥーン', languages='ja')
+        rule_text = IkaUtils.rule2text(context['game']['rule'], unknown='ゲーム', languages='ja')
         data = self._get_message('start')
         data['text'] = data['text'].format(map=map_text, rule=rule_text)
         self._read(data)
