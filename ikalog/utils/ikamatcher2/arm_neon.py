@@ -23,87 +23,7 @@ import numpy as np
 
 from ikalog.utils.ikamatcher2.kernel import Kernel
 from ikalog.utils.ikamatcher2.decode_1bit import decode_1bit
-
-from ctypes import c_char_p, c_double, c_int
-
-dllfile = 'lib/ikamatcher2_neon_hal.so'
-ctypes.cdll.LoadLibrary(dllfile)
-dll = ctypes.CDLL(dllfile)
-
-dll.IkaMatcher2_encode.argtypes = [
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # dest
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # src
-    c_int,  # pixels
-]
-dll.IkaMatcher2_encode.restype = c_int
-
-dll.IkaMatcher2_popcnt128_sw.argtypes = [
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # src
-    c_int,  # pixels
-]
-dll.IkaMatcher2_popcnt128_sw.restype = c_int
-
-
-dll.logical_and_popcount.argtypes = [
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-    c_int, # pixels
-]
-dll.logical_and_popcount.restype = c_int
-
-dll.logical_and_popcount_neon_128.argtypes = [
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-    c_int, # pixels
-]
-dll.logical_and_popcount_neon_128.restype = c_int
-
-
-dll.logical_and_popcount_neon_256.argtypes = [
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-    c_int, # pixels
-]
-dll.logical_and_popcount_neon_256.restype = c_int
-
-
-dll.logical_and_popcount_neon_512.argtypes = [
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-    c_int, # pixels
-]
-dll.logical_and_popcount_neon_512.restype = c_int
-
-
-#dll.logical_or_popcount.argtypes = [
-#    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-#    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-#    c_int, # pixels
-#]
-#dll.logical_or_popcount.restype = c_int
-
-dll.logical_or_popcount_neon_128.argtypes = [
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-    c_int, # pixels
-]
-dll.logical_or_popcount_neon_128.restype = c_int
-
-
-dll.logical_or_popcount_neon_256.argtypes = [
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-    c_int, # pixels
-]
-dll.logical_or_popcount_neon_256.restype = c_int
-
-
-dll.logical_or_popcount_neon_512.argtypes = [
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-    np.ctypeslib.ndpointer(dtype=np.uint8, flags='C_CONTIGUOUS'),  # 
-    c_int, # pixels
-]
-dll.logical_or_popcount_neon_512.restype = c_int
+import ikamatcher2_neon_hal as ikamat2_neon
 
 
 zeros512 = np.zeros(512, dtype=np.uint8)
@@ -136,9 +56,8 @@ class NEON(Kernel):
         assert img_8b_1d_p.shape[0] >= (self._h * self._w / 8)
         assert img_8b_1d_p.shape[0] % self._align == 0
 
-        dest = np.zeros(img_8b_1d_p.shape[0], dtype=np.uint8)
-        dll.IkaMatcher2_encode(dest, img_8b_1d_p, (self._h * self._w))
         dest = np.empty(img_8b_1d_p.shape[0], dtype=np.uint8)
+        ikamat2_neon.encode(dest, img_8b_1d_p, (self._h * self._w))
         return dest
 
     def decode(self, img):
@@ -159,7 +78,7 @@ class NEON(Kernel):
         assert len(img.shape) == 1
         assert img.shape[0] >= pixels / 8
 
-        r = dll.logical_and_popcount_neon_256(img, pixels)
+        r = ikamat2_neon.logical_and_popcount_neon_256(img, pixels)
         return r
 
     def logical_or(self, img):
@@ -182,8 +101,8 @@ class NEON(Kernel):
         return func(img, self._img_mask, pixels)
 
     def logical_or_popcnt(self, img):
-        return self.logical_andor_popcnt(img, 512, dll.logical_or_popcount_neon_512)
+        return self.logical_andor_popcnt(img, 512, ikamat2_neon.logical_or_popcount_neon_512)
 
     def logical_and_popcnt(self, img):
-        return self.logical_andor_popcnt(img, 512, dll.logical_and_popcount_neon_512)
+        return self.logical_andor_popcnt(img, 512, ikamat2_neon.logical_and_popcount_neon_512)
 
