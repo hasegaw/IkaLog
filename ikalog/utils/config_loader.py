@@ -94,11 +94,15 @@ def _init_source(opts):
 
     if input_type == 'PYNQ':
         from ikalog.inputs.pynq_capture import PynqCapture
-        source = PynqCapture()
+        source = PynqCapture(
+            debug=input_args.get('debug', False),
+            enable_output=input_args.get('enable_output', False),
+        )
         source.select_source(index=0)
         return source
 
     return source
+
 
 def _replace_vars(args, vars):
     replaced = {}
