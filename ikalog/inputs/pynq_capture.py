@@ -78,26 +78,20 @@ class PynqCapture(VideoInput):
 
             self.reset()
             self.hdmi_in = HDMI('in', init_timeout=10)
-            self.hdmi_out = HDMI('out', frame_list=self.hdmi_in.frame_list)
-            self.hdmi_out.mode(4) # 2=720p, 4=1080p
+            if self._enable_output:
+                self.hdmi_out = HDMI('out', frame_list=self.hdmi_in.frame_list)
+                self.hdmi_out.mode(2)  # 2=720p, 4=1080p
+
             time.sleep(1)
 
-            #self.hdmi_out.stop()
-            #self.hdmi_in.stop()
-            #time.sleep(1)
-
-            self.hdmi_out.start()
+            if self.hdmi_out is not None:
+                self.hdmi_out.start()
             self.hdmi_in.start()
 
-            self.hdmi_in_geom = (self.hdmi_in.frame_width(), self.hdmi_in.frame_height())
+            self.hdmi_in_geom = \
+                (self.hdmi_in.frame_width(), self.hdmi_in.frame_height())
 
-            print('HDMI is capturing a video source of resolution %dx%d' %
-                self.hdmi_in_geom)
-
-            #if not self.hdmi_in.isOpened():
-            #    IkaUtils.dprint(
-            #        '%s: cv2.VideoCapture() failed to open the device' % self)
-            #    self.hdmi_in = None
+            IkaUtils.dprint('%s: resolution %dx%d' % self.hdmi_in_geom)
 
         except:
             print(traceback.format_exc())
@@ -129,35 +123,39 @@ class PynqCapture(VideoInput):
 
     # override
     def _read_frame_func(self):
-        frame_raw = self.hdmi_in.frame_raw()
-        frame = np.frombuffer(frame_raw, dtype=np.uint8)
-        frame = frame.reshape(1080, 1920,3)
-#        frame = frame[0:720, 0:1280, :]
-
-        #if not ret:
-        #    raise EOFError()
-
+        t1 = time.time()
+        if hasattr(self.hdmi_in, 'frame_raw2'):
+            # Modified version of PYNQ library has faster capture function.
+            frame = self.hdmi_in.frame_raw2()
+        else:
+            # This function is supported in original version, but 10X slow.
+            frame_raw = self.hdmi_in.frame_raw()
+            frame = np.frombuffer(frame_raw, dtype=np.uint8)
+            frame = frame.reshape(1080, 1920, 3)
+            frame = frame[0:720, 0:1280, :]
+        t2 = time.time()
+        if self._debug:
+            print('read_frame_func: %6.6f' % (t2 - t1))
         return frame
 
-    def __init__(self):
+    def __init__(self, enable_output=False, debug=False):
         self.hdmi_in = None
         self.hdmi_out = None
+        self._enable_output = enable_output
+        self._debug = debug
+
+        IkaUtils.dprint(
+            '%s: debug %s enable_output %s' %
+            (self, self._debug, self._enable_output))
+
         super(PynqCapture, self).__init__()
 
 if __name__ == "__main__":
     obj = PynqCapture()
-    list = obj.enumerate_sources()
-    for n in range(len(list)):
-        IkaUtils.dprint("%d: %s" % (n, list[n]))
-
-    dev = input("Please input number (or name) of capture device: ")
-    obj.select_source(dev)
+    obj.select_source(0)
+    time.sleep(1)
 
     k = 0
-    while k != 27:
+    t = time.time()
+    while (time.time() - t) < 100:
         frame = obj.read_frame()
-        if 0 and (frame is not None):
-            cv2.imshow(obj.__class__.__name__, frame)
-            k = cv2.waitKey(1)
-        if k == ord('s'):
-            cv2.imwrite('test.png', frame)
