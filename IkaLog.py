@@ -92,5 +92,6 @@ if __name__ == "__main__":
         engine.enable_plugin(op)
 
     engine.close_session_at_eof = True
+    IkaUtils.dprint('IkaLog: start.')
     engine.run()
     IkaUtils.dprint('bye!')
