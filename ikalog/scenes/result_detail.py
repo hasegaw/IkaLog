@@ -29,10 +29,8 @@ import threading
 import traceback
 from datetime import datetime
 
-
 import cv2
 import numpy as np
-
 
 from ikalog.api import APIClient
 from ikalog.scenes.stateful_scene import StatefulScene
@@ -789,6 +787,8 @@ class ResultDetail(StatefulScene):
 
         # そのほか
         # context['game']['timestamp'] = datetime.now()
+        context['game']['image_scoreboard'] = \
+            copy.deepcopy(context['engine']['frame'])
         self._call_plugins_later('on_result_detail_still')
 
         return True

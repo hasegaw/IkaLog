@@ -740,7 +740,7 @@ class StatInk(object):
     # @param context   IkaLog context
     #
     def on_result_detail_still(self, context):
-        self.img_result_detail = context['engine']['frame']
+        self.img_result_detail = context['game']['image_scoreboard']
         IkaUtils.dprint('%s: Gathered img_result (%s)' %
                         (self, self.img_result_detail.shape))
 
@@ -778,7 +778,7 @@ class StatInk(object):
         self.post_payload(context, payload)
 
     def on_result_gears_still(self, context):
-        self.img_gears = context['engine']['frame']
+        self.img_gears = context['game']['image_gears']
         IkaUtils.dprint('%s: Gathered img_gears (%s)' %
                         (self, self.img_gears.shape))
 

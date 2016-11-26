@@ -509,7 +509,7 @@ class Twitter(object):
     # @param context   IkaLog context
     #
     def on_result_detail_still(self, context):
-        self.img_result_detail = context['engine']['frame']
+        self.img_result_detail = context['game']['image_scoreboard']
 
     def on_game_session_end(self, context):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
