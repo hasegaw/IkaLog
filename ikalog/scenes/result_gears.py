@@ -17,6 +17,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+
+import copy
 import sys
 import traceback
 
@@ -84,6 +86,8 @@ class ResultGears(StatefulScene):
             # The values, especially cash, will be overwritten by
             # the results of the last frame, but may be used for fallbacks.
             matched = self._analyze(frame, context)
+            context['game']['image_gears'] = \
+                copy.deepcopy(context['engine']['frame'])
             self._call_plugins('on_result_gears_still')
 
         if matched:
