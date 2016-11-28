@@ -97,6 +97,7 @@ def _init_source(opts):
         source = PynqCapture(
             debug=input_args.get('debug', False),
             enable_output=input_args.get('enable_output', False),
+            mode=input_args.get('mode', 0),
         )
         source.select_source(index=0)
         return source
