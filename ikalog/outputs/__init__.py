@@ -21,7 +21,6 @@
 from .console import Console
 from .csv import CSV
 from .debug import DebugLog
-from .debug_video_writer import DebugVideoWriter
 from .description import Description
 from .fluentd import Fluentd
 from .hue import Hue

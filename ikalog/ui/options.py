@@ -121,7 +121,6 @@ class OptionsGUI(object):
             ikalog.outputs.Boyomi,
             ikalog.outputs.Slack,
             ikalog.outputs.WebSocketServer,
-            ikalog.outputs.DebugVideoWriter,
         ]
         for key in output_dict.keys():
             if key in misc_keys:

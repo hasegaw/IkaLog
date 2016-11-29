@@ -229,12 +229,6 @@ OUTPUT_ARGS['Description'] = {'output_filepath': 'description.txt'}
 # OUTPUT_PLUGINS.append('DebugLog')
 OUTPUT_ARGS['DebugLog'] = {'dir': './screenshots/', 'screenshot': False}
 
-# DebugVideoWriter: Video Recorder for debugging (aka flight recorder)
-# Press V key in preview window to toggle record.
-#
-# OUTPUT_PLUGINS.append('DebugVideoWriter')
-OUTPUT_ARGS['DebugVideoWriter'] = {'dir': './debug_videos/'}
-
 # PreviewDetected: Draw rect in preview when IkaLog detected something
 #
 # OUTPUT_PLUGINS.append('PreviewDetected')
