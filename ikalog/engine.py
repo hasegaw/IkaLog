@@ -75,7 +75,24 @@ class IkaEngine:
             'text': text,
         }
 
-    #
+    # services
+
+    def set_service(self, service_identifier, obj):
+        """
+        Register a service.
+        Plugins can publish functions (or objects) to other plugins, as a service.
+        """
+        assert not service_identifier in self._services
+        self._services[service_identifier] = obj
+
+    def get_service(self, service_identifier, default=None):
+        """
+        Lookup and return the service registered.
+        return None (or caller-specified value) if the identifier is not registered.
+        """
+        return self._services.get(service_identifier, default)
+
+    # game event handlers
 
     def on_game_individual_result(self, context):
         self.session_close_wdt = context['engine']['msec'] + (20 * 1000)
@@ -411,6 +428,7 @@ class IkaEngine:
         self.output_plugins = [self]
         self.output_plugins.extend(self.scenes)
         self.output_plugins.extend(plugins)
+        self.call_plugins('on_initialize_plugin')
 
     def enable_plugin(self, plugin):
         if not (plugin in self.output_plugins):
@@ -462,6 +480,7 @@ class IkaEngine:
         self._initialize_scenes()
 
         self.output_plugins = [self]
+        self._services = {}
         self.last_capture = time.time() - 100
 
         self._stop = False
