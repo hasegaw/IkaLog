@@ -172,6 +172,10 @@ class Slack(object):
             print("モジュール slackweb がロードできませんでした。 Slack 投稿ができません。")
             print("インストールするには以下のコマンドを利用してください。\n    pip install slackweb\n")
 
+    def on_initialize_plugin(self, context):
+        engine = context['engine']['engine']
+        engine.set_service('slack_post', self.post)
+
     ##
     # Constructor
     # @param self     The Object Pointer.
