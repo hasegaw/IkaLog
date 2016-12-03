@@ -25,6 +25,8 @@ from ikalog.utils import IkaUtils
 
 class ImageFilter(object):
 
+    want_grayscale_image = True
+    
     # For backward compatibility
     _warned_evaluate_is_deprecated = False
 
@@ -128,10 +130,10 @@ class MM_NOT_BLACK(MM_BLACK):
             img_bgr=img_bgr, img_gray=img_gray)
         return 255 - img_result
 
-# MM_COLOR_BY_HUE:
-
 
 class MM_COLOR_BY_HUE(ImageFilter):
+
+    want_grayscale_image = False
 
     def _hue_range_to_list(self, r):
         # FIXME: 0, 180をまたぐ場合にふたつに分ける
@@ -170,6 +172,8 @@ class MM_COLOR_BY_HUE(ImageFilter):
 
 
 class MM_NOT_COLOR_BY_HUE(MM_COLOR_BY_HUE):
+
+    want_grayscale_image = False
 
     def _run_filter(self, img_bgr=None, img_gray=None):
         img_result = super(MM_NOT_COLOR_BY_HUE, self)._run_filter(
