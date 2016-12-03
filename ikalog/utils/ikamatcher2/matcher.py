@@ -219,7 +219,7 @@ def load_kernel():
         default_kernel = NEON
 
     else:
-        from ikalog.utils.ikamatcher2.arm_neon import Numpy_uint8_fast
+        from ikalog.utils.ikamatcher2.reference import Numpy_uint8_fast
         default_kernel = Numpy_uint8_fast
 
     IkaUtils.dprint('%s: using kernel %s' % (IkaMatcher2, default_kernel.__name__))
