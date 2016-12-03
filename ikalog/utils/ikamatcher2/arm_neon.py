@@ -56,7 +56,7 @@ class NEON(Kernel):
         assert img_8b_1d_p.shape[0] >= (self._h * self._w / 8)
         assert img_8b_1d_p.shape[0] % self._align == 0
 
-        dest = np.empty(img_8b_1d_p.shape[0], dtype=np.uint8)
+        dest = np.zeros(img_8b_1d_p.shape[0], dtype=np.uint8)
         ikamat2_neon.encode(dest, img_8b_1d_p, (self._h * self._w))
         return dest
 
