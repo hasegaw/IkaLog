@@ -544,6 +544,11 @@ class Twitter(object):
             print("モジュール requests_oauthlib がロードできませんでした。 Twitter 投稿ができません。")
             print("インストールするには以下のコマンドを利用してください。\n    pip install requests_oauthlib\n")
 
+    def on_initialize_plugin(self, context):
+        engine = context['engine']['engine']
+        engine.set_service('twitter_post', self.tweet)
+        engine.set_service('twitter_post_media', self.post_media)
+
     ##
     # Constructor
     # @param self              The Object Pointer.
