@@ -30,9 +30,6 @@ zeros512 = np.zeros(512, dtype=np.uint8)
 
 
 class NEON(Kernel):
-    # 128 bits for SIMD operation
-    _align = 512
-
     def encode(self, img):
         """
         Encode the image to internal image format.
@@ -42,21 +39,22 @@ class NEON(Kernel):
         Alignment of returned image: self._align bytes
         """
 
+        align = 128 # encode func is read per 128bytes
         assert img.shape[0] == self._h
         assert img.shape[1] == self._w
 
         img_8b_1d = np.reshape(img, (-1))
-        padding_len = self._align - (len(img_8b_1d) % self._align)
-        if padding_len:
+        img_8b_1d_p = img_8b_1d
+        if len(img_8b_1d) & (align-1):
+            padding_len = align - (len(img_8b_1d) % align)
             img_8b_1d_p = np.append(img_8b_1d, zeros512[0: padding_len])
-        else:
-            img_8b_1d_p = img_8b_1d
 
         assert len(img_8b_1d_p.shape) == 1
         assert img_8b_1d_p.shape[0] >= (self._h * self._w / 8)
-        assert img_8b_1d_p.shape[0] % self._align == 0
+        assert img_8b_1d_p.shape[0] % align == 0
 
-        dest = np.zeros(img_8b_1d_p.shape[0], dtype=np.uint8)
+        dest_len = int(img_8b_1d_p.shape[0]/8)
+        dest = np.empty(dest_len , dtype=np.uint8)
         ikamat2_neon.encode(dest, img_8b_1d_p, (self._h * self._w))
         return dest
 
@@ -89,15 +87,11 @@ class NEON(Kernel):
 
     def logical_andor_popcnt(self, img, width, func):
         pixels = self._w * self._h
-        if (pixels % width):
-            pixels += width - (pixels % width)
-
-        assert pixels % width == 0
-        assert pixels >= (self._w * self._h)
 
         assert len(img.shape) == 1
         assert img.shape[0] >= pixels / 8
 
+        # img and self._img_mask aligned by encode
         return func(img, self._img_mask, pixels)
 
     def logical_or_popcnt(self, img):
