@@ -221,12 +221,6 @@ def _init_outputs(opts):
         args = _replace_vars(output_args['DebugLog'], vars)
         OutputPlugins.append(outputs.DebugLog(**args))
 
-    # 不具合調査向け。
-    # ウインドウに対して v キー押下でデバッグ録画を開始する
-    if 'DebugVideoWriter' in output_plugins:
-        args = _replace_vars(output_args['DebugVideoWriter'], vars)
-        OutputPlugins.append(outputs.DebugVideoWriter(**args))
-
     # PreviewDetected: 認識した画像をプレビュー上でマークする
     if 'PreviewDetected' in output_plugins:
         args = _replace_vars(output_args['PreviewDetected'], vars)

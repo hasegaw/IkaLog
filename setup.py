@@ -53,7 +53,6 @@ Mydata_files.append(('tools', [
 ]))
 Mydata_files.append(('lib', ['lib/videoinput.dll']))
 Mydata_files.append(('screenshots', ['screenshots/.gitkeep']))
-Mydata_files.append(('debug_videos', ['debug_videos/.gitkeep']))
 
 setup(
     console=['IkaUI.py'],
