@@ -23,6 +23,7 @@ from socketserver import ThreadingMixIn
 import json
 import threading
 import traceback
+import errno
 
 from ikalog.utils import *
 from .preview import PreviewRequestHandler
@@ -31,52 +32,91 @@ from .preview import PreviewRequestHandler
 def _get_type_name(var):
     return type(var).__name__
 
-
 def _request_handler2engine(request_handler):
     return request_handler.server.ikalog_context['engine']['engine']
 
+class Response(object):
+    def __init__(self, *args, **kwargs):
+        self.status = 200
+        self.content_type = 'application/json'
+        self.charset = 'utf-8'
+        self.response = {}
+
+    def send(self, request_handler):
+        content_binary = self._format()
+        if (self.charset is not None):
+            content_type = '{}; charset={}'.format(self.content_type, self.charset)
+        else:
+            content_type = self.content_type
+        request_handler.send_response(self.status)
+        request_handler.send_header('Content-Type', content_type)
+        request_handler.send_header('Content-Length', len(content_binary))
+        request_handler.end_headers()
+        request_handler.wfile.write(content_binary)
+
+    def _format(self):
+        if isinstance(self.response, bytearray):
+            return self.response
+
+        if self.content_type != 'application/json':
+            return bytearray(self.response, self.charset)
+
+        return bytearray(
+            json.dumps(self.response, ensure_ascii=False, default=_get_type_name),
+            self.charset
+        )
 
 class APIServer(object):
+    def _prepare_send_file(self, request_handler, payload, path, content_type):
+        response = Response()
+        try:
+            with open(path, mode='rb') as f:
+                response.content_type = content_type
+                response.charset = None
+                response.response = bytearray(f.read())
+
+        except OSError as e:
+            if e.errno == errno.ENOENT:
+                response.status = 404
+                response.content_type = 'text/plain'
+                response.response = 'Not found'
+            elif e.errno == errno.EACCES:
+                response.status = 403
+                response.content_type = 'text/plain'
+                response.response = 'Forbidden'
+            else:
+                response.status = 500
+                response.content_type = 'text/plain'
+                response.response = 'Server Error'
+        except:
+            response.status = 500
+            response.response = 'Server Error'
+        return response
 
     def _view_game(self, request_handler, payload):
-        request_handler.send_response(200)
-        request_handler.send_header(
-            'Content-type', 'text/html; charset=UTF-8')
-        request_handler.end_headers()
-        with open(IkaUtils.get_path('tools', 'view.html')) as f:
-            data = f.read()
-            request_handler.wfile.write(bytearray(data, 'utf-8'))
+        return self._prepare_send_file(request_handler, payload,
+            IkaUtils.get_path('tools', 'view.html'), 'text/html')
 
     def _graph_game(self, request_handler, payload):
-        request_handler.send_response(200)
-        request_handler.send_header(
-            'Content-type', 'text/html; charset=UTF-8')
-        request_handler.end_headers()
-        with open(IkaUtils.get_path('tools', 'graph.html')) as f:
-            data = f.read()
-            request_handler.wfile.write(bytearray(data, 'utf-8'))
+        return self._prepare_send_file(request_handler, payload,
+            IkaUtils.get_path('tools', 'graph.html'), 'text/html')
 
     def _engine_context_game(self, request_handler, payload):
-        request_handler.send_response(200)
-        request_handler.send_header(
-            'Content-type', 'text/plain; charset=UTF-8')
-        request_handler.end_headers()
-        request_handler.wfile.write(bytearray(
-            json.dumps(request_handler.server.ikalog_context['game'],
-                       default=_get_type_name),
-            'utf-8'))
+        response = Response()
+        response.response = request_handler.server.ikalog_context['game']
+        return response
 
     def _engine_source(self, request_handler, payload):
+        response = Response()
+        response.content_type = 'text/plain'
         engine = _request_handler2engine(request_handler)
         file_path = payload.get('file_path')
         if (not file_path) or (not engine.put_source_file(file_path)):
-            file_path = 'error'
-
-        request_handler.send_response(200)
-        request_handler.send_header(
-            'Content-type', 'text/plain; charset=UTF-8')
-        request_handler.end_headers()
-        request_handler.wfile.write(bytearray(file_path, 'utf-8'))
+            response.status = 400
+            response.response = 'error'
+        else:
+            response.response = file_path
+        return response
 
     def _engine_preview(self, request_handler, payload):
         handler = PreviewRequestHandler(request_handler)
@@ -91,26 +131,23 @@ class APIServer(object):
         context = request_handler.server.ikalog_context
         frame = context['engine']['frame']
 
+        response = Response()
         if screenshot_save_func and screenshot_save_func(frame):
-            request_handler.send_response(200)
-            request_handler.send_header(
-                'Content-type', 'text/plain; charset=UTF-8')
-            request_handler.end_headers()
-            request_handler.wfile.write(
-                bytearray('saved a screenshot', 'utf-8'))
+            response.response = {'status': 'ok', 'message': 'Saved a screenshot'}
+        else:
+            response.response = {'status': 'failed', 'message': 'Failed to save a screenshot'}
+        return response
 
     def _slack_post(self, request_handler, payload):
+        response = Response()
         engine = _request_handler2engine(request_handler)
         slack_post = engine.get_service('slack_post')
         if slack_post:
             slack_post(payload['message'])
-            request_handler.send_response(200)
-            request_handler.send_header(
-                'Content-type', 'text/plain; charset=UTF-8')
-            request_handler.end_headers()
-            request_handler.wfile.write(bytearray('aaaa', 'utf-8'))
-
-        # ToDo: return error if failed
+            response.response = {'status': 'ok', 'message': 'Posted'}
+        else:
+            response.response = {'status': 'failed', 'message': 'Failed'}
+        return response
 
     def _twitter_post(self, request_handler, payload, screenshot=False):
         engine = _request_handler2engine(request_handler)
@@ -118,6 +155,7 @@ class APIServer(object):
         twitter_post_media=engine.get_service('twitter_post_media')
 
         media=None
+        response = Response()
         if screenshot and (twitter_post_media is not None):
             # FIXME: Consider deepcopy.
             context=request_handler.server.ikalog_context
@@ -126,13 +164,10 @@ class APIServer(object):
 
         if twitter_post:
             twitter_post(payload['message'], media = media)
-            request_handler.send_response(200)
-            request_handler.send_header(
-                'Content-type', 'text/plain; charset=UTF-8')
-            request_handler.end_headers()
-            request_handler.wfile.write(bytearray('aaaa', 'utf-8'))
-
-        # ToDo: return error if failed
+            response.response = {'status': 'ok', 'message': 'Tweeted'}
+        else:
+            response.response = {'status': 'failed', 'message': 'Failed'}
+        return response
 
     def _twitter_post_screenshot(self, request_handler, payload):
         return self._twitter_post(request_handler, payload, True)
@@ -160,19 +195,21 @@ class APIServer(object):
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
 
-    def _send_response_json(self, response):
-        body = json.dumps(response)
-
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html; charset=utf-8')
-        self.send_header('Pragma', 'no-cache')
-        self.send_header('Content-length', len(body))
-        self.end_headers()
-        self.wfile.write(bytearray(body, 'utf-8'))
+    def _send_response_json(self, response, status = 200):
+        resp = Response()
+        resp.status = status
+        resp.response = response
+        resp.send(self)
 
     def do_GET(self):
         response = self.api_server.process_request(
             self, self.path, {})
+
+        if response is not None:
+            if isinstance(response, Response):
+                response.send(self)
+            else:
+                self._send_response_json(response)
 
     def do_POST(self):
         length = int(self.headers.get('content-length'))
@@ -200,7 +237,10 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
             response = {'error': 'Invalid request'}
 
         if response is not None:
-            self._send_response_json(response)
+            if isinstance(response, Response):
+                response.send(self)
+            else:
+                self._send_response_json(response)
 
         if hasattr(self, 'callback_func'):
             self.callback_func(self.path, payload, response)
