@@ -101,6 +101,19 @@ class Screenshot(object):
 
         self.panel.SetSizer(self.layout)
 
+    def generate_timestr(self):
+        return time.strftime('%Y%m%d_%H%M%S',
+                                time.localtime(IkaUtils.getTime(context)))
+
+    def write_screenshot(self, frame, filename=None):
+        filename = filename or '%s.png' % self.generate_timestr()
+        if IkaUtils.writeScreenshot(filename, frame):
+            IkaUtils.dprint('%s: Saved a screenshot %s' % (self, filename))
+            return True
+
+        IkaUtils.dprint('%s: Failed to save a screenshot %s' % (self, filename))
+        return False
+
     ##
     # on_result_detail_still Hook
     # @param self      The Object Pointer
@@ -110,19 +123,15 @@ class Screenshot(object):
         if not self.result_detail_enabled:
             return
 
-        timestr = time.strftime("%Y%m%d_%H%M%S",
-                                time.localtime(IkaUtils.getTime(context)))
+        timestr = self.generate_timestr()
         destfile = os.path.join(self.dir, 'ikabattle_%s.png' % timestr)
 
-        if IkaUtils.writeScreenshot(destfile, context['engine']['frame']):
-            print(_('Saved a screenshot %s') % destfile)
+        self.write_screenshot(context['engine']['frame'], filename=destfile)
 
-    def on_key_press(self, context, key):
-        if not (key == 0x53 or key == 0x73):
-            return False
 
-        if PlazaUserStat().match(context):
-            self.save_drawing(context)
+    def on_initialize_plugin(self, context):
+        engine = context['engine']['engine']
+        engine.set_service('screenshot_save', self.write_screenshot)
 
     ##
     # Constructor
