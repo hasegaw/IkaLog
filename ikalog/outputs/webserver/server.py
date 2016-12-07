@@ -127,6 +127,16 @@ class APIServer(object):
         engine = _request_handler2engine(request_handler)
         engine.stop()
 
+    def _input_devices(self, request_handler, payload):
+        cameras = []
+        if IkaUtils.isWindows():
+            from ikalog.inputs.win.videoinput_wrapper import VideoInputWrapper
+            cameras = VideoInputWrapper().get_device_list()
+
+        response = Response()
+        response.response = cameras
+        return response
+
     def _screenshot_save(self, request_handler, payload):
         engine = _request_handler2engine(request_handler)
         screenshot_save_func = engine.get_service('screenshot_save')
@@ -182,6 +192,7 @@ class APIServer(object):
             '/api/v1/engine/source': self._engine_source,
             '/api/v1/engine/preview': self._engine_preview,
             '/api/v1/engine/stop': self._engine_stop,
+            '/api/v1/input/devices': self._input_devices,
             '/api/v1/screenshot/save': self._screenshot_save,
             '/api/v1/slack/post': self._slack_post,
             '/api/v1/twitter/post': self._twitter_post,
