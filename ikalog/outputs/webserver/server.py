@@ -20,6 +20,8 @@
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
+from urllib.parse import urlparse, parse_qs
+from collections import ChainMap
 import json
 import threading
 import traceback
@@ -204,9 +206,16 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         resp.response = response
         resp.send(self)
 
+    def _parse_path(self, path):
+        parsed = urlparse(path)
+        query = parse_qs(parsed.query)
+        return (parsed.path, query)
+
     def do_GET(self):
+        (path, query) = self._parse_path(self.path)
+
         response = self.api_server.process_request(
-            self, self.path, {})
+            self, path, query)
 
         if response is not None:
             if isinstance(response, Response):
@@ -215,24 +224,26 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
                 self._send_response_json(response)
 
     def do_POST(self):
+        (path, query) = self._parse_path(self.path)
+
         length = int(self.headers.get('content-length'))
         data = self.rfile.read(length)
 
         try:
             payload = json.loads(data.decode('utf-8'))
         except:
-            payload = None
+            payload = {}
 
         if not isinstance(payload, dict):
             try:
                 payload = umsgpack.unpackb(data)
             except:
-                payload = None
+                payload = {}
 
         if isinstance(payload, dict):
             # FIXME: Exception handling
             response = self.api_server.process_request(
-                self, self.path, payload)
+                self, path, ChainMap(query, payload))
 
         else:
             IkaUtils.dprint('%s: Invalid REST API Request' % self)
