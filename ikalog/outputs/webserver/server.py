@@ -29,6 +29,7 @@ import errno
 
 from ikalog.utils import *
 from .preview import PreviewRequestHandler
+from ikalog.version import IKALOG_VERSION
 
 
 def _get_type_name(var):
@@ -53,6 +54,7 @@ class Response(object):
         request_handler.send_response(self.status)
         request_handler.send_header('Content-Type', content_type)
         request_handler.send_header('Content-Length', len(content_binary))
+        request_handler.send_header('Access-Control-Allow-Origin', '*')
         request_handler.end_headers()
         request_handler.wfile.write(content_binary)
 
@@ -184,6 +186,19 @@ class APIServer(object):
     def _twitter_post_screenshot(self, request_handler, payload):
         return self._twitter_post(request_handler, payload, True)
 
+    def _webui_system_info(self, request_handler, payload):
+        engine = _request_handler2engine(request_handler)
+        twitter_has_preset_key = engine.get_service('twitter_has_preset_key')
+
+        response = Response()
+        response.response = {
+            "twitter_has_preset_key": twitter_has_preset_key is not None and twitter_has_preset_key(),
+            "is_windows": IkaUtils.isWindows(),
+            "is_mac": IkaUtils.isOSX(),
+            "version": IKALOG_VERSION,
+        }
+        return response
+
     def process_request(self, request_handler, path, payload):
         handler={
             '/view': self._view_game,
@@ -193,6 +208,7 @@ class APIServer(object):
             '/api/v1/engine/preview': self._engine_preview,
             '/api/v1/engine/stop': self._engine_stop,
             '/api/v1/input/devices': self._input_devices,
+            '/api/v1/webui/system_info': self._webui_system_info,
             '/api/v1/screenshot/save': self._screenshot_save,
             '/api/v1/slack/post': self._slack_post,
             '/api/v1/twitter/post': self._twitter_post,

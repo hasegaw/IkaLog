@@ -544,10 +544,14 @@ class Twitter(object):
             print("モジュール requests_oauthlib がロードできませんでした。 Twitter 投稿ができません。")
             print("インストールするには以下のコマンドを利用してください。\n    pip install requests_oauthlib\n")
 
+    def _has_preset_key(self):
+        return self._preset_ck is not None and self._preset_cs is not None
+
     def on_initialize_plugin(self, context):
         engine = context['engine']['engine']
         engine.set_service('twitter_post', self.tweet)
         engine.set_service('twitter_post_media', self.post_media)
+        engine.set_service('twitter_has_preset_key', self._has_preset_key)
 
     ##
     # Constructor
