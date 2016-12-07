@@ -27,8 +27,13 @@ import traceback
 from ikalog.utils import *
 from .preview import PreviewRequestHandler
 
+
 def _get_type_name(var):
     return type(var).__name__
+
+
+def _request_handler2engine(request_handler):
+    return request_handler.server.ikalog_context['engine']['engine']
 
 
 class APIServer(object):
@@ -62,7 +67,7 @@ class APIServer(object):
             'utf-8'))
 
     def _engine_source(self, request_handler, payload):
-        engine = request_handler.server.ikalog_context['engine']['engine']
+        engine = _request_handler2engine(request_handler)
         file_path = payload.get('file_path')
         if (not file_path) or (not engine.put_source_file(file_path)):
             file_path = 'error'
@@ -77,26 +82,79 @@ class APIServer(object):
         handler = PreviewRequestHandler(request_handler)
 
     def _engine_stop(self, request_handler, payload):
-        request_handler.server.ikalog_context['engine']['engine'].stop()
+        engine = _request_handler2engine(request_handler)
+        engine.stop()
+
+    def _screenshot_save(self, request_handler, payload):
+        engine = _request_handler2engine(request_handler)
+        screenshot_save_func = engine.get_service('screenshot_save')
+        context = request_handler.server.ikalog_context
+        frame = context['engine']['frame']
+
+        if screenshot_save_func and screenshot_save_func(frame):
+            request_handler.send_response(200)
+            request_handler.send_header(
+                'Content-type', 'text/plain; charset=UTF-8')
+            request_handler.end_headers()
+            request_handler.wfile.write(
+                bytearray('saved a screenshot', 'utf-8'))
+
+    def _slack_post(self, request_handler, payload):
+        engine = _request_handler2engine(request_handler)
+        slack_post = engine.get_service('slack_post')
+        if slack_post:
+            slack_post(payload['message'])
+            request_handler.send_response(200)
+            request_handler.send_header(
+                'Content-type', 'text/plain; charset=UTF-8')
+            request_handler.end_headers()
+            request_handler.wfile.write(bytearray('aaaa', 'utf-8'))
+
+        # ToDo: return error if failed
+
+    def _twitter_post(self, request_handler, payload, screenshot=False):
+        engine = _request_handler2engine(request_handler)
+        twitter_post = engine.get_service('twitter_post'))
+        twitter_post_media=engine.get_service('twitter_post_media')
+
+        media=None
+        if screenshot and (twitter_post_media is not None):
+            # FIXME: Consider deepcopy.
+            context=request_handler.server.ikalog_context
+            img=context['engine']['frame']
+            media=twitter_post_media(img)
+
+        if twitter_post:
+            twitter_post(payload['message'], media = media)
+            request_handler.send_response(200)
+            request_handler.send_header(
+                'Content-type', 'text/plain; charset=UTF-8')
+            request_handler.end_headers()
+            request_handler.wfile.write(bytearray('aaaa', 'utf-8'))
+
+        # ToDo: return error if failed
+
+    def _twitter_post_screenshot(self, request_handler, payload):
+        return self._twitter_post(request_handler, payload, True)
 
     def process_request(self, request_handler, path, payload):
-        handler = {
+        handler={
             '/view': self._view_game,
             '/graph': self._graph_game,
             '/api/v1/engine/context/game': self._engine_context_game,
             '/api/v1/engine/source': self._engine_source,
             '/api/v1/engine/preview': self._engine_preview,
             '/api/v1/engine/stop': self._engine_stop,
+            '/api/v1/screenshot/save': self._screenshot_save,
+            '/api/v1/slack/post': self._slack_post,
+            '/api/v1/twitter/post': self._twitter_post,
+            '/api/v1/twitter/post_screenshot': self._twitter_post_screenshot,
         }.get(path, None)
 
         if handler is None:
             return {'status': 'error', 'description': 'Invalid API Path %s' % path}
 
-        try:
-            response_payload = handler(request_handler, payload)
-        except:
-            return {'status': 'error', 'description': 'Exception', 'detail': traceback.format_exc()}
-
+        response_payload = handler(request_handler, payload)
         return response_payload
 
 
