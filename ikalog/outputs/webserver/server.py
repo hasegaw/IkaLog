@@ -114,7 +114,7 @@ class APIServer(object):
 
     def _twitter_post(self, request_handler, payload, screenshot=False):
         engine = _request_handler2engine(request_handler)
-        twitter_post = engine.get_service('twitter_post'))
+        twitter_post = engine.get_service('twitter_post')
         twitter_post_media=engine.get_service('twitter_post_media')
 
         media=None
