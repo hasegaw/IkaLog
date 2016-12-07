@@ -187,7 +187,10 @@ class APIServer(object):
         }.get(path, None)
 
         if handler is None:
-            return {'status': 'error', 'description': 'Invalid API Path %s' % path}
+            response = Response()
+            response.status = 404
+            response.response = {'status': 'error', 'description': 'Invalid API Path %s' % path}
+            return response
 
         response_payload = handler(request_handler, payload)
         return response_payload
