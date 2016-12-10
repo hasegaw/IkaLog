@@ -21,8 +21,6 @@
 import os
 import time
 
-from ikalog.scenes.plaza_user_stat import *  # Fixme...
-
 
 # Needed in GUI mode
 try:

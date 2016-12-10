@@ -42,7 +42,6 @@ from .result_gears import ResultGears
 from .result_festa import ResultFesta
 
 from .lobby import Lobby
-from .plaza_user_stat import PlazaUserStat
 
 from .downie import Downie
 from .blank import Blank
