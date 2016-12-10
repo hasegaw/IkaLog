@@ -62,7 +62,6 @@ def IkaUI_main():
         outputs.Boyomi(),
         outputs.Slack(),
         outputs.StatInk(),
-        outputs.DebugVideoWriter(),
         outputs.WebSocketServer(),
     ]
     gui = IkaLogGUI(engine, outputs_with_gui)
