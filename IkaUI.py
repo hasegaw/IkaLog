@@ -35,6 +35,7 @@ from ikalog import outputs
 from ikalog.engine import *
 from ikalog.ui.panel import *
 from ikalog.ui import VideoCapture, IkaLogGUI
+from ikalog.ui import outputs as ui_outputs
 
 _ = Localization.gettext_translation('IkaUI', fallback=True).gettext
 
@@ -58,7 +59,7 @@ def IkaUI_main():
         # outputs.Hue(),
         outputs.OBS(),
         outputs.Twitter(),
-        outputs.Screenshot(),
+        ui_outputs.IkaUIScreenshot(),
         outputs.Boyomi(),
         outputs.Slack(),
         outputs.StatInk(),
