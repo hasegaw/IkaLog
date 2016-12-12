@@ -3,6 +3,7 @@ sys.path.append('lib')
 
 from ikalog.utils.ikamatcher2.reference import Numpy_uint8, Numpy_uint8_fast
 from ikalog.utils.ikamatcher2.arm_neon import NEON
+from lib.ikamatcher2_kernel_hal import HAL
 import numpy as np
 import time
 
@@ -32,4 +33,4 @@ def test(kernel):
 test(Numpy_uint8)
 test(Numpy_uint8_fast)
 test(NEON)
-
+test(HAL)

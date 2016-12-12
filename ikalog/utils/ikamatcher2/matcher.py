@@ -215,8 +215,12 @@ def load_kernel():
     global default_kernel
 
     if platform.machine().startswith('armv7'):
-        from ikalog.utils.ikamatcher2.arm_neon import NEON
-        default_kernel = NEON
+        try:
+            from lib.ikamatcher2_kernel_hal import HAL
+            default_kernel = HAL
+        except:
+            from ikalog.utils.ikamatcher2.arm_neon import NEON
+            default_kernel = NEON
 
     else:
         from ikalog.utils.ikamatcher2.reference import Numpy_uint8_fast
