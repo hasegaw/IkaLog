@@ -261,10 +261,11 @@ class ResultDetail(StatefulScene):
         best_match = (context['engine']['frame'], 0.0, 0, 0)
         offset_list = [0, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
 
+        gray_frame = cv2.cvtColor(context['engine']['frame'], cv2.COLOR_BGR2GRAY)
         for ox in offset_list:
             for oy in offset_list:
                 filter.offset = (ox, oy)
-                img = filter.execute(context['engine']['frame'])
+                img = filter.execute(gray_frame)
                 score = self.evaluate_image_accuracy(img)
 
                 if best_match[1] < score:
@@ -275,14 +276,18 @@ class ResultDetail(StatefulScene):
                         'frame': img,
                         'score': score,
                         'desc': 'Offset (%s, %s)' % (ox, oy),
+                        'offset': (ax, ay)
                     })
 
         if best_match[2] != 0 or best_match[3] != 0:
+            filter.offset = (best_match[2], best_match[3])
+            new_frame = filter.execute(context['engine']['frame'])
             l.append({
-                'frame': best_match[0],
+                'frame': new_frame,
                 'score': score,
                 'desc': 'Offset (%s, %s)' % (best_match[2], best_match[3]),
                 'acceptable': True,
+                'offset': (best_match[2], best_match[3]),
             })
 
     def adjust_image(self, context):
@@ -302,6 +307,8 @@ class ResultDetail(StatefulScene):
                     'on_result_detail_log',
                     params={'desc': best['desc']}
                 )
+            if best.get('offset',None):
+                self._call_plugins('on_result_detail_calibration', best.get('offset'))
 
         else:
             # Should not reach here

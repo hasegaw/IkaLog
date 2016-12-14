@@ -32,36 +32,21 @@ from ikalog.inputs.filters import OffsetFilter
 
 class ResultGears(StatefulScene):
 
+    def on_result_detail_calibration(self, context, param):
+        # result_detailで検出したオフセットを流用する
+        IkaUtils.dprint('%s: cache offset (%d,%d)' % (self, param[0], param[1]))
+        self.offset = param
+
     def auto_offset(self, frame):
-        # 画面のオフセットを自動検出して image を返す
-
-        filter = OffsetFilter(self)
-        filter.enable()
-
-        # filter が必要とするので...
-        self.out_width = 1280
-        self.out_height = 720
-
-        best_match = (frame, 0.0, 0, 0)
-        offset_list = [0, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
-
-        for ox in offset_list:
-            for oy in offset_list:
-                filter.offset = (ox, oy)
-                img = filter.execute(frame)
-
-                score = self.mask_gears_msg.match_score(img)
-                if not score[0]:
-                    continue
-
-                if best_match[1] < score[1]:
-                    best_match = (img, score[1], ox, oy)
-
-        if best_match[2] != 0 or best_match[3] != 0:
-            IkaUtils.dprint('%s: Offset detected. (%d, %d)' %
-                            (self, best_match[2], best_match[3]))
-
-        return best_match[0]
+        if self.offset and self.offset != (0,0):
+            # result_detailで検出したオフセットを適用する
+            self.out_width = 1280
+            self.out_height = 720
+            filter = OffsetFilter(self)
+            filter.enable()
+            filter.offset = self.offset
+            return filter.execute(frame)
+        return frame
 
     def reset(self):
         super(ResultGears, self).reset()
@@ -277,6 +262,8 @@ class ResultGears(StatefulScene):
             self.number_recoginizer = character_recoginizer.NumberRecoginizer()
         except:
             self.number_recoginizer = None
+
+        self.offset = None
 
 if __name__ == "__main__":
     ResultGears.main_func()

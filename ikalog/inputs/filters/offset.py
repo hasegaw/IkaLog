@@ -193,7 +193,7 @@ class OffsetFilter(Filter):
         w = min(out_width - dx1, out_width - sx1)
         h = min(out_height - dy1, out_height - sy1)
 
-        new_frame = np.zeros((out_height, out_width, 3), np.uint8)
+        new_frame = np.zeros(frame.shape, np.uint8)
         new_frame[dy1:dy1 + h, dx1:dx1 + w] = frame[sy1:sy1 + h, sx1:sx1 + w]
         return new_frame
 
