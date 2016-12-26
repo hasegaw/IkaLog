@@ -21,14 +21,15 @@
 import os
 import time
 
+from ikalog.utils import *
+
 class Screenshot(object):
 
-    def generate_timestr(self):
+    def generate_timestr(self, context):
         return time.strftime('%Y%m%d_%H%M%S',
                                 time.localtime(IkaUtils.getTime(context)))
 
-    def write_screenshot(self, frame, filename=None):
-        filename = filename or '%s.png' % self.generate_timestr()
+    def write_screenshot(self, frame, filename):
         if IkaUtils.writeScreenshot(filename, frame):
             IkaUtils.dprint('%s: Saved a screenshot %s' % (self, filename))
             return True
@@ -45,7 +46,7 @@ class Screenshot(object):
         if not self.result_detail_enabled:
             return
 
-        timestr = self.generate_timestr()
+        timestr = self.generate_timestr(context)
         destfile = os.path.join(self.dir, 'ikabattle_%s.png' % timestr)
 
         self.write_screenshot(context['engine']['frame'], filename=destfile)
