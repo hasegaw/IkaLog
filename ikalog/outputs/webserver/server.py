@@ -152,6 +152,21 @@ class APIServer(object):
             response.response = {'status': 'failed', 'message': 'Failed to save a screenshot'}
         return response
 
+    def _screenshot_get_configuration(self, request_handler, payload):
+        engine = _request_handler2engine(request_handler)
+        screenshot_get_config_func = engine.get_service('screenshot_get_configuration')
+
+        response = Response()
+        response.response = {'status': 'ok', 'configuration': screenshot_get_config_func()}
+        return response
+
+    def _screenshot_set_configuration(self, request_handler, payload):
+        engine = _request_handler2engine(request_handler)
+        screenshot_set_config_func = engine.get_service('screenshot_set_configuration')
+        screenshot_set_config_func(dict(payload))
+
+        return self._screenshot_get_configuration(request_handler, payload)
+
     def _slack_post(self, request_handler, payload):
         response = Response()
         engine = _request_handler2engine(request_handler)
@@ -210,6 +225,8 @@ class APIServer(object):
             '/api/v1/input/devices': self._input_devices,
             '/api/v1/webui/system_info': self._webui_system_info,
             '/api/v1/screenshot/save': self._screenshot_save,
+            '/api/v1/screenshot/get_configuration': self._screenshot_get_configuration,
+            '/api/v1/screenshot/set_configuration': self._screenshot_set_configuration,
             '/api/v1/slack/post': self._slack_post,
             '/api/v1/twitter/post': self._twitter_post,
             '/api/v1/twitter/post_screenshot': self._twitter_post_screenshot,
