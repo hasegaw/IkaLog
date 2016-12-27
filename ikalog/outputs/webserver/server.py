@@ -38,6 +38,20 @@ def _get_type_name(var):
 def _request_handler2engine(request_handler):
     return request_handler.server.ikalog_context['engine']['engine']
 
+def _get_plugins_list(engine):
+    r = {}
+    cond = lambda x: hasattr(x, 'get_configuration')
+    plugins = filter(cond, engine.output_plugins)
+    for plugin in plugins:# engine.output_plugins:
+        if hasattr(plugin, 'plugin_name'):
+            plugin_name = plugin.plugin_name
+        else:
+            plugin_name = plugin.__class__.__name__
+
+        r[plugin_name] = plugin
+    return r
+
+
 class Response(object):
     def __init__(self, *args, **kwargs):
         self.status = 200
@@ -152,20 +166,95 @@ class APIServer(object):
             response.response = {'status': 'failed', 'message': 'Failed to save a screenshot'}
         return response
 
-    def _screenshot_get_configuration(self, request_handler, payload):
+    def _config_get(self, request_handler, payload):
         engine = _request_handler2engine(request_handler)
-        screenshot_get_config_func = engine.get_service('screenshot_get_configuration')
+        plugins = _get_plugins_list(engine)
+
+        config = {}
+        for plugin_name in plugins.keys():
+            plugin = plugins[plugin_name]
+            config[plugin_name] = plugin.get_configuration()
 
         response = Response()
-        response.response = {'status': 'ok', 'configuration': screenshot_get_config_func()}
+        response.response = {'status': 'ok', 'configuration': config}
         return response
 
-    def _screenshot_set_configuration(self, request_handler, payload):
+    def _config_validate(self, request_handler, payload):
+        validation_result = []
+        payload = dict(payload)
         engine = _request_handler2engine(request_handler)
-        screenshot_set_config_func = engine.get_service('screenshot_set_configuration')
-        screenshot_set_config_func(dict(payload))
+        plugins = _get_plugins_list(engine)
 
-        return self._screenshot_get_configuration(request_handler, payload)
+        new_config = payload.get('configuration', {})
+        for plugin_name in new_config.keys():
+            if not (plugin_name in plugins):
+                validation_result.append({
+                    'error': 'PLUGIN_NOT_SUPPORTED',
+                    'plugin': plugin_name
+                })
+                continue
+
+            try:
+                conf = new_config[plugin_name]
+                print(plugin, conf)
+                plugin.validate_configuration(conf)
+            except AssertionError:
+                # FIXME: Return more information.
+                validation_result.append({
+                    'error': 'PLUGIN_CONFIG_INVALID',
+                    'plugin': plugin_name,
+                })
+            except:
+                validation_result.append({
+                    'error': 'PLUGIN_CONFIG_INVALID',
+                    'plugin': plugin_name,
+                    'exception': True,
+                })
+
+        if len(validation_result) > 0:
+            # Validation Error
+            response = Response()
+            response.response = {
+                'status': 'error',
+                'error': validation_result
+            }
+            return response
+
+        response = Response()
+        response.response = {'status': 'ok'}
+        return response
+
+    def _config_set(self, request_handler, payload):
+        validation = self._config_validate(request_handler, payload)
+        if validation['status'] != 'ok':
+            return validation
+
+        payload = dict(payload)
+        engine = _request_handler2engine(request_handler)
+        plugins = _get_plugins_list(engine)
+
+        result = []
+        for plugin_name in new_config.keys():
+            try:
+                conf = new_config[plugin_name]
+                plugin.set_configuration(conf)
+            except:
+                validation_result.append({
+                    'error': 'PLUGIN_CONFIG_SET_ERROR',
+                    'plugin': plugin_name,
+                    'exception': True,
+                })
+
+        if len(result) > 1:
+            response = Response()
+            response.response = {
+                'status': 'error',
+                'error': reult
+            }
+            return response
+
+        return self._config_get(request_handler, payload)
+
 
     def _slack_post(self, request_handler, payload):
         response = Response()
@@ -225,11 +314,12 @@ class APIServer(object):
             '/api/v1/input/devices': self._input_devices,
             '/api/v1/webui/system_info': self._webui_system_info,
             '/api/v1/screenshot/save': self._screenshot_save,
-            '/api/v1/screenshot/get_configuration': self._screenshot_get_configuration,
-            '/api/v1/screenshot/set_configuration': self._screenshot_set_configuration,
             '/api/v1/slack/post': self._slack_post,
             '/api/v1/twitter/post': self._twitter_post,
             '/api/v1/twitter/post_screenshot': self._twitter_post_screenshot,
+            '/api/v1/config/get': self._config_get,
+            '/api/v1/config/set': self._config_set,
+            '/api/v1/config/validate': self._config_validate,
         }.get(path, None)
 
         if handler is None:
