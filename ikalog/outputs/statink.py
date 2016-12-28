@@ -195,27 +195,6 @@ class StatInk(object):
     def on_click_button_statink(self, event):
         webbrowser.open('https://stat.ink/profile')
 
-    def encode_stage_name(self, context):
-        return context['game']['map']
-
-    def encode_rule_name(self, context):
-        return context['game']['rule']
-
-    def encode_weapon_name(self, weapon):
-        # FIXME: 現状返ってくる key が日本語表記なので id に変換
-        weapon_id = None
-        for k in weapons:
-            if weapons[k]['ja'] == weapon:
-                weapon_id = k
-
-        if (weapon_id is None) and (weapons.get(weapon, None) is not None):
-            weapon_id = weapon
-
-        if weapon_id is None:
-            IkaUtils.dprint(
-                '%s: Failed convert weapon name %s to stas.ink value' % (self, weapon))
-        return weapon_id
-
     def encode_image(self, img):
         result, img_png = cv2.imencode('.png', img)
 
@@ -345,12 +324,11 @@ class StatInk(object):
             IkaUtils.dprint('%s: No lobby information.' % self)
 
         # GameStart
-
-        stage = self.encode_stage_name(context)
+        stage = context['game']['map']
         if stage:
             payload['map'] = stage
 
-        rule = self.encode_rule_name(context)
+        rule = context['game']['rule']
         if rule:
             payload['rule'] = rule
 
@@ -445,10 +423,9 @@ class StatInk(object):
             unknown_text=None
         )
 
-        if 'weapon' in me:
-            weapon = self.encode_weapon_name(me['weapon'])
-            if weapon:
-                payload['weapon'] = weapon
+        weapon = me.get('weapon')
+        if weapon:
+            payload['weapon'] = weapon
 
         if context['game']['is_fes']:
             payload['gender'] = me['gender_en']
@@ -477,10 +454,9 @@ class StatInk(object):
                     ['int', 'point', 'score'],
                 ], player, e)
 
-            if 'weapon' in e:
-                weapon = self.encode_weapon_name(e['weapon'])
-                if weapon:
-                    player['weapon'] = weapon
+            weapon = e.get('weapon')
+            if weapon:
+                player['weapon'] = weapon
 
             if payload.get('rule') != 'nawabari':
                 if 'udemae_pre' in e:
