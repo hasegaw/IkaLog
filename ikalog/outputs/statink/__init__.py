@@ -515,14 +515,9 @@ class StatInk(object):
     def print_payload(self, payload):
         payload = payload.copy()
 
-        if 'image_result' in payload:
-            payload['image_result'] = '(PNG Data)'
-
-        if 'image_judge' in payload:
-            payload['image_judge'] = '(PNG Data)'
-
-        if 'image_gear' in payload:
-            payload['image_gear'] = '(PNG Data)'
+        for k in ['image_result', 'image_judge', 'image_gear']:
+            if k in payload:
+                payload[k] = '(PNG Data)'
 
         if 'events' in payload:
             payload['events'] = '(Events)'
