@@ -745,8 +745,6 @@ class StatInk(object):
 
         payload = self.composite_payload(context)
 
-        self.print_payload(payload)
-
         if self.debug_writePayloadToFile or self.payload_file:
             payload_file = IkaUtils.get_file_name(self.payload_file, context)
             self.write_payload_to_file(payload, filename=payload_file)
