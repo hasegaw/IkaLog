@@ -235,12 +235,9 @@ class StatInk(object):
 
         return payload
 
-    def composite_result_payload(self, context, payload):
-        # ResultJudge
-
+    def composite_result_judge(self, context, payload):
         if payload.get('rule', None) in ['nawabari']:
             scores = context['game'].get('nawabari_scores_pct', None)
-            print('nawabari scores = %s' % scores)
             if scores is not None:
                 payload['my_team_final_percent'] = scores[0]
                 payload['his_team_final_percent'] = scores[1]
@@ -257,8 +254,7 @@ class StatInk(object):
             payload['my_team_final_point'] = scores[0]
             payload['his_team_final_point'] = scores[1]
 
-        # ResultDetail
-
+    def composite_result_scoreboard(self, context, payload):
         me = IkaUtils.getMyEntryFromContext(context)
         if me is None:
             return
@@ -313,8 +309,8 @@ class StatInk(object):
 
         payload['players'] = players
 
-        # ResultGears
 
+    def composite_result_gears(self, context, payload):
         if ('result_gears' in context['scenes']) and ('gears' in context['scenes']['result_gears']):
             try:
                 gears_list = []
@@ -358,8 +354,13 @@ class StatInk(object):
                     '%s: Failed in ResultGears payload. Fix me...' % self)
                 IkaUtils.dprint(traceback.format_exc())
 
-        # ResultUdemae
+        self._set_values(
+            [  # 'type', 'stat.ink Field', 'IkaLog Field'
+                ['int', 'cash_after', 'cash'],
+            ], payload, context['scenes']['result_gears'])
 
+
+    def composite_result_udemae(self, context, payload):
         if payload.get('rule') != 'nawabari':
             self._set_values(
                 [  # 'type', 'stat.ink Field', 'IkaLog Field'
@@ -373,15 +374,9 @@ class StatInk(object):
         if (payload.get('rule') != 'nawabari') and (knockout is not None):
             payload['knock_out'] = {True: 'yes', False: 'no'}[knockout]
 
-        # ResultGears
 
-        if 'result_gears' in context['scenes']:
-            self._set_values(
-                [  # 'type', 'stat.ink Field', 'IkaLog Field'
-                    ['int', 'cash_after', 'cash'],
-                ], payload, context['scenes']['result_gears'])
+    def composite_result_splatfest(self, context, payload):
 
-        # ResultFesta
         if payload.get('lobby', None) == 'fest':
             self._set_values(
                 [  # 'type', 'stat.ink Field', 'IkaLog Field'
@@ -401,8 +396,7 @@ class StatInk(object):
 
                 payload['fest_title_after'] = current_title.lower()
 
-        # Screenshots
-
+    def composite_result_screenshots(self, context, payload):
         if self.img_result_detail is not None:
             img_scoreboard = anonymize(
                 self.img_result_detail,
@@ -418,6 +412,13 @@ class StatInk(object):
         else:
             IkaUtils.dprint('%s: img_judge is empty.' % self)
 
+    def composite_result_payload(self, context, payload):
+        self.composite_result_judge(context, payload)
+        self.composite_result_scoreboard(context, payload)
+        self.composite_result_gears(context, payload)
+        self.composite_result_udemae(context, payload)
+        self.composite_result_splatfest(context, payload)
+        self.composite_result_screenshots(context, payload)
 
     def write_response_to_file(self, r_header, r_body, basename=None):
         if basename is None:
@@ -439,6 +440,7 @@ class StatInk(object):
         except:
             IkaUtils.dprint('%s: Failed to write file' % self)
             IkaUtils.dprint(traceback.format_exc())
+
 
     def write_payload_to_file(self, payload, filename=None):
         if filename is None:
