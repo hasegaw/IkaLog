@@ -380,39 +380,35 @@ class StatInkCompositor(object):
         else:
             dprint('img_gears is empty.')
 
-    def composite_result_payload(self, context, payload):
-        self.composite_result_judge(context, payload)
-        self.composite_result_scoreboard(context, payload)
-        #self.composite_result_gears(context, payload)
-        self.composite_result_udemae(context, payload)
-        self.composite_result_splatfest(context, payload)
-        self.composite_result_screenshots(context, payload)
-
     def composite_payload(self, context):
         payload = {
             'uuid': uuid.uuid1().hex,
         }
-
-        self.composite_lobby(context, payload)
-        self.composite_stage_and_mode(context, payload)
 
         if context['game'].get('start_time'):
             payload['start_at'] = int(context['game']['start_time'])
         if context['game'].get('end_time'):
             payload['end_at'] = int(context['game']['end_time'])
 
-        # In-game logs
-        self.composite_kill_death(self, context, payload)
+        self.composite_lobby(context, payload)
+        self.composite_stage_and_mode(context, payload)
+        self.composite_kill_death(context, payload)
+        self.composite_result_judge(context, payload)
+        self.composite_result_scoreboard(context, payload)
+        self.composite_result_gears(context, payload)
+        self.composite_result_udemae(context, payload)
+        self.composite_result_splatfest(context, payload)
 
-        if len(self.events) > 0:
-            payload['events'] = list(self.events)
+        self.composite_team_colors(context, payload)
+        self.composite_screenshots(payload)
 
         # Video URL
-        if isinstance(self.video_id, str) and (self.video_id != ''):
-            payload['link_url'] = 'https://www.youtube.com/watch?v=%s' % self.video_id
+        if isinstance(self._parent.video_id, str) and (self._parent.video_id != ''):
+            payload['link_url'] = 'https://www.youtube.com/watch?v=%s' % self._parent.video_id
 
-        self.composite_result_payload(context, payload)
-        self.composite_team_colors(context, payload)
+        # In-game events (timeline)
+        if len(self._parent.events) > 0:
+            payload['events'] = list(self._parent.events)
 
         # Agent Information
 
@@ -420,7 +416,10 @@ class StatInkCompositor(object):
         payload['agent_variables'] = self.composite_agent_variables(context)
         payload['agent_custom'] = self.composite_agent_custom(context)
 
+
         _remove_none_keyvalues(payload)
+
+        return payload
 
     def __init__(self, parent=None):
         self._parent = parent
