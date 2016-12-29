@@ -90,7 +90,7 @@ class StatInkCompositor(object):
             'public': lambda x: 'standard',
             'private': lambda x: 'private',
             'festa': lambda x: 'fest',
-            'tag': lambda x: 'squad%d' % x.get('team_members', 0),
+            'tag': lambda x: 'squad_%d' % x.get('team_members', 0),
         }
 
         payload['lobby'] = None
@@ -98,7 +98,7 @@ class StatInkCompositor(object):
             payload['lobby'] = func[lobby_type](lobby)
 
         valid_lobby_types = ['standard', 'private',
-                             'fest', 'squad2', 'squad3', 'squad4']
+                             'fest', 'squad_2', 'squad_3', 'squad_4']
         if not (payload['lobby'] in valid_lobby_types):
             if payload['lobby']:
                 dprint('invalid lobby %s' % payload['lobby'])

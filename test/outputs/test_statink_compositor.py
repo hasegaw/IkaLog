@@ -72,17 +72,17 @@ class TestStatInk(unittest.TestCase):
         context['game'] = {'is_fes': False}
         context['lobby'] = {'type': 'tag', 'team_members': 2}
         obj.composite_lobby(context, payload)
-        assert payload['lobby'] == 'squad2'
+        assert payload['lobby'] == 'squad_2'
 
         context['game'] = {'is_fes': False}
         context['lobby'] = {'type': 'tag', 'team_members': 3}
         obj.composite_lobby(context, payload)
-        assert payload['lobby'] == 'squad3'
+        assert payload['lobby'] == 'squad_3'
 
         context['game'] = {'is_fes': False}
         context['lobby'] = {'type': 'tag', 'team_members': 4}
         obj.composite_lobby(context, payload)
-        assert payload['lobby'] == 'squad4'
+        assert payload['lobby'] == 'squad_4'
 
         # wrong key
         context['game'] = {'is_fes': False}
