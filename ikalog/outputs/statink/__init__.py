@@ -3,7 +3,7 @@
 #
 #  IkaLog
 #  ======
-#  Copyright (C) 2015 Takeshi HASEGAWA
+#  Copyright (C) 2016 Takeshi HASEGAWA
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -24,14 +24,14 @@ import pprint
 import threading
 import time
 import traceback
-import uuid
 import webbrowser
 
-import cv2
 import umsgpack
 
 from datetime import datetime
 from ikalog.constants import fes_rank_titles, stages, weapons, special_weapons
+from ikalog.outputs.statink.compositor import StatInkCompositor
+from ikalog.outputs.statink.collector import StatInkCollector
 from ikalog.utils.statink_uploader import UploadToStatInk
 import ikalog.version
 from ikalog.utils import *
@@ -39,386 +39,38 @@ from ikalog.utils.anonymizer import anonymize
 
 _ = Localization.gettext_translation('statink', fallback=True).gettext
 
+import pickle
 
-class StatInk(object):
 
-    def encode_image(self, img):
-        result, img_png = cv2.imencode('.png', img)
+class StatInk(StatInkCollector):
 
-        if not result:
-            IkaUtils.dprint('%s: Failed to encode the image (%s)' %
-                            (self, img.shape))
-            return None
+    def close_game_session_handler(self, context):
+        """
+        Callback from StatInkLogger
+        """
 
-        s = img_png.tostring()
+        IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
 
-        IkaUtils.dprint('%s: Encoded screenshot (%dx%d %d bytes)' %
-                        (self, img.shape[1], img.shape[0], len(s)))
+        if (not self.enabled) and (not self.dry_run):
+            return False
 
-        return s
+        cond = \
+            (context['game'].get('map', None) != None) or \
+            (context['game'].get('rule', None) != None) or \
+            (context['game'].get('won', None) != None)
 
-    def _set_values(self, fields, dest, src):
-        for field in fields:
-
-            f_type = field[0]
-            f_statink = field[1]
-            f_ikalog = field[2]
-
-            if (f_ikalog in src) and (src[f_ikalog] is not None):
-                if f_type == 'int':
-                    try:
-                        dest[f_statink] = int(src[f_ikalog])
-                    except:  # ValueError
-                        IkaUtils.dprint('%s: field %s failed: src[%s] == %s' % (
-                            self, f_statink, f_ikalog, src[f_ikalog]))
-                        pass
-                elif f_type == 'str':
-                    dest[f_statink] = str(src[f_ikalog])
-                elif f_type == 'str_lower':
-                    dest[f_statink] = str(src[f_ikalog]).lower()
-
-    def _get_offset_msec(self, context):
-        if (context['engine'].get('msec') and
-            context['game'].get('start_offset_msec')):
-            return (context['engine']['msec'] -
-                    context['game']['start_offset_msec'])
-        return None
-
-    def _add_event(self, context, event_data=None, time_delta=0.0):
-        assert event_data is not None
-        offset_msec = self._get_offset_msec(context)
-        if (not 'at' in event_data) and offset_msec:
-            # Use only the first decimal.
-            event_data['at'] = int(offset_msec / 100) / 10 + time_delta
-        else:
-            IkaUtils.dprint('%s: Event %s not logged due to no timing information.' % (
-                self, event_data['type']))
+        if not cond:
             return
 
-        self.events.append(event_data)
-
-    def _add_ranked_battle_event(self, context, event_sub_type=None):
-        assert event_sub_type is not None
-        self._add_event(context, {
-            'type': 'ranked_battle_event',
-            'value': event_sub_type,
-        })
-
-    def composite_agent_custom(self, context):
-        custom = {}
-
-        if 'exceptions_log' in context['engine']:
-            if len(context['engine']['exceptions_log']) > 0:
-                custom['exceptions'] = \
-                    context['engine']['exceptions_log'].copy()
-
-        if len(custom) == 0:
-            return None
-
-        return json.dumps(custom, separators=(',', ':'))
-
-
-    def composite_agent_variables(self, context):
-        variables = {}
-
-        variables['input_class'] = \
-            context['engine'].get('input_class', 'unknown')
-
-        variables['primary_language'] = \
-            Localization.get_game_languages()[0]
-
-        # variables['exceptions']
-        #
-        # e.g. "InklingsTracker(10) GameStart(4) ..."
-        if 'exceptions_log' in context['engine']:
-            if len(context['engine']['exceptions_log']) > 0:
-
-                exceptions = context['engine']['exceptions_log'].items()
-                # FIXME: Sorting
-                s = []
-                for e in exceptions:
-                    s.append('%s(%d)' % (e[0], e[1]['count']))
-                variables['exceptions'] = ', '.join(s)
-
-        return variables
-
-    def composite_payload(self, context):
-        payload = {
-            'uuid': uuid.uuid1().hex,
-        }
-
-        # Lobby
-
-        lobby_type = context['lobby'].get('type', None)
-        if lobby_type == 'public':
-            payload['lobby'] = 'standard'
-
-        elif lobby_type == 'private':
-            payload['lobby'] = 'private'
-
-        elif context['game'].get('is_fes') or (lobby_type == 'festa'):
-            payload['lobby'] = 'fest'
-
-        elif lobby_type == 'tag':
-            num_members = context['lobby'].get('team_members', None)
-            if num_members in [2, 3, 4]:
-                payload['lobby'] = 'squad_%d' % num_members
-            else:
-                IkaUtils.dprint('%s: invalid lobby key squad_%s' %
-                                (self, num_members))
-
-        else:
-            IkaUtils.dprint('%s: No lobby information.' % self)
-
-        # GameStart
-        stage = context['game']['map']
-        if stage:
-            payload['map'] = stage
-
-        rule = context['game']['rule']
-        if rule:
-            payload['rule'] = rule
-
-        if context['game'].get('start_time'):
-            payload['start_at'] = int(context['game']['start_time'])
-        if context['game'].get('end_time'):
-            payload['end_at'] = int(context['game']['end_time'])
-
-        # In-game logs
-
-        if len(context['game']['death_reasons'].keys()) > 0:
-            payload['death_reasons'] = context['game']['death_reasons'].copy()
-
-        if context['game'].get('max_kill_combo'):
-            payload['max_kill_combo'] = int(context['game']['max_kill_combo'])
-
-        if context['game'].get('max_kill_streak'):
-            payload['max_kill_streak'] = int(context['game']['max_kill_streak'])
-
-        if len(self.events) > 0:
-            payload['events'] = list(self.events)
-
-        # Video URL
-        if isinstance(self.video_id, str) and (self.video_id != ''):
-            payload['link_url'] = 'https://www.youtube.com/watch?v=%s' % self.video_id
-
-        self.composite_result_payload(context, payload)
-
-        # Team colors
-        if ('my_team_color' in context['game']):
-            payload['my_team_color'] = {
-                'hue': context['game']['my_team_color']['hsv'][0] * 2,
-                'rgb': context['game']['my_team_color']['rgb'],
-            }
-            payload['his_team_color'] = {
-                'hue': context['game']['counter_team_color']['hsv'][0] * 2,
-                'rgb': context['game']['counter_team_color']['rgb'],
-            }
-
-        if self.img_gears is not None:
-            payload['image_gear'] = self.encode_image(self.img_gears)
-
-        # Agent Information
-
-        payload['agent'] = 'IkaLog'
-        payload['agent_version'] = ikalog.version.IKALOG_VERSION
-        payload['agent_game_version'] = ikalog.version.GAME_VERSION
-        payload['agent_game_version_date'] = ikalog.version.GAME_VERSION_DATE
-
-        payload['agent_variables'] = self.composite_agent_variables(context)
-        payload['agent_custom'] = self.composite_agent_custom(context)
-
-        # Remove any 'None' data
-        for key, val in list(payload.items()):
-            if val is None:
-                del payload[key]
-
-        return payload
-
-    def composite_result_judge(self, context, payload):
-        if payload.get('rule', None) in ['nawabari']:
-            scores = context['game'].get('nawabari_scores_pct', None)
-            if scores is not None:
-                payload['my_team_final_percent'] = scores[0]
-                payload['his_team_final_percent'] = scores[1]
-
-        if payload.get('rule', None) in ['area', 'yagura', 'hoko']:
-            scores = context['game'].get('ranked_scores', None)
-            print('ranked scores = %s' % scores)
-            if scores is not None:
-                payload['my_team_count'] = scores[0]
-                payload['his_team_count'] = scores[1]
-
-        scores = context['game'].get('earned_scores', None)
-        if 0:  # scores is not None:
-            payload['my_team_final_point'] = scores[0]
-            payload['his_team_final_point'] = scores[1]
-
-    def composite_result_scoreboard(self, context, payload):
-        me = IkaUtils.getMyEntryFromContext(context)
-        if me is None:
-            return
-
-        payload['result'] = IkaUtils.getWinLoseText(
-            context['game']['won'],
-            win_text='win',
-            lose_text='lose',
-            unknown_text=None
-        )
-
-        weapon = me.get('weapon')
-        if weapon:
-            payload['weapon'] = weapon
-
-        if context['game']['is_fes']:
-            payload['gender'] = me['gender_en']
-            payload['fest_title'] = str(me['prefix_en']).lower()
-
-        self._set_values(
-            [  # 'type', 'stat.ink Field', 'IkaLog Field'
-                ['int', 'rank_in_team', 'rank_in_team'],
-                ['int', 'kill', 'kills'],
-                ['int', 'death', 'deaths'],
-                ['int', 'level', 'rank'],
-                ['int', 'my_point', 'score'],
-            ], payload, me)
-
-        players = []
-        for e in context['game']['players']:
-            player = {}
-            player['team'] = 'my' if (e['team'] == me['team']) else 'his'
-            player['is_me'] = 'yes' if e['me'] else 'no'
-            self._set_values(
-                [  # 'type', 'stat.ink Field', 'IkaLog Field'
-                    ['int', 'rank_in_team', 'rank_in_team'],
-                    ['int', 'kill', 'kills'],
-                    ['int', 'death', 'deaths'],
-                    ['int', 'level', 'rank'],
-                    ['int', 'point', 'score'],
-                ], player, e)
-
-            weapon = e.get('weapon')
-            if weapon:
-                player['weapon'] = weapon
-
-            if payload.get('rule') != 'nawabari':
-                if 'udemae_pre' in e:
-                    player['rank'] = str(e['udemae_pre']).lower()
-
-            players.append(player)
-
-        payload['players'] = players
-
-
-    def composite_result_gears(self, context, payload):
-        if ('result_gears' in context['scenes']) and ('gears' in context['scenes']['result_gears']):
-            try:
-                gears_list = []
-                for e in context['scenes']['result_gears']['gears']:
-                    primary_ability = e.get('main', None)
-                    secondary_abilities = [
-                        e.get('sub1', None),
-                        e.get('sub2', None),
-                        e.get('sub3', None),
-                    ]
-
-                    gear = {'secondary_abilities': []}
-                    if primary_ability is not None:
-                        gear['primary_ability'] = primary_ability
-
-                    # when:
-                    #   "Run Speed Up" "Locked" "Empty"
-                    # should be: (json-like)
-                    #   [ "run_speed_up", null ]
-                    #       - "Locked":  send `null`
-                    #       - "Empty":   not send
-                    #       - Otherwise: predefined id string ("key")
-                    for ability in secondary_abilities:
-                        if (ability is None) or (ability == 'empty'):
-                            continue
-
-                        if (ability == 'locked'):
-                            gear['secondary_abilities'].append(None)
-                        else:
-                            gear['secondary_abilities'].append(ability)
-
-                    gears_list.append(gear)
-
-                payload['gears'] = {
-                    'headgear': gears_list[0],
-                    'clothing': gears_list[1],
-                    'shoes': gears_list[2],
-                }
-            except:
-                IkaUtils.dprint(
-                    '%s: Failed in ResultGears payload. Fix me...' % self)
-                IkaUtils.dprint(traceback.format_exc())
-
-        self._set_values(
-            [  # 'type', 'stat.ink Field', 'IkaLog Field'
-                ['int', 'cash_after', 'cash'],
-            ], payload, context['scenes']['result_gears'])
-
-
-    def composite_result_udemae(self, context, payload):
-        if payload.get('rule') != 'nawabari':
-            self._set_values(
-                [  # 'type', 'stat.ink Field', 'IkaLog Field'
-                    ['str_lower', 'rank', 'result_udemae_str_pre'],
-                    ['int', 'rank_exp', 'result_udemae_exp_pre'],
-                    ['str_lower', 'rank_after', 'result_udemae_str'],
-                    ['int', 'rank_exp_after', 'result_udemae_exp'],
-                ], payload, context['game'])
-
-        knockout = context['game'].get('knockout', None)
-        if (payload.get('rule') != 'nawabari') and (knockout is not None):
-            payload['knock_out'] = {True: 'yes', False: 'no'}[knockout]
-
-
-    def composite_result_splatfest(self, context, payload):
-
-        if payload.get('lobby', None) == 'fest':
-            self._set_values(
-                [  # 'type', 'stat.ink Field', 'IkaLog Field'
-                    ['int', 'fest_exp', 'result_festa_exp_pre'],
-                    ['int', 'fest_exp_after', 'result_festa_exp'],
-                ], payload, context['game'])
-
-            if payload.get('fest_title', None) is not None:
-                current_title = payload['fest_title']
-                if context['game'].get('result_festa_title_changed', False):
-                    try:
-                        index = fes_rank_titles.index(current_title)
-                        current_title = fes_rank_titles[index + 1]
-                    except IndexError:
-                        IkaUtils.dprint(
-                            '%s: IndexError at fes_rank_titles' % self)
-
-                payload['fest_title_after'] = current_title.lower()
-
-    def composite_result_screenshots(self, context, payload):
-        if self.img_result_detail is not None:
-            img_scoreboard = anonymize(
-                self.img_result_detail,
-                anonOthers = self.anon_others,
-                anonAll = self.anon_all,
-            )
-            payload['image_result'] = self.encode_image(img_scoreboard)
-        else:
-            IkaUtils.dprint('%s: img_result_detail is empty.' % self)
-
-        if self.img_judge is not None:
-            payload['image_judge'] = self.encode_image(self.img_judge)
-        else:
-            IkaUtils.dprint('%s: img_judge is empty.' % self)
-
-    def composite_result_payload(self, context, payload):
-        self.composite_result_judge(context, payload)
-        self.composite_result_scoreboard(context, payload)
-        self.composite_result_gears(context, payload)
-        self.composite_result_udemae(context, payload)
-        self.composite_result_splatfest(context, payload)
-        self.composite_result_screenshots(context, payload)
+        compositor = StatInkCompositor(self)
+        payload = compositor.composite_payload(context)
+
+        if self.debug_writePayloadToFile or self.payload_file:
+            payload_file = IkaUtils.get_file_name(self.payload_file, context)
+            self.write_payload_to_file(payload, filename=payload_file)
+
+        # FIXME: Dry-run not supported
+        self.post_payload(context, payload)
 
     def write_response_to_file(self, r_header, r_body, basename=None):
         if basename is None:
@@ -440,7 +92,6 @@ class StatInk(object):
         except:
             IkaUtils.dprint('%s: Failed to write file' % self)
             IkaUtils.dprint(traceback.format_exc())
-
 
     def write_payload_to_file(self, payload, filename=None):
         if filename is None:
@@ -505,7 +156,8 @@ class StatInk(object):
             raise('No API key specified')
 
         copied_context = IkaUtils.copy_context(context)
-        call_plugins_later_func = context['engine']['service']['call_plugins_later']
+        call_plugins_later_func = context['engine'][
+            'service']['call_plugins_later']
 
         thread = threading.Thread(
             target=self._post_payload_worker,
@@ -524,252 +176,14 @@ class StatInk(object):
 
         pprint.pprint(payload)
 
-    def _open_game_session(self, context):
-        self.events = []
-        self.time_last_score_msec = None
-        self.time_last_objective_msec = None
-        self.time_last_special_gauge_msec = None 
-        self.last_dead_event = None
-        self._called_close_game_session = False
-
-    def on_reset_capture(self, context):
-        self._open_game_session(context)
-
-    def on_game_go_sign(self, context):
-        self._open_game_session(context)
-
-    def on_game_start(self, context):
-        # ゴーサインをベースにカウントするが、ゴーサインを認識
-        # できなかった場合の保険として on_game_start も拾っておく
-        self._open_game_session(context)
-
-    def on_game_finish(self, context):
-        self._add_event(context, {'type': 'finish'})
-        self.on_game_paint_score_update(context)
-
-        # 戦績画面はこの後にくるはずなので今までにあるデータは捨てる
-        self.img_result_detail = None
-        self.img_judge = None
-        self.img_gears = None
-
-        IkaUtils.dprint('%s: Discarded screenshots' % self)
-
-    ##
-    # on_result_detail_still Hook
-    # @param self      The Object Pointer
-    # @param context   IkaLog context
-    #
-    def on_result_detail_still(self, context):
-        self.img_result_detail = context['game']['image_scoreboard']
-        IkaUtils.dprint('%s: Gathered img_result (%s)' %
-                        (self, self.img_result_detail.shape))
-
-    def on_result_judge(self, context):
-        self.img_judge = context['game'].get('image_judge', None)
-        IkaUtils.dprint('%s: Gathered img_judge(%s)' %
-                        (self, self.img_judge.shape))
-
-    def _close_game_session(self, context):
-        if self._called_close_game_session:
-            return
-        self._called_close_game_session = True
-
-        IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
-
-        if (not self.enabled) and (not self.dry_run):
-            return False
-
-        cond = \
-            (context['game'].get('map', None) != None) or \
-            (context['game'].get('rule', None) != None) or \
-            (context['game'].get('won', None) != None)
-
-        if not cond:
-            return
-
-        payload = self.composite_payload(context)
-
-        if self.debug_writePayloadToFile or self.payload_file:
-            payload_file = IkaUtils.get_file_name(self.payload_file, context)
-            self.write_payload_to_file(payload, filename=payload_file)
-
-        self.post_payload(context, payload)
-
-    def on_result_gears_still(self, context):
-        self.img_gears = context['game']['image_gears']
-        IkaUtils.dprint('%s: Gathered img_gears (%s)' %
-                        (self, self.img_gears.shape))
-
-    def on_game_session_end(self, context):
-        self._close_game_session(context)
-
-    def on_game_session_abort(self, context):
-        self._close_game_session(context)
-
-    def on_game_killed(self, context, params):
-        self._add_event(context, {'type': 'killed'})
-
-    def on_game_dead(self, context):
-        self.last_dead_event = {'type': 'dead'}
-        self._add_event(context, self.last_dead_event, time_delta=-2.0)
-
-    def on_game_death_reason_identified(self, context):
-        # 死因が特定されたら最後の死亡イベントに追加する
-        if self.last_dead_event is not None:
-            reason = context['game']['last_death_reason']
-            self.last_dead_event['reason'] = reason
-            self.last_dead_event = None
-
-    def on_game_low_ink(self, context):
-        self._add_event(context, {'type': 'low_ink'})
-
-    def on_game_inkling_state_update(self, context):
-        if not self.track_inklings_enabled:
-            return
-
-        if self._get_offset_msec(context):
-            self._add_event(context, {
-                'type': 'alive_inklings',
-                'my_team': context['game']['inkling_state'][0],
-                'his_team': context['game']['inkling_state'][1],
-            })
-
-    def on_game_game_status_update(self, context, params):
-        self._add_event(context, {
-            'type': 'game_status',
-            'game_status': params['game_status'],
-        })
-
-    def on_game_paint_score_update(self, context):
-        score = context['game'].get('paint_score', 0)
-        event_msec = self._get_offset_msec(context)
-        if (score > 0) and event_msec:
-            # 前回のスコアイベントから 200ms 経っていない場合は処理しない
-            if (self.time_last_score_msec is None) or (event_msec - self.time_last_score_msec >= 200):
-                self._add_event(context, {
-                    'type': 'point',
-                    'point': score,
-                })
-                self.time_last_score_msec = event_msec
-
-    def on_game_special_gauge_update(self, context):
-        if not self.track_special_gauge_enabled:
-            return
-
-        score = context['game'].get('special_gauge', 0)
-        event_msec = self._get_offset_msec(context)
-        if (score > 0) and event_msec:
-            # 前回のスコアイベントから 200ms 経っていない場合は処理しない
-            if (self.time_last_special_gauge_msec is None) or (event_msec - self.time_last_special_gauge_msec >= 200):
-                self._add_event(context, {
-                    'type': 'special%',
-                    'point': score,
-                })
-                self.time_last_special_gauge_msec = event_msec
-
-    def on_game_special_gauge_charged(self, context):
-        if not self.track_special_gauge_enabled:
-            return
-
-        event_msec = self._get_offset_msec(context)
-        if event_msec:
-            self._add_event(context, {
-                'type': 'special_charged',
-            })
-
-    def on_game_special_weapon(self, context):
-        if not self.track_special_weapon_enabled:
-            return
-
-        special_weapon = context['game'].get('special_weapon', None)
-        if not (special_weapon in special_weapons.keys()):
-            IkaUtils.dprint('%s: special_weapon %s is invalid.' %
-                            (self, special_weapon))
-            return
-
-        event_msec = self._get_offset_msec(context)
-        if event_msec:
-            self._add_event(context, {
-                'type': 'special_weapon',
-                'special_weapon': special_weapon,
-                'me': context['game'].get('special_weapon_is_mine', False),
-            })
-
-    def on_game_objective_position_update(self, context):
-        if not self.track_objective_enabled:
-            return
-
-        event_msec = self._get_offset_msec(context)
-
-        if (self.time_last_objective_msec is None) or (event_msec - self.time_last_objective_msec >= 200):
-            self._add_event(context, {
-                'type': 'objective',
-                'position': context['game']['tower'].get('pos', 0),
-            })
-            self.time_last_objective_msec = event_msec
-
-    def on_game_splatzone_counter_update(self, context):
-        if not self.track_splatzone_enabled:
-            return
-
-        event_msec = self._get_offset_msec(context)
-        self._add_event(context, {
-            'type': 'splatzone',
-            'my_team_count': context['game']['splatzone_my_team_counter']['value'],
-            'my_team_injury_count': None,
-            'his_team_count': context['game']['splatzone_counter_team_counter']['value'],
-            'his_team_injury_count': None,
-        })
-        self.time_last_score_msec = event_msec
-
-    def on_game_splatzone_we_got(self, context):
-        self._add_ranked_battle_event(context, 'we_got')
-
-    def on_game_splatzone_we_lost(self, context):
-        self._add_ranked_battle_event(context, 'we_lost')
-
-    def on_game_splatzone_they_got(self, context):
-        self._add_ranked_battle_event(context, 'they_got')
-
-    def on_game_splatzone_they_lost(self, context):
-        self._add_ranked_battle_event(context, 'they_lost')
-
-    def on_game_rainmaker_we_got(self, context):
-        self._add_ranked_battle_event(context, 'we_got')
-
-    def on_game_rainmaker_we_lost(self, context):
-        self._add_ranked_battle_event(context, 'we_lost')
-
-    def on_game_rainmaker_they_got(self, context):
-        self._add_ranked_battle_event(context, 'they_got')
-
-    def on_game_rainmaker_they_lost(self, context):
-        self._add_ranked_battle_event(context, 'they_lost')
-
-    def on_game_towercontrol_we_took(self, context):
-        self._add_ranked_battle_event(context, 'we_got')
-
-    def on_game_towercontrol_we_lost(self, context):
-        self._add_ranked_battle_event(context, 'we_lost')
-
-    def on_game_towercontrol_they_took(self, context):
-        self._add_ranked_battle_event(context, 'they_got')
-
-    def on_game_towercontrol_they_lost(self, context):
-        self._add_ranked_battle_event(context, 'they_lost')
-
-    def on_game_ranked_we_lead(self, context):
-        self._add_ranked_battle_event(context, 'we_lead')
-
-    def on_game_ranked_they_lead(self, context):
-        self._add_ranked_battle_event(context, 'they_lead')
-
     def __init__(self, api_key=None, track_objective=False,
                  track_splatzone=False, track_inklings=False,
                  track_special_gauge=False, track_special_weapon=False,
-                 anon_all = False, anon_others = False,
+                 anon_all=False, anon_others=False,
                  debug=False, dry_run=False, url='https://stat.ink',
                  video_id=None, payload_file=None):
+        super(StatInk, self).__init__()
+
         self.enabled = not (api_key is None)
         self.api_key = api_key
         self.dry_run = dry_run
@@ -783,21 +197,7 @@ class StatInk(object):
         self.anon_all = anon_all
         self.anon_others = anon_others
 
-        self.events = []
-        self.time_last_score_msec = None
-        self.time_last_special_gauge_msec = None
-        self.time_last_objective_msec = None
-        self.last_dead_event = None
-
-        self.img_result_detail = None
-        self.img_judge = None
-        self.img_gears = None
-
-
         self.url_statink_v1_battle = '%s/api/v1/battle' % url
 
         self.video_id = video_id
         self.payload_file = payload_file
-
-        # If true, it means the payload is not posted or saved.
-        self._called_close_game_session = False
