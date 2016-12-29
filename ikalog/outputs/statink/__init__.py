@@ -18,28 +18,21 @@
 #  limitations under the License.
 #
 
-import json
 import os
 import pprint
 import threading
-import time
 import traceback
 import webbrowser
 
 import umsgpack
 
 from datetime import datetime
-from ikalog.constants import fes_rank_titles, stages, weapons, special_weapons
-from ikalog.outputs.statink.compositor import StatInkCompositor
 from ikalog.outputs.statink.collector import StatInkCollector
+from ikalog.outputs.statink.compositor import StatInkCompositor
 from ikalog.utils.statink_uploader import UploadToStatInk
-import ikalog.version
 from ikalog.utils import *
-from ikalog.utils.anonymizer import anonymize
 
 _ = Localization.gettext_translation('statink', fallback=True).gettext
-
-import pickle
 
 
 class StatInk(StatInkCollector):
