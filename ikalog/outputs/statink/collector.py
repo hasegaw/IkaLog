@@ -19,10 +19,37 @@
 #
 
 from ikalog.constants import special_weapons
+from ikalog.plugin import IkaLogPlugin
 from ikalog.utils import *
 
+class StatInkCollector(IkaLogPlugin):
 
-class StatInkCollector(object):
+    def on_validate_configuration(self, config):
+        assert config['enabled'] in [True, False]
+        return True
+
+    def on_reset_configuration(self):
+        config = self.config
+        config['enabled'] = False
+
+        config['api_key'] = ''
+        config['endpoint_url'] = 'https://stat.ink/'
+        config['dry_run'] = False
+        config['debug_write_payload_to_file'] = False
+        config['show_response'] = False
+
+        config['track_inklings'] = True
+        config['track_special_gauge'] = True
+        config['track_special_weapon'] = True
+        config['track_objective'] = True
+        config['track_splatzone'] = True
+
+        config['anon_all'] = False
+        config['anon_others'] = False
+
+    def on_set_configuration(self, config):
+        self.config['enabled'] = config['enabled']
+        self.config['api_key'] = config['api_key']
 
     def _get_offset_msec(self, context):
         if (context['engine'].get('msec') and
@@ -140,7 +167,7 @@ class StatInkCollector(object):
         self._add_event(context, {'type': 'low_ink'})
 
     def on_game_inkling_state_update(self, context):
-        if not self.track_inklings_enabled:
+        if not self.config['track_inklings']:
             return
 
         if self._get_offset_msec(context):
@@ -169,7 +196,7 @@ class StatInkCollector(object):
                 self.time_last_score_msec = event_msec
 
     def on_game_special_gauge_update(self, context):
-        if not self.track_special_gauge_enabled:
+        if not self.config['track_special_gauge']:
             return
 
         score = context['game'].get('special_gauge', 0)
@@ -184,7 +211,7 @@ class StatInkCollector(object):
                 self.time_last_special_gauge_msec = event_msec
 
     def on_game_special_gauge_charged(self, context):
-        if not self.track_special_gauge_enabled:
+        if not self.config['track_special_gauge']:
             return
 
         event_msec = self._get_offset_msec(context)
@@ -194,7 +221,7 @@ class StatInkCollector(object):
             })
 
     def on_game_special_weapon(self, context):
-        if not self.track_special_weapon_enabled:
+        if not self.config['track_special_weapon']:
             return
 
         special_weapon = context['game'].get('special_weapon', None)
@@ -212,7 +239,7 @@ class StatInkCollector(object):
             })
 
     def on_game_objective_position_update(self, context):
-        if not self.track_objective_enabled:
+        if not self.config['track_objective']:
             return
 
         event_msec = self._get_offset_msec(context)
@@ -225,7 +252,7 @@ class StatInkCollector(object):
             self.time_last_objective_msec = event_msec
 
     def on_game_splatzone_counter_update(self, context):
-        if not self.track_splatzone_enabled:
+        if not self.config['track_splatzone']:
             return
 
         event_msec = self._get_offset_msec(context)
@@ -281,6 +308,8 @@ class StatInkCollector(object):
         self._add_ranked_battle_event(context, 'they_lead')
 
     def __init__(self):
+        super(StatInkCollector, self).__init__()
+
         self._open_game_session(None)
 
         # If true, it means the payload is not posted or saved.

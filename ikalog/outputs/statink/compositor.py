@@ -363,8 +363,8 @@ class StatInkCompositor(object):
         if self._parent.img_scoreboard is not None:
             img_scoreboard = anonymize(
                 self._parent.img_scoreboard,
-                anonOthers=self._parent.anon_others,
-                anonAll=self._parent.anon_all,
+                anonOthers=self._parent.config['anon_others'],
+                anonAll=self._parent.config['anon_all'],
             )
             payload['image_result'] = _encode_image(img_scoreboard)
         else:

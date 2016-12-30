@@ -35,16 +35,15 @@ from ikalog.utils import *
 _ = Localization.gettext_translation('statink', fallback=True).gettext
 
 
-class StatInk(StatInkCollector):
+class StatInkPlugin(StatInkCollector):
 
     def close_game_session_handler(self, context):
         """
         Callback from StatInkLogger
         """
 
-        IkaUtils.dprint('%s (enabled = %s)' % (self, self.enabled))
-
-        if (not self.enabled) and (not self.dry_run):
+        if not (self.config['enabled'] or self.config['dry_run']):
+            # This plugin is not active.
             return False
 
         cond = \
@@ -53,16 +52,18 @@ class StatInk(StatInkCollector):
             (context['game'].get('won', None) != None)
 
         if not cond:
-            return
+            return False
 
         compositor = StatInkCompositor(self)
         payload = compositor.composite_payload(context)
 
-        if self.debug_writePayloadToFile or self.payload_file:
+        cond_write_payload = \
+            self.config['debug_write_payload_to_file'] or self.payload_file
+
+        if cond_write_payload:
             payload_file = IkaUtils.get_file_name(self.payload_file, context)
             self.write_payload_to_file(payload, filename=payload_file)
 
-        # FIXME: Dry-run not supported
         self.post_payload(context, payload)
 
     def write_response_to_file(self, r_header, r_body, basename=None):
@@ -101,12 +102,15 @@ class StatInk(StatInkCollector):
 
     def _post_payload_worker(self, context, payload, api_key,
                              call_plugins_later_func=None):
+        return
+        url_statink_v1_battle = '%s/api/v1/battle' % self.config['endpoint_url']
+
         # This function runs on worker thread.
         error, statink_response = UploadToStatInk(payload,
                                                   api_key,
-                                                  self.url_statink_v1_battle,
-                                                  self.show_response_enabled,
-                                                  (self.dry_run == 'server'))
+                                                  url_statink_v1_battle,
+                                                  self.config['show_response'],
+                                                  (self.config['dry_run'] == 'server'))
 
         if not call_plugins_later_func:
             return
@@ -131,7 +135,7 @@ class StatInk(StatInkCollector):
             )
 
     def post_payload(self, context, payload, api_key=None):
-        if self.dry_run == True:
+        if self.config['dry_run'] == True:
             IkaUtils.dprint(
                 '%s: Dry-run mode, skipping POST to stat.ink.' % self)
             return
@@ -143,14 +147,14 @@ class StatInk(StatInkCollector):
             return
 
         if api_key is None:
-            api_key = self.api_key
+            api_key = self.config['api_key']
 
         if api_key is None:
             raise('No API key specified')
 
         copied_context = IkaUtils.copy_context(context)
-        call_plugins_later_func = context['engine'][
-            'service']['call_plugins_later']
+        call_plugins_later_func = \
+            context['engine']['service']['call_plugins_later']
 
         thread = threading.Thread(
             target=self._post_payload_worker,
@@ -169,6 +173,14 @@ class StatInk(StatInkCollector):
 
         pprint.pprint(payload)
 
+    def __init__(self):
+        super(StatInkPlugin, self).__init__()
+
+
+class StatInk(StatInkPlugin):
+    """
+    Legacy Plugin interface
+    """
     def __init__(self, api_key=None, track_objective=False,
                  track_splatzone=False, track_inklings=False,
                  track_special_gauge=False, track_special_weapon=False,
@@ -177,20 +189,21 @@ class StatInk(StatInkCollector):
                  video_id=None, payload_file=None):
         super(StatInk, self).__init__()
 
-        self.enabled = not (api_key is None)
-        self.api_key = api_key
-        self.dry_run = dry_run
-        self.debug_writePayloadToFile = False
-        self.show_response_enabled = debug
-        self.track_inklings_enabled = track_inklings
-        self.track_special_gauge_enabled = track_special_gauge
-        self.track_special_weapon_enabled = track_special_weapon
-        self.track_objective_enabled = track_objective
-        self.track_splatzone_enabled = track_splatzone
-        self.anon_all = anon_all
+        config = self.config
+        config['enabled'] = not (api_key is None)
+        config['api_key'] = api_key
+        config['endpoint_url'] = url
+        config['dry_run'] = dry_run
+        config['debug_write_payload_to_file'] = False
+        config['show_response'] = debug
+        config['track_inklings'] = track_inklings
+        config['track_special_gauge'] = track_special_gauge
+        config['track_special_weapon'] = track_special_weapon
+        config['track_objective'] = track_objective
+        config['track_splatzone'] = track_splatzone
+        config['anon_all'] = anon_all
         self.anon_others = anon_others
 
-        self.url_statink_v1_battle = '%s/api/v1/battle' % url
 
         self.video_id = video_id
         self.payload_file = payload_file
