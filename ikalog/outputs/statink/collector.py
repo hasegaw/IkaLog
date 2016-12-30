@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 
+from ikalog.constants import special_weapons
 from ikalog.utils import *
 
 
