@@ -83,10 +83,12 @@ class Capture(IkaLogPlugin):
             capture = cls()
             capture.select_source(self._source_name)
             self.capture = capture
-            IkaUtils.dprint('%s: new input activated (%s, %s)' % (self, cls, config))
+            IkaUtils.dprint('%s: new input activated (%s, %s)' %
+                            (self, cls, config))
             time.sleep(5)
         except:
-            IkaUtils.dprint('%s: new input cannot be activated (%s, %s)' % (self, cls, config))
+            IkaUtils.dprint(
+                '%s: new input cannot be activated (%s, %s)' % (self, cls, config))
             IkaUtils.dprint(traceback.format_exc())
 
             self.capture = None
@@ -148,7 +150,7 @@ class Capture(IkaLogPlugin):
                 cls = self._available_classes[config['active_class']]
             except KeyError:
                 raise 'Not supported input'
-        return {'status': 'ok'}
+        return True
 
     def on_set_configuration(self, config):
         self.on_validate_configuration(config)
