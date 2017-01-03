@@ -23,6 +23,8 @@ import unittest
 
 
 class MockPlugin(IkaLogPlugin):
+    def on_reset_configuration(self):
+        pass
 
     def on_set_configuration(self, config):
         self.config = config
@@ -30,6 +32,13 @@ class MockPlugin(IkaLogPlugin):
     def on_validate_configuration(self, config):
         assert 'hoge' in config
         return True
+
+class MockPlugin2(IkaLogPlugin):
+    def on_reset_configuration(self):
+        pass
+
+    def on_get_configuration(self):
+        return {'overrided': 'configuration'}
 
 
 class TestPluginBase(unittest.TestCase):
@@ -45,6 +54,10 @@ class TestPluginBase(unittest.TestCase):
             pass
 
         obj.set_configuration({'hello': 'world', 'hoge': 'fuga'})
+
+    def test_plugin_mock2(self):
+        obj = MockPlugin2()
+        assert obj.get_configuration()['overrided'] == 'configuration'
 
 if __name__ == '__main__':
     unittest.main()

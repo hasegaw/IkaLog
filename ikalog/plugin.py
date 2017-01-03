@@ -23,7 +23,7 @@ class IkaLogPlugin(object):
 
     def get_configuration(self):
         if hasattr(self, 'on_get_configuration'):
-            return self.on_get_configuration
+            return self.on_get_configuration()
         return self.config.copy()
 
     def validate_configuration(self, config):
