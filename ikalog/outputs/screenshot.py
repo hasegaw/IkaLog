@@ -27,11 +27,17 @@ from ikalog.utils import *
 
 class ScreenshotPlugin(IkaLogPlugin):
 
-    def generate_timestr(self, context):
-        return time.strftime('%Y%m%d_%H%M%S',
-                             time.localtime(IkaUtils.getTime(context)))
+    def generate_timestr(self, context=None):
+        t = time.time() if context is None else IkaUtils.getTime(context)
+        return time.strftime('%Y%m%d_%H%M%S', time.localtime(t))
 
-    def write_screenshot(self, frame, filename):
+    def write_screenshot(self, frame, filename=None):
+        if filename is None:
+            filename = 'snapshot%s.png' % self.generate_timestr()
+
+        if filename == os.path.basename(filename):
+            filename = os.path.join(self.config['dest_dir'], filename)
+
         if IkaUtils.writeScreenshot(filename, frame):
             IkaUtils.dprint('%s: Saved a screenshot %s' % (self, filename))
             return True
