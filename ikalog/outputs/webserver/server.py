@@ -23,6 +23,7 @@ from socketserver import ThreadingMixIn
 from urllib.parse import urlparse, parse_qs
 from collections import ChainMap
 import json
+import platform
 import threading
 import traceback
 import errno
@@ -224,6 +225,25 @@ class APIServer(object):
         response.response = {'status': 'ok'}
         return response
 
+    def _status_get(self, request_handler, payload):
+        engine = _request_handler2engine(request_handler)
+        plugins = _get_plugins_list(engine)
+
+        status = {
+            'status': 'ok',
+            'is_windows': IkaUtils.isWindows(),
+            'is_osx': IkaUtils.isOSX(),
+            'version': IKALOG_VERSION,
+            'stopped': engine.is_stopped(),
+            'paused': engine.is_paused(),
+            'platform_system': platform.system(),
+            'platform_machine': platform.machine(),
+            }
+
+        response = Response()
+        response.response = status
+        return response
+
     def _config_set(self, request_handler, payload):
         validation = self._config_validate(request_handler, payload)
         if validation['status'] != 'ok':
@@ -320,6 +340,7 @@ class APIServer(object):
             '/api/v1/config/get': self._config_get,
             '/api/v1/config/set': self._config_set,
             '/api/v1/config/validate': self._config_validate,
+            '/api/v1/status/get': self._status_get,
         }.get(path, None)
 
         if handler is None:
