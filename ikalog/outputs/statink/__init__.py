@@ -37,6 +37,34 @@ _ = Localization.gettext_translation('statink', fallback=True).gettext
 
 class StatInkPlugin(StatInkCollector):
 
+    def on_reset_configuration(self):
+        config = self.config
+        config['enabled'] = False
+        config['api_key'] = ''
+        config['endpoint_url'] = 'https://stat.ink',
+        config['dry_run'] = False
+        config['debug_write_payload_to_file'] = False
+        config['show_response'] = False
+        config['track_inklings'] = True
+        config['track_special_gauge'] = True
+        config['track_special_weapon'] = True
+        config['track_objective'] = True
+        config['track_splatzone'] = True
+        config['anon_all'] = False
+        config['anon_others'] = False
+
+    def on_validate_configuration(self, config):
+        boolean_params = ['enabled', 'dry_run', 'write_payload_to_file', 'show_response', 'track_inklings',
+                          'track_special_gauge', 'track_special_weapon', 'track_objective', 'track_splatzone']
+        for param in boolean_params:
+            assert config.get(param) in [True, False, None]
+        return True
+
+    def on_set_configuration(self, new_config):
+        config = self.config
+        for k in new_config:
+            config[k] = new_config[k]
+
     def close_game_session_handler(self, context):
         """
         Callback from StatInkLogger
@@ -103,7 +131,8 @@ class StatInkPlugin(StatInkCollector):
     def _post_payload_worker(self, context, payload, api_key,
                              call_plugins_later_func=None):
         return
-        url_statink_v1_battle = '%s/api/v1/battle' % self.config['endpoint_url']
+        url_statink_v1_battle = '%s/api/v1/battle' % self.config[
+            'endpoint_url']
 
         # This function runs on worker thread.
         error, statink_response = UploadToStatInk(payload,
@@ -181,6 +210,7 @@ class StatInk(StatInkPlugin):
     """
     Legacy Plugin interface
     """
+
     def __init__(self, api_key=None, track_objective=False,
                  track_splatzone=False, track_inklings=False,
                  track_special_gauge=False, track_special_weapon=False,
@@ -202,8 +232,7 @@ class StatInk(StatInkPlugin):
         config['track_objective'] = track_objective
         config['track_splatzone'] = track_splatzone
         config['anon_all'] = anon_all
-        self.anon_others = anon_others
-
+        config['anon_others'] = anon_others
 
         self.video_id = video_id
         self.payload_file = payload_file
