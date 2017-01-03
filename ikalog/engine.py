@@ -183,6 +183,9 @@ class IkaEngine:
     def is_stopped(self):
         return self._stop
 
+    def is_paused(self):
+        return self._pause
+
     def reset(self):
         index = 0
         if 'game' in self.context:
