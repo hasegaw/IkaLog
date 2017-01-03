@@ -81,7 +81,7 @@ class Capture(IkaLogPlugin):
         try:
             self._source_name = config['source_name']
             capture = cls()
-            capture.select_source(self._source_name)
+            capture.select_source(name=self._source_name)
             self.capture = capture
             IkaUtils.dprint('%s: new input activated (%s, %s)' %
                             (self, cls, config))
@@ -101,11 +101,6 @@ class Capture(IkaLogPlugin):
         self._activate_input_nolock(cls, config)
 
     def _deactivate_input_nolock(self):
-        if self.is_active():
-            IkaUtils.dprint('%s: Deactivating input...' % self)
-            self.capture.stop()
-            time.sleep(1)
-
         if self.capture is not None:
             IkaUtils.dprint('%s: Deinitializing input...' % self)
             del self.capture
