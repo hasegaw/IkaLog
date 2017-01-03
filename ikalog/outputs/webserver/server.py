@@ -197,7 +197,6 @@ class APIServer(object):
 
             try:
                 conf = new_config[plugin_name]
-                print(plugin, conf)
                 plugin.validate_configuration(conf)
             except AssertionError:
                 # FIXME: Return more information.
@@ -205,12 +204,14 @@ class APIServer(object):
                     'error': 'PLUGIN_CONFIG_INVALID',
                     'plugin': plugin_name,
                 })
+                self.dprint(traceback.format_exc())
             except:
                 validation_result.append({
                     'error': 'PLUGIN_CONFIG_INVALID',
                     'plugin': plugin_name,
                     'exception': True,
                 })
+                self.dprint(traceback.format_exc())
 
         if len(validation_result) > 0:
             # Validation Error
@@ -246,30 +247,32 @@ class APIServer(object):
 
     def _config_set(self, request_handler, payload):
         validation = self._config_validate(request_handler, payload)
-        if validation['status'] != 'ok':
+        if validation.response['status'] != 'ok':
             return validation
 
-        payload = dict(payload)
+        new_config = dict(payload)#new_config = dict(payload)
         engine = _request_handler2engine(request_handler)
         plugins = _get_plugins_list(engine)
 
         result = []
         for plugin_name in new_config.keys():
+            plugin = plugins[plugin_name]
             try:
                 conf = new_config[plugin_name]
                 plugin.set_configuration(conf)
             except:
-                validation_result.append({
+                result.append({
                     'error': 'PLUGIN_CONFIG_SET_ERROR',
                     'plugin': plugin_name,
                     'exception': True,
                 })
+                self.dprint(traceback.format_exc())
 
         if len(result) > 1:
             response = Response()
             response.response = {
                 'status': 'error',
-                'error': reult
+                'error': result
             }
             return response
 
@@ -386,8 +389,11 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
 
         try:
             payload = json.loads(data.decode('utf-8'))
-        except:
-            payload = {}
+        except json.decoder.JSONDecodeError:
+            self.dprint(traceback.format_exc())
+            response = {'status': 'error', 'message': 'JSON Decode Error'}
+            self._send_response_json(response)
+            return False
 
         if not isinstance(payload, dict):
             try:
@@ -402,7 +408,6 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
 
         else:
             IkaUtils.dprint('%s: Invalid REST API Request' % self)
-            print(payload, data)
             response = {'error': 'Invalid request'}
 
         if response is not None:
