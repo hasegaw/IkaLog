@@ -150,7 +150,7 @@ class AVFoundationCapture(VideoInput):
             return False
 
         index = source_list.index(source)
-        self._select_device_by_index_fucn(index)
+        self._select_device_by_index_func(index)
 
     def __init__(self):
         self.cap = None

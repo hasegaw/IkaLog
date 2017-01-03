@@ -204,14 +204,14 @@ class APIServer(object):
                     'error': 'PLUGIN_CONFIG_INVALID',
                     'plugin': plugin_name,
                 })
-                self.dprint(traceback.format_exc())
+                IkaUtils.dprint(traceback.format_exc())
             except:
                 validation_result.append({
                     'error': 'PLUGIN_CONFIG_INVALID',
                     'plugin': plugin_name,
                     'exception': True,
                 })
-                self.dprint(traceback.format_exc())
+                IkaUtils.dprint(traceback.format_exc())
 
         if len(validation_result) > 0:
             # Validation Error
@@ -266,7 +266,7 @@ class APIServer(object):
                     'plugin': plugin_name,
                     'exception': True,
                 })
-                self.dprint(traceback.format_exc())
+                IkaUtils.dprint(traceback.format_exc())
 
         if len(result) > 1:
             response = Response()
