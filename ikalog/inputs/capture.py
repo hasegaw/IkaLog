@@ -78,11 +78,21 @@ class Capture(IkaLogPlugin):
     """
 
     def _activate_input_nolock(self, cls, config):
-        capture = cls()
-        self._source_name = 0
-        capture.select_source(self._source_name)  # name=config['source_name'])
-        self.capture = capture
-        time.sleep(5)
+        try:
+            self._source_name = config['source_name']
+            capture = cls()
+            capture.select_source(self._source_name)
+            self.capture = capture
+            IkaUtils.dprint('%s: new input activated (%s, %s)' % (self, cls, config))
+            time.sleep(5)
+        except:
+            IkaUtils.dprint('%s: new input cannot be activated (%s, %s)' % (self, cls, config))
+            IkaUtils.dprint(traceback.format_exc())
+
+            self.capture = None
+            self._source_name = None
+            return False
+        return True
 
     def _activate_input(self, cls, config):
         # FIXME: lock
