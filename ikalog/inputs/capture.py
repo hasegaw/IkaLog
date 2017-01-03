@@ -103,9 +103,8 @@ class Capture(IkaLogPlugin):
     def _deactivate_input_nolock(self):
         if self.capture is not None:
             IkaUtils.dprint('%s: Deinitializing input...' % self)
-            del self.capture
+            self.capture = None
             time.sleep(1)
-        self.capture = None
 
     def _deactivate_input(self):
         # FIXME: lock
