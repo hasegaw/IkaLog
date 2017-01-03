@@ -102,6 +102,10 @@ def _init_source(opts):
         source.select_source(index=0)
         return source
 
+    if input_type == 'ui':
+        from ikalog.inputs.capture import Capture
+        source = Capture()
+
     return source
 
 
