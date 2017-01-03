@@ -142,8 +142,15 @@ class AVFoundationCapture(VideoInput):
 
     # override
     def _select_device_by_name_func(self, source):
-        IkaUtils.dprint(
-            '%s: Doesn''t support _select_device_by_name_func()' % self)
+        source_list = self.enumerate_sources()
+
+        if not (source in source_list):
+            IkaUtils.dprint('%s: Requested source "%s" not available'
+                % (self, source))
+            return False
+
+        index = source_list.index(source)
+        self._select_device_by_index_fucn(index)
 
     def __init__(self):
         self.cap = None
