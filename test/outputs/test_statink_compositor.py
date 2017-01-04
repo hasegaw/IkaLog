@@ -34,8 +34,7 @@ class StatInkMock(object):
         self.img_scoreboard = np.zeros((720, 1280, 3), dtype=np.uint8)
         self.img_gears = np.zeros((720, 1280, 3), dtype=np.uint8)
         self.img_judge = np.zeros((720, 1280, 3), dtype=np.uint8)
-        self.anon_others = False
-        self.anon_all = False
+        self.config = {'anon_others': False, 'anon_all': False}
 
 
 class TestStatInk(unittest.TestCase):
