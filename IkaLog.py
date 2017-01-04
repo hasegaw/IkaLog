@@ -91,6 +91,9 @@ if __name__ == "__main__":
     for op in output_plugins:
         engine.enable_plugin(op)
 
+    from ikalog.configuration import read_from_file
+    read_from_file(engine, 'ikalog.conf.json')
+
     engine.close_session_at_eof = True
     IkaUtils.dprint('IkaLog: start.')
     engine.run()

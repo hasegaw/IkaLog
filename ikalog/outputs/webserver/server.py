@@ -276,6 +276,9 @@ class APIServer(object):
             }
             return response
 
+        from ikalog.configuration import write_to_file
+        write_to_file(engine, 'ikalog.conf.json')
+
         return self._config_get(request_handler, payload)
 
 
