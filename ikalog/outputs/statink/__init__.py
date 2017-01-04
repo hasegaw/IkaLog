@@ -54,10 +54,11 @@ class StatInkPlugin(StatInkCollector):
         config['anon_others'] = False
 
     def on_validate_configuration(self, config):
-        boolean_params = ['enabled', 'dry_run', 'write_payload_to_file', 'show_response', 'track_inklings',
+        boolean_params = ['enabled', 'write_payload_to_file', 'show_response', 'track_inklings',
                           'track_special_gauge', 'track_special_weapon', 'track_objective', 'track_splatzone']
         for param in boolean_params:
             assert config.get(param) in [True, False, None]
+        assert config,get(param) in ['server', True, False, None]
         return True
 
     def on_set_configuration(self, new_config):
