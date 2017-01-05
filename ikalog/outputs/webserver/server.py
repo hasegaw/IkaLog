@@ -18,7 +18,7 @@
 #  limitations under the License.
 #
 
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import HTTPServer, SimpleHTTPRequestHandler
 from socketserver import ThreadingMixIn
 from urllib.parse import urlparse, parse_qs
 from collections import ChainMap
@@ -36,14 +36,16 @@ from ikalog.version import IKALOG_VERSION
 def _get_type_name(var):
     return type(var).__name__
 
+
 def _request_handler2engine(request_handler):
     return request_handler.server.ikalog_context['engine']['engine']
+
 
 def _get_plugins_list(engine):
     r = {}
     cond = lambda x: hasattr(x, 'get_configuration')
     plugins = filter(cond, engine.output_plugins)
-    for plugin in plugins:# engine.output_plugins:
+    for plugin in plugins:  # engine.output_plugins:
         if hasattr(plugin, 'plugin_name'):
             plugin_name = plugin.plugin_name
         else:
@@ -54,6 +56,7 @@ def _get_plugins_list(engine):
 
 
 class Response(object):
+
     def __init__(self, *args, **kwargs):
         self.status = 200
         self.content_type = 'application/json'
@@ -63,7 +66,8 @@ class Response(object):
     def send(self, request_handler):
         content_binary = self._format()
         if (self.charset is not None):
-            content_type = '{}; charset={}'.format(self.content_type, self.charset)
+            content_type = '{}; charset={}'.format(
+                self.content_type, self.charset)
         else:
             content_type = self.content_type
         request_handler.send_response(self.status)
@@ -81,11 +85,14 @@ class Response(object):
             return bytearray(self.response, self.charset)
 
         return bytearray(
-            json.dumps(self.response, ensure_ascii=False, default=_get_type_name),
+            json.dumps(self.response, ensure_ascii=False,
+                       default=_get_type_name),
             self.charset
         )
 
+
 class APIServer(object):
+
     def _prepare_send_file(self, request_handler, payload, path, content_type):
         response = Response()
         try:
@@ -114,11 +121,11 @@ class APIServer(object):
 
     def _view_game(self, request_handler, payload):
         return self._prepare_send_file(request_handler, payload,
-            IkaUtils.get_path('tools', 'view.html'), 'text/html')
+                                       IkaUtils.get_path('tools', 'view.html'), 'text/html')
 
     def _graph_game(self, request_handler, payload):
         return self._prepare_send_file(request_handler, payload,
-            IkaUtils.get_path('tools', 'graph.html'), 'text/html')
+                                       IkaUtils.get_path('tools', 'graph.html'), 'text/html')
 
     def _engine_context_game(self, request_handler, payload):
         response = Response()
@@ -162,9 +169,11 @@ class APIServer(object):
 
         response = Response()
         if screenshot_save_func and screenshot_save_func(frame):
-            response.response = {'status': 'ok', 'message': 'Saved a screenshot'}
+            response.response = {'status': 'ok',
+                                 'message': 'Saved a screenshot'}
         else:
-            response.response = {'status': 'failed', 'message': 'Failed to save a screenshot'}
+            response.response = {'status': 'failed',
+                                 'message': 'Failed to save a screenshot'}
         return response
 
     def _config_get(self, request_handler, payload):
@@ -239,7 +248,7 @@ class APIServer(object):
             'paused': engine.is_paused(),
             'platform_system': platform.system(),
             'platform_machine': platform.machine(),
-            }
+        }
 
         response = Response()
         response.response = status
@@ -250,7 +259,7 @@ class APIServer(object):
         if validation.response['status'] != 'ok':
             return validation
 
-        new_config = dict(payload)#new_config = dict(payload)
+        new_config = dict(payload)  # new_config = dict(payload)
         engine = _request_handler2engine(request_handler)
         plugins = _get_plugins_list(engine)
 
@@ -281,7 +290,6 @@ class APIServer(object):
 
         return self._config_get(request_handler, payload)
 
-
     def _slack_post(self, request_handler, payload):
         response = Response()
         engine = _request_handler2engine(request_handler)
@@ -296,18 +304,18 @@ class APIServer(object):
     def _twitter_post(self, request_handler, payload, screenshot=False):
         engine = _request_handler2engine(request_handler)
         twitter_post = engine.get_service('twitter_post')
-        twitter_post_media=engine.get_service('twitter_post_media')
+        twitter_post_media = engine.get_service('twitter_post_media')
 
-        media=None
+        media = None
         response = Response()
         if screenshot and (twitter_post_media is not None):
             # FIXME: Consider deepcopy.
-            context=request_handler.server.ikalog_context
-            img=context['engine']['frame']
-            media=twitter_post_media(img)
+            context = request_handler.server.ikalog_context
+            img = context['engine']['frame']
+            media = twitter_post_media(img)
 
         if twitter_post:
-            twitter_post(payload['message'], media = media)
+            twitter_post(payload['message'], media=media)
             response.response = {'status': 'ok', 'message': 'Tweeted'}
         else:
             response.response = {'status': 'failed', 'message': 'Failed'}
@@ -330,7 +338,7 @@ class APIServer(object):
         return response
 
     def process_request(self, request_handler, path, payload):
-        handler={
+        handler = {
             '/view': self._view_game,
             '/graph': self._graph_game,
             '/api/v1/engine/context/game': self._engine_context_game,
@@ -352,16 +360,17 @@ class APIServer(object):
         if handler is None:
             response = Response()
             response.status = 404
-            response.response = {'status': 'error', 'description': 'Invalid API Path %s' % path}
+            response.response = {'status': 'error',
+                                 'description': 'Invalid API Path %s' % path}
             return response
 
         response_payload = handler(request_handler, payload)
         return response_payload
 
 
-class HTTPRequestHandler(BaseHTTPRequestHandler):
+class HTTPRequestHandler(SimpleHTTPRequestHandler):
 
-    def _send_response_json(self, response, status = 200):
+    def _send_response_json(self, response, status=200):
         resp = Response()
         resp.status = status
         resp.response = response
@@ -372,8 +381,17 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         query = parse_qs(parsed.query)
         return (parsed.path, query)
 
+    def translate_path(self, path):
+        assert path.startswith('/')
+        path = 'data/html/%s' % path
+        return super(HTTPRequestHandler, self).translate_path(path)
+
     def do_GET(self):
         (path, query) = self._parse_path(self.path)
+
+        if not path.startswith('/api/'):
+            super(HTTPRequestHandler, self).do_GET()
+            return
 
         response = self.api_server.process_request(
             self, path, query)
