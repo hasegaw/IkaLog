@@ -376,9 +376,9 @@ class StatInkCompositor(object):
             dprint('img_judge is empty.')
 
         if self._parent.img_gears is not None:
-            payload['image_gears'] = _encode_image(self._parent.img_gears)
+            payload['image_gear'] = _encode_image(self._parent.img_gears)
         else:
-            dprint('img_gears is empty.')
+            dprint('img_gear is empty.')
 
     def composite_payload(self, context):
         payload = {
