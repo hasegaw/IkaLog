@@ -383,7 +383,7 @@ class HTTPRequestHandler(SimpleHTTPRequestHandler):
 
     def translate_path(self, path):
         assert path.startswith('/')
-        path = 'data/html/%s' % path
+        path = 'data/wui/html/%s' % path
         return super(HTTPRequestHandler, self).translate_path(path)
 
     def do_GET(self):
