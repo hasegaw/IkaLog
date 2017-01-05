@@ -131,7 +131,6 @@ class StatInkPlugin(StatInkCollector):
 
     def _post_payload_worker(self, context, payload, api_key,
                              call_plugins_later_func=None):
-        return
         url_statink_v1_battle = '%s/api/v1/battle' % self.config[
             'endpoint_url']
 
