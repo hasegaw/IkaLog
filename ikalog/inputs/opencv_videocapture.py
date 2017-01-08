@@ -26,6 +26,7 @@ import cv2
 
 from ikalog.utils import *
 from ikalog.inputs.win.videoinput_wrapper import VideoInputWrapper
+from ikalog.inputs.osx.avfoundation_capture import AVFoundationCaptureDevice
 from ikalog.inputs import VideoInput
 
 
@@ -35,7 +36,9 @@ class CVCapture(VideoInput):
     def _enumerate_sources_func(self):
         if IkaUtils.isWindows():
             return self._videoinput_wrapper.get_device_list()
-        return ['Device Enumeration not supported']
+        if IkaUtils.isOSX():
+            return AVFoundationCaptureDevice().get_source_list()
+        return None
 
     # override
     def _initialize_driver_func(self):
