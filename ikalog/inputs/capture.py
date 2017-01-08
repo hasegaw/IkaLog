@@ -60,7 +60,7 @@ class Capture(IkaLogPlugin):
         # List all available input methods
         input_plugins = []
         if IkaUtils.isWindows():
-            input_plugins.append(inputs.DirectShowCapture)
+            input_plugins.append(inputs.DirectShow)
         if IkaUtils.isOSX():
             input_plugins.append(inputs.AVFoundationCapture)
         input_plugins.append(inputs.CVCapture)
