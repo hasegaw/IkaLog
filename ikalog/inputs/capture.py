@@ -79,7 +79,7 @@ class Capture(IkaLogPlugin):
 
     def _activate_input_nolock(self, cls, config):
         try:
-            self._source_name = config['source_name']
+            self._source_name = config['source']
             capture = cls()
             capture.select_source(name=self._source_name)
             self.capture = capture
@@ -133,7 +133,7 @@ class Capture(IkaLogPlugin):
         if self.capture is not None:
             config['active_class'] = self.capture.__class__.__name__
         if self._source_name is not None:
-            config['active_source_name'] = self._source_name
+            config['source'] = self._source_name
 
         config['read_only'] = ro
         return config
