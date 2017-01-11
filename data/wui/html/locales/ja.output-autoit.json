@@ -1,0 +1,7 @@
+{
+  "Automatically rename recorded videos": "録画ファイルを自動的にリネームする",
+  "Control video recording app (AutoIt)": "ビデオ自動録画（AutoItによる制御）",
+  "Enable control of video recording applications": "録画ソフトの開始・停止を自動操作する",
+  "Path to controller scripts (ControlOBS.au3)": "実行する制御スクリプト(ControlOBS.au3またはControlAmarecTV.au3)のパス",
+  "Recordings Folder": "録画フォルダ"
+}

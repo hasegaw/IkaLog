@@ -1,0 +1,15 @@
+{
+  "(Builtin)": "(組み込み)",
+  "Additional message": "ツイートに付加するメッセージ",
+  "Attach a scoreboard": "リザルト画面のスクリーンショットを投稿する",
+  "Authenticate": "認証",
+  "Bot name": "Botの名前",
+  "Include my K/D ratio": "K/Dレートを含める",
+  "Include my rank in ranked mode": "ガチマッチのウデマエを含める",
+  "Include my score": "ナワバリスコアを含める",
+  "Post game results to Twitter": "Twitterにゲーム結果を投稿する",
+  "Post game results to a Slack channel": "戦績をSlackチャンネルに投稿する",
+  "Reply to @_ikalog_ to keep my followers' timeline clean": "@_ikalog_ へのリプライとして投稿（フォロワーのTLを汚しません）",
+  "Use IkaLog Consumer Key (easy)": "IkaLog のコンシューマキーを使う（簡単）",
+  "Use your own Consumer Key": "自分で取得したコンシューマキーを使う"
+}

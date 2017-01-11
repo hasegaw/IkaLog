@@ -1,0 +1,14 @@
+{
+  "API Key": "APIキー",
+  "All players": "全員",
+  "Disabled": "無効",
+  "Enable anonymizer (Hide player names)": "匿名化（スクリーンショットのプレーヤー名を隠す）を有効にする",
+  "Include Special Weapons (experimental)": "投稿内容にスペシャル発動を含める (experimental)",
+  "Include Special gauge (experimental)": "投稿内容にスペシャルの溜まり具合を含める (experimental)",
+  "Include SplatZone counters (experimental)": "投稿内容にガチエリアのカウント情報を含める（experimental)",
+  "Include inkling status (experimental)": "投稿内容にインクリングの生死状況を含める (experimental)",
+  "Include position data of tracked objectives (experimental)": "投稿内容にヤグラ／ホコの位置情報を含める（experimental)",
+  "Other players": "自分以外",
+  "Post game results to stat.ink": "戦績をstat.inkに投稿する",
+  "Show stat.ink response in console": "stat.inkからの応答メッセージをコンソールに表示"
+}

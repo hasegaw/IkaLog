@@ -1,0 +1,19 @@
+{
+  "A screenshot was taken.": "スクリーンショットを保存しました。",
+  "Calibrate": "WiiU画面を探す",
+  "Capture through AmarecTV": "アマレコLive経由でキャプチャ",
+  "Enable deinterlacing (experimental)": "インタレース解除（普段は不要）",
+  "Failed to take a screenshot.": "スクリーンショットの保存に失敗しました。",
+  "HDMI video input (AVFoundation, recommended)": "HDMI(or D4)ビデオキャプチャ (AVFoundation, 推奨)",
+  "HDMI video input (DirectShow, recommended)": "HDMI(or D4)ビデオキャプチャ (DirectShow, 推奨)",
+  "HDMI video input (OpenCV driver)": "HDMI(or D4)ビデオキャプチャ (OpenCV)",
+  "Read from pre-recorded video file (for testing)": "動画ファイルを再生（開発用）",
+  "Realtime capture from desktop": "デスクトップ上に映っているWiiU画面を介してキャプチャ",
+  "Reload": "再読み込み",
+  "Reset": "リセット",
+  "Screenshot": "スクリーンショット",
+  "Select input source": "入力ソース",
+  "Take a screenshot": "スクリーンショットを保存",
+  "Video Input": "ビデオ入力",
+  "Video file path": "動画ファイル名"
+}

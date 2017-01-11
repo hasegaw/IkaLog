@@ -1,0 +1,7 @@
+{
+  "Enable WebSocket server": "WebSocketサーバを有効にする",
+  "Port": "ポート",
+  "The server is accessible by anyone": "このサーバは誰でもアクセスできます",
+  "Warning": "警告",
+  "WebSocket Server": "WebSocket（ウェブソケット）サーバ"
+}
