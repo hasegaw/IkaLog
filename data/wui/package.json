@@ -1,0 +1,44 @@
+{
+  "name": "ikalog-webui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "build": "NODE_ENV=production webpack -p --progress",
+    "debug": "webpack -d --progress",
+    "watch": "webpack -d --progress --watch"
+  },
+  "author": {
+    "name": "Takeshi HASEGAWA",
+    "url": "https://github.com/hasegaw"
+  },
+  "contributors": [
+    {
+      "name": "AIZAWA Hina",
+      "url": "https://github.com/fetus-hina"
+    }
+  ],
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-loader": "^6.2.8",
+    "babel-preset-latest": "^6.16.0",
+    "babel-preset-react": "^6.16.0",
+    "bootstrap": "^4.0.0-alpha.5",
+    "css-loader": "^0.26.0",
+    "file-loader": "^0.9.0",
+    "flumpt": "^0.2.0",
+    "font-awesome": "^4.7.0",
+    "i18next": "^4.1.0",
+    "i18next-xhr-backend": "^1.2.1",
+    "keymirror": "^0.1.1",
+    "node-sass": "^3.13.0",
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1",
+    "react-notification-system": "^0.2.11",
+    "sass-loader": "^4.0.2",
+    "style-loader": "^0.13.1",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.13.3"
+  }
+}
