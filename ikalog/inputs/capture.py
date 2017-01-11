@@ -133,7 +133,9 @@ class Capture(IkaLogPlugin):
         if self.capture is not None:
             config['active_class'] = self.capture.__class__.__name__
         if self._source_name is not None:
-            config['source'] = self._source_name
+            capture_config = {}
+            capture_config['source'] = self._source_name
+            config[config['active_class']] = capture_config
 
         config['read_only'] = ro
         return config
