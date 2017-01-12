@@ -209,7 +209,7 @@ class TestStatInk(unittest.TestCase):
         obj.composite_screenshots(payload)
 
         assert payload['image_result'] is not None
-        assert payload['image_gears'] is not None
+        assert payload['image_gear'] is not None
         assert payload['image_judge'] is not None
 
         payload = {}
