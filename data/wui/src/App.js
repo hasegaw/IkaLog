@@ -558,6 +558,8 @@ export default class App extends Flux {
           throw new Error('IkaLog error');
         }
         const conf = json.configuration || {};
+        const csv = conf.CSV || {};
+        const json_ = conf.JSON || {};
         const screenshot = conf.Screenshot || {};
         const statink = conf.StatInk || {};
 
@@ -593,6 +595,14 @@ export default class App extends Flux {
         })(conf.Capture || {});
 
         const output = {
+          csv: {
+            enabled: !!csv.enabled,
+            path: String(csv.filename),
+          },
+          json: {
+            enabled: !!json_.enabled,
+            path: String(json_.filename),
+          },
           screenshot: {
             enabled: !!screenshot.enabled,
             currentEnabled: !!screenshot.enabled,

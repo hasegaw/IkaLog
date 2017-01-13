@@ -29,10 +29,10 @@ export default class File extends Component {
     return (
       <div>
         <Screenshot {...this.props} />
-        {/* <hr /> */}
-        {/* <Csv {...this.props} /> */}
-        {/* <hr /> */}
-        {/* <Json {...this.props} /> */}
+        <hr />
+        <Csv {...this.props} />
+        <hr />
+        <Json {...this.props} />
       </div>
     );
   }
