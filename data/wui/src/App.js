@@ -557,9 +557,9 @@ export default class App extends Flux {
         if (json.status !== 'ok') {
           throw new Error('IkaLog error');
         }
-        const conf = json.configuration;
-        const screenshot = conf.Screenshot;
-        const statink = conf.StatInk;
+        const conf = json.configuration || {};
+        const screenshot = conf.Screenshot || {};
+        const statink = conf.StatInk || {};
 
         const input = (capture => {
           const ret = {
@@ -590,7 +590,7 @@ export default class App extends Flux {
             ret.driver = 'amarec';
           }
           return ret;
-        })(json.configuration.Capture);
+        })(conf.Capture || {});
 
         const output = {
           screenshot: {
