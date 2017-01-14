@@ -580,7 +580,7 @@ export default class App extends Flux {
                   return null;
               }
             })(capture.active_class),
-            device: capture.source ? { source: capture.source } : null,
+            device: capture[capture.active_class] || null,
             classes: capture.read_only || {},
           };
 
