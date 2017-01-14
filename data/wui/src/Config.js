@@ -59,6 +59,24 @@ export function toIkaLogFormat(state) {
   })();
   // }}}
 
+  // CSV
+  payload.CSV = (() => {
+    const conf = plugins.output.csv;
+    return {
+      enabled: conf.enabled,
+      filename: conf.path,
+    };
+  })();
+
+  // JSON
+  payload.JSON = (() => {
+    const conf = plugins.output.json;
+    return {
+      enabled: conf.enabled,
+      filename: conf.path,
+    };
+  })();
+
   // screenshot
   payload.Screenshot = (() => {
     const conf = plugins.output.screenshot;
