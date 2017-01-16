@@ -77,6 +77,15 @@ class Capture(IkaLogPlugin):
     Device activation and deactivation
     """
 
+    def _is_activated(self, new_cls, new_source):
+        if self.capture is None:
+            return True
+
+        current_class = self.capture.__class__.__name__
+        current_source = self._source_name
+
+        return (current_class == new_class and current_source == new_source)
+
     def _activate_input_nolock(self, cls, config):
         try:
             self._source_name = config['source']
@@ -145,16 +154,27 @@ class Capture(IkaLogPlugin):
             try:
                 cls = self._available_classes[config['active_class']]
             except KeyError:
-                raise 'Not supported input'
+                raise Exception('Not supported input')
         return True
 
     def on_set_configuration(self, config):
         self.on_validate_configuration(config)
-        if 'active_class' in config:
+        if not ('active_class' in config):
             self._deactivate_input()
-            time.sleep(1)
-            cls = self._available_classes[config['active_class']]
-            self._activate_input(cls, config[config['active_class']])
+            return True
+
+        new_class = config['active_class']
+        new_source = config.get(new_class, {}).get('source')
+
+        if self._is_activated(new_class, new_source):
+            IkaUtils.dprint('%s: Requested capture configuration is'
+                            ' already active.' % self)
+            return True
+
+        self._deactivate_input()
+        time.sleep(1)
+        cls = self._available_classes[config['active_class']]
+        self._activate_input(cls, config[config['active_class']])
 
     """
     IkaLog Capture Interface
