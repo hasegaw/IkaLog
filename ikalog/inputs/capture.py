@@ -122,6 +122,20 @@ class Capture(IkaLogPlugin):
         # FIXME: lock
         self._deactivate_input_nolock()
 
+    def _reactivate_input(self):
+        if self.capture is None:
+            return True
+
+        current_class = self.capture.__class__
+        current_source = self._source_name
+
+        new_config = {
+            'source': current_source
+        }
+
+        self._deactivate_input()
+        self._activate_input(current_class, new_config)
+
     """
     IkaLog Plugins Interface
     """
