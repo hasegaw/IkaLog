@@ -25,22 +25,21 @@ import socket
 import sys
 import traceback
 
+
 from ikalog.constants import *
+from ikalog.outputs.commentator import Commentator
+from ikalog.plugin import IkaLogPlugin
 from ikalog.utils import *
-from .commentator import Commentator
 
 _ = Localization.gettext_translation('boyomi', fallback=True).gettext
 
-# Needed in GUI mode
-try:
-    import wx
-except:
-    pass
-
 
 class BoyomiClient(object):
-    ''' 棒読みちゃんにコマンドを送信するクラスです
+    '''
+    棒読みちゃんにコマンドを送信するクラスです
     http://chi.usamimi.info/Program/Application/BouyomiChan/
+
+    FIXME: 非同期で動いてほしい（通信中に IkaEngine が止まるので）
     '''
 
     def __init__(self, host='127.0.0.1', port=50001):
@@ -112,140 +111,63 @@ class BoyomiClient(object):
         self._close()
 
 
-class Boyomi(Commentator):
+class BoyomiPlugin(Commentator, IkaLogPlugin):
     '''
     Boyomi-chan client.
     Boyomi-chan is Japnanese speech server.
     '''
 
-    def __init__(self,
-                 host='127.0.0.1',
-                 port=50001,
-                 dictionary={},
-                 dictionary_csv=None,
-                 custom_read_csv=None):
-        super(Boyomi, self).__init__(dictionary, dictionary_csv, custom_read_csv)
-        self._client = BoyomiClient(host, port)
-        self._read_event('initialize')
+    def __init__(self):
+        self._client = None
+        super(BoyomiPlugin, self).__init__()
+        super(Commentator, self).__init__()
 
-    def config_key(self):
-        return 'boyomi'
+    def on_validate_configuration(self, config):
+        assert config['enabled'] in [True, False]
+        return True
 
-    def set_config(self, config):
-        dictionary = config.get(self.config_key(), {})
-        self._dict = BoyomiDictionary(dictionary)
+    def on_reset_configuration(self):
+        self.config['enabled'] = False
+        self.config['host'] = 'localhost'
+        self.config['port'] = 50001
 
-    def get_config(self, config):
-        boyomi = self._dict.get_config()
-        config[self.config_key()] = boyomi
-        return config
+    def on_set_configuration(self, config):
+        self.config['host'] = config['host']
+        self.config['port'] = config['port']
+        self.config['enabled'] = config['enabled']
+
+        modified = False
+        client = self._client
+        if client is not None:
+            host_changed = (client.host != self.config['host'])
+            port_changed = (client.host != self.config['port'])
+            modified = host_changed or port_changed
+
+        if modified:
+            self._client = BoyomiClient(self._host, int(self._port))
+
+        # FIXME: load custom read
 
     def _do_read(self, message):
+        if self._client is None:
+            return
+
         self._client.read(message['text'])
 
-    def initialize_client(self):
-        try:
-            self._client = BoyomiClient(self._host, int(self._port))
-        except:
-            IkaUtils.dprint(_('Failed to apply configuration to boyomi client. Review your settings.'))
-            self.dprint(traceback.format_exc())
-            self._client = None
-            return False
-        return True
 
-    def apply_ui(self):
-        self._enabled = self.check_enable.GetValue()
-        self._host = self.edit_host.GetValue()
-        self._port = self.edit_port.GetValue()
-        self.initialize_client()
+class LegacyBoyomi(BoyomiPlugin):
 
-    def refresh_ui(self):
-        self.check_enable.SetValue(self._enabled)
+    def __init__(self, host='127.0.0.1', port=50001, dictionary={}, dictionary_csv=None, custom_read_csv=None):
+        super(LegacyBoyomi, self).__init__()
 
-        if not self._host is None:
-            self.edit_host.SetValue(self._host)
-        else:
-            self.edit_host.SetValue('')
-
-        if not self._port is None:
-            self.edit_port.SetValue(str(self._port))
-        else:
-            self.edit_port.SetValue('50001')
-
-        self._internal_update = False
-
-    def on_config_reset(self, context=None):
-        self.config_reset()
-        self.refresh_ui()
-
-    def config_reset(self):
-        self._enabled = False
-        self._host = '127.0.0.1'
-        self._port = '50001'
-
-    def on_config_load_from_context(self, context):
-        self.config_reset()
-
-        try:
-            conf = context['config']['boyomi']
-        except:
-            conf = {}
-
-        if 'Enable' in conf:
-            self._enabled = conf['Enable']
-
-        if 'host' in conf:
-            self._host = conf['host']
-
-        if 'port' in conf:
-            try:
-                self._port = int(conf['port'])
-            except ValueError:
-                IkaUtils.dprint('%s: port must be an integer' % self)
-                self._port = 50001
-
-        self.refresh_ui()
-        self.initialize_client()
-        return True
-
-    def on_config_save_to_context(self, context):
-        context['config']['boyomi'] = {
-            'Enable': self._enabled,
-            'host': self._host,
-            'port': self._port,
+        config = {
+            'host': host,
+            'port': port,
+            'dictionary': dirctionary,
+            'dictionary_csv': directionary_csv,
+            'custom_read_csv': custom_read_csv,
         }
+        self.set_configuration(config)
 
-    def on_config_apply(self, context):
-        self.apply_ui()
 
-    def on_test_button_click(self, event):
-        self._read_event('initialize')
-
-    def on_option_tab_create(self, notebook):
-        self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.panel_name = _('Boyomi')
-        self.layout = wx.BoxSizer(wx.VERTICAL)
-
-        self.check_enable = wx.CheckBox(
-            self.panel, wx.ID_ANY, _('Enable Boyomi client'))
-        self.edit_host = wx.TextCtrl(self.panel, wx.ID_ANY, 'host')
-        self.edit_port = wx.TextCtrl(self.panel, wx.ID_ANY, 'port')
-        self.button_test = wx.Button(self.panel, wx.ID_ANY, _('Test intergration'))
-
-        try:
-            layout = wx.GridSizer(2, 4)
-        except:
-            layout = wx.GridSizer(2)
-
-        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('host')))
-        layout.Add(self.edit_host)
-        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('port')))
-        layout.Add(self.edit_port)
-
-        self.layout.Add(self.check_enable)
-        self.layout.Add(layout, flag=wx.EXPAND)
-        self.layout.Add(self.button_test)
-
-        self.panel.SetSizer(self.layout)
-
-        self.button_test.Bind(wx.EVT_BUTTON, self.on_test_button_click)
+Boyomi = LegacyBoyomi
