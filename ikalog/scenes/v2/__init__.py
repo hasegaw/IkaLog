@@ -19,6 +19,7 @@
 #
 
 from .game.superjump import V2GameSuperJump as GameSuperJump
+from .game.kill import V2GameKill as GameKill
 
 def initialize_scenes(engine):
     import ikalog.scenes as scenes
@@ -27,6 +28,7 @@ def initialize_scenes(engine):
         scenes.GameTimerIcon(engine),
 
         GameSuperJump(engine),
+        GameKill(engine),
 
         scenes.Blank(engine),
     ]
