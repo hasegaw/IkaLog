@@ -71,7 +71,6 @@ class V2ResultJudge(StatefulScene):
             #self._analyze(context)
             self._call_plugins('on_result_judge')
             self._last_event_msec = context['engine']['msec']
-            cv2.imshow('gathered', context['engine']['frame'])
 
         return matched
     
