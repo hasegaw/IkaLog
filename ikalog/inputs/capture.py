@@ -79,12 +79,15 @@ class Capture(IkaLogPlugin):
 
     def _is_activated(self, new_cls, new_source):
         if self.capture is None:
-            return True
+            current_class = None
+            current_source = None
+        else:
+            current_class = self.capture.__class__.__name__
+            current_source = self._source_name
 
-        current_class = self.capture.__class__.__name__
-        current_source = self._source_name
+        print(current_class, current_source, new_cls, new_source)
 
-        return (current_class == new_class and current_source == new_source)
+        return (current_class == new_cls and current_source == new_source)
 
     def _activate_input_nolock(self, cls, config):
         try:
