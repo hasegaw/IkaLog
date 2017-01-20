@@ -18,24 +18,3 @@
 #  limitations under the License.
 #
 
-from .game.superjump import V2GameSuperJump as GameSuperJump
-from .game.kill import V2GameKill as GameKill
-
-from .result.judge import V2ResultJudge as ResultJudge
-from .result.scoreboard.scoreboard import V2ResultScoreboard as ResultScoreboard
-
-def initialize_scenes(engine):
-    import ikalog.scenes as scenes
-
-    s = [
-        scenes.GameTimerIcon(engine),
-
-        GameSuperJump(engine),
-        GameKill(engine),
-
-        ResultJudge(engine),
-        ResultScoreboard(engine),
-
-        scenes.Blank(engine),
-    ]
-    return s
