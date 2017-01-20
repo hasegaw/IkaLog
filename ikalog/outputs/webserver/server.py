@@ -24,7 +24,9 @@ from urllib.parse import urlparse, parse_qs
 from collections import ChainMap
 import json
 import platform
+import subprocess
 import threading
+import time
 import traceback
 import errno
 
@@ -32,6 +34,23 @@ from ikalog.utils import *
 from .preview import PreviewRequestHandler
 from ikalog.version import IKALOG_VERSION
 
+
+def _open_wui(host, port):
+    if host in ['0.0.0.0', '127.0.0.1']:
+        host = 'localhost'
+    cmd = None
+
+    if IkaUtils.isWindows():
+        cmd = ['start', 'http://%s:%s/' % (host, port) ]
+    elif IkaUtils.isOSX():
+        cmd = ['open', 'http://%s:%s/' % (host, port) ]
+
+    if cmd is not None:
+        try:
+            subprocess.call(cmd)
+
+        except FileNotFoundError:
+            IkaUtils.dprint('%s: cannot execute %s' % (__name__, cmd))
 
 def _get_type_name(var):
     return type(var).__name__
@@ -454,11 +473,12 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 class RESTAPIServer(object):
 
-    def __init__(self, enabled=False, bind_addr='127.0.0.1', port=8888):
+    def __init__(self, enabled=False, bind_addr='127.0.0.1', port=8888, open_wui=True):
         self._bind_addr = bind_addr
         self._port = port
         self._listeners = []
         self._httpd = None
+        self._open_wui = open_wui
 
         self._worker_thread = None
 
@@ -479,6 +499,9 @@ class RESTAPIServer(object):
             threading.Thread(target=self._worker_func, args=(self, context))
         self._worker_thread.daemon = True
         self._worker_thread.start()
+        time.sleep(1)
+        if self._open_wui:
+            _open_wui(self._bind_addr, self._port)
 
     def _worker_func(self, self2, context):
         IkaUtils.dprint('%s: serving at %s:%s' %
