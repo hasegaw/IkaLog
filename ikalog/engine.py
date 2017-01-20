@@ -28,7 +28,7 @@ import time
 import traceback
 
 from ikalog.utils import *
-from . import scenes
+from .scenes.v1 import initialize_scenes
 
 # The IkaLog core engine.
 #
@@ -444,36 +444,7 @@ class IkaEngine:
         self._pause = pause
 
     def _initialize_scenes(self):
-        self.scenes = [
-            scenes.GameTimerIcon(self),
-            scenes.GameStart(self),
-            scenes.GameGoSign(self),
-            scenes.GameKill(self),
-            scenes.GameKillCombo(self),
-            scenes.GameDead(self),
-            scenes.GameLowInk(self),
-            scenes.GameOutOfBound(self),
-            scenes.GameFinish(self),
-            scenes.GameSpecialGauge(self),
-            scenes.GameSpecialWeapon(self),
-
-            scenes.GameRankedBattleEvents(self),
-            scenes.PaintScoreTracker(self),
-            scenes.ObjectiveTracker(self),
-            scenes.SplatzoneTracker(self),
-            scenes.InklingsTracker(self),
-
-            scenes.ResultJudge(self),
-            scenes.ResultDetail(self),
-            scenes.ResultUdemae(self),
-            scenes.ResultGears(self),
-            scenes.ResultFesta(self),
-
-            scenes.Lobby(self),
-            # scenes.Downie(self),
-
-            scenes.Blank(self),
-        ]
+        self.scenes = initialize_scenes(self)
 
     def __del__(self):
         self.call_plugins('on_engine_destroy')
