@@ -45,6 +45,7 @@ class V2ResultScoreboard(StatefulScene):
             return False
 
         cv2.imshow('gathered2', context['engine']['frame'])
+        self._analyze(context)
         self._switch_state(self._state_tracking)
         self._last_matched_msec = context['engine']['msec']
 
@@ -106,7 +107,10 @@ class V2ResultScoreboard(StatefulScene):
 
 
     def _analyze(self, context):
-        pass
+        from ikalog.scenes.v2.result.scoreboard.analyze import analyze
+        players = analyze(context['engine']['frame'])
+
+        context['game']['players'] = players
 
 
     def dump(self, context):
