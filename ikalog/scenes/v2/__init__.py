@@ -21,6 +21,7 @@
 from .game.respawn import V2GameRespawn as GameRespawn
 from .game.special_gauge.background import V2GameSpecialGaugeBackground as GameSpecialGaugeBackground
 from .game.special_gauge.gauge import V2GameSpecialGauge as GameSpecialGauge
+from .game.special_gauge.level import V2GameSpecialGaugeLevel as GameSpecialGaugeLevel
 from .game.special_gauge.sub_and_special import V2GameSubAndSpecial as GameSubAndSpecial
 from .game.superjump import V2GameSuperJump as GameSuperJump
 from .game.kill import V2GameKill as GameKill
@@ -38,6 +39,7 @@ def initialize_scenes(engine):
 
         GameSpecialGauge(engine),
         GameSpecialGaugeBackground(engine),
+        GameSpecialGaugeLevel(engine),
         GameSubAndSpecial(engine),
 
         GameSuperJump(engine),
