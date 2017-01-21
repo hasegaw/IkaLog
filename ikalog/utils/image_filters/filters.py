@@ -122,6 +122,9 @@ class MM_DARK(MM_BLACK):
     def __init__(self, visibility=(0, 64)):
         super(MM_DARK, self).__init__(visibility=visibility)
 
+class MM_NOT_DARK(MM_BLACK):
+    def __init__(self, visibility=(64, 255)):
+        super(MM_NOT_DARK, self).__init__(visibility=visibility)
 
 class MM_NOT_BLACK(MM_BLACK):
 
