@@ -59,18 +59,12 @@ def extract_players_image(img_team):
 
     for top in _top_list:
         img_entry = img_team[top: top+ 47, :, :]
-
         e = extract_entry(img_entry)
         players.append(e)
-        
-        for k in e.keys():
-            cv2.imshow(k, e[k])
-
     return players
 
 def extract_players(frame):
     img_teams = transform_scoreboard(frame)
-    print(img_teams)
 
     players_win =  extract_players_image(img_teams['win'])
     players_lose =  extract_players_image(img_teams['lose'])
@@ -80,12 +74,13 @@ def extract_players(frame):
         player['index'] = players_win.index(player)
 
     for player in players_lose:
-        player['team'] = 0
+        player['team'] = 1
         player['index'] = players_lose.index(player) + 4
 
     players = []
     players.extend(players_win)
     players.extend(players_lose)
+
     return players
 
 
@@ -97,11 +92,7 @@ if __name__ == '__main__':
 
     t = time.time()
     i = 0
-    for team in r:
-        for player in r:
-            for k in ['weapon', 'kill', 'death']:
-                cv2.imwrite('scoreboard.player%d.%s.%s.png' % (i, k, t), player['img_%s' % k])
-            i = i + 1
-
-    print(r)
-
+    for player in r:
+        for k in ['weapon', 'kill', 'death']:
+            cv2.imwrite('scoreboard.player%d.%s.%s.png' % (i, k, t), player['img_%s' % k])
+        i = i + 1
