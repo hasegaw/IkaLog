@@ -21,8 +21,8 @@
 import cv2
 
 _center = (int(1280 * 0.75), int(720 * 0.5))
-_top_win = 61
-_top_lose = 404
+_top_win = 57
+_top_lose = 390
 _height = 300
 
 mat_win_team = cv2.getRotationMatrix2D(_center, -2.0, 1.0)
