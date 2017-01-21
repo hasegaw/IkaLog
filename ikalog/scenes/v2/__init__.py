@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 
+from .game.session import V2GameSession as GameSession
 from .game.respawn import V2GameRespawn as GameRespawn
 from .game.special_gauge.background import V2GameSpecialGaugeBackground as GameSpecialGaugeBackground
 from .game.special_gauge.gauge import V2GameSpecialGauge as GameSpecialGauge
@@ -34,6 +35,7 @@ def initialize_scenes(engine):
 
     s = [
         scenes.GameTimerIcon(engine),
+        GameSession(engine),
 
         GameRespawn(engine),
 
