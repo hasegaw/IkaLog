@@ -73,7 +73,7 @@ Splatoon 2 specific code here
 """
 
 
-class V2GameSpecialGaugeLevel(StatefulScene):
+class V2GameSpecialGaugeLevel(Scene):
 
     def reset(self):
         super(V2GameSpecialGaugeLevel, self).reset()
