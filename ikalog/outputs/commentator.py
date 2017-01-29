@@ -139,7 +139,7 @@ class Commentator(object):
         return config
 
     def _read(self, message):
-        if (not self._enabled):
+        if (not self._enabled) or (message is None) or (len(message['text']) == 0):
             return
 
         try:
