@@ -26,13 +26,13 @@ const t = text => window.i18n.t(text, {ns: 'sidebar'});
 export default class LangBox extends Component {
   render() {
     return (
-      <div className="card mb-1">
+      <div className="card mb-3">
         <div className="card-header">
           Language
         </div>
         <div className="card-block">
           <UiLang {...this.props} />
-          {/* <GameLang {...this.props} /> */}
+          <GameLang {...this.props} />
         </div>
       </div>
     );
@@ -42,7 +42,7 @@ export default class LangBox extends Component {
 class UiLang extends Component {
   render() {
     return (
-      <div className="mb-1">
+      <div className="mb-3">
         <p className="mb-0">
           IkaLog UI:
         </p>
@@ -60,18 +60,11 @@ class GameLang extends Component {
     return (
       <div className="mb-0">
         <p className="mb-0">
-          {t('Your copy of Splatoon')}(*):
+          {t('Your copy of Splatoon')}:
         </p>
         <div className="btn-group-vertical btn-block">
-          <GameButton text="Japanese" target="ja" {...this.props} />
-          <GameButton text="English (NA)" target="en_NA" {...this.props} />
-          <GameButton text="English (EU)" target="en_EU" {...this.props} />
+          <GameButton {...this.props} />
         </div>
-        <p className="mb-0">
-          <small>
-            (*){t('Needs restart IkaLog after apply')}
-          </small>
-        </p>
       </div>
     );
   }
@@ -99,22 +92,30 @@ class UiButton extends Component {
 }
 
 class GameButton extends Component {
-  constructor(props) {
-    super(props);
-    this._onClick = this._onClick.bind(this);
-  }
-
   render() {
-    const selected = this.props.target === this.props.game.lang;
-    const classes = 'btn btn-block ' + (selected ? 'btn-info active' : 'btn-secondary');
     return (
-      <button type="button" className={classes} onClick={this._onClick}>
-        {t(this.props.text)}
+      <button type="button" className="btn btn-block btn-info active">
+        {t(this.getLang())}
       </button>
     );
   }
 
-  _onClick() {
-    this.dispatch('game:changelang', this.props.target);
+  getLang() {
+    const langs = this.props.system.gameLanguages || [];
+    for (let i = 0; i < langs.length; ++i) {
+      const lang = String(langs[i]).toLowerCase().replace(/[^a-z0-9]+/, '_');
+      switch (lang) {
+        case 'ja':
+        case 'ja_jp':
+          return 'Japanese';
+
+        case 'en_na':
+          return 'English (NA)';
+
+        case 'en_eu':
+          return 'English (EU)';
+      }
+    }
+    return "Unknown";
   }
 }

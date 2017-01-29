@@ -4,9 +4,10 @@
   "description": "",
   "main": "",
   "scripts": {
-    "build": "NODE_ENV=production webpack -p --progress",
+    "build": "cross-env NODE_ENV=production webpack -p --progress",
     "debug": "webpack -d --progress",
-    "watch": "webpack -d --progress --watch"
+    "watch": "webpack -d --progress --watch",
+    "lock": "npm shrinkwrap --dev"
   },
   "author": {
     "name": "Takeshi HASEGAWA",
@@ -25,6 +26,7 @@
     "babel-preset-latest": "^6.16.0",
     "babel-preset-react": "^6.16.0",
     "bootstrap": "^4.0.0-alpha.5",
+    "cross-env": "^3.1.4",
     "css-loader": "^0.26.0",
     "file-loader": "^0.9.0",
     "flumpt": "^0.2.0",

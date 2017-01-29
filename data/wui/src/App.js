@@ -547,6 +547,7 @@ export default class App extends Flux {
           isWindows: !!json.is_windows,
           isMacOS: !!json.is_osx,
           ikalogVersion: String(json.version),
+          gameLanguages: json.game_languages || [],
         };
       });
   }
