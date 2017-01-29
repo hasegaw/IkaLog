@@ -592,7 +592,7 @@ class ResultDetail(StatefulScene):
         img_deaths = img_entry[entry_height_kd:entry_height_kd *
                                2, entry_xoffset_kd:entry_xoffset_kd + entry_width_kd]
 
-        img_fes_title = img_name[0:entry_height / 2, :]
+        img_fes_title = img_name[0:(entry_height // 2), :]
         img_fes_title_hsv = cv2.cvtColor(img_fes_title, cv2.COLOR_BGR2HSV)
         yellow = cv2.inRange(img_fes_title_hsv[:, :, 0], 32 - 2, 32 + 2)
         yellow2 = cv2.inRange(img_fes_title_hsv[:, :, 2], 240, 255)
