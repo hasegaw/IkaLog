@@ -243,7 +243,7 @@ class Commentator(object):
             data['text'] = data['text'].format(kill=kill, death=death)
             self._read(data)
 
-        if (me['score'] is not None) and (context['game']['won'] is not None):
+        if (me.get('score') is not None) and (context['game']['won'] is not None):
             # 判定のしようもないので、300pt時代のことは考えない
             bonus = 1000 if context['game']['won'] else 0
             score = int(me['score'])
