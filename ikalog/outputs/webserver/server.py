@@ -521,6 +521,17 @@ class RESTAPIServer(object):
         if self._httpd:
             self._httpd.ikalog_context = context
 
+    def on_stop(self, context):
+        if self._httpd:
+            IkaUtils.dprint('%s: Stopping webserver...' % (self))
+            self._httpd.shutdown()
+            del self._httpd
+            IkaUtils.dprint('%s: Stopped.' % (self))
+
+        # Notify on_stop event to child listeners to stopping mjpeg stream.
+        for listener in self._listeners:
+            listener.on_event("on_stop", context, None)
+
     def on_uncaught_event(self, event_name, context, params=None):
         for listener in self._listeners:
             listener.on_event(event_name, context, params)
