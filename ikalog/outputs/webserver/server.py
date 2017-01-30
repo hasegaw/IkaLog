@@ -30,6 +30,8 @@ import time
 import traceback
 import errno
 
+import cv2
+
 from ikalog.utils import *
 from .preview import PreviewRequestHandler
 from ikalog.version import IKALOG_VERSION
@@ -193,6 +195,31 @@ class APIServer(object):
         else:
             response.response = {'status': 'failed',
                                  'message': 'Failed to save a screenshot'}
+        return response
+
+    def _screenshot_memory(self, request_handler, payload):
+        engine = _request_handler2engine(request_handler)
+        screenshot_memory_func = engine.get_service('screenshot_memory')
+        context = request_handler.server.ikalog_context
+        frame = context['engine']['frame']
+
+        response = Response()
+        screenshot_memory_func(frame)  # this shouldn't fail
+        return self._screenshot_read_memory(request_handler, payload)
+
+    def _screenshot_read_memory(self, request_handler, payload):
+        engine = _request_handler2engine(request_handler)
+        screenshot_read_memory_func = engine.get_service('screenshot_read_memory')
+
+        response = Response()
+        response.response = {'status': 'failed', 'message': 'Failed to read memory'}
+
+        if screenshot_read_memory_func:
+            snapshot = screenshot_read_memory_func()
+            result, snapshot_ndarray = cv2.imencode('.png', snapshot)
+            if result:
+                response.response = bytearray(snapshot_ndarray)
+                response.content_type = 'image/png'
         return response
 
     def _config_get(self, request_handler, payload):
@@ -368,6 +395,8 @@ class APIServer(object):
             '/api/v1/input/devices': self._input_devices,
             '/api/v1/webui/system_info': self._webui_system_info,
             '/api/v1/screenshot/save': self._screenshot_save,
+            '/api/v1/screenshot/memory': self._screenshot_memory,
+            '/api/v1/screenshot/read_memory': self._screenshot_read_memory,
             '/api/v1/slack/post': self._slack_post,
             '/api/v1/twitter/post': self._twitter_post,
             '/api/v1/twitter/post_screenshot': self._twitter_post_screenshot,
