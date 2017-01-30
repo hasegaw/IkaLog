@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 
+import copy
 import os
 import time
 
@@ -26,6 +27,10 @@ from ikalog.utils import *
 
 
 class ScreenshotPlugin(IkaLogPlugin):
+
+    def __init__(self, dest_dir=None):
+        super(ScreenshotPlugin, self).__init__()
+        self._memory = None
 
     def generate_timestr(self, context=None):
         t = time.time() if context is None else IkaUtils.getTime(context)
@@ -45,6 +50,12 @@ class ScreenshotPlugin(IkaLogPlugin):
         IkaUtils.dprint('%s: Failed to save a screenshot %s' %
                         (self, filename))
         return False
+
+    def memory_screenshot(self, frame):
+        self._memory = copy.deepcopy(frame)
+
+    def read_memory_screenshot(self):
+        return self._memory
 
     def on_validate_configuration(self, config):
         assert config['dest_dir'] is not None
@@ -73,19 +84,12 @@ class ScreenshotPlugin(IkaLogPlugin):
     def on_initialize_plugin(self, context):
         engine = context['engine']['engine']
         engine.set_service('screenshot_save', self.write_screenshot)
+        engine.set_service('screenshot_memory', self.memory_screenshot)
+        engine.set_service('screenshot_read_memory', self.read_memory_screenshot)
         engine.set_service('screenshot_get_configuration',
                            self.get_configuration)
         engine.set_service('screenshot_set_configuration',
                            self.set_configuration)
-
-    ##
-    # Constructor
-    # @param self         The Object Pointer.
-    # @param dir          Destionation directory (Relative path, or absolute path)
-    #
-    def __init__(self, dest_dir=None):
-        super(ScreenshotPlugin, self).__init__()
-
 
 class Screenshot(ScreenshotPlugin):
 
