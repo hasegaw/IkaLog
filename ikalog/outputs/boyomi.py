@@ -163,8 +163,8 @@ class LegacyBoyomi(BoyomiPlugin):
         config = {
             'host': host,
             'port': port,
-            'dictionary': dirctionary,
-            'dictionary_csv': directionary_csv,
+            'dictionary': dictionary,
+            'dictionary_csv': dictionary_csv,
             'custom_read_csv': custom_read_csv,
         }
         self.set_configuration(config)
