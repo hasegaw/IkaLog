@@ -53,14 +53,12 @@ const app = new App({
       lock: false, // true if communicating
       fatalError: false,
     },
-    game: {
-      lang: 'ja', // FIXME
-    },
     system: null,
     // system: {
     //   hasBuiltinTwitterToken: true,
     //   isWindows: true,
     //   isMacOS: false,
+    //   gameLanguages: ["en_NA", "en"]
     // },
     plugins: {
       input: null,

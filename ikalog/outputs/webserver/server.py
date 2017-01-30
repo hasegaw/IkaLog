@@ -267,6 +267,7 @@ class APIServer(object):
             'paused': engine.is_paused(),
             'platform_system': platform.system(),
             'platform_machine': platform.machine(),
+            'game_languages': Localization.get_game_languages(),
         }
 
         response = Response()
