@@ -24,10 +24,10 @@ from urllib.parse import urlparse, parse_qs
 from collections import ChainMap
 import json
 import platform
-import subprocess
 import threading
 import time
 import traceback
+import webbrowser
 import errno
 
 import cv2
@@ -40,19 +40,13 @@ from ikalog.version import IKALOG_VERSION
 def _open_wui(host, port):
     if host in ['0.0.0.0', '127.0.0.1']:
         host = 'localhost'
-    cmd = None
 
-    if IkaUtils.isWindows():
-        cmd = ['start', 'http://%s:%s/' % (host, port) ]
-    elif IkaUtils.isOSX():
-        cmd = ['open', 'http://%s:%s/' % (host, port) ]
+    url = 'http://%s:%s/' % (host, port)
 
-    if cmd is not None:
-        try:
-            subprocess.call(cmd)
-
-        except FileNotFoundError:
-            IkaUtils.dprint('%s: cannot execute %s' % (__name__, cmd))
+    try:
+        webbrowser.open(url)
+    except webbrowser.Error:
+        IkaUtils.dprint('%s: cannot open %s' % (__name__, url))
 
 def _get_type_name(var):
     return type(var).__name__
@@ -312,7 +306,11 @@ class APIServer(object):
 
         result = []
         for plugin_name in new_config.keys():
-            plugin = plugins[plugin_name]
+            plugin = plugins.get(plugin_name)
+            if plugin is None:
+                IkaUtils.dprint('%s: %s is not loaded' % (self, plugin_name))
+                continue
+
             try:
                 conf = new_config[plugin_name]
                 plugin.set_configuration(conf)
