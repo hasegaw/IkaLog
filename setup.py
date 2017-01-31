@@ -39,6 +39,8 @@ addDirectory('masks/ja')
 addDirectory('masks/en_NA')
 addDirectory('masks/en_EU')
 addDirectory('data')
+addDirectory('data/wui/html')
+addDirectory('data/wui/html/locales')
 addDirectory('locale/ja/LC_MESSAGES')
 
 Mydata_files.append(('', [
