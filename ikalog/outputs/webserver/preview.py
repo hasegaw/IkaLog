@@ -58,8 +58,8 @@ class PreviewRequestHandler(object):
             self._http_handler.wfile.write(
                 '--frame_boundary\r\n'.encode('utf-8')
             )
-            self._http_handler.send_header('Content-type', 'image/jpeg')
-            self._http_handler.send_header('Content-length', str(jpeg_length))
+            self._http_handler.send_header('Content-Type', 'image/jpeg')
+            self._http_handler.send_header('Content-Length', str(jpeg_length))
             self._http_handler.end_headers()
             self._http_handler.wfile.write(jpeg)
 
