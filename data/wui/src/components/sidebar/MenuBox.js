@@ -45,7 +45,7 @@ class Buttons extends Component {
       <div className="btn-group-vertical btn-block mb-2">
         <Button text="Preview" target="preview" {...this.props} />
         <Button text="Video Input" target="input" {...this.props} />
-        <Button text="Plugins" target="output" {...this.props} />
+        <Button text="Settings" target="output" {...this.props} />
       </div>
     );
   }
