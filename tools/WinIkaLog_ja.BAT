@@ -17,4 +17,4 @@
 
 SET LANG=ja_JP
 SET IKALOG_LANG=ja
-IkaUI.exe
+IkaLog.exe

@@ -57,7 +57,7 @@ Mydata_files.append(('lib', ['lib/videoinput.dll']))
 Mydata_files.append(('screenshots', ['screenshots/.gitkeep']))
 
 setup(
-    console=['IkaUI.py'],
+    console=['IkaLog.py'],
     data_files=Mydata_files,
     zipfile=None,
     options={
