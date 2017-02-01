@@ -146,7 +146,7 @@ class Commentator(object):
             self._do_read(message)
         except ConnectionRefusedError:
             error = '「{message}」を読み上げることができませんでした'.format(message=message['text'])
-            IkaUtils.dprint(error)
+            IkaUtils.dprint(traceback.format_exc())
 
     def _do_read(self, message):
         return
