@@ -58,7 +58,9 @@ class StatInkPlugin(StatInkCollector):
                           'track_special_gauge', 'track_special_weapon', 'track_objective', 'track_splatzone']
         for param in boolean_params:
             assert config.get(param) in [True, False, None]
-        assert config,get(param) in ['server', True, False, None]
+
+        if config['enabled']:
+            assert (not config.get('api_key') in [None, ''])
         return True
 
     def on_set_configuration(self, new_config):
@@ -220,7 +222,7 @@ class StatInk(StatInkPlugin):
         super(StatInk, self).__init__()
 
         config = self.config
-        config['enabled'] = not (api_key is None)
+        config['enabled'] = not (api_key in ['', None])
         config['api_key'] = api_key
         config['endpoint_url'] = url
         config['dry_run'] = dry_run
