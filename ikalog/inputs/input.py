@@ -45,6 +45,10 @@ class VideoInput(object):
     out_height = 720
 
     ##
+    # Force keep_alive.
+    keep_alive = False
+
+    ##
     # _initialize_driver_func()
     # Handler for source-specific initialization.
     # @param self    the object

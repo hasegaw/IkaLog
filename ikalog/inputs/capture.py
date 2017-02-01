@@ -31,6 +31,9 @@ _ = t.gettext
 
 class Capture(IkaLogPlugin):
 
+    plugin_name = 'Capture'
+    keep_alive = True
+
     """
     Constructor
     """

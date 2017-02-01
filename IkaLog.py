@@ -82,8 +82,10 @@ if __name__ == "__main__":
     capture, output_plugins = config_loader.config(args)
     capture.set_pos_msec(get_pos_msec(args))
 
+    keep_alive = args.get('keep_alive') or capture.keep_alive
+
     engine = IkaEngine(enable_profile=args.get('profile'),
-                       keep_alive=args.get('keep_alive'))
+                       keep_alive=keep_alive)
     engine.pause(False)
     engine.set_capture(capture)
 
