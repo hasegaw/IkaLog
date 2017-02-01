@@ -117,6 +117,8 @@ class BoyomiPlugin(Commentator, IkaLogPlugin):
     Boyomi-chan is Japnanese speech server.
     '''
 
+    plugin_name = 'Boyomi'
+
     def __init__(self):
         self._client = None
         super(BoyomiPlugin, self).__init__()
@@ -161,13 +163,15 @@ class LegacyBoyomi(BoyomiPlugin):
         super(LegacyBoyomi, self).__init__()
 
         config = {
+            'enabled': True,
             'host': host,
             'port': port,
             'dictionary': dictionary,
             'dictionary_csv': dictionary_csv,
             'custom_read_csv': custom_read_csv,
         }
-        self.set_configuration(config)
 
+        if config['enabled']:
+            self.set_configuration(config)
 
 Boyomi = LegacyBoyomi
