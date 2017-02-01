@@ -64,8 +64,12 @@ def read_from_file(engine, filename):
     try:
         f = open(filename, 'r')
         config = json.load(f)
+    except FileNotFoundError as e:
+        IkaUtils.dprint("No configuration file to read.")
+        return False
+
     except:
-        print("JSON: Failed to read JSON file")
+        IkaUtils.dprint("JSON: Failed to read JSON file")
         IkaUtils.dprint(traceback.format_exc())
         return False
 
