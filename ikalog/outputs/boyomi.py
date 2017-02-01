@@ -161,7 +161,7 @@ class LegacyBoyomi(BoyomiPlugin):
         super(LegacyBoyomi, self).__init__()
 
         config = {
-            'enabled': True,
+            'enabled': (host is not None),
             'host': host,
             'port': port,
             'dictionary': dictionary,
