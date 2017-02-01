@@ -65,11 +65,13 @@ class VideoRecorderPlugin(IkaLogPlugin):
         self.config['enabled'] = False
         self.config['auto_rename'] = False
         self.config['script_name'] = False
+        self.config['dest_dir'] = os.path.join('.', '')  # "./" or ".\"
 
     def on_set_configuration(self, config):
         self.config['enabled'] = config['enabled']
         self.config['auto_rename'] = config['auto_rename']
         self.config['script_name'] = config['script_name']
+        self.config['dest_dir'] = config['dest_dir']
 
     def run_external_script(self, mode):
         cmd = '%s %s' % (self.control_obs, mode)
