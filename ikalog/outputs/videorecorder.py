@@ -23,127 +23,55 @@ import os
 import traceback
 import threading
 
+from ikalog.plugin import IkaLogPlugin
 from ikalog.utils import *
 
 
-# Needed in GUI mode
-try:
-    import wx
-except:
-    pass
-
-# IkaLog Output Plugin: Show message on Console
-#
-
 _ = Localization.gettext_translation('video_recorder', fallback=True).gettext
 
-class OBS(object):
 
-    def apply_ui(self):
-        self.enabled = self.checkEnable.GetValue()
-        self.auto_rename_enabled = self.checkAutoRenameEnable.GetValue()
-        self.control_obs = self.editControlOBS.GetValue()
-        self.dir = self.editDir.GetValue()
+def create_mp4_filename(context):
+    # FIXME: i18n
 
-    def refresh_ui(self):
-        self._internal_update = True
-        self.checkEnable.SetValue(self.enabled)
-        self.checkAutoRenameEnable.SetValue(self.auto_rename_enabled)
+    map = IkaUtils.map2text(context['game']['map'], unknown='マップ不明')
+    rule = IkaUtils.rule2text(context['game']['rule'], unknown='ルール不明')
+    won = IkaUtils.getWinLoseText(
+        context['game']['won'], win_text='win', lose_text='lose')
 
-        if not self.control_obs is None:
-            self.editControlOBS.SetValue(self.control_obs)
-        else:
-            self.editControlOBS.SetValue('')
+    time_str = time.strftime("%Y%m%d_%H%M", time.localtime())
+    newname = '%s_%s_%s_%s.mp4' % (time_str, map, rule, won)
 
-        if not self.dir is None:
-            self.editDir.SetValue(self.dir)
-        else:
-            self.editDir.SetValue('')
+    return newname
 
-    def on_config_reset(self, context=None):
-        self.config_reset()
-        self.refresh_ui()
 
-    def config_reset(self):
-        self.enabled = False
-        self.auto_rename_enabled = False
-        self.control_obs = os.path.join(os.getcwd(), 'tools', 'ControlOBS.au3')
-        self.dir = ''
+class VideoRecorderPlugin(IkaLogPlugin):
 
-    def on_config_load_from_context(self, context):
-        self.config_reset()
-        try:
-            conf = context['config']['obs']
-        except:
-            conf = {}
+    plugin_name = 'VideoRecorder'
 
-        if 'Enable' in conf:
-            self.enabled = conf['Enable']
+    def __init__(self, dest_dir=None):
+        super(VideoRecorderPlugin, self).__init__()
 
-        if 'AutoRenameEnable' in conf:
-            self.auto_rename_enabled = conf['AutoRenameEnable']
-
-        if 'ControlOBS' in conf:
-            self.control_obs = conf['ControlOBS']
-
-        if 'Dir' in conf:
-            self.dir = conf['Dir']
-
-        self.refresh_ui()
+    def on_validate_configuration(self, config):
+        assert config['dest_dir'] is not None
+        # assert os.path.exists(config['dest_dir'])
+        assert os.path.exists(config['script_name'])
+        assert config['auto_rename'] in [True, False]
+        assert config['enabled'] in [True, False]
         return True
 
-    def on_config_save_to_context(self, context):
-        context['config']['obs'] = {
-            'Enable': self.enabled,
-            'AutoRenameEnable': self.auto_rename_enabled,
-            'ControlOBS': self.control_obs,
-            'Dir': self.dir,
-        }
+    def on_reset_configuration(self):
+        # self.config['dest_dir'] = 'screeenshots/'
 
-    def on_config_apply(self, context):
-        self.apply_ui()
+        self.config['enabled'] = False
+        self.config['auto_rename'] = False
+        self.config['script_name'] = False
 
-    def on_option_tab_create(self, notebook):
-        self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.panel_name = _('Video Recorder')
-        self.layout = wx.BoxSizer(wx.VERTICAL)
-        self.panel.SetSizer(self.layout)
-        self.checkEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, _('Enable control of video recording applications'))
-        self.checkAutoRenameEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, _('Automatically rename recorded videos'))
-        self.editControlOBS = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
-        self.editDir = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
+    def on_set_configuration(self, config):
+        self.config['enabled'] = config['enabled']
+        self.config['auto_rename'] = config['auto_rename']
+        self.config['script_name'] = config['script_name']
 
-        self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, _('Path to controller scripts (ControlOBS.au3)')))
-        self.layout.Add(self.editControlOBS, flag=wx.EXPAND)
-        self.layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Recordings Folder')))
-        self.layout.Add(self.editDir, flag=wx.EXPAND)
-
-        self.layout.Add(self.checkEnable)
-        self.layout.Add(self.checkAutoRenameEnable)
-
-        self.panel.SetSizer(self.layout)
-
-    # Generate new MP4 filename.
-    #
-    # @param self    The object.
-    # @param context IkaLog context.
-    # @return        File name generated (without directory/path)
-    def create_mp4_filename(self, context):
-        map = IkaUtils.map2text(context['game']['map'], unknown='マップ不明')
-        rule = IkaUtils.rule2text(context['game']['rule'], unknown='ルール不明')
-        won = IkaUtils.getWinLoseText(
-            context['game']['won'], win_text='win', lose_text='lose')
-
-        time_str = time.strftime("%Y%m%d_%H%M", time.localtime())
-        newname = '%s_%s_%s_%s.mp4' % (time_str, map, rule, won)
-
-        return newname
-
-    # RunControlOBS
-    def run_control_obs(self, mode):
+    def run_external_script(self, mode):
         cmd = '%s %s' % (self.control_obs, mode)
         print('Running %s' % cmd)
         try:
@@ -151,71 +79,83 @@ class OBS(object):
         except:
             print(traceback.format_exc())
 
-    # OnLobbyMatched
-    #
-    # @param self    The object.
-    # @param context IkaLog context.
+    """
+    aaa
+    """
+
+    def run_test(self):
+        """
+        Run the specficified script in test mode.
+        """
+        self.run_external_script('test')
+
+    def run_start(self):
+        self.run_external_script('start')
+
+    def run_stop(self):
+        self.run_external_script('stop')
+
+    """
+    Event handlers
+    """
+
     def on_lobby_matched(self, context):
-        if not self.enabled:
+        if not self.config['enabled']:
             return False
 
-        self.run_control_obs('start')
+        self.run_start()
 
-    def worker(self):
-        self.run_control_obs('stop')
-
-    def on_game_individual_result(self, context):
-        if not self.enabled:
-            return False
-
+    def set_basic_variables(self, context):
         # Set Environment variables.
-        map = IkaUtils.map2text(context['game']['map'], unknown='unknown')
-        rule = IkaUtils.rule2text(context['game']['rule'], unknown='unknown')
+        game = context['game']
+        map = game.get('map', 'unknown')
+        rule = game.get('rule', 'unknown')
         won = IkaUtils.getWinLoseText(
-            context['game']['won'], win_text='win', lose_text='lose', unknown_text='unknown')
+            game['won'], win_text='win', lose_text='lose', unknown_text='unknown')
+
+        # Environment variables setup
 
         os.environ['IKALOG_STAGE'] = map
         os.environ['IKALOG_RULE'] = rule
         os.environ['IKALOG_WON'] = won
         #os.environ['IKALOG_TIMESTAMP'] = time.strftime("%Y%m%d_%H%M", context['game']['timestamp'])
 
-        if self.auto_rename_enabled:
-            os.environ['IKALOG_MP4_DESTNAME'] = os.path.join(
-                self.dir,
-                self.create_mp4_filename(context)
-            )
-            os.environ['IKALOG_MP4_DESTDIR'] = os.path.join(
-                self.dir,
-                '', # terminate with delimiter (slash or backslash.)
-            )
+    def on_game_individual_result(self, context):
+        if not self.config['enabled']:
+            return False
+
+        self.set_basic_variables(context)
+
+        # Environment variables setup for auto-renaming
+
+        if self.config['auto_rename']:
+            os.environ['IKALOG_MP4_DESTNAME'] = \
+                os.path.join(self.config['dest_dir'],
+                             create_mp4_filename(context))
+            os.environ['IKALOG_MP4_DESTDIR'] = \
+                os.path.join(self.config['dest_dir'], '')
 
         # Since we want to stop recording asyncnously,
         # This function is called by independent thread.
         # Note the context can be unexpected value.
 
-        thread = threading.Thread(target=self.worker)
+        thread = threading.Thread(target=self.run_stop)
         thread.start()
 
+
+class LegacyOBS(VideoRecorderPlugin):
+
     def __init__(self, control_obs=None, dir=None):
-        self.enabled = (not control_obs is None)
-        self.auto_rename_enabled = (not dir is None)
-        self.control_obs = control_obs
-        self.dir = dir
+        super(LegacyOBS, self).__init__()
 
-if __name__ == "__main__":
-    from datetime import datetime
-    import time
-    context = {
-        'game': {
-            'map': {'name': 'mapname'},
-            'rule': {'name': 'rulename'},
-            'won': True,
-            'timestamp': datetime.now(),
+        conf = {
+            'enabled':  (not control_obs is None),
+            'auto_rename': (dir is not None),
+            'dest_dir': dir,
+            'script_name': control_obs,
         }
-    }
 
-    obs = OBS('P:/IkaLog/tools/ControlOBS.au3', dir='K:/')
+        if conf['enabled']:
+            self.set_configuration(conf)
 
-    obs.on_lobby_matched(context)
-    time.sleep(10)
-    obs.on_game_individual_result(context)
+OBS = LegacyOBS
