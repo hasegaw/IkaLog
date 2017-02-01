@@ -559,6 +559,7 @@ export default class App extends Flux {
           throw new Error('IkaLog error');
         }
         const conf = json.configuration || {};
+        const boyomi = conf.Boyomi || {};
         const csv = conf.CSV || {};
         const json_ = conf.JSON || {};
         const screenshot = conf.Screenshot || {};
@@ -611,7 +612,7 @@ export default class App extends Flux {
           },
           statink: {
             enabled: !!statink.enabled,
-            apikey: String(statink.api_key),
+            apikey: statink.api_key ? String(statink.api_key) : '',
             showResponse: !!statink.show_response,
             trackInklings: !!statink.track_inklings,
             trackSpecialGauge: !!statink.track_special_gauge,
@@ -627,6 +628,11 @@ export default class App extends Flux {
               }
               return false;
             })(),
+          },
+          boyomi: {
+            enabled: !!boyomi.enabled,
+            host: boyomi.host ? String(boyomi.host) : '127.0.0.1',
+            port: ~~boyomi.port || 50001,
           },
         };
 

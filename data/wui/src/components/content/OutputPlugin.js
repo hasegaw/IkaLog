@@ -24,7 +24,7 @@ import { stopEvent } from '../../Utils';
 import File from './outputs/File';
 // import Sns from './outputs/Sns';
 import Statink from './outputs/Statink';
-// import Speech from './outputs/Speech';
+import Speech from './outputs/Speech';
 // import Autoit from './outputs/Autoit';
 // import WebSocket from './outputs/WebSocket';
 
@@ -43,8 +43,8 @@ export default class OutputPlugin extends Component {
         case 'statink':
           return <Statink {...this.props} />;
 
-        //case 'speech':
-        //  return <Speech {...this.props} />;
+        case 'speech':
+          return <Speech {...this.props} />;
 
         //case 'autoit':
         //  return <Autoit {...this.props} />;
@@ -64,7 +64,7 @@ export default class OutputPlugin extends Component {
             <NavItem text='File'       target='file'      {...this.props} />
             {/* <NavItem text='SNS'        target='sns'       {...this.props} /> */}
             <NavItem text='stat.ink'   target='statink'   {...this.props} />
-            {/* <NavItem text='Speech App' target='speech'    {...this.props} /> */}
+            <NavItem text='Speech App' target='speech'    {...this.props} />
             {/* <NavItem text='Recording'  target='autoit'    {...this.props} /> */}
             {/* <NavItem text='WebSocket'  target='websocket' {...this.props} /> */}
           </ul>
