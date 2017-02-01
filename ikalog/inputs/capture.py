@@ -66,7 +66,7 @@ class Capture(IkaLogPlugin):
             input_plugins.append(inputs.DirectShow)
         if IkaUtils.isOSX():
             input_plugins.append(inputs.AVFoundationCapture)
-        input_plugins.append(inputs.CVCapture)
+        # input_plugins.append(inputs.CVCapture)
 
         for plugin_class in input_plugins:
             try:
