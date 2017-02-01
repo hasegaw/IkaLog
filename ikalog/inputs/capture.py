@@ -95,8 +95,11 @@ class Capture(IkaLogPlugin):
     def _activate_input_nolock(self, cls, config):
         try:
             self._source_name = config['source']
+
             capture = cls()
             capture.select_source(name=self._source_name)
+            capture.set_frame_rate(10)
+
             self.capture = capture
             IkaUtils.dprint('%s: new input activated (%s, %s)' %
                             (self, cls, config))
