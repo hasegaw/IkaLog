@@ -138,15 +138,13 @@ class BoyomiPlugin(Commentator, IkaLogPlugin):
         self.config['port'] = config['port']
         self.config['enabled'] = config['enabled']
 
-        modified = False
-        client = self._client
-        if client is not None:
-            host_changed = (client.host != self.config['host'])
-            port_changed = (client.host != self.config['port'])
-            modified = host_changed or port_changed
-
-        if modified:
-            self._client = BoyomiClient(self._host, int(self._port))
+        if not self.config['enabled']:
+            self._client = None
+        else:
+            self._client = BoyomiClient(
+                self.config['host'],
+                self.config['port']
+            )
 
         # FIXME: load custom read
 
