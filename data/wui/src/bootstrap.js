@@ -56,7 +56,7 @@ export function initI18Next(defaultLang) {
           'output-file',
           // 'output-sns',
           'output-statink',
-          // 'output-speech',
+          'output-speech',
           // 'output-autoit',
           // 'output-websocket',
         ],
