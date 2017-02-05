@@ -103,5 +103,15 @@ export function toIkaLogFormat(state) {
     };
   })();
 
+  // boyomi
+  payload.Boyomi = (() => {
+    const conf = plugins.output.boyomi;
+    return {
+      enabled: conf.enabled,
+      host: conf.host,
+      port: conf.port,
+    };
+  })();
+
   return payload;
 }

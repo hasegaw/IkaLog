@@ -42,9 +42,14 @@ export default class Preview extends Component {
 }
 
 class PreviewImage extends Component {
-  render() {
+  componentDidMount() {
     if (!this.props.chrome.preview) {
         this.dispatch('preview:reload', null);
+    }
+  }
+
+  render() {
+    if (!this.props.chrome.preview) {
         return null;
     }
 
