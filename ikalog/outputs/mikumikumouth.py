@@ -29,8 +29,10 @@ import traceback
 import threading
 
 from ikalog.constants import *
+from ikalog.plugin import IkaLogPlugin
 from ikalog.utils import *
-from .commentator import Commentator
+from ikalog.outputs.commentator import Commentator
+
 
 class MikuMikuMouthServer(object):
     ''' みくみくまうすにコマンドを送信するサーバーです
@@ -68,51 +70,87 @@ class MikuMikuMouthServer(object):
         self._loop = False
 
     def _send(self, text):
-        for sock in self._socks:
+        for sock in self._socks.copy():
             if sock is not self._server:
+                close_sock = False
+
                 try:
                     sock.sendall(text.encode('utf-8'))
                 except ConnectionAbortedError:
-                    pass
+                    close_sock = True
+
+                except BrokenPipeError:
+                    close_sock = True
+
+                if close_sock:
+                    self._socks.remove(sock)
+                    sock.close()
 
     def talk(self, data):
         print(json.dumps(data))
         self._send(json.dumps(data))
 
 
-class MikuMikuMouth(Commentator):
+class MikuMikuMouthPlugin(Commentator, IkaLogPlugin):
     '''
     みくみくまうすサーバー
     '''
+
+    plugin_name = 'MikuMikuMouth'
+
+    def __init__(self):
+        self._server = None
+        super(MikuMikuMouthPlugin, self).__init__()
+        super(Commentator, self).__init__()
+
+    def on_validate_configuration(self, config):
+        assert config['enabled'] in [True, False]
+        assert int(config['port']) > 0
+        return True
+
+    def on_reset_configuration(self):
+        self.config['enabled'] = False
+        self.config['host'] = 'localhost'
+        self.config['port'] = 50082
+
+    def on_set_configuration(self, config):
+        self.config['host'] = config['host']
+        self.config['port'] = config['port']
+        self.config['enabled'] = config['enabled']
+
+        if self._server is not None:
+            self._server.close()
+
+        if not self.config['enabled']:
+            self._server = None
+        else:
+            self._server = MikuMikuMouthServer(
+                self.config['host'],
+                self.config['port']
+            )
+            self._server.listen()
+
+    def _do_read(self, message):
+        if self._server is None:
+            return
+
+        message['tag'] = 'white'
+        self._server.talk(message)
+
+    def on_stop(self, context):
+        self._server.close()
+
+
+class LegacyMikuMikuMouth(MikuMikuMouthPlugin):
+
     def __init__(self,
                  host='127.0.0.1',
                  port=50082,
                  dictionary={},
                  dictionary_csv=None,
                  custom_read_csv=None):
-        super(MikuMikuMouth, self).__init__(dictionary, dictionary_csv, custom_read_csv)
-        self._server = MikuMikuMouthServer(host, port)
-        self._server.listen()
-        self._read_event('initialize');
 
-    def config_key(self):
-        return 'mikumikumouth'
+        super(LegacyMikuMikuMouth, self).__init__()
 
-    def set_config(self, config):
-        dictionary = config.get(self.config_key(), {})
-        self._dict = BoyomiDictionary(dictionary)
 
-    def get_config(self, config):
-        mikumikumouth = self._dict.get_config()
-        config[self.config_key()] = mikumikumouth
-        return config
-
-    def _do_read(self, message):
-        if (self._server is None) or (not self._enabled):
-            return
-
-        message["tag"] = "white"
-        self._server.talk(message)
-
-    def on_stop(self, context):
-        self._server.close()
+MikuMikuMouth = LegacyMikuMikuMouth
