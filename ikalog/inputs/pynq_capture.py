@@ -97,7 +97,7 @@ class PynqCapture(VideoInput):
                 (self.hdmi_in.frame_width(), self.hdmi_in.frame_height())
 
             self.framebuffer = []
-            for i in range(video.VDMA_DICT['NUM_FSTORES']):
+            for i in range(self.hdmi_in.frame_list.max_frames()):
                 pointer = self.ffi.cast('uint8_t *', self.hdmi_in.frame_addr(i))
                 #buffer_size = video.MAX_FRAME_WIDTH * video.MAX_FRAME_HEIGHT * 3 # 3 == sizeof(RGB)
                 buffer_size = self.hdmi_in_geom[0] * self.hdmi_in_geom[1] * 3
