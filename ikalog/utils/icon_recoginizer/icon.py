@@ -144,17 +144,111 @@ class IconRecoginizer(object):
         self.model = cv2.ml.KNearest_create()
         self.trained = False
 
+    def pca_backproject_test(self, img):
+        """
+        Project, then backproject the image to test PCA ability.
+        """
+        if self._pca_dim is None:
+            return img
+
+        # Project
+        features = np.array(self.extract_features(
+            img), dtype=np.float32).reshape((1, -1))
+        features = cv2.PCAProject(
+            data=features,
+            mean=self._pca_mean,
+            eigenvectors=self._pca_eigenvectors,
+        )
+        features = np.array(features, dtype=np.float32).reshape((1, -1))
+
+        # BackProject
+        back_projected = cv2.PCABackProject(
+            data=features,
+            mean=self._pca_mean,
+            eigenvectors=self._pca_eigenvectors,
+        )
+
+        return np.array(back_projected, dtype=np.uint8).reshape(img.shape)
+
+    def offset_image(self, img, ox, oy):
+        sx1 = max(-ox, 0)
+        sy1 = max(-oy, 0)
+
+        dx1 = max(ox, 0)
+        dy1 = max(oy, 0)
+
+        out_height, out_width = img.shape[0:2]
+
+        w = min(out_width - dx1, out_width - sx1)
+        h = min(out_height - dy1, out_height - sy1)
+
+        new_frame = np.zeros((out_height, out_width, 3), np.uint8)
+        new_frame[dy1:dy1 + h, dx1:dx1 + w] = img[sy1:sy1 + h, sx1:sx1 + w]
+        return new_frame
+
+    def predict_list(self, img_list, by_name=True):
+        """
+        Predict list of images.
+        """
+        X = None
+        n = 0
+        for img in img_list:
+            features = np.array(self.extract_features(
+                img), dtype=np.float32).reshape((1, -1))
+
+            if self._pca_dim is not None:
+                features = cv2.PCAProject(
+                    data=features,
+                    mean=self._pca_mean,
+                    eigenvectors=self._pca_eigenvectors,
+                )
+                features = np.array(
+                    features, dtype=np.float32).reshape((1, -1))
+
+            if X is None:
+                X = np.zeros(
+                    (len(img_list), features.shape[1]), dtype=np.float32)
+            X[n, :] = features
+            n = n + 1
+
+        retval, results, neigh_resp, dists = \
+            self.model.findNearest(X, self._k)
+
+        responses_int = np.array(results, dtype=np.int)
+        if by_name:
+            keys = list(
+                map(lambda response: self.id2name(response), responses_int))
+            return keys, dists
+
+        return responses_int, dists
+
+    def predict_slide(self, img):
+        """
+        Predict a image. Try finding the best fit by offsetting the image.
+        """
+        x_val_list = [-2, -1, 0, 1, 2]
+        y_val_list = [-2, -1, 0, 1, 2]
+
+        img_list = []
+        for x in x_val_list:
+            for y in x_val_list:
+                img_list.append(self.offset_image(img, x, y))
+
+        responses, dists = self.predict_list(img_list)
+        dists2 = np.amin(dists, axis=1)
+        best_index = np.argmin(np.array(dists2))
+        return responses[best_index], dists[best_index]
+
     def predict(self, img):
+        """
+        Predict a image.
+        """
+
         if not self.trained:
             return None, None
 
-        features = np.array(self.extract_features(img), dtype=np.float32)
-        retval, results, neigh_resp, dists = \
-            self.model.findNearest(features.reshape((1, -1)), self._k)
-
-        id = int(results.ravel())
-        name = self.id2name(id)
-        return name, dists[0][0]
+        keys, dists = self.predict_list([img])
+        return keys[0], dists[0]
 
     def add_sample1(self, name, features):
         id = self.name2id(name)
@@ -174,6 +268,25 @@ class IconRecoginizer(object):
             print('Group %s' % group['name'])
             for sample in group['learn_samples']:
                 self.add_sample1(group['name'], sample['features'])
+
+        if self._pca_dim is not None:
+            print('Applying PCA....')
+            self._pca_mean, self._pca_eigenvectors = cv2.PCACompute(
+                data=self.samples,
+                mean=None,
+                maxComponents=self._pca_dim,
+            )
+
+            self.samples = cv2.PCAProject(
+                data=self.samples,
+                mean=self._pca_mean,
+                eigenvectors=self._pca_eigenvectors,
+            )
+
+            # assert self._samples.shape[0] == self.responses.shape[0]
+            assert self.samples.shape[1] == self._pca_dim
+            print('PCA Done')
+            print(self.samples.shape)
 
     def knn_train(self):
         # 終わったら
@@ -209,7 +322,7 @@ class IconRecoginizer(object):
 #                        return
 
         # とりあえず最初のいくつかを学習
-        for sample in group_info['images'][1:100]:
+        for sample in group_info['images'][0:100]:
             group_info['learn_samples'].append(sample)
 
         print('  読み込み画像数', len(group_info['images']))
@@ -256,7 +369,14 @@ class IconRecoginizer(object):
 
     def save_model_to_file(self, file):
         f = open(file, 'wb')
-        pickle.dump([self.samples, self.responses, self.icon_names], f)
+        pickle.dump([
+            self.samples,
+            self.responses,
+            self.icon_names,
+            self._pca_dim,
+            self._pca_mean,
+            self._pca_eigenvectors,
+        ], f)
         f.close()
 
     def load_model_from_file(self, file):
@@ -266,9 +386,18 @@ class IconRecoginizer(object):
         self.samples = l[0]
         self.responses = l[1]
         self.icon_names = l[2]
+        if len(l) >= 6:
+            self._pca_dim = l[3]
+            self._pca_mean = l[4]
+            self._pca_eigenvectors = l[5]
+        else:
+            self._pca_dim = None
 
-    def __init__(self, k=3):
+    def __init__(self, k=3, pca_dim=None):
         self.icon_names = []
         self.knn_reset()
         self.groups = []
         self._k = k
+        self._pca_dim = pca_dim
+        self._pca_mean = None
+        self._pca_eigenvectors = None

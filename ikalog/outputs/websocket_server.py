@@ -24,6 +24,8 @@ import sys
 import threading
 import time
 
+from ikalog import constants
+
 # Needed in GUI mode
 try:
     import wx
@@ -264,11 +266,35 @@ class WebSocketServer(object):
 
     # Inkpolis events
 
-    def on_inkopolis_lottery_done(self, context):
+    def on_spike_reroll_done(self, context):
+        # find local name
+        gear_names = {}
+        for d in [constants.gear_headgear, constants.gear_clothing, constants.gear_shoes]:
+            for key in d.keys():
+                gear_names[key] = d[key]
+
         self._send_message({
-            'event': 'on_inkopolis_lottery',
-            'gear_brand': context['game']['downie']['brand'],
-            'gear_level': context['game']['downie']['level'],
+            'event': 'on_spike_reroll_done',
+            'key': context['game']['downie']['key'],
+            'name': gear_names.get(context['game']['downie']['key'], None),
+            'brand': context['game']['downie']['brand'],
+            'level': context['game']['downie']['level'],
+            'sub_abilities': context['game']['downie']['sub_abilities'],
+        })
+
+    def on_spike_unlock_done(self, context):
+        # find local name
+        gear_names = {}
+        for d in [constants.gear_headgear, constants.gear_clothing, constants.gear_shoes]:
+            for key in d.keys():
+                gear_names[key] = d[key]
+
+        self._send_message({
+            'event': 'on_spike_unlock',
+            'key': context['game']['downie']['key'],
+            'name': gear_names.get(context['game']['downie']['key'], None),
+            'brand': context['game']['downie']['brand'],
+            'level': context['game']['downie']['level'],
             'sub_abilities': context['game']['downie']['sub_abilities'],
         })
 

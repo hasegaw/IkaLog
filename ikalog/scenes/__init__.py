@@ -41,8 +41,11 @@ from .result_udemae import ResultUdemae
 from .result_gears import ResultGears
 from .result_festa import ResultFesta
 
+from .gear_select import GearSelect
 from .lobby import Lobby
 from .plaza_user_stat import PlazaUserStat
 
-from .downie import Downie
+from .spike.reroll import SpikeReroll
+from .spike.unlock import SpikeUnlock
+
 from .blank import Blank

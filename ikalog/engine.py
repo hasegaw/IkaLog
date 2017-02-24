@@ -466,8 +466,11 @@ class IkaEngine:
             scenes.ResultGears(self),
             scenes.ResultFesta(self),
 
+            scenes.GearSelect(self),
             scenes.Lobby(self),
-            # scenes.Downie(self),
+
+            scenes.SpikeReroll(self),
+            scenes.SpikeUnlock(self),
 
             scenes.Blank(self),
         ]

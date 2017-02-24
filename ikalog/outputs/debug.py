@@ -22,6 +22,7 @@ import sys
 import time
 
 from ikalog.utils import *
+from ikalog import constants
 
 
 # IkaLog Output Plugin: Write debug logs.
@@ -225,10 +226,36 @@ class DebugLog(object):
     def on_game_lost_sync(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    # Inkopolis
+    # Spike events
 
-    def on_inkopolis_lottery_done(self, context):
-        s = "\n  brand: %s\n  level: %d\n  new sub abilities: %s" % (
+    def on_spike_reroll_done(self, context):
+        # find local name
+        gear_names = {}
+        for d in [constants.gear_headgear, constants.gear_clothing, constants.gear_shoes]:
+            for key in d.keys():
+                gear_names[key] = d[key]
+
+        s = "\n  type: %s\n  key: %s(%s)\n  brand: %s\n  level: %d\n  new sub abilities: %s" % (
+            context['game']['downie']['type'],
+            context['game']['downie']['key'],
+            gear_names.get(context['game']['downie']['key'], '(NULL)'),
+            context['game']['downie']['brand'],
+            context['game']['downie']['level'],
+            context['game']['downie']['sub_abilities']
+        )
+        self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
+
+    def on_spike_unlock_done(self, context):
+        # find local name
+        gear_names = {}
+        for d in [constants.gear_headgear, constants.gear_clothing, constants.gear_shoes]:
+            for key in d.keys():
+                gear_names[key] = d[key]
+
+        s = "\n  type: %s\n  key: %s(%s)\n  brand: %s\n  level: %d\n  new sub abilities: %s" % (
+            context['game']['downie']['type'],
+            context['game']['downie']['key'],
+            gear_names.get(context['game']['downie']['key'], '(NULL)'),
             context['game']['downie']['brand'],
             context['game']['downie']['level'],
             context['game']['downie']['sub_abilities']
@@ -246,6 +273,10 @@ class DebugLog(object):
 
     def on_output_statink_submission_dryrun(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_gear_select(self, context, params={}):
+        self.write_debug_log(sys._getframe().f_code.co_name, context, text=params)
+
 
     # UI support
 

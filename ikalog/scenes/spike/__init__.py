@@ -17,8 +17,3 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-
-from ikalog.utils.icon_recoginizer.icon import IconRecoginizer
-from ikalog.utils.icon_recoginizer.weapon import WeaponRecoginizer
-from ikalog.utils.icon_recoginizer.gear import GearRecoginizer
-from ikalog.utils.icon_recoginizer.gearpower import GearPowerRecoginizer
