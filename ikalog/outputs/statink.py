@@ -791,6 +791,12 @@ class StatInk(object):
     def on_game_killed(self, context, params):
         self._add_event(context, {'type': 'killed'})
 
+    def on_game_chained_kill_combo(self, context):
+        self._add_event(context, {
+            'type': 'chained_kill_combo',
+            'combo': context['game'].get('kill_combo', 1),
+        })
+
     def on_game_dead(self, context):
         self.last_dead_event = {'type': 'dead'}
         self._add_event(context, self.last_dead_event, time_delta=-2.0)
