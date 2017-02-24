@@ -56,6 +56,8 @@ def get_args():
                         default=False)
     parser.add_argument('--time', '-t', dest='time', type=str)
     parser.add_argument('--time_msec', dest='time_msec', type=int)
+    parser.add_argument('--epoch_time', dest='epoch_time', type=str,
+                        help='In the format like 20150528_235900 or "now".')
     parser.add_argument('--video_id', dest='video_id', type=str)
     parser.add_argument('--keep_alive', action='store_true', default=False,
                         help='Do not exit on EOFError with no next inputs.')
@@ -86,6 +88,7 @@ if __name__ == "__main__":
                        keep_alive=args.get('keep_alive'))
     engine.pause(False)
     engine.set_capture(capture)
+    engine.set_epoch_time(args['epoch_time'])
 
     engine.set_plugins(output_plugins)
     for op in output_plugins:

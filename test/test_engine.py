@@ -82,6 +82,28 @@ class TestEngine(unittest.TestCase):
         self.assertNotEqual(context['game']['kills'],
                             engine.context['game']['kills'])
 
+    def test_set_epoch_time(self):
+        engine = ikalog.engine.IkaEngine()
+        engine.reset()
+        context = engine.context
+
+        # None is the default as the current time.
+        self.assertIsNone(context['engine']['epoch_time'])
+
+        IKA_EPOCH = time.mktime(time.strptime('20150528_123456',
+                                              '%Y%m%d_%H%M%S'))
+        engine.set_epoch_time('20150528_123456')
+        self.assertEqual(IKA_EPOCH, context['engine']['epoch_time'])
+
+        # '' or None does not change the current value.
+        engine.set_epoch_time('')
+        self.assertEqual(IKA_EPOCH, context['engine']['epoch_time'])
+        engine.set_epoch_time(None)
+        self.assertEqual(IKA_EPOCH, context['engine']['epoch_time'])
+
+        # None is the default as the current time.
+        engine.set_epoch_time('now')
+        self.assertIsNone(context['engine']['epoch_time'])
 
 if __name__ == '__main__':
     unittest.main()
