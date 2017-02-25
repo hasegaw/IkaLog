@@ -25,8 +25,10 @@ import traceback
 
 import cv2
 import numpy as np
+from pynq import PL
 from pynq.drivers import video
 from pynq.drivers.video import HDMI
+from pynq.mmio import MMIO
 from cffi import FFI
 
 from ikalog.utils import *
@@ -80,12 +82,32 @@ class PynqCapture(VideoInput):
         try:
             self.ffi = FFI()
             self.hdmi_in = HDMI('in', init_timeout=10)
+            time.sleep(1)
+
+            source_height = self.hdmi_in.frame_height()  # :S
+
             self.hdmi_in.start()
+            self._stride = 1920
+
+            if (self._vdma_reg.read(0xa8) == 1280 * 3):
+                # This should work with the commit:
+                # https://github.com/gleentea/PYNQ/commit/55d3c7de3e89618ec089973dcb66ff6da68a1ab0
+                self._stride = 1280
+
+            # elif abs(720 - source_height) < 3:
+            #    print('modify stride for 720p')
+            #    self._vdma_reg.write(0xa8, 1280 * 3)
+            #    self._vdma_reg.write(0xa4, 1280 * 3)
+            #    self._stride = 1280
+
+            self.hdmi_in_geom = \
+                (self.hdmi_in.frame_width(), self.hdmi_in.frame_height())
 
             # TODO: under development
             if False and self._enable_output:
                 self.hdmi_out = HDMI('out', frame_list=self.hdmi_in.frame_list)
-                mode = self._select_output_mode(self.hdmi_in.frame_width(), self.hdmi_in.frame_height())
+                mode = self._select_output_mode(
+                    self.hdmi_in.frame_width(), self.hdmi_in.frame_height())
                 self.hdmi_out.mode(mode)
 
             time.sleep(1)
@@ -93,20 +115,21 @@ class PynqCapture(VideoInput):
             if self.hdmi_out is not None:
                 self.hdmi_out.start()
 
-            self.hdmi_in_geom = \
-                (self.hdmi_in.frame_width(), self.hdmi_in.frame_height())
-
             self.framebuffer = []
             for i in range(self.hdmi_in.frame_list.max_frames()):
-                pointer = self.ffi.cast('uint8_t *', self.hdmi_in.frame_addr(i))
-                #buffer_size = video.MAX_FRAME_WIDTH * video.MAX_FRAME_HEIGHT * 3 # 3 == sizeof(RGB)
+                pointer = self.ffi.cast(
+                    'uint8_t *', self.hdmi_in.frame_addr(i))
+                # buffer_size = video.MAX_FRAME_WIDTH * video.MAX_FRAME_HEIGHT
+                # * 3 # 3 == sizeof(RGB)
                 buffer_size = self.hdmi_in_geom[0] * self.hdmi_in_geom[1] * 3
                 _bf = self.ffi.buffer(pointer, buffer_size)
-                bf = np.frombuffer(_bf,np.uint8).reshape(self.hdmi_in_geom[1],self.hdmi_in_geom[0],3)
-                #self.framebuffer.append(bf[:self.hdmi_in_geom[1],:self.hdmi_in_geom[0],:])
+                bf = np.frombuffer(_bf, np.uint8).reshape(
+                    self.hdmi_in_geom[1], self.hdmi_in_geom[0], 3)
+                # self.framebuffer.append(bf[:self.hdmi_in_geom[1],:self.hdmi_in_geom[0],:])
                 self.framebuffer.append(bf)
 
-            IkaUtils.dprint('%s: resolution %dx%d' % (self, self.hdmi_in_geom[0], self.hdmi_in_geom[1]))
+            IkaUtils.dprint('%s: resolution %dx%d, stride %d' %
+                            (self, self.hdmi_in_geom[0], self.hdmi_in_geom[1], self._vdma_reg.read(0xa8)))
 
         except:
             print(traceback.format_exc())
@@ -143,20 +166,41 @@ class PynqCapture(VideoInput):
     # override
     def _read_frame_func(self):
         t1 = time.time()
-        if self._mode == 1 and hasattr(self.hdmi_in, 'frame_raw2'):
-            # Modified version of PYNQ library has faster capture function.
-            frame = self.hdmi_in.frame_raw2()
-        elif self._mode == 2:
+
+        frame = None
+
+        if self._mode == 2:
             index = self.hdmi_in.frame_index()
             self.hdmi_in.frame_index_next()
             frame = self.framebuffer[index]
         else:
-            # This function is supported in original version, but 10X slow.
             frame_raw = self.hdmi_in.frame_raw()
-            frame = np.frombuffer(frame_raw, dtype=np.uint8)
-            frame = frame.reshape(1080, 1920, 3)
-            frame = frame[0:720, 0:1280, :]
+
+            stride_720p = self._stride == 1280
+            source_720p = abs(self.hdmi_in_geom[1] - 720) < 3  # :S
+            if self._debug:
+                print(stride_720p, source_720p)
+
+            if ((not stride_720p) and (not source_720p)):
+                # 1080p video in 1080p format
+                frame = np.frombuffer(frame_raw, dtype=np.uint8)
+                frame = frame.reshape((1080, 1920, 3))
+                frame = cv2.resize(frame, (1280, 720))
+
+            elif ((not stride_720p) and source_720p):
+                # 720p video in 1080p format
+                frame = np.frombuffer(frame_raw, dtype=np.uint8)
+                frame = frame.reshape((1080, 1920, 3))
+                frame = frame[0:720, 0:1280, :]
+
+            elif (stride_720p and source_720p):
+                # 720p video in 720p format
+                frame = np.frombuffer(
+                    frame_raw, dtype=np.uint8, count=1280 * 720 * 3)
+                frame = frame[:1280 * 720 * 3].reshape((720, 1280, 3))
+
         t2 = time.time()
+
         if self._debug:
             print('read_frame_func: %6.6f' % (t2 - t1))
         return frame
@@ -172,7 +216,8 @@ class PynqCapture(VideoInput):
             return 3
         if width == 1920 and height == 1080:
             return 4
-        raise Exception("Specific output frame size not supported: %dx%d"%(width,height))
+        raise Exception(
+            "Specific output frame size not supported: %dx%d" % (width, height))
 
     def __init__(self, enable_output=False, debug=False, mode=2):
         self.hdmi_in = None
@@ -183,6 +228,10 @@ class PynqCapture(VideoInput):
         self._debug = debug
         self._mode = mode
 
+        vdma_name = 'SEG_axi_vdma_0_Reg'
+        vdma_baseaddr = PL.ip_dict[vdma_name][0]
+        self._vdma_reg = MMIO(vdma_baseaddr, 0xFF)
+
         IkaUtils.dprint(
             '%s: debug %s enable_output %s mode %s' %
             (self, self._debug, self._enable_output, self._mode))
@@ -191,7 +240,7 @@ class PynqCapture(VideoInput):
 
 if __name__ == "__main__":
     from PIL import Image
-    obj = PynqCapture(debug=True,enable_output=False)
+    obj = PynqCapture(debug=True, enable_output=False, mode=0)
     obj.select_source(0)
     time.sleep(1)
 
@@ -199,5 +248,6 @@ if __name__ == "__main__":
     t = time.time()
     while (time.time() - t) < 100:
         frame = obj.read_frame()
-        Image.frombytes("RGB",(frame.shape[1],frame.shape[0]),bytes(frame[:,:,::-1])).save("dump/test_%d.jpg"%k)
-        k = k+1
+        Image.frombytes("RGB", (frame.shape[1], frame.shape[0]), bytes(
+            frame[:, :, ::-1])).save("dump/test_%d.jpg" % k)
+        k = k + 1
