@@ -18,6 +18,8 @@
 #  limitations under the License.
 #
 
+import time
+import datetime
 import json
 import traceback
 import uuid
@@ -71,6 +73,10 @@ def _set_values(fields, dest, src):
             'str_lower': lambda x: str(x[f_ikalog]).lower(),
         }
         dest[f_statink] = func[f_type](src)
+
+
+def _validate_time(t):
+    return time.mktime(datetime.date(2014, 1, 1).timetuple()) <= t
 
 
 class StatInkCompositor(object):
@@ -385,9 +391,10 @@ class StatInkCompositor(object):
             'uuid': uuid.uuid1().hex,
         }
 
-        if context['game'].get('start_time'):
+        if _validate_time(context['game'].get('start_time', 0)):
             payload['start_at'] = int(context['game']['start_time'])
-        if context['game'].get('end_time'):
+
+        if _validate_time(context['game'].get('end_time', 0)):
             payload['end_at'] = int(context['game']['end_time'])
 
         self.composite_lobby(context, payload)
@@ -404,7 +411,8 @@ class StatInkCompositor(object):
 
         # Video URL
         if isinstance(self._parent.video_id, str) and (self._parent.video_id != ''):
-            payload['link_url'] = 'https://www.youtube.com/watch?v=%s' % self._parent.video_id
+            payload['link_url'] = \
+                'https://www.youtube.com/watch?v=%s' % self._parent.video_id
 
         # In-game events (timeline)
         if len(self._parent.events) > 0:
@@ -415,7 +423,6 @@ class StatInkCompositor(object):
         self.composite_agent_information(context, payload)
         payload['agent_variables'] = self.composite_agent_variables(context)
         payload['agent_custom'] = self.composite_agent_custom(context)
-
 
         _remove_none_keyvalues(payload)
 

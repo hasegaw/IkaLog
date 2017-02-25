@@ -220,3 +220,16 @@ class TestStatInk(unittest.TestCase):
         assert not ('image_result' in payload)
         assert not ('image_judge' in payload)
         assert not ('image_gears' in payload)
+
+    def _test_validate_time(self, t, expected_result):
+        import time
+        from ikalog.outputs.statink.compositor import _validate_time
+
+        assert _validate_time(time.mktime(t.timetuple())) == expected_result
+
+    def test_validate_time(self):
+        import datetime
+
+        self._test_validate_time(datetime.date(2013, 12, 31), False)
+        self._test_validate_time(datetime.date(2014, 1, 1), True)
+        self._test_validate_time(datetime.date(2017, 3, 3), True)
