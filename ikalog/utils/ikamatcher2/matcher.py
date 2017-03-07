@@ -27,7 +27,7 @@ from ikalog.utils.find_image_file import find_image_file
 from ikalog.utils.ikautils import IkaUtils
 from ikalog.utils.image_filters.filters import *
 
-default_kernel = None # Overrided by load_kernel()
+default_kernel = None  # Overrided by load_kernel()
 
 
 class IkaMatcher2(object):
@@ -61,7 +61,7 @@ class IkaMatcher2(object):
             img_gray = None
             img_bgr = img
 
-        return { 'bgr': img_bgr, 'gray': img_gray, 'bg': None, 'fg': None }
+        return {'bgr': img_bgr, 'gray': img_gray, 'bg': None, 'fg': None}
 
     def match(self, img, debug=None):
         matched, fg_score, bg_score = self.match_score(img, debug)
@@ -84,18 +84,23 @@ class IkaMatcher2(object):
 
         # Phase 2: Background check
         try:
-            if img_obj['bg'] is None:
-                if self._bg_method.want_grayscale_image and (img_obj['gray'] is None):
-                    self.generate_grayscale_image(img_obj)
+            if self._orig_threshold is None:
+                bg_ratio = 0.0
+                bg_matched = True
+            else:
+                if img_obj['bg'] is None:
+                    if self._bg_method.want_grayscale_image and (img_obj['gray'] is None):
+                        self.generate_grayscale_image(img_obj)
 
-                img_bg = 255 - \
-                    self._bg_method(img_bgr=img_obj['bgr'], img_gray=img_obj['gray'])
-                img_obj['bg'] = self._kernel.encode(img_bg)
-            bg_pixels = self._kernel.logical_and_popcnt(img_obj['bg'])
+                    img_bg = 255 - \
+                        self._bg_method(
+                            img_bgr=img_obj['bgr'], img_gray=img_obj['gray'])
+                    img_obj['bg'] = self._kernel.encode(img_bg)
+                bg_pixels = self._kernel.logical_and_popcnt(img_obj['bg'])
 
-            # fixme: zero division
-            bg_ratio = bg_pixels / (self._width * self._height)
-            bg_matched = (bg_ratio <= self._orig_threshold)
+                # fixme: zero division
+                bg_ratio = bg_pixels / (self._width * self._height)
+                bg_matched = (bg_ratio <= self._orig_threshold)
         except:
             IkaUtils.dprint('%s (%s): bg_method %s caused a exception.' % (
                 self, self._label, self._bg_method.__class__.__name__))
@@ -103,17 +108,22 @@ class IkaMatcher2(object):
 
         # Phase 3: Foreground check
         if bg_matched:
-            if img_obj['fg'] is None:
-                if self._fg_method.want_grayscale_image and (img_obj['gray'] is None):
-                    self.generate_grayscale_image(img_obj)
+            if self._threshold is None:
+                fg_ratio = 1.0
+                fg_matched = True
+            else:
+                if img_obj['fg'] is None:
+                    if self._fg_method.want_grayscale_image and (img_obj['gray'] is None):
+                        self.generate_grayscale_image(img_obj)
 
-                img_fg = self._fg_method(img_bgr=img_obj['bgr'], img_gray=img_obj['gray'])
-                img_obj['fg'] = self._kernel.encode(img_fg)
-            fg_pixels = self._kernel.logical_or_popcnt(img_obj['fg'])
+                    img_fg = self._fg_method(
+                        img_bgr=img_obj['bgr'], img_gray=img_obj['gray'])
+                    img_obj['fg'] = self._kernel.encode(img_fg)
+                fg_pixels = self._kernel.logical_or_popcnt(img_obj['fg'])
 
-            # fixme: zero division
-            fg_ratio = fg_pixels / (self._width * self._height)
-            fg_matched = (fg_ratio > self._threshold)
+                # fixme: zero division
+                fg_ratio = fg_pixels / (self._width * self._height)
+                fg_matched = (fg_ratio > self._threshold)
 
         if debug:
             label = self._label
@@ -182,6 +192,7 @@ class IkaMatcher2(object):
 
 
 class MultiClassIkaMatcher2(object):
+
     def __init__(self):
         self._masks = []
 
@@ -200,14 +211,15 @@ class MultiClassIkaMatcher2(object):
 
         results = []
         for mask in self._masks:
-            fg_matched, fg_ratio, bg_ratio = mask.match_score_internal(img_obj, debug)
+            fg_matched, fg_ratio, bg_ratio = mask.match_score_internal(
+                img_obj, debug)
             if fg_matched:
                 results.append([fg_ratio, mask])
 
         if len(results) == 0:
             return 0.0, None
 
-        best = sorted(results, key=lambda x:-x[0])[0]
+        best = sorted(results, key=lambda x: -x[0])[0]
         return best
 
 
@@ -226,7 +238,8 @@ def load_kernel():
         from ikalog.utils.ikamatcher2.reference import Numpy_uint8_fast
         default_kernel = Numpy_uint8_fast
 
-    IkaUtils.dprint('%s: using kernel %s' % (IkaMatcher2, default_kernel.__name__))
+    IkaUtils.dprint('%s: using kernel %s' %
+                    (IkaMatcher2, default_kernel.__name__))
 
 
 load_kernel()
