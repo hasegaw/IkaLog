@@ -28,7 +28,7 @@ from .game.superjump import V2GameSuperJump as GameSuperJump
 from .game.kill import V2GameKill as GameKill
 
 from .result.judge import V2ResultJudge as ResultJudge
-from .result.scoreboard.scoreboard import V2ResultScoreboard as ResultScoreboard
+from .result.scoreboard.simple import ResultScoreboard as ResultScoreboard
 
 def initialize_scenes(engine):
     import ikalog.scenes as scenes
