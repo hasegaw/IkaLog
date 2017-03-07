@@ -76,6 +76,8 @@ def _set_values(fields, dest, src):
 
 
 def _validate_time(t):
+    if t is None:
+        return True
     return time.mktime(datetime.date(2014, 1, 1).timetuple()) <= t
 
 
@@ -238,7 +240,7 @@ class StatInkCompositor(object):
         if weapon:
             payload['weapon'] = weapon
 
-        if context['game']['is_fes']:
+        if context['game'].get('is_fes'):
             payload['gender'] = me['gender_en']
             payload['fest_title'] = str(me['prefix_en']).lower()
 
@@ -321,10 +323,11 @@ class StatInkCompositor(object):
                     '%s: Failed in ResultGears payload. Fix me...' % self)
                 IkaUtils.dprint(traceback.format_exc())
 
+        result_gears = context.get('scenes', {}).get('result_gears', {})
         _set_values(
             [  # 'type', 'stat.ink Field', 'IkaLog Field'
                 ['int', 'cash_after', 'cash'],
-            ], payload, context['scenes']['result_gears'])
+            ], payload, result_gears)
 
     def composite_result_udemae(self, context, payload):
         if payload.get('rule') == 'nawabari':
@@ -391,11 +394,18 @@ class StatInkCompositor(object):
             'uuid': uuid.uuid1().hex,
         }
 
-        if _validate_time(context['game'].get('start_time', 0)):
-            payload['start_at'] = int(context['game']['start_time'])
+        game = context['game']
+        if ('start_time' in game) and _validate_time(game.get('start_time')):
+            try:
+                payload['start_at'] = int(context['game']['start_time'])
+            except:
+                pass
 
-        if _validate_time(context['game'].get('end_time', 0)):
-            payload['end_at'] = int(context['game']['end_time'])
+        if ('end_time' in game) and _validate_time(game.get('end_time')):
+            try:
+                payload['end_at'] = int(context['game']['end_time'])
+            except:
+                pass
 
         self.composite_lobby(context, payload)
         self.composite_stage_and_mode(context, payload)
