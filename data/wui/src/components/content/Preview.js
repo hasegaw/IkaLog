@@ -43,14 +43,25 @@ export default class Preview extends Component {
 
 class PreviewImage extends Component {
   componentDidMount() {
-    if (!this.props.chrome.preview) {
+    if (this.props.chrome.preview !== true) {
+      if (this.props.chrome.preview !== false) {
+        this.dispatch('preview:connect', null);
+      } else {
         this.dispatch('preview:reload', null);
+      }
     }
   }
 
+  componentWillUnmount() {
+    this.dispatch('preview:disconnect', null);
+  }
+
   render() {
-    if (!this.props.chrome.preview) {
-        return null;
+    if (this.props.chrome.preview === null) {
+      return <Loading {...this.props} />;
+    }
+    if (this.props.chrome.preview === false) {
+      return <FatalError {...this.props} />;
     }
 
     const style = {
@@ -58,9 +69,8 @@ class PreviewImage extends Component {
       height: "auto",
     };
 
-    const url = '/api/v1/engine/preview?_=' + encodeURIComponent(this.props.chrome.preview);
     return (
-      <img src={url} style={style} />
+      <img src={this.props.chrome.previewStream.src} style={style} />
     );
   }
 }
@@ -111,5 +121,36 @@ class ReloadButton extends Component {
 
   _onClick() {
     this.dispatch('preview:reload', null);
+  }
+}
+
+
+class Loading extends Component {
+  render() {
+    const outerStyle = {
+      textAlign: "center",
+    };
+    return (
+      <p style={outerStyle}>
+        <span className="fa fa-spinner fa-pulse fa-3x fa-fw"></span>
+        <span className="sr-only">Loading...</span>
+      </p>
+    );
+  }
+}
+
+class FatalError extends Component {
+  render() {
+    const outerStyle = {
+      textAlign: "center",
+    };
+    return (
+      <p style={outerStyle}>
+        <span className="fa fa-frown-o fa-3x fa-fw" style={iconStyle}></span><br />
+        <span style={textStyle}>
+          Error.
+        </span>
+      </p>
+    );
   }
 }

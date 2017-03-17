@@ -67,7 +67,7 @@ export default class App extends Flux {
     this.on(':saveConfig', () => {
       this.update(state => {
         state.tasks.apply = 'progress';
-        
+
         const postConf = {
           url: endpoints.setConfig,
           contentType: 'application/json; charset=UTF-8',
@@ -181,7 +181,7 @@ export default class App extends Flux {
         return state;
       });
     });
-    
+
     // input / ファイル入力のでインタレース指定 ON/OFF
     this.on('input:changeFileDeinterlace', newState => {
       if (newState !== true && newState !== false) {
@@ -269,12 +269,53 @@ export default class App extends Flux {
       });
     });
 
+    // プレビュー接続要求
+    const previewConnect = state => {
+      const timeCode = Date.now();
+      const image = new Image();
+      image.src = `${endpoints.previewStream}?_=${timeCode}`;
+      image.onload = event => {
+        console.log('IkaLog Preview: Loaded')
+        this.update(state => {
+          state.chrome.preview = true;
+          return state;
+        });
+      };
+      image.onerror = event => {
+        console.log('IkaLog Preview: Error')
+        this.update(state => {
+          state.chrome.preview = false;
+          return state;
+        });
+      };
+      console.log('IkaLog Preview: Connecting...')
+      state.chrome.previewStream = image;
+      return state;
+    };
+    this.on('preview:connect', dummy => {
+      this.update(previewConnect);
+    });
+
+    // プレビュー切断要求
+    const previewDisconnect = state => {
+      if (state.chrome.previewStream) {
+        state.chrome.previewStream.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        state.chrome.previewStream.onload = () => {};
+        state.chrome.previewStream.onerror = () => {};
+      }
+      state.chrome.previewStream = null;
+      state.chrome.preview = null;
+      console.log('IkaLog Preview: Disconnect');
+      return state;
+    };
+    this.on('preview:disconnect', dummy => {
+      this.update(previewDisconnect);
+    });
+
     // プレビュー更新要求
     this.on('preview:reload', dummy => {
-      this.update(state => {
-        state.chrome.preview = Date.now();
-        return state;
-      });
+      this.update(previewDisconnect);
+      this.update(previewConnect);
     });
 
     // CSV 設定変更

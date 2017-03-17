@@ -50,6 +50,7 @@ const app = new App({
       content: 'preview',
       pluginTab: 'file',
       preview: null,
+      previewStream: null,
       lock: false, // true if communicating
       fatalError: false,
     },
