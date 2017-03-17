@@ -562,6 +562,7 @@ export default class App extends Flux {
         const boyomi = conf.Boyomi || {};
         const csv = conf.CSV || {};
         const json_ = conf.JSON || {};
+        const mikumikumouth = conf.MikuMikuMouth || {};
         const screenshot = conf.Screenshot || {};
         const statink = conf.StatInk || {};
 
@@ -633,6 +634,11 @@ export default class App extends Flux {
             enabled: !!boyomi.enabled,
             host: boyomi.host ? String(boyomi.host) : '127.0.0.1',
             port: ~~boyomi.port || 50001,
+          },
+          mikumikumouth: {
+            enabled: !!mikumikumouth.enabled,
+            host: mikumikumouth.host ? String(mikumikumouth.host) : '127.0.0.1',
+            port: ~~mikumikumouth.port || 3939,
           },
         };
 

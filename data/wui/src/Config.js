@@ -113,5 +113,15 @@ export function toIkaLogFormat(state) {
     };
   })();
 
+  // mikumikumouth
+  payload.MikuMikuMouth = (() => {
+    const conf = plugins.output.mikumikumouth;
+    return {
+      enabled: conf.enabled,
+      host: conf.host,
+      port: conf.port,
+    };
+  })();
+
   return payload;
 }

@@ -21,15 +21,15 @@
 import React from 'react';
 import { Component } from 'flumpt';
 import Boyomi from './speech/Boyomi';
-// import MMMouth from './speech/MMMouth';
+import MMMouth from './speech/MMMouth';
 
 export default class Speech extends Component {
   render() {
     return (
       <div>
         <Boyomi {...this.props} />
-        {/* <hr /> */}
-        {/* <MMMouth {...this.props} /> */}
+        <hr />
+        <MMMouth {...this.props} />
       </div>
     );
   }
