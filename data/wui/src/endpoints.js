@@ -25,4 +25,5 @@ export default {
   setConfig: `${prefix}/api/v1/config/set`,
   systemInfo: `${prefix}/api/v1/status/get`,
   takeScreenshot: `${prefix}/api/v1/screenshot/save`,
+  previewStream: `${prefix}/api/v1/engine/preview`,
 };

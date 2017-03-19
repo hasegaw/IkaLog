@@ -49,7 +49,7 @@ export default class MMMouth extends Component {
         <WrappedCheckbox
             name="output-mikumikumouth-enable"
             checked={!!this.props.plugins.output.mikumikumouth.enabled}
-            text={t('Enable TCP server for MikuMikuMouth')}
+            text={t('Enable MikuMikuMouth client')}
             onChange={this._onChangeEnable}
         />
         {input}
@@ -60,6 +60,12 @@ export default class MMMouth extends Component {
   _renderInput() {
     return (
       <div className={INDENT}>
+        <p>
+          {t('Please set mode to REST API.')}&#32;
+          <a href="http://mikumikumouth.net/developer.html#対応プロトコル" target="_blank">
+            <span className="fa fa-fw fa-question" />
+          </a>
+        </p>
         <LabeledInput
             id="output-mikumikumouth-host"
             label={t('Host') + ':'}
@@ -73,7 +79,7 @@ export default class MMMouth extends Component {
             type="number"
             value={this.props.plugins.output.mikumikumouth.port}
             onChange={this._onChangePort}
-            placeholder={t('Example') + ': 50001'}
+            placeholder={t('Example') + ': 3939'}
         />
       </div>
     );
