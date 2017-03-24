@@ -69,12 +69,12 @@ class V2GameRespawn(StatefulScene):
             IkaMatcher(
                 567, 561, 191, 62,
                 img_file='v2_game_respawn.png',
-                bg_method=matcher.MM_DARK(),
+                bg_method=matcher.MM_NOT_WHITE(),
                 fg_method=matcher.MM_WHITE(),
-                threshold=0.8,
-                orig_threshold=0.5,
+                threshold=0.83,
+                orig_threshold=0.1,
                 label='game_respawn',
-                debug=debug,
+                debug=False,
             ),
         ]
 
