@@ -172,7 +172,7 @@ class V2GameStart(StatefulScene):
             #for stage_id in stages.keys():
             stage = IkaMatcher(
                 self.mapname_left, self.mapname_top, self.mapname_width, self.mapname_height,
-                img_file='stage_%s.png' % stage_id,
+                img_file='v2_stage_%s.png' % stage_id,
                 threshold=0.95,
                 orig_threshold=0.30,
                 bg_method=matcher.MM_NOT_WHITE(),
@@ -187,14 +187,14 @@ class V2GameStart(StatefulScene):
         for rule_id in rules.keys():
             rule = IkaMatcher(
                 531, 224, 227, 58,
-                img_file='rule_%s.png' % rule_id,
-                threshold=0.8,
-                orig_threshold=0.60,
-                bg_method=matcher.MM_BLACK(),
+                img_file='v2_rule_%s.png' % rule_id,
+                threshold=0.95,
+                orig_threshold=0.05,
+                bg_method=matcher.MM_NOT_WHITE(),
                 fg_method=matcher.MM_WHITE(),
                 label='rule:%s' % rule_id,
                 call_plugins=self._call_plugins,
-                debug=debug,
+                debug=False,
             )
             setattr(rule, 'id_', rule_id)
             self.rule_matchers.add_mask(rule)
