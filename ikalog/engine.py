@@ -28,7 +28,7 @@ import time
 import traceback
 
 from ikalog.utils import *
-from .scenes.v1 import initialize_scenes
+from .scenes.v2 import initialize_scenes
 
 # The IkaLog core engine.
 #
