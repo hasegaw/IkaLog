@@ -31,6 +31,8 @@ from .game.kill import V2GameKill as GameKill
 from .result.judge import V2ResultJudge as ResultJudge
 from .result.scoreboard.simple import ResultScoreboard as ResultScoreboard
 
+from ikalog.scenes.botw.dead import BOTWDead
+
 def initialize_scenes(engine):
     import ikalog.scenes as scenes
 
@@ -44,13 +46,15 @@ def initialize_scenes(engine):
         GameSpecialGauge(engine),
         GameSpecialGaugeBackground(engine),
         GameSpecialGaugeLevel(engine),
-        GameSubAndSpecial(engine),
+#        GameSubAndSpecial(engine),
 
         GameSuperJump(engine),
         GameKill(engine),
 
         ResultJudge(engine),
         ResultScoreboard(engine),
+
+        BOTWDead(engine),
 
         scenes.Blank(engine),
     ]
