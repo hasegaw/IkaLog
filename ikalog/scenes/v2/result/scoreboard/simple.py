@@ -119,7 +119,7 @@ class ResultScoreboard(StatefulScene):
         escaped = not self.matched_in(context, 1000)
 
         if escaped:
-            self._switch_state(self._state_tracking)
+            self._switch_state(self._state_default)
 
         return matched
 
