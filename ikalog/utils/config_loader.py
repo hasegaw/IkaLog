@@ -242,6 +242,9 @@ def _init_outputs(opts):
         args = _replace_vars(output_args['MikuMikuMouth'], vars)
         OutputPlugins.append(outputs.MikuMikuMouth(**args))
 
+    from ikalog.outputs.botw_console import BOTWConsole
+    OutputPlugins.append(BOTWConsole())
+
     return OutputPlugins
 
 
