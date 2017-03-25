@@ -99,6 +99,8 @@ class StatInkCompositor(object):
             'private': lambda x: 'private',
             'festa': lambda x: 'fest',
             'tag': lambda x: 'squad_%d' % x.get('team_members', 0),
+
+            'testfire': lambda x: 'standard',
         }
 
         payload['lobby'] = None

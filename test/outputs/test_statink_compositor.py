@@ -89,6 +89,11 @@ class TestStatInk(unittest.TestCase):
         obj.composite_lobby(context, payload)
         assert not payload.get('lobby')
 
+        # testfire -> standard battle
+        context = {'lobby': {'type': 'testfire'}, 'game': {'is_fes': False}}
+        obj.composite_lobby(context, payload)
+        assert payload['lobby'] == 'standard'
+
         # no lobby data => no lobby info in payload
         del context['lobby']
         obj.composite_lobby(context, payload)
