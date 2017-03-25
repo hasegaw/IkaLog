@@ -28,33 +28,33 @@ from ikalog.utils import *
 
 class Lobby(Scene):
 
-    def match_tag_lobby(self, context):
+    def match_squad_lobby(self, context):
         frame = context['engine']['frame']
 
         # 「ルール」「ステージ」
-        r_mandatory = self.mask_tag_rule.match(frame) and \
-            self.mask_tag_stage.match(frame)
+        r_mandatory = self.mask_squad_rule.match(frame) and \
+            self.mask_squad_stage.match(frame)
 
         if not r_mandatory:
             return False
 
-        r_tag_matching = self.mask_tag_matching.match(frame)
-        r_tag_matched = self.mask_tag_matched.match(frame)
+        r_squad_matching = self.mask_squad_matching.match(frame)
+        r_squad_matched = self.mask_squad_matched.match(frame)
 
-        matched = (r_tag_matching or r_tag_matched)
-        matched = matched and not (r_tag_matching and r_tag_matched)
+        matched = (r_squad_matching or r_squad_matched)
+        matched = matched and not (r_squad_matching and r_squad_matched)
 
         if not matched:
             return False
 
         context['lobby']['type'] = 'tag'
 
-        if (r_tag_matching):
+        if (r_squad_matching):
             context['lobby']['state'] = 'matching'
         else:
             context['lobby']['state'] = 'matched'
 
-        if 1:  # if r_tag_matched:
+        if 1:  # if r_squad_matched:
             # タッグ参加人数は?
             top_list = [76, 149, 215, 290]
 
@@ -155,7 +155,7 @@ class Lobby(Scene):
         if self.match_public_lobby(context):
             return True
 
-        if self.match_tag_lobby(context):
+        if self.match_squad_lobby(context):
             return True
 
         if self.match_private_lobby(context):
@@ -232,7 +232,7 @@ class Lobby(Scene):
             debug=debug
         )
 
-        self.mask_tag_rule = IkaMatcher(
+        self.mask_squad_rule = IkaMatcher(
             126, 249, 76, 26,
             img_file='lobby_squad_matching.png',
             threshold=0.90,
@@ -244,7 +244,7 @@ class Lobby(Scene):
             debug=debug
         )
 
-        self.mask_tag_stage = IkaMatcher(
+        self.mask_squad_stage = IkaMatcher(
             156, 360, 94, 36,
             img_file='lobby_squad_matching.png',
             threshold=0.90,
@@ -284,7 +284,7 @@ class Lobby(Scene):
         )
 
         # 背景：暗い赤、黒　文字：黄色
-        self.mask_tag_matched = IkaMatcher(
+        self.mask_squad_matched = IkaMatcher(
             826, 24, 280, 34,
             img_file='lobby_squad_matched.png',
             threshold=0.90,
@@ -299,7 +299,7 @@ class Lobby(Scene):
         )
 
         # 背景：暗い赤、黒　文字：白
-        self.mask_tag_matching = IkaMatcher(
+        self.mask_squad_matching = IkaMatcher(
             826, 24, 280, 34,
             img_file='lobby_squad_matching.png',
             threshold=0.90,
