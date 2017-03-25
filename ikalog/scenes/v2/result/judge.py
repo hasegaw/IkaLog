@@ -77,15 +77,14 @@ class V2ResultJudge(StatefulScene):
     def match_win_or_lose(self, context):
         frame = context['engine']['frame']
 
-        match_win = self.mask_win.match(frame)
-        match_lose = self.mask_lose.match(frame)
+        r_win = self.mask_win.match(frame)
+        r_lose = self.mask_lose.match(frame)
 
-        match_win_or_lose = (match_win and (not match_lose) or
-                             (match_lose and (not match_win)))
+        match_win_or_lose = bool(r_win) ^ bool(r_lose)
 
         if not match_win_or_lose:
             return None
-        return 'win' if match_win else 'lose'
+        return 'win' if r_win else 'lose'
 
     def match_still(self, context):
 
