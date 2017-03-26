@@ -30,6 +30,7 @@ from ikalog.utils import *
 
 from ikalog.scenes.v2.result.scoreboard.extract import extract_players
 from ikalog.utils.character_recoginizer.number2 import Number2Classifier
+#from ikalog.utils.ikamatcher1 import IkaMatcher1
 
 
 class ResultScoreboard(StatefulScene):
@@ -139,9 +140,9 @@ class ResultScoreboard(StatefulScene):
             920, 0, 100, 70,
             img_file='v2_result_scoreboard.png',
             threshold=0.90,
-            orig_threshold=0.20,
-            bg_method=matcher.MM_DARK(),
-            fg_method=matcher.MM_NOT_DARK(),
+            orig_threshold=0.10,
+            bg_method=matcher.MM_DARK(visibility=(0, 16)),
+            fg_method=matcher.MM_NOT_DARK(visibility=(16, 255)),
             label='result_scoreboard:WIN',
             debug=debug,
         )
@@ -150,9 +151,9 @@ class ResultScoreboard(StatefulScene):
             710, 57, 144, 66,
             img_file='v2_result_scoreboard.png',
             threshold=0.90,
-            orig_threshold=0.20,
-            bg_method=matcher.MM_DARK(),
-            fg_method=matcher.MM_NOT_DARK(),
+            orig_threshold=0.10,
+            bg_method=matcher.MM_DARK(visibility=(0, 16)),
+            fg_method=matcher.MM_NOT_DARK(visibility=(16, 255)),
             label='result_scoreboard:WIN_STR',
             debug=debug,
         )
@@ -161,9 +162,9 @@ class ResultScoreboard(StatefulScene):
             920, 340, 100, 70,
             img_file='v2_result_scoreboard.png',
             threshold=0.90,
-            orig_threshold=0.20,
-            bg_method=matcher.MM_DARK(),
-            fg_method=matcher.MM_NOT_DARK(),
+            orig_threshold=0.10,
+            bg_method=matcher.MM_DARK(visibility=(0, 16)),
+            fg_method=matcher.MM_NOT_DARK(visibility=(16, 255)),
             label='result_scoreboard:LOSE',
             debug=debug,
         )
