@@ -172,7 +172,7 @@ class V2ResultJudge(StatefulScene):
         )
 
         self.mask_lose = IkaMatcher(
-            73, 34, 181, 94,
+            18, 42, 126, 50,
             img_file='v2_result_judge_lose.png',
             threshold=0.9,
             orig_threshold=0.100,
