@@ -27,6 +27,7 @@ from .game.special_gauge.level import V2GameSpecialGaugeLevel as GameSpecialGaug
 from .game.special_gauge.sub_and_special import V2GameSubAndSpecial as GameSubAndSpecial
 from .game.superjump import V2GameSuperJump as GameSuperJump
 from .game.kill import V2GameKill as GameKill
+from .game.dead import V2GameDead as GameDead
 
 from .lobby import V2Lobby as Lobby
 
@@ -53,6 +54,7 @@ def initialize_scenes(engine):
 
         GameSuperJump(engine),
         GameKill(engine),
+        GameDead(engine),
 
         Lobby(engine),
 
