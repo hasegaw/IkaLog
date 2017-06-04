@@ -82,7 +82,7 @@ class TimerReader(object):
         if self._p > self._p_threshold:
             time_valid = self.read_time(255 - img_timer_black)
 
-            if time_valid:
+            if 0:  # time_valid:
                 print('残り時間',  self._time_counter)
 
         return self._p > self._p_threshold
@@ -91,10 +91,10 @@ class TimerReader(object):
         self._number_recoginizer = NumberRecoginizer()
 
 
-class V2GameTimerIcon(Scene):
+class GameTimerIcon(Scene):
 
     def reset(self):
-        super(V2GameTimerIcon, self).reset()
+        super(GameTimerIcon, self).reset()
 
         self._last_event_msec = - 100 * 1000
 
@@ -114,25 +114,25 @@ class V2GameTimerIcon(Scene):
     def _init_scene(self, debug=False):
         self._masks = [
             IkaMatcher(
-                589, 109, y0, y1 - y0,
+                589, y0, 109, y1 - y0,
                 img_file='v2_game_timer_icon.png',
                 threshold=0.9,
                 orig_threshold=1.0,
                 bg_method=matcher.MM_DARK(),
                 fg_method=matcher.MM_DARK(),
                 label='timer_icon_top',
-                debug=True,
+                debug=False,
             ),
 
             IkaMatcher(
-                589, 109, y2, y3 - y2,
+                589, y2, 109, y3 - y2,
                 img_file='v2_game_timer_icon.png',
                 threshold=0.9,
                 orig_threshold=1.0,
                 bg_method=matcher.MM_DARK(),
                 fg_method=matcher.MM_DARK(),
                 label='timer_icon_bottom',
-                debug=True,
+                debug=False,
             ),
 
             TimerReader(),
@@ -140,4 +140,4 @@ class V2GameTimerIcon(Scene):
 
 
 if __name__ == "__main__":
-    V2GameTimerIcon.main_func()
+    GameTimerIcon.main_func()
