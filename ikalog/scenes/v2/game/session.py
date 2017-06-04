@@ -35,16 +35,16 @@ class V2GameSession(StatefulScene):
 
     def _state_default(self, context):
         in_battle = \
-            self.is_another_scene_matched(context, 'V2GameSuperjump') or \
-            self.is_another_scene_matched(context, 'V2GameSpecialGauge')
+            self.is_another_scene_matched(context, 'GameTimerIcon') or \
+            self.is_another_scene_matched(context, 'V2GameSuperjump')
 
         if in_battle:
             self._switch_state(self._state_battle)
 
     def _state_battle(self, context):
         in_battle = \
-            self.is_another_scene_matched(context, 'V2GameSuperjump') or \
-            self.is_another_scene_matched(context, 'V2GameSpecialGauge')
+            self.is_another_scene_matched(context, 'GameTimerIcon') or \
+            self.is_another_scene_matched(context, 'V2GameSuperjump')
 
         if not in_battle:
             self._switch_state(self._state_default)
@@ -54,6 +54,7 @@ class V2GameSession(StatefulScene):
 
     def _init_scene(self, debug=False):
         pass
+
 
 if __name__ == "__main__":
     V2GameSession.main_func()
