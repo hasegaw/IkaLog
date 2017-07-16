@@ -28,7 +28,7 @@ from ikalog.utils import *
 from ikalog.utils.ikamatcher2.matcher import MultiClassIkaMatcher2 as MultiClassIkaMatcher
 
 
-stages = [ 'aaa']
+stages = {'ama': True, 'battera': True, 'fujitsubo': True, 'gangaze': True, 'combu': True, 'tachiuo': True}
 rules = {'nawabari': True, }
 
 
@@ -68,7 +68,7 @@ class V2GameStart(StatefulScene):
         stage = None
         rule = None
 
-        best_stage = (None, None)# self.stage_matchers.match_best(frame)
+        best_stage = self.stage_matchers.match_best(frame)
         best_rule = self.rule_matchers.match_best(frame)
 
         if best_stage[1] is not None:
@@ -80,7 +80,6 @@ class V2GameStart(StatefulScene):
 
     def _state_default(self, context):
         frame = context['engine']['frame']
-
         if frame is None:
             return False
 
@@ -156,25 +155,24 @@ class V2GameStart(StatefulScene):
         self.election_period = 5 * 1000  # msec
 
         self._mask_rule = IkaMatcher(
-                600, 162, 80, 45,
+                600, 128, 77, 35,
                 img_file='v2_rule_nawabari.png',
                 bg_method=matcher.MM_NOT_WHITE(),
                 fg_method=matcher.MM_WHITE(),
-                threshold=0.8,
-                orig_threshold=0.4,
+                threshold=0.9,
+                orig_threshold=0.3,
                 label='rule',
                 debug=debug,
             )
 
         self.stage_matchers = MultiClassIkaMatcher()
         self.rule_matchers = MultiClassIkaMatcher()
-        if 0:
-            #for stage_id in stages.keys():
+        for stage_id in stages.keys():
             stage = IkaMatcher(
-                self.mapname_left, self.mapname_top, self.mapname_width, self.mapname_height,
+                1133, 655, 119, 34,
                 img_file='v2_stage_%s.png' % stage_id,
-                threshold=0.95,
-                orig_threshold=0.30,
+                threshold=0.85,
+                orig_threshold=0.15,
                 bg_method=matcher.MM_NOT_WHITE(),
                 fg_method=matcher.MM_WHITE(),
                 label='stage:%s' % stage_id,
@@ -188,13 +186,13 @@ class V2GameStart(StatefulScene):
             rule = IkaMatcher(
                 531, 224, 227, 58,
                 img_file='v2_rule_%s.png' % rule_id,
-                threshold=0.95,
-                orig_threshold=0.05,
+                threshold=0.70,
+                orig_threshold=0.10,
                 bg_method=matcher.MM_NOT_WHITE(),
                 fg_method=matcher.MM_WHITE(),
                 label='rule:%s' % rule_id,
                 call_plugins=self._call_plugins,
-                debug=False,
+                debug=debug,
             )
             setattr(rule, 'id_', rule_id)
             self.rule_matchers.add_mask(rule)
