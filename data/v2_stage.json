@@ -1,0 +1,160 @@
+[
+    {
+        "key": "battera",
+        "name": {
+            "ja_JP": "バッテラストリート",
+            "en_US": "The Reef",
+            "en_GB": "The Reef",
+            "es_ES": "Barrio Congrio",
+            "es_MX": "Barrio Congrio"
+        },
+        "short_name": {
+            "ja_JP": "バッテラ",
+            "en_US": "Reef",
+            "en_GB": "Reef",
+            "es_ES": "Barrio",
+            "es_MX": "Barrio"
+        },
+        "area": 2450,
+        "release_at": {
+            "time": 1490382000,
+            "iso8601": "2017-03-24T19:00:00+00:00"
+        }
+    },
+    {
+        "key": "fujitsubo",
+        "name": {
+            "ja_JP": "フジツボスポーツクラブ",
+            "en_US": "Musselforge Fitness",
+            "en_GB": "Musselforge Fitness",
+            "es_ES": "Gimnasio Mejillón",
+            "es_MX": "Gimnasio Mejillón"
+        },
+        "short_name": {
+            "ja_JP": "フジツボ",
+            "en_US": "Fitness",
+            "en_GB": "Fitness",
+            "es_ES": "Gimnasio",
+            "es_MX": "Gimnasio"
+        },
+        "area": 1957,
+        "release_at": {
+            "time": 1490382000,
+            "iso8601": "2017-03-24T19:00:00+00:00"
+        }
+    },
+    {
+        "key": "gangaze",
+        "name": {
+            "ja_JP": "ガンガゼ野外音楽堂",
+            "en_US": "Starfish Mainstage",
+            "en_GB": "Starfish Mainstage",
+            "es_ES": "Auditorio Erizo",
+            "es_MX": "Auditorio Erizo"
+        },
+        "short_name": {
+            "ja_JP": "ガンガゼ",
+            "en_US": "Mainstage",
+            "en_GB": "Mainstage",
+            "es_ES": "Auditorio",
+            "es_MX": "Auditorio"
+        },
+        "area": null,
+        "release_at": null
+    },
+    {
+        "key": "combu",
+        "name": {
+            "ja_JP": "コンブトラック",
+            "en_US": "Humpback Pump Track",
+            "en_GB": "Humpback Pump Track",
+            "es_ES": "Tiburódromo",
+            "es_MX": "Tiburódromo"
+        },
+        "short_name": {
+            "ja_JP": "コンブ",
+            "en_US": "Track",
+            "en_GB": "Track",
+            "es_ES": "Tiburódromo",
+            "es_MX": "Tiburódromo"
+        },
+        "area": null,
+        "release_at": null
+    },
+    {
+        "key": "ama",
+        "name": {
+            "ja_JP": "海女美術大学",
+            "en_US": "Inkblot Art Academy",
+            "en_GB": "Inkblot Art Academy",
+            "es_ES": "Instituto Coralino",
+            "es_MX": "Instituto Coralino"
+        },
+        "short_name": {
+            "ja_JP": "アマビ",
+            "en_US": "Academy",
+            "en_GB": "Academy",
+            "es_ES": "Institute",
+            "es_MX": "Institute"
+        },
+        "area": null,
+        "release_at": null
+    },
+    {
+        "key": "chozame",
+        "name": {
+            "ja_JP": "チョウザメ造船",
+            "en_US": "Sturgeon Shipyard",
+            "en_GB": "Sturgeon Shipyard",
+            "es_ES": "Sturgeon Shipyard",
+            "es_MX": "Sturgeon Shipyard"
+        },
+        "short_name": {
+            "ja_JP": "チョウザメ",
+            "en_US": "Shipyard",
+            "en_GB": "Shipyard",
+            "es_ES": "Shipyard",
+            "es_MX": "Shipyard"
+        },
+        "area": null,
+        "release_at": null
+    },
+    {
+        "key": "hokke",
+        "name": {
+            "ja_JP": "ホッケふ頭",
+            "en_US": "Port Mackerel",
+            "en_GB": "Port Mackerel",
+            "es_ES": "Puerto Jurel",
+            "es_MX": "Puerto Jurel"
+        },
+        "short_name": {
+            "ja_JP": "ホッケ",
+            "en_US": "Port",
+            "en_GB": "Port",
+            "es_ES": "Puerto",
+            "es_MX": "Puerto"
+        },
+        "area": null,
+        "release_at": null
+    },
+    {
+        "key": "tachiuo",
+        "name": {
+            "ja_JP": "タチウオパーキング",
+            "en_US": "Moray Towers",
+            "en_GB": "Moray Towers",
+            "es_ES": "Torres Merluza",
+            "es_MX": "Torres Merluza"
+        },
+        "short_name": {
+            "ja_JP": "タチウオ",
+            "en_US": "Towers",
+            "en_GB": "Towers",
+            "es_ES": "Torres",
+            "es_MX": "Torres"
+        },
+        "area": null,
+        "release_at": null
+    }
+]

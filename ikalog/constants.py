@@ -265,3 +265,12 @@ for ability in gear_abilities.keys():
 
 for brand in gear_brands.keys():
     gear_brands[brand]['id'] = brand
+
+stages_v2 = {}
+import json
+a = json.loads(open('data/v2_stage.json').read())
+for d in a:
+    stages_v2[d['key']] = {
+        'ja': d['name']['ja_JP'],
+        'en': d['name']['en_US'],
+    }
