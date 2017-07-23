@@ -29,7 +29,7 @@ from ikalog.utils.ikamatcher2.matcher import MultiClassIkaMatcher2 as MultiClass
 
 
 stages = {'ama': True, 'battera': True, 'fujitsubo': True, 'gangaze': True, 'combu': True, 'tachiuo': True}
-rules = {'nawabari': True, }
+rules = {'nawabari': True, 'area': True}
 
 
 class V2GameStart(StatefulScene):
