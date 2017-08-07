@@ -27,8 +27,10 @@ from ikalog.utils import *
 #from ikalog.constants import stages, rules
 from ikalog.utils.ikamatcher2.matcher import MultiClassIkaMatcher2 as MultiClassIkaMatcher
 
+from ikalog.ml.classifier import ImageClassifier
 
-stages = {'ama': True, 'battera': True, 'fujitsubo': True, 'gangaze': True, 'combu': True, 'tachiuo': True}
+stages = {'ama': True, 'battera': True, 'fujitsubo': True,
+          'gangaze': True, 'combu': True, 'tachiuo': True}
 rules = {'nawabari': True, }
 
 
@@ -65,31 +67,32 @@ class V2GameStart(StatefulScene):
     def _detect_stage_and_rule(self, context):
         frame = context['engine']['frame']
 
-        stage = None
-        rule = None
+        stage = self._c_stage.predict_frame(context['engine']['frame'])
+        rule = self._c_rule.predict_frame(context['engine']['frame'])
 
-        best_stage = self.stage_matchers.match_best(frame)
-        best_rule = self.rule_matchers.match_best(frame)
-
-        if best_stage[1] is not None:
-            stage = best_stage[1].id_
-        if best_rule[1] is not None:
-            rule = best_rule[1].id_
+        if stage == -1:
+            stage = None
+        if rule == -1:
+            rule = None
 
         return stage, rule
 
     def _state_default(self, context):
+        # pass matching in some scenes.
+        session = self.find_scene_object('V2GameSession')
+        if session is not None:
+            if not (session._state.__name__ in ('_state_default')):
+                return False
+
         frame = context['engine']['frame']
         if frame is None:
             return False
 
-        if not self._mask_rule.match(frame):
-            return False
-
-        # Get the best matched stat.ink key
         stage, rule = self._detect_stage_and_rule(context)
 
-        if stage or rule:
+        matched = (stage or rule)
+
+        if matched:
             self.stage_votes = []
             self.rule_votes = []
             self.stage_votes.append((context['engine']['msec'], stage))
@@ -119,7 +122,6 @@ class V2GameStart(StatefulScene):
             return False
 
         # それ以上マッチングしなかった場合 -> シーンを抜けている
-
         if not self.matched_in(context, 20000, attr='_last_event_msec'):
             context['game']['map'] = self.elect(context, self.stage_votes)
             context['game']['rule'] = self.elect(context, self.rule_votes)
@@ -153,49 +155,11 @@ class V2GameStart(StatefulScene):
 
     def _init_scene(self, debug=False):
         self.election_period = 5 * 1000  # msec
+        self._c_stage = ImageClassifier()
+        self._c_stage.load_from_file('data/spl2.game_start.stage.dat')
+        self._c_rule = ImageClassifier()
+        self._c_rule.load_from_file('data/spl2.game_start.rule.dat')
 
-        self._mask_rule = IkaMatcher(
-                600, 128, 77, 35,
-                img_file='v2_rule_nawabari.png',
-                bg_method=matcher.MM_NOT_WHITE(),
-                fg_method=matcher.MM_WHITE(),
-                threshold=0.9,
-                orig_threshold=0.3,
-                label='rule',
-                debug=debug,
-            )
-
-        self.stage_matchers = MultiClassIkaMatcher()
-        self.rule_matchers = MultiClassIkaMatcher()
-        for stage_id in stages.keys():
-            stage = IkaMatcher(
-                1133, 655, 119, 34,
-                img_file='v2_stage_%s.png' % stage_id,
-                threshold=0.85,
-                orig_threshold=0.15,
-                bg_method=matcher.MM_NOT_WHITE(),
-                fg_method=matcher.MM_WHITE(),
-                label='stage:%s' % stage_id,
-                call_plugins=self._call_plugins,
-                debug=debug,
-            )
-            setattr(stage, 'id_', stage_id)
-            self.stage_matchers.add_mask(stage)
-
-        for rule_id in rules.keys():
-            rule = IkaMatcher(
-                531, 224, 227, 58,
-                img_file='v2_rule_%s.png' % rule_id,
-                threshold=0.70,
-                orig_threshold=0.10,
-                bg_method=matcher.MM_NOT_WHITE(),
-                fg_method=matcher.MM_WHITE(),
-                label='rule:%s' % rule_id,
-                call_plugins=self._call_plugins,
-                debug=debug,
-            )
-            setattr(rule, 'id_', rule_id)
-            self.rule_matchers.add_mask(rule)
 
 if __name__ == "__main__":
     V2GameStart.main_func()
