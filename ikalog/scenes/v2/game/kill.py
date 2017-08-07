@@ -22,11 +22,14 @@ import uuid
 
 import cv2
 
+from ikalog.ml.classifier import ImageClassifier
+
 from ikalog.scenes.scene import Scene
 from ikalog.utils import *
 from ikalog.utils.character_recoginizer import *
 
 from ikalog.utils.player_name import normalize_player_name
+
 
 class V2GameKill(Scene):
 
@@ -39,36 +42,32 @@ class V2GameKill(Scene):
         self._msec_last_decrease = 0
 
     def find_kill_messages(self, context):
-        _y = 664
-        killed_y = [_y]
-        killed_y = [_y, _y - 40, _y - 80, _y - 120]  # たぶん...。
+        _y = 665
+        killed_y = [_y, _y - 45, _y - 90, _y - 135]  # たぶん...。
 
         found = []
         for n in range(len(killed_y)):
             y = killed_y[n]
 
             # Detect kill
+            img_killed = context['engine']['frame'][y: y + 25, 499:499 + 49]
+            matched = self.classifier_killed.predict1(img_killed) >= 0
 
-            img_killed = context['engine']['frame'][y: y + 30, 525:778]
-            img_killed_gray = cv2.cvtColor(img_killed[:, 0:25, :], cv2.COLOR_BGR2GRAY)
-            ret, img_killed_thresh = cv2.threshold(img_killed_gray, 90, 255, cv2.THRESH_BINARY)
-            cv2.imshow('a', img_killed_thresh)
+            if matched:
+                found.append({'found': 'found'})
 
-            r = self.mask_killed.match(img_killed_thresh)
-            if not r:
-                continue
-                # or
-                return found
-
+        return found
+        while False:
             self._call_plugins(
                 'on_mark_rect_in_preview',
-                [ (502, y), (778, y + 30) ]
+                [(502, y), (778, y + 30)]
             )
 
             # crop the name part.
             img_name = img_killed[:, 25:, :]
 
-            img_name_w = matcher.MM_WHITE(sat=(0, 64), visibility=(128, 255))(img_name)
+            img_name_w = matcher.MM_WHITE(
+                sat=(0, 64), visibility=(128, 255))(img_name)
 
             img_name_x_hist = np.extract(
                 np.sum(img_name_w, axis=0) > 128,
@@ -83,7 +82,7 @@ class V2GameKill(Scene):
                 continue
 
             img_name_norm = normalize_player_name(
-                img_name[:, img_name_left :img_name_right]
+                img_name[:, img_name_left:img_name_right]
             )
 
             found.append({
@@ -117,8 +116,11 @@ class V2GameKill(Scene):
             self.last_kills = num_current_kills
 
     def match_no_cache(self, context):
-#        if self.last_kills == 0 and (not self.is_another_scene_matched(context, 'GameTimerIcon')):
-#            return False
+        # pass matching in some scenes.
+        session = self.find_scene_object('V2GameSession')
+        if session is not None:
+            if not (session._state.__name__ in ('_state_battle')):
+                return False
 
         frame = context['engine']['frame']
 
@@ -135,7 +137,6 @@ class V2GameKill(Scene):
         # 150ms のチャタリングは無視
         if not self.matched_in(context, 150, attr='_msec_last_decrease'):
             self.last_kills = min(self.last_kills, len(current_kills))
- 
 
         return self.last_kills > 0
 
@@ -146,16 +147,9 @@ class V2GameKill(Scene):
         pass
 
     def _init_scene(self, debug=False):
-        self.mask_killed = IkaMatcher(
-            0, 0, 25, 30,
-            img_file='game_killed.png',
-            threshold=0.80,
-            orig_threshold=0.10,
-            bg_method=matcher.MM_WHITE(sat=(0, 255), visibility=(0, 48)),
-            fg_method=matcher.MM_WHITE(visibility=(192, 255)),
-            label='killed',
-            debug=debug,
-        )
+        self.classifier_killed = ImageClassifier(object)
+        self.classifier_killed.load_from_file('spl2.game_kill.dat')
+
 
 if __name__ == "__main__":
     V2GameKill.main_func()
