@@ -22,6 +22,7 @@ import sys
 import cv2
 
 from ikalog.scenes.stateful_scene import StatefulScene
+from ikalog.ml.classifier import ImageClassifier
 from ikalog.utils import *
 from ikalog.utils.character_recoginizer import *
 
@@ -104,8 +105,11 @@ class V2GameDead(StatefulScene):
         self._cause_of_death_votes = {}
 
     def _state_default(self, context):
-        #        if not self.is_another_scene_matched(context, 'GameTimerIcon'):
-        #            return False
+        # pass matching in some scenes.
+        session = self.find_scene_object('V2GameSession')
+        if session is not None:
+            if not (session._state.__name__ in ('_state_battle')):
+                return False
 
         frame = context['engine']['frame']
 
@@ -115,7 +119,7 @@ class V2GameDead(StatefulScene):
         # if not matched and self.matched_in(context, 1000):
         #    return False
 
-        matched = self.mask_dead.match(context['engine']['frame'])
+        matched = self._c.predict_frame(context['engine']['frame']) >= 0
 
         if matched:
             context['game']['dead'] = True
@@ -131,7 +135,7 @@ class V2GameDead(StatefulScene):
         if frame is None:
             return False
 
-        matched = self.mask_dead.match(context['engine']['frame'])
+        matched = self._c.predict_frame(context['engine']['frame']) >= 0
 
         # 画面が続いているならそのまま
         if matched:
@@ -165,22 +169,15 @@ class V2GameDead(StatefulScene):
         pass
 
     def _init_scene(self, debug=False):
-        self.mask_dead = IkaMatcher(
-            1091, 642, 102, 32,
-            img_file='game_dead.png',
-            threshold=0.90,
-            orig_threshold=0.30,
-            bg_method=matcher.MM_NOT_WHITE(),
-            fg_method=matcher.MM_WHITE(),
-            label='dead',
-            call_plugins=self._call_plugins,
-            debug=debug,
-        )
+        self._c = ImageClassifier()
+        self._c.load_from_file('data/spl2.game_dead.dat')
 
-        try:
-            self.deadly_weapon_recoginizer = DeadlyWeaponRecoginizer()
-        except:
+        # try:
+        #    self.deadly_weapon_recoginizer = DeadlyWeaponRecoginizer()
+        # except:
+        if 1:
             self.deadly_weapon_recoginizer = None
+
 
 if __name__ == "__main__":
     V2GameDead.main_func()
