@@ -17,10 +17,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import math
 
 from ikalog.constants import special_weapons
 from ikalog.plugin import IkaLogPlugin
 from ikalog.utils import *
+
 
 class StatInkCollector(IkaLogPlugin):
 
@@ -166,6 +168,20 @@ class StatInkCollector(IkaLogPlugin):
     def on_game_low_ink(self, context):
         self._add_event(context, {'type': 'low_ink'})
 
+    def on_game_map_open(self, context):
+        self._last_map_open_event = {'type': 'map_view'}
+        self._last_map_open_msec = context['engine']['msec']
+
+        self._add_event(context, self._last_map_open_event)
+
+    def on_game_map_close(self, context):
+        if self._last_map_open_event is not None:
+            duration = context['engine']['msec'] - self._last_map_open_msec
+            duration_sec = math.floor(duration / 100) / 10
+
+            self._last_map_open_event['seconds'] = duration_sec
+            self._last_map_open_event = None
+
     def on_game_inkling_state_update(self, context):
         if not self.config['track_inklings']:
             return
@@ -309,6 +325,8 @@ class StatInkCollector(IkaLogPlugin):
 
     def __init__(self):
         super(StatInkCollector, self).__init__()
+
+        self._last_map_open_event = None
 
         self._open_game_session(None)
 
