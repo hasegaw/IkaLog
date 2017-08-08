@@ -22,6 +22,7 @@ import copy
 import cv2
 import numpy as np
 
+from ikalog.ml.classifier import ImageClassifier
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 
@@ -35,6 +36,12 @@ class V2ResultJudge(StatefulScene):
         self._last_event_msec = - 100 * 1000
 
     def _state_default(self, context):
+        # pass matching in some scenes.
+        session = self.find_scene_object('V2GameSession')
+        if session is not None:
+            if not (session._state.__name__ in ('_state_default', '_state_battle_finish')):
+                return False
+
         frame = context['engine']['frame']
 
         if frame is None:
@@ -68,27 +75,22 @@ class V2ResultJudge(StatefulScene):
         if triggered:
             context['game']['image_judge'] = \
                 copy.deepcopy(context['engine']['frame'])
-            #self._analyze(context)
+            # self._analyze(context)
             self._call_plugins('on_result_judge')
             self._last_event_msec = context['engine']['msec']
 
         return matched
-    
+
     def match_win_or_lose(self, context):
         frame = context['engine']['frame']
 
-        r_win = self.mask_win.match(frame)
-        r_lose = self.mask_lose.match(frame)
-
-        match_win_or_lose = bool(r_win) ^ bool(r_lose)
-
-        if not match_win_or_lose:
-            return None
-        return 'win' if r_win else 'lose'
+        y = self._c_judge.predict_frame(context['engine']['frame'])
+        label = {-1: None, 0: 'win', 1: 'lose'}[y]
+        return label
 
     def match_still(self, context):
 
-        img_bar = context['engine']['frame'][573:573+125, :, :]
+        img_bar = context['engine']['frame'][573:573 + 125, :, :]
         img_bar_b = image_filters.MM_WHITE()(img_bar)
         img_bar_b_i16 = np.array(img_bar_b, dtype=np.int16)
 
@@ -118,9 +120,9 @@ class V2ResultJudge(StatefulScene):
 
         return True
 
-
     def _analyze(self, context):
-        # Not implemented for Splatoon 2 yet
+        # FALSE: Not implemented for Splatoon 2 yet
+        return False
 
         win_ko = bool(self.mask_win_ko.match(context['engine']['frame']))
         lose_ko = bool(self.mask_lose_ko.match(context['engine']['frame']))
@@ -138,8 +140,6 @@ class V2ResultJudge(StatefulScene):
         # パーセンテージの読み取りは未実装
         return True
 
-        # ToDo: 最新コードをマージ
-
     def dump(self, context):
         print('%s: matched %s analyzed %s' %
               (self.__class__.__name__, self._matched, self._analyzed))
@@ -147,58 +147,9 @@ class V2ResultJudge(StatefulScene):
         print('    Knockout: %s' % context['game'].get('knockout', None))
 
     def _init_scene(self, debug=False):
-        self.mask_win = IkaMatcher(
-            0, 0, 190, 110,
-            img_file='v2_result_judge_win.png',
-            threshold=0.9,
-            orig_threshold=0.100,
-            bg_method=matcher.MM_BLACK(),
-            fg_method=matcher.MM_WHITE(),
-            label='result_judge/win',
-            call_plugins=self._call_plugins,
-            debug=debug,
-        )
+        self._c_judge = ImageClassifier()
+        self._c_judge.load_from_file('data/spl2.result.judge.dat')
 
-        self.mask_win_ko = IkaMatcher(
-            123, 572, 318, 57,
-            img_file='result_judge_win.png',
-            threshold=0.9,
-            orig_threshold=0.100,
-            bg_method=matcher.MM_NOT_WHITE(),
-            fg_method=matcher.MM_WHITE(),
-            label='result_judge/win_ko',
-            call_plugins=self._call_plugins,
-            debug=debug,
-        )
-
-        self.mask_lose = IkaMatcher(
-            18, 42, 126, 50,
-            img_file='v2_result_judge_lose.png',
-            threshold=0.9,
-            orig_threshold=0.100,
-            bg_method=matcher.MM_NOT_WHITE(),
-            fg_method=matcher.MM_WHITE(),
-            label='result_judge/lose',
-            call_plugins=self._call_plugins,
-            debug=debug,
-        )
-
-        self.mask_lose_ko = IkaMatcher(
-            820, 572, 318, 57,
-            img_file='result_judge_lose.png',
-            threshold=0.9,
-            orig_threshold=0.100,
-            bg_method=matcher.MM_NOT_WHITE(),
-            fg_method=matcher.MM_WHITE(),
-            label='result_judge/lose_ko',
-            call_plugins=self._call_plugins,
-            debug=debug,
-        )
-
-        try:
-            self.number_recoginizer = character_recoginizer.NumberRecoginizer()
-        except:
-            self.number_recoginizer = None
 
 if __name__ == "__main__":
     V2ResultJudge.main_func()
