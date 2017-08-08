@@ -127,6 +127,8 @@ class V2GameDead(StatefulScene):
             self.recoginize_and_vote_death_reason(context)
             self._switch_state(self._state_tracking)
 
+            context['game']['death'] = context['game'].get('death', 0) + 1
+
         return matched
 
     def _state_tracking(self, context):
