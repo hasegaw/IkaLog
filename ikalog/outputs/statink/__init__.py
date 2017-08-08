@@ -133,13 +133,13 @@ class StatInkPlugin(StatInkCollector):
 
     def _post_payload_worker(self, context, payload, api_key,
                              call_plugins_later_func=None):
-        url_statink_v1_battle = '%s/api/v1/battle' % self.config[
+        url_statink_v2_battle = '%s/api/v2/battle' % self.config[
             'endpoint_url']
 
         # This function runs on worker thread.
         error, statink_response = UploadToStatInk(payload,
                                                   api_key,
-                                                  url_statink_v1_battle,
+                                                  url_statink_v2_battle,
                                                   self.config['show_response'],
                                                   (self.config['dry_run'] == 'server'))
 
