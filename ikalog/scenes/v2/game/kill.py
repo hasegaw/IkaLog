@@ -148,7 +148,7 @@ class V2GameKill(Scene):
 
     def _init_scene(self, debug=False):
         self.classifier_killed = ImageClassifier(object)
-        self.classifier_killed.load_from_file('spl2.game_kill.dat')
+        self.classifier_killed.load_from_file('data/spl2.game_kill.dat')
 
 
 if __name__ == "__main__":
