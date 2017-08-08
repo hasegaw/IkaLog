@@ -22,8 +22,12 @@ import copy
 import re
 import traceback
 
+import numpy as np
+
 import cv2
 
+from ikalog.ml.classifier import ImageClassifier
+from ikalog.ml.text_reader import TextReader
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.inputs.filters import OffsetFilter
 from ikalog.utils import *
@@ -34,6 +38,32 @@ from ikalog.utils.character_recoginizer.number2 import Number2Classifier
 
 
 class ResultScoreboard(StatefulScene):
+
+    def _read_int(self, img):
+        #cv2.imshow('read char', img)
+
+        img = cv2.resize(img, (img.shape[1] * 3, img.shape[0] * 3))
+
+        img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        img_gray = img_hsv[:, :, 2]
+        img_gray[img_gray < 200] = 0
+        img_gray[img_hsv[:, :, 1] > 30] = 0
+        img_gray[img_gray > 0] = 255
+
+        val_str, val_int = None, None
+        img_bgr = cv2.cvtColor(img_gray, cv2.COLOR_GRAY2BGR)
+        if 1:
+            val_str = self._tr.read_char(img_gray)
+            print('Read: %s' % val_str)
+
+        try:
+            val_int = int(val_str)
+        except:
+            pass
+
+        #cv2.imshow('%s' % val_str, img_bgr)
+        # cv2.waitKey(1000)
+        return val_int
 
     def analyze(self, context):
         context['game']['players'] = []
@@ -50,24 +80,42 @@ class ResultScoreboard(StatefulScene):
         self._last_frame = None
         self._diff_pixels = []
 
-    def _state_default(self, context):
-        if self.matched_in(context, 30 * 1000):
-            return False
-
+    def check_match(self, context):
         frame = context['engine']['frame']
 
         if frame is None:
             return False
 
-        matched_r3 = self.mask_win.match(frame)
-        if not matched_r3:
+        img = self._c_win.extract_rect(context['engine']['frame'])
+        img_v = np.array(cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+                         [:, :, 2], dtype=np.float32)
+
+        # min-max
+        img_v_2 = img_v - np.min(img_v)
+        img_v_3 = img_v_2 / np.maximum(1, np.max(img_v_2)) * 255
+        img_v_4 = np.array(img_v_3, dtype=np.uint8)
+        img_a = cv2.cvtColor(img_v_4, cv2.COLOR_GRAY2BGR)
+
+        cv2.imshow('result', img_a)
+
+        matched = self._c_win.predict1(img_a) >= 0
+        return matched
+
+    def _state_default(self, context):
+        # pass matching in some scenes.
+        session = self.find_scene_object('V2GameSession')
+        if session is not None:
+            if not (session._state.__name__ in ('_state_default', '_state_battle_finish')):
+                return False
+
+        frame = context['engine']['frame']
+        if frame is None:
             return False
 
-        matched_r1 = self.mask_win_hook.match(frame)
-        matched_r2 = self.mask_lose_hook.match(frame)
+        if self.matched_in(context, 30 * 1000):
+            return False
 
-        matched = matched_r1 and matched_r2 and matched_r3
-
+        matched = self.check_match(context)
         if matched:
             self._switch_state(self._state_tracking)
 
@@ -78,19 +126,16 @@ class ResultScoreboard(StatefulScene):
             players = extract_players(frame)
             for p in players:
                 try:
-                    score = self.number_recoginizer.match(p['img_score'])
+                    score = self._tr.read_char(p['img_score'])
                     p['score'] = re.sub(r'p$', r'', score)
                 except:
                     pass
 
-                p['kill'] = self.number_recoginizer.match_digits(p['img_kill'])
-                p['death'] = self.number_recoginizer.match_digits(
-                    p['img_death'])
+                p['kill_or_assist'] = self._read_int(p['img_kill_or_assist'])
+                p['special'] = self._read_int(p['img_special'])
 
                 # backward compatibility
                 p['me'] = p.get('myself')
-                p['kills'] = p['kill']
-                p['deaths'] = p['death']
 
             context['game']['players'] = players
 
@@ -100,6 +145,8 @@ class ResultScoreboard(StatefulScene):
 
             # for debug....
             context['game']['lobby'] = 'private'
+
+            self.dump(context)
 
             self._call_plugins_later('on_result_detail')
             self._call_plugins_later('on_game_individual_result')
@@ -112,11 +159,7 @@ class ResultScoreboard(StatefulScene):
     def _state_tracking(self, context):
         frame = context['engine']['frame']
 
-        matched = (frame is not None) and \
-            self.mask_win_hook.match(frame) and \
-            self.mask_lose_hook.match(frame) and \
-            self.mask_win.match(frame)
-
+        matched = self.check_match(context)
         escaped = not self.matched_in(context, 1000)
 
         if escaped:
@@ -130,12 +173,17 @@ class ResultScoreboard(StatefulScene):
 
         for e in context['game']['players']:
             kill = e.get('kill')
-            death = e.get('death')
+            special = e.get('special')
             score = e.get('score')
             myself = '*' if e.get('myself') else None
-            print(kill, death, score, myself)
+            print(kill, special, score, myself)
 
     def _init_scene(self, debug=False):
+        self._tr = TextReader()
+
+        self._c_win = ImageClassifier()
+        self._c_win.load_from_file('data/spl2.result.scoreboard_1.dat')
+
         self.mask_win_hook = IkaMatcher(
             920, 0, 100, 70,
             img_file='v2_result_scoreboard.png',
@@ -151,7 +199,7 @@ class ResultScoreboard(StatefulScene):
             710, 57, 144, 66,
             img_file='v2_result_scoreboard.png',
             threshold=0.90,
-            orig_threshold=0.10,
+            orig_threshold=0.30,
             bg_method=matcher.MM_DARK(visibility=(0, 16)),
             fg_method=matcher.MM_NOT_DARK(visibility=(16, 255)),
             label='result_scoreboard:WIN_STR',
@@ -162,13 +210,14 @@ class ResultScoreboard(StatefulScene):
             920, 340, 100, 70,
             img_file='v2_result_scoreboard.png',
             threshold=0.90,
-            orig_threshold=0.10,
+            orig_threshold=0.30,
             bg_method=matcher.MM_DARK(visibility=(0, 16)),
             fg_method=matcher.MM_NOT_DARK(visibility=(16, 255)),
             label='result_scoreboard:LOSE',
             debug=debug,
         )
         self.number_recoginizer = Number2Classifier()
+
 
 if __name__ == "__main__":
     ResultScoreboard.main_func()

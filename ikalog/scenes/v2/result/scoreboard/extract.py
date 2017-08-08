@@ -24,7 +24,7 @@ import numpy as np
 from ikalog.utils.image_filters.filters import MM_COLOR_BY_HUE
 from ikalog.scenes.v2.result.scoreboard.transform import transform_scoreboard
 
-_top_list = [64, 120, 176, 232]
+_top_list = [66, 121, 177, 232]
 
 """
 Arrow Detection
@@ -32,7 +32,7 @@ Arrow Detection
 
 
 def find_my_entry_index(all_players):
-    loss_func = lambda p: np.sum(image_filters.MM_DARK()(p['img_selected']))
+    def loss_func(p): return np.sum(image_filters.MM_DARK()(p['img_selected']))
     losses = list(map(loss_func, all_players))
     return np.argmin(losses)
 
@@ -40,21 +40,22 @@ def find_my_entry_index(all_players):
 def find_my_entry(all_players):
     return all_players[find_my_entry_index(all_players)]
 
+
 """
 Entry extraction
 """
 
 
 def extract_entry(img_entry):
-    hh = int(img_entry.shape[0] * 0.5)
+    hh = int(img_entry.shape[0] * 0.52)
     return {
         'img_selected': img_entry[:, 45:45 + 30, :],
         'img_player': img_entry[:, 105:105 + 50, :],
-        'img_weapon': img_entry[:, 153: 153 + 45, :],
+        'img_weapon': img_entry[:, 195: 195 + 45, :],
         'img_name': img_entry[:, 197: 192 + 200, :],
         'img_score': img_entry[:, 390:390 + 100, :],
-        'img_kill': img_entry[:hh, 545: 545 + 30, :],
-        'img_death': img_entry[hh:, 545: 545 + 30, :],
+        'img_kill_or_assist': img_entry[hh:, 515: 515 + 30, :],
+        'img_special': img_entry[hh:, 561: 561 + 30, :],
     }
 
 
