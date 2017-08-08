@@ -231,6 +231,17 @@ class StatInkCompositor(object):
         if me is None:
             return
 
+        # Spl2: Use IkaLog-counted values for kill and death counts
+        kills = context['game'].get('kills')
+        if kills is not None:
+            me['kills'] = kills
+            payload['kill'] = kills
+
+        death = context['game'].get('death')
+        if death is not None:
+            me['death'] = death
+            payload['death'] = death
+
         payload['result'] = IkaUtils.getWinLoseText(
             context['game']['won'],
             win_text='win',
@@ -238,9 +249,9 @@ class StatInkCompositor(object):
             unknown_text=None
         )
 
-        weapon = me.get('weapon')
-        if weapon:
-            payload['weapon'] = weapon
+        # weapon = me.get('weapon')
+        # if weapon:
+        #     payload['weapon'] = weapon
 
         if context['game'].get('is_fes'):
             payload['gender'] = me['gender_en']
@@ -251,6 +262,7 @@ class StatInkCompositor(object):
                 ['int', 'rank_in_team', 'rank_in_team'],
                 ['int', 'kill', 'kills'],
                 ['int', 'death', 'deaths'],
+                ['int', 'special', 'special'],
                 ['int', 'level', 'rank'],
                 ['int', 'my_point', 'score'],
             ], payload, me)
@@ -265,13 +277,14 @@ class StatInkCompositor(object):
                     ['int', 'rank_in_team', 'rank_in_team'],
                     ['int', 'kill', 'kills'],
                     ['int', 'death', 'deaths'],
+                    ['int', 'special', 'special'],
                     ['int', 'level', 'rank'],
                     ['int', 'point', 'score'],
                 ], player, e)
 
-            weapon = e.get('weapon')
-            if weapon:
-                player['weapon'] = weapon
+            #weapon = e.get('weapon')
+            # if weapon:
+            #    player['weapon'] = weapon
 
             if payload.get('rule') != 'nawabari':
                 if 'udemae_pre' in e:
