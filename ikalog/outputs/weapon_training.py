@@ -43,9 +43,8 @@ class WeaponTraining(object):
             basename = time.strftime("ikabattle_%Y%m%d_%H%M", time.localtime())
         i = 0
         for e in context['game']['players']:
-            if not ('weapon' in e):
-                continue
-            destdir = "%s/%s" % (self.dest_dir, e['weapon'])
+            weapon_id = e.get('weapon', 'confused')
+            destdir = "%s/%s" % (self.dest_dir, weapon_id)
             destfile = "%s/%s.%d.png" % (destdir, basename, i)
             print(destfile)
             try:
