@@ -25,6 +25,8 @@ import cv2
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 
+from ikalog.ml.classifier import ImageClassifier
+
 
 class V2GameSuperJump(StatefulScene):
 
@@ -34,20 +36,21 @@ class V2GameSuperJump(StatefulScene):
         self._last_event_msec = - 100 * 1000
 
     def _state_default(self, context):
-        matched = self.match1(context)
+        matched = self._c_start.predict_frame(context['engine']['frame']) >= 0
 
         if matched:
             self._switch_state(self._state_tracking)
-            return True
+            self._call_plugins('on_game_map_open')
 
-        return False
+        return matched
 
     def _state_tracking(self, context):
-        matched = self.match1(context)
+        matched = self._c_start.predict_frame(context['engine']['frame']) >= 0
 
         # Exit the scene if it doesn't matched for 1000ms
         if (not matched) and (not self.matched_in(context, 1000)):
             self._switch_state(self._state_default)
+            self._call_plugins('on_game_map_close')
 
         return matched
 
@@ -65,51 +68,9 @@ class V2GameSuperJump(StatefulScene):
         pass
 
     def _init_scene(self, debug=False):
-        self._masks = [
-            IkaMatcher(
-                32, 344, 50, 50,
-                img_file='v2_game_superjump.png',
-                bg_method=matcher.MM_DARK(),
-                fg_method=matcher.MM_WHITE(),
-                threshold=0.8,
-                orig_threshold=0.4,
-                label='superjump_left',
-                debug=debug,
-            ),
+        self._c_start = ImageClassifier()
+        self._c_start.load_from_file('data/spl2.game_map.dat')
 
-            IkaMatcher(
-                977, 344, 50, 50,
-                img_file='v2_game_superjump.png',
-                bg_method=matcher.MM_DARK(),
-                fg_method=matcher.MM_WHITE(),
-                threshold=0.8,
-                orig_threshold=0.4,
-                label='superjump_right',
-                debug=debug,
-            ),
-
-            IkaMatcher(
-                509, 36, 50, 50,
-                img_file='v2_game_superjump.png',
-                bg_method=matcher.MM_DARK(),
-                fg_method=matcher.MM_WHITE(),
-                threshold=0.8,
-                orig_threshold=0.4,
-                label='superjump_top',
-                debug=debug,
-            ),
-
-            IkaMatcher(
-                506, 654, 267, 48,
-                img_file='v2_game_superjump.png',
-                bg_method=matcher.MM_DARK(),
-                fg_method=matcher.MM_WHITE(),
-                threshold=0.8,
-                orig_threshold=0.4,
-                label='superjump_top',
-                debug=debug,
-            ),
-        ]
 
 if __name__ == "__main__":
     V2GameSuperJump.main_func()
