@@ -39,9 +39,10 @@ def transform_scoreboard(frame):
     img_lose_team = cv2.warpAffine(frame, mat_lose_team, dim)
 
     return {
-        'win': img_win_team[_top_win:_top_win + _height, 640:, :],
+        'win': img_win_team[_top_win:_top_win + _height, 639:, :],
         'lose': img_lose_team[_top_lose:_top_lose + _height, 640:, :],
     }
+
 
 if __name__ == '__main__':
     img = cv2.imread(
