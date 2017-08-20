@@ -26,6 +26,8 @@ import numpy as np
 from ikalog.ml import classifier
 
 
+_array0to1280 = np.array(range(1280), dtype=np.int32)
+
 def get_min_and_max(array_2d):
     """
     ゼロエリアを除いた最小枠を求める
@@ -36,9 +38,8 @@ def get_min_and_max(array_2d):
     # print(sum_x)
     # print(sum_y)
 
-    array0to200 = np.array(range(200), dtype=np.int32)
-    x_pixels = np.extract(sum_x > 0, array0to200)
-    y_pixels = np.extract(sum_y > 0, array0to200)
+    x_pixels = np.extract(sum_x > 0, _array0to1280)
+    y_pixels = np.extract(sum_y > 0, _array0to1280)
     #print('x_pixels', x_pixels)
     #print('y_pixels', y_pixels)
 
