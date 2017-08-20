@@ -1,0 +1,3278 @@
+[
+    {
+        "key": "sshooter",
+        "splatnet": 40,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "スプラシューター",
+            "en_US": "Splattershot",
+            "en_GB": "Splattershot",
+            "es_ES": "Lanzatintas",
+            "es_MX": "Rociador",
+            "fr_FR": "Liquidateur",
+            "fr_CA": "Liquéficateur"
+        },
+        "sub": {
+            "key": "quickbomb",
+            "name": {
+                "ja_JP": "クイックボム",
+                "en_US": "Burst Bomb",
+                "en_GB": "Burst Bomb",
+                "es_ES": "Bomba rápida",
+                "es_MX": "Bomba rápida",
+                "fr_FR": "Bombe ballon",
+                "fr_CA": "Bombe ballon"
+            }
+        },
+        "special": {
+            "key": "chakuchi",
+            "name": {
+                "ja_JP": "スーパーチャクチ",
+                "en_US": "Splashdown",
+                "en_GB": "Splashdown",
+                "es_ES": "Salto explosivo",
+                "es_MX": "Salto explosivo",
+                "fr_FR": "Choc chromatique",
+                "fr_CA": "Choc chromatique"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "sshooter"
+    },
+    {
+        "key": "maneuver",
+        "splatnet": 5010,
+        "type": {
+            "key": "maneuver",
+            "name": {
+                "ja_JP": "マニューバー",
+                "en_US": "Dualies",
+                "en_GB": "Dualies",
+                "es_ES": "Dualies",
+                "es_MX": "Dualies",
+                "fr_FR": "Dualies",
+                "fr_CA": "Dualies"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "スプラマニューバー",
+            "en_US": "Splat Dualies",
+            "en_GB": "Splat Dualies",
+            "es_ES": "Dual diffusor",
+            "es_MX": "Dual diffusor",
+            "fr_FR": "Double encreur",
+            "fr_CA": "Double encreur"
+        },
+        "sub": {
+            "key": "quickbomb",
+            "name": {
+                "ja_JP": "クイックボム",
+                "en_US": "Burst Bomb",
+                "en_GB": "Burst Bomb",
+                "es_ES": "Bomba rápida",
+                "es_MX": "Bomba rápida",
+                "fr_FR": "Bombe ballon",
+                "fr_CA": "Bombe ballon"
+            }
+        },
+        "special": {
+            "key": "missile",
+            "name": {
+                "ja_JP": "マルチミサイル",
+                "en_US": "Tenta Missiles",
+                "en_GB": "Tenta Missiles",
+                "es_ES": "Lanzamisiles",
+                "es_MX": "Lanzamisiles",
+                "fr_FR": "Multi-missile",
+                "fr_CA": "Multi-missile"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "maneuver"
+    },
+    {
+        "key": "splatroller",
+        "splatnet": 1010,
+        "type": {
+            "key": "roller",
+            "name": {
+                "ja_JP": "ローラー",
+                "en_US": "Rollers",
+                "en_GB": "Rollers",
+                "es_ES": "Rodillos",
+                "es_MX": "Rodillos",
+                "fr_FR": "Rouleau",
+                "fr_CA": "Rouleau"
+            },
+            "category": {
+                "key": "roller",
+                "name": {
+                    "ja_JP": "ローラー",
+                    "en_US": "Rollers",
+                    "en_GB": "Rollers",
+                    "es_ES": "Rodillos",
+                    "es_MX": "Rodillos",
+                    "fr_FR": "Rouleau",
+                    "fr_CA": "Rouleau"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "スプラローラー",
+            "en_US": "Splat Roller",
+            "en_GB": "Splat Roller",
+            "es_ES": "Rodillo básico",
+            "es_MX": "Rodillo básico",
+            "fr_FR": "Rouleau",
+            "fr_CA": "Rouleau"
+        },
+        "sub": {
+            "key": "curlingbomb",
+            "name": {
+                "ja_JP": "カーリングボム",
+                "en_US": "Curling Bomb",
+                "en_GB": "Curling Bomb",
+                "es_ES": "Bomba deslizante",
+                "es_MX": "Bomba deslizante",
+                "fr_FR": "Bombe curling",
+                "fr_CA": "Bombe curling"
+            }
+        },
+        "special": {
+            "key": "chakuchi",
+            "name": {
+                "ja_JP": "スーパーチャクチ",
+                "en_US": "Splashdown",
+                "en_GB": "Splashdown",
+                "es_ES": "Salto explosivo",
+                "es_MX": "Salto explosivo",
+                "fr_FR": "Choc chromatique",
+                "fr_CA": "Choc chromatique"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "splatroller"
+    },
+    {
+        "key": "splatcharger",
+        "splatnet": 2010,
+        "type": {
+            "key": "charger",
+            "name": {
+                "ja_JP": "チャージャー",
+                "en_US": "Chargers",
+                "en_GB": "Chargers",
+                "es_ES": "Cargatintas",
+                "es_MX": "Cargatintas",
+                "fr_FR": "Fusil",
+                "fr_CA": "Fusil"
+            },
+            "category": {
+                "key": "charger",
+                "name": {
+                    "ja_JP": "チャージャー",
+                    "en_US": "Chargers",
+                    "en_GB": "Chargers",
+                    "es_ES": "Cargatintas",
+                    "es_MX": "Cargatintas",
+                    "fr_FR": "Fusil",
+                    "fr_CA": "Fusil"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "スプラチャージャー",
+            "en_US": "Splat Charger",
+            "en_GB": "Splat Charger",
+            "es_ES": "Cargatintas",
+            "es_MX": "Cargatintas",
+            "fr_FR": "Concentraceur",
+            "fr_CA": "Concentraceur"
+        },
+        "sub": {
+            "key": "splashbomb",
+            "name": {
+                "ja_JP": "スプラッシュボム",
+                "en_US": "Splat Bomb",
+                "en_GB": "Splat Bomb",
+                "es_ES": "Bomba básica",
+                "es_MX": "Bomba básica",
+                "fr_FR": "Bombe splash",
+                "fr_CA": "Bombe splash"
+            }
+        },
+        "special": {
+            "key": "presser",
+            "name": {
+                "ja_JP": "ハイパープレッサー",
+                "en_US": "Sting Ray",
+                "en_GB": "Sting Ray",
+                "es_ES": "Rayo tintódico",
+                "es_MX": "Rayo tintódico",
+                "fr_FR": "Pigmalance",
+                "fr_CA": "Pigmalance"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "splatcharger"
+    },
+    {
+        "key": "prime",
+        "splatnet": 70,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "プライムシューター",
+            "en_US": "Splattershot Pro",
+            "en_GB": "Splattershot Pro",
+            "es_ES": "Lanzatintas plus",
+            "es_MX": "Lanzatintas plus",
+            "fr_FR": "Liquidateur pro",
+            "fr_CA": "Liquéficateur pro"
+        },
+        "sub": {
+            "key": "pointsensor",
+            "name": {
+                "ja_JP": "ポイントセンサー",
+                "en_US": "Point Sensor",
+                "en_GB": "Point Sensor",
+                "es_ES": "Rastreador",
+                "es_MX": "Rastreador",
+                "fr_FR": "Détecteur",
+                "fr_CA": "Détecteur"
+            }
+        },
+        "special": {
+            "key": "amefurashi",
+            "name": {
+                "ja_JP": "アメフラシ",
+                "en_US": "Ink Storm",
+                "en_GB": "Ink Storm",
+                "es_ES": "Atormentador",
+                "es_MX": "Atormentador",
+                "fr_FR": "Pluie d'encre",
+                "fr_CA": "Pluie d'encre"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "prime"
+    },
+    {
+        "key": "sharp",
+        "splatnet": 20,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "シャープマーカー",
+            "en_US": "Splash-o-matic",
+            "en_GB": "Splash-o-matic",
+            "es_ES": "Marcador fino",
+            "es_MX": "Marcador fino",
+            "fr_FR": "Marqueur léger",
+            "fr_CA": "Marqueur léger"
+        },
+        "sub": {
+            "key": "poisonmist",
+            "name": {
+                "ja_JP": "ポイズンミスト",
+                "en_US": "Toxic Mist",
+                "en_GB": "Toxic Mist",
+                "es_ES": "Toxic Mist",
+                "es_MX": "Toxic Mist",
+                "fr_FR": "Brume toxique",
+                "fr_CA": "Brume toxique"
+            }
+        },
+        "special": {
+            "key": "jetpack",
+            "name": {
+                "ja_JP": "ジェットパック",
+                "en_US": "Inkjet",
+                "en_GB": "Inkjet",
+                "es_ES": "Propulsor",
+                "es_MX": "Propulsor",
+                "fr_FR": "Chromo-jet",
+                "fr_CA": "Chromo-jet"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "sharp"
+    },
+    {
+        "key": "hotblaster",
+        "splatnet": 210,
+        "type": {
+            "key": "blaster",
+            "name": {
+                "ja_JP": "ブラスター",
+                "en_US": "Blasters",
+                "en_GB": "Blasters",
+                "es_ES": "Devastadors",
+                "es_MX": "Devastadors",
+                "fr_FR": "Éclablaster",
+                "fr_CA": "Éclablaster"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ホットブラスター",
+            "en_US": "Blaster",
+            "en_GB": "Blaster",
+            "es_ES": "Devastador",
+            "es_MX": "Devastador",
+            "fr_FR": "Éclablaster",
+            "fr_CA": "Éclablasteur"
+        },
+        "sub": {
+            "key": "poisonmist",
+            "name": {
+                "ja_JP": "ポイズンミスト",
+                "en_US": "Toxic Mist",
+                "en_GB": "Toxic Mist",
+                "es_ES": "Toxic Mist",
+                "es_MX": "Toxic Mist",
+                "fr_FR": "Brume toxique",
+                "fr_CA": "Brume toxique"
+            }
+        },
+        "special": {
+            "key": "chakuchi",
+            "name": {
+                "ja_JP": "スーパーチャクチ",
+                "en_US": "Splashdown",
+                "en_GB": "Splashdown",
+                "es_ES": "Salto explosivo",
+                "es_MX": "Salto explosivo",
+                "fr_FR": "Choc chromatique",
+                "fr_CA": "Choc chromatique"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "hotblaster"
+    },
+    {
+        "key": "dynamo",
+        "splatnet": 1020,
+        "type": {
+            "key": "roller",
+            "name": {
+                "ja_JP": "ローラー",
+                "en_US": "Rollers",
+                "en_GB": "Rollers",
+                "es_ES": "Rodillos",
+                "es_MX": "Rodillos",
+                "fr_FR": "Rouleau",
+                "fr_CA": "Rouleau"
+            },
+            "category": {
+                "key": "roller",
+                "name": {
+                    "ja_JP": "ローラー",
+                    "en_US": "Rollers",
+                    "en_GB": "Rollers",
+                    "es_ES": "Rodillos",
+                    "es_MX": "Rodillos",
+                    "fr_FR": "Rouleau",
+                    "fr_CA": "Rouleau"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ダイナモローラー",
+            "en_US": "Dynamo Roller",
+            "en_GB": "Dynamo Roller",
+            "es_ES": "Dinamorrodillo",
+            "es_MX": "Dinamorrodillo",
+            "fr_FR": "Dynamo-rouleau",
+            "fr_CA": "Dynamo-rouleau"
+        },
+        "sub": {
+            "key": "trap",
+            "name": {
+                "ja_JP": "トラップ",
+                "en_US": "Ink Mine",
+                "en_GB": "Ink Mine",
+                "es_ES": "Bomba Trampa",
+                "es_MX": "Bomba Trampa",
+                "fr_FR": "Mine",
+                "fr_CA": "Mine"
+            }
+        },
+        "special": {
+            "key": "presser",
+            "name": {
+                "ja_JP": "ハイパープレッサー",
+                "en_US": "Sting Ray",
+                "en_GB": "Sting Ray",
+                "es_ES": "Rayo tintódico",
+                "es_MX": "Rayo tintódico",
+                "fr_FR": "Pigmalance",
+                "fr_CA": "Pigmalance"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "dynamo"
+    },
+    {
+        "key": "hokusai",
+        "splatnet": 1110,
+        "type": {
+            "key": "brush",
+            "name": {
+                "ja_JP": "フデ",
+                "en_US": "Brushes",
+                "en_GB": "Brushes",
+                "es_ES": "Brochas",
+                "es_MX": "Brochas",
+                "fr_FR": "Épinceau",
+                "fr_CA": "Épinceau"
+            },
+            "category": {
+                "key": "roller",
+                "name": {
+                    "ja_JP": "ローラー",
+                    "en_US": "Rollers",
+                    "en_GB": "Rollers",
+                    "es_ES": "Rodillos",
+                    "es_MX": "Rodillos",
+                    "fr_FR": "Rouleau",
+                    "fr_CA": "Rouleau"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ホクサイ",
+            "en_US": "Octobrush",
+            "en_GB": "Octobrush",
+            "es_ES": "Brocha",
+            "es_MX": "Brocha",
+            "fr_FR": "Épinceau brosse",
+            "fr_CA": "Épinceau brosse"
+        },
+        "sub": {
+            "key": "robotbomb",
+            "name": {
+                "ja_JP": "ロボットボム",
+                "en_US": "Autobomb",
+                "en_GB": "Autobomb",
+                "es_ES": "Autobomb",
+                "es_MX": "Autobomb",
+                "fr_FR": "Bombe robot",
+                "fr_CA": "Bombe robot"
+            }
+        },
+        "special": {
+            "key": "jetpack",
+            "name": {
+                "ja_JP": "ジェットパック",
+                "en_US": "Inkjet",
+                "en_GB": "Inkjet",
+                "es_ES": "Propulsor",
+                "es_MX": "Propulsor",
+                "fr_FR": "Chromo-jet",
+                "fr_CA": "Chromo-jet"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "hokusai"
+    },
+    {
+        "key": "splatscope",
+        "splatnet": 2020,
+        "type": {
+            "key": "charger",
+            "name": {
+                "ja_JP": "チャージャー",
+                "en_US": "Chargers",
+                "en_GB": "Chargers",
+                "es_ES": "Cargatintas",
+                "es_MX": "Cargatintas",
+                "fr_FR": "Fusil",
+                "fr_CA": "Fusil"
+            },
+            "category": {
+                "key": "charger",
+                "name": {
+                    "ja_JP": "チャージャー",
+                    "en_US": "Chargers",
+                    "en_GB": "Chargers",
+                    "es_ES": "Cargatintas",
+                    "es_MX": "Cargatintas",
+                    "fr_FR": "Fusil",
+                    "fr_CA": "Fusil"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "スプラスコープ",
+            "en_US": "Splatterscope",
+            "en_GB": "Splatterscope",
+            "es_ES": "Cargatintas con mira",
+            "es_MX": "Cargatintas con mira",
+            "fr_FR": "Concentraceur zoom",
+            "fr_CA": "Concentraceur zoom"
+        },
+        "sub": {
+            "key": "splashbomb",
+            "name": {
+                "ja_JP": "スプラッシュボム",
+                "en_US": "Splat Bomb",
+                "en_GB": "Splat Bomb",
+                "es_ES": "Bomba básica",
+                "es_MX": "Bomba básica",
+                "fr_FR": "Bombe splash",
+                "fr_CA": "Bombe splash"
+            }
+        },
+        "special": {
+            "key": "presser",
+            "name": {
+                "ja_JP": "ハイパープレッサー",
+                "en_US": "Sting Ray",
+                "en_GB": "Sting Ray",
+                "es_ES": "Rayo tintódico",
+                "es_MX": "Rayo tintódico",
+                "fr_FR": "Pigmalance",
+                "fr_CA": "Pigmalance"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "splatcharger"
+    },
+    {
+        "key": "bucketslosher",
+        "splatnet": 3000,
+        "type": {
+            "key": "slosher",
+            "name": {
+                "ja_JP": "スロッシャー",
+                "en_US": "Sloshers",
+                "en_GB": "Sloshers",
+                "es_ES": "Derramatics",
+                "es_MX": "Derramatics",
+                "fr_FR": "Seauceur",
+                "fr_CA": "Seauceur"
+            },
+            "category": {
+                "key": "slosher",
+                "name": {
+                    "ja_JP": "スロッシャー",
+                    "en_US": "Sloshers",
+                    "en_GB": "Sloshers",
+                    "es_ES": "Derramatics",
+                    "es_MX": "Derramatics",
+                    "fr_FR": "Seauceur",
+                    "fr_CA": "Seauceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "バケットスロッシャー",
+            "en_US": "Slosher",
+            "en_GB": "Slosher",
+            "es_ES": "Derramatic",
+            "es_MX": "Derramatic",
+            "fr_FR": "Seauceur",
+            "fr_CA": "Seauceur"
+        },
+        "sub": {
+            "key": "kyubanbomb",
+            "name": {
+                "ja_JP": "キューバンボム",
+                "en_US": "Suction Bomb",
+                "en_GB": "Suction Bomb",
+                "es_ES": "Bomba ventosa",
+                "es_MX": "Bomba ventosa",
+                "fr_FR": "Bombe gluante",
+                "fr_CA": "Bombe gluante"
+            }
+        },
+        "special": {
+            "key": "missile",
+            "name": {
+                "ja_JP": "マルチミサイル",
+                "en_US": "Tenta Missiles",
+                "en_GB": "Tenta Missiles",
+                "es_ES": "Lanzamisiles",
+                "es_MX": "Lanzamisiles",
+                "fr_FR": "Multi-missile",
+                "fr_CA": "Multi-missile"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "bucketslosher"
+    },
+    {
+        "key": "barrelspinner",
+        "splatnet": 4010,
+        "type": {
+            "key": "splatling",
+            "name": {
+                "ja_JP": "スピナー",
+                "en_US": "Splatlings",
+                "en_GB": "Splatlings",
+                "es_ES": "Tintralladoras",
+                "es_MX": "Garabateadors",
+                "fr_FR": "Badigeonneur",
+                "fr_CA": "Badigeonneur"
+            },
+            "category": {
+                "key": "splatling",
+                "name": {
+                    "ja_JP": "スピナー",
+                    "en_US": "Splatlings",
+                    "en_GB": "Splatlings",
+                    "es_ES": "Tintralladoras",
+                    "es_MX": "Garabateadors",
+                    "fr_FR": "Badigeonneur",
+                    "fr_CA": "Badigeonneur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "バレルスピナー",
+            "en_US": "Heavy Splatling",
+            "en_GB": "Heavy Splatling",
+            "es_ES": "Tintralladora",
+            "es_MX": "Tintralladora",
+            "fr_FR": "Badigeonneur",
+            "fr_CA": "Badigeonneur"
+        },
+        "sub": {
+            "key": "sprinkler",
+            "name": {
+                "ja_JP": "スプリンクラー",
+                "en_US": "Sprinkler",
+                "en_GB": "Sprinkler",
+                "es_ES": "Aspersor",
+                "es_MX": "Aspersor",
+                "fr_FR": "Fontaine",
+                "fr_CA": "Fontaine"
+            }
+        },
+        "special": {
+            "key": "presser",
+            "name": {
+                "ja_JP": "ハイパープレッサー",
+                "en_US": "Sting Ray",
+                "en_GB": "Sting Ray",
+                "es_ES": "Rayo tintódico",
+                "es_MX": "Rayo tintódico",
+                "fr_FR": "Pigmalance",
+                "fr_CA": "Pigmalance"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "barrelspinner"
+    },
+    {
+        "key": "sshooter_collabo",
+        "splatnet": 41,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "スプラシューターコラボ",
+            "en_US": "Tentatek Splattershot",
+            "en_GB": "Tentatek Splattershot",
+            "es_ES": "Lanzatintas B",
+            "es_MX": "Rociador Tentáctica",
+            "fr_FR": "Liquidateur griffé",
+            "fr_CA": "Liquéficateur Tentatek"
+        },
+        "sub": {
+            "key": "splashbomb",
+            "name": {
+                "ja_JP": "スプラッシュボム",
+                "en_US": "Splat Bomb",
+                "en_GB": "Splat Bomb",
+                "es_ES": "Bomba básica",
+                "es_MX": "Bomba básica",
+                "fr_FR": "Bombe splash",
+                "fr_CA": "Bombe splash"
+            }
+        },
+        "special": {
+            "key": "jetpack",
+            "name": {
+                "ja_JP": "ジェットパック",
+                "en_US": "Inkjet",
+                "en_GB": "Inkjet",
+                "es_ES": "Propulsor",
+                "es_MX": "Propulsor",
+                "fr_FR": "Chromo-jet",
+                "fr_CA": "Chromo-jet"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "sshooter"
+    },
+    {
+        "key": "wakaba",
+        "splatnet": 10,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "わかばシューター",
+            "en_US": "Splattershot Jr.",
+            "en_GB": "Splattershot Jr.",
+            "es_ES": "Splattershot Jr.",
+            "es_MX": "Splattershot Jr.",
+            "fr_FR": "Liquidateur Jr.",
+            "fr_CA": "Liquéficateur ultra"
+        },
+        "sub": {
+            "key": "splashbomb",
+            "name": {
+                "ja_JP": "スプラッシュボム",
+                "en_US": "Splat Bomb",
+                "en_GB": "Splat Bomb",
+                "es_ES": "Bomba básica",
+                "es_MX": "Bomba básica",
+                "fr_FR": "Bombe splash",
+                "fr_CA": "Bombe splash"
+            }
+        },
+        "special": {
+            "key": "armor",
+            "name": {
+                "ja_JP": "インクアーマー",
+                "en_US": "Ink Armor",
+                "en_GB": "Ink Armor",
+                "es_ES": "Ink Armor",
+                "es_MX": "Ink Armor",
+                "fr_FR": "Armure d'encre",
+                "fr_CA": "Armure d'encre"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "wakaba"
+    },
+    {
+        "key": "sputtery",
+        "splatnet": 5000,
+        "type": {
+            "key": "maneuver",
+            "name": {
+                "ja_JP": "マニューバー",
+                "en_US": "Dualies",
+                "en_GB": "Dualies",
+                "es_ES": "Dualies",
+                "es_MX": "Dualies",
+                "fr_FR": "Dualies",
+                "fr_CA": "Dualies"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "スパッタリー",
+            "en_US": "Dapple Dualies",
+            "en_GB": "Dapple Dualies",
+            "es_ES": "Dapple Dualies",
+            "es_MX": "Dapple Dualies",
+            "fr_FR": "Double moucheteur",
+            "fr_CA": "Double moucheteur"
+        },
+        "sub": {
+            "key": "jumpbeacon",
+            "name": {
+                "ja_JP": "ジャンプビーコン",
+                "en_US": "Squid Beakon",
+                "en_GB": "Squid Beakon",
+                "es_ES": "Squid Beakon",
+                "es_MX": "Squid Beakon",
+                "fr_FR": "Balise de saut",
+                "fr_CA": "Balise de saut"
+            }
+        },
+        "special": {
+            "key": "pitcher",
+            "name": {
+                "ja_JP": "ボムピッチャー",
+                "en_US": "Bomb Launcher",
+                "en_GB": "Bomb Launcher",
+                "es_ES": "Bomb Launcher",
+                "es_MX": "Bomb Launcher",
+                "fr_FR": "Lanceur de bombes",
+                "fr_CA": "Lanceur de bombes"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "sputtery"
+    },
+    {
+        "key": "clashblaster",
+        "splatnet": 230,
+        "type": {
+            "key": "blaster",
+            "name": {
+                "ja_JP": "ブラスター",
+                "en_US": "Blasters",
+                "en_GB": "Blasters",
+                "es_ES": "Devastadors",
+                "es_MX": "Devastadors",
+                "fr_FR": "Éclablaster",
+                "fr_CA": "Éclablaster"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "クラッシュブラスター",
+            "en_US": "Clash Blaster",
+            "en_GB": "Clash Blaster",
+            "es_ES": "Clash Blaster",
+            "es_MX": "Clash Blaster",
+            "fr_FR": "Rafablaster",
+            "fr_CA": "Rafalblasteur"
+        },
+        "sub": {
+            "key": "splashbomb",
+            "name": {
+                "ja_JP": "スプラッシュボム",
+                "en_US": "Splat Bomb",
+                "en_GB": "Splat Bomb",
+                "es_ES": "Bomba básica",
+                "es_MX": "Bomba básica",
+                "fr_FR": "Bombe splash",
+                "fr_CA": "Bombe splash"
+            }
+        },
+        "special": {
+            "key": "presser",
+            "name": {
+                "ja_JP": "ハイパープレッサー",
+                "en_US": "Sting Ray",
+                "en_GB": "Sting Ray",
+                "es_ES": "Rayo tintódico",
+                "es_MX": "Rayo tintódico",
+                "fr_FR": "Pigmalance",
+                "fr_CA": "Pigmalance"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "clashblaster"
+    },
+    {
+        "key": "soytuber",
+        "splatnet": 2060,
+        "type": {
+            "key": "charger",
+            "name": {
+                "ja_JP": "チャージャー",
+                "en_US": "Chargers",
+                "en_GB": "Chargers",
+                "es_ES": "Cargatintas",
+                "es_MX": "Cargatintas",
+                "fr_FR": "Fusil",
+                "fr_CA": "Fusil"
+            },
+            "category": {
+                "key": "charger",
+                "name": {
+                    "ja_JP": "チャージャー",
+                    "en_US": "Chargers",
+                    "en_GB": "Chargers",
+                    "es_ES": "Cargatintas",
+                    "es_MX": "Cargatintas",
+                    "fr_FR": "Fusil",
+                    "fr_CA": "Fusil"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ソイチューバー",
+            "en_US": "Goo Tuber",
+            "en_GB": "Goo Tuber",
+            "es_ES": "Goo Tuber",
+            "es_MX": "Goo Tuber",
+            "fr_FR": "Détubeur",
+            "fr_CA": "Détubeur"
+        },
+        "sub": {
+            "key": "kyubanbomb",
+            "name": {
+                "ja_JP": "キューバンボム",
+                "en_US": "Suction Bomb",
+                "en_GB": "Suction Bomb",
+                "es_ES": "Bomba ventosa",
+                "es_MX": "Bomba ventosa",
+                "fr_FR": "Bombe gluante",
+                "fr_CA": "Bombe gluante"
+            }
+        },
+        "special": {
+            "key": "chakuchi",
+            "name": {
+                "ja_JP": "スーパーチャクチ",
+                "en_US": "Splashdown",
+                "en_GB": "Splashdown",
+                "es_ES": "Salto explosivo",
+                "es_MX": "Salto explosivo",
+                "fr_FR": "Choc chromatique",
+                "fr_CA": "Choc chromatique"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "soytuber"
+    },
+    {
+        "key": "jetsweeper",
+        "splatnet": 90,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ジェットスイーパー",
+            "en_US": "Jet Squelcher",
+            "en_GB": "Jet Squelcher",
+            "es_ES": "Jet Squelcher",
+            "es_MX": "Jet Squelcher",
+            "fr_FR": "Nettoyeur XL",
+            "fr_CA": "Méganettoyeur"
+        },
+        "sub": {
+            "key": "poisonmist",
+            "name": {
+                "ja_JP": "ポイズンミスト",
+                "en_US": "Toxic Mist",
+                "en_GB": "Toxic Mist",
+                "es_ES": "Toxic Mist",
+                "es_MX": "Toxic Mist",
+                "fr_FR": "Brume toxique",
+                "fr_CA": "Brume toxique"
+            }
+        },
+        "special": {
+            "key": "jetpack",
+            "name": {
+                "ja_JP": "ジェットパック",
+                "en_US": "Inkjet",
+                "en_GB": "Inkjet",
+                "es_ES": "Propulsor",
+                "es_MX": "Propulsor",
+                "fr_FR": "Chromo-jet",
+                "fr_CA": "Chromo-jet"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "jetsweeper"
+    },
+    {
+        "key": "nzap85",
+        "splatnet": 60,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "N-ZAP85",
+            "en_US": "N-ZAP '85",
+            "en_GB": "N-ZAP '85",
+            "es_ES": "N-ZAP '85",
+            "es_MX": "N-ZAP '85",
+            "fr_FR": "N-ZAP 85",
+            "fr_CA": "N-ZAP 85"
+        },
+        "sub": {
+            "key": "kyubanbomb",
+            "name": {
+                "ja_JP": "キューバンボム",
+                "en_US": "Suction Bomb",
+                "en_GB": "Suction Bomb",
+                "es_ES": "Bomba ventosa",
+                "es_MX": "Bomba ventosa",
+                "fr_FR": "Bombe gluante",
+                "fr_CA": "Bombe gluante"
+            }
+        },
+        "special": {
+            "key": "armor",
+            "name": {
+                "ja_JP": "インクアーマー",
+                "en_US": "Ink Armor",
+                "en_GB": "Ink Armor",
+                "es_ES": "Ink Armor",
+                "es_MX": "Ink Armor",
+                "fr_FR": "Armure d'encre",
+                "fr_CA": "Armure d'encre"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "nzap85"
+    },
+    {
+        "key": "promodeler_rg",
+        "splatnet": 31,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "プロモデラーRG",
+            "en_US": "Aerospray RG",
+            "en_GB": "Aerospray RG",
+            "es_ES": "Aerospray RG",
+            "es_MX": "Aerospray RG",
+            "fr_FR": "Aérogun premium",
+            "fr_CA": "Pouche-pouche premium"
+        },
+        "sub": {
+            "key": "sprinkler",
+            "name": {
+                "ja_JP": "スプリンクラー",
+                "en_US": "Sprinkler",
+                "en_GB": "Sprinkler",
+                "es_ES": "Aspersor",
+                "es_MX": "Aspersor",
+                "fr_FR": "Fontaine",
+                "fr_CA": "Fontaine"
+            }
+        },
+        "special": {
+            "key": "sphere",
+            "name": {
+                "ja_JP": "イカスフィア",
+                "en_US": "Baller",
+                "en_GB": "Baller",
+                "es_ES": "Baller",
+                "es_MX": "Baller",
+                "fr_FR": "Chromo-sphère",
+                "fr_CA": "Chromo-sphère"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "promodeler_rg"
+    },
+    {
+        "key": "promodeler_mg",
+        "splatnet": 30,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "プロモデラーMG",
+            "en_US": "Aerospray MG",
+            "en_GB": "Aerospray MG",
+            "es_ES": "Aerospray MG",
+            "es_MX": "Aerospray MG",
+            "fr_FR": "Aérogun",
+            "fr_CA": "Pouche-pouche"
+        },
+        "sub": {
+            "key": "kyubanbomb",
+            "name": {
+                "ja_JP": "キューバンボム",
+                "en_US": "Suction Bomb",
+                "en_GB": "Suction Bomb",
+                "es_ES": "Bomba ventosa",
+                "es_MX": "Bomba ventosa",
+                "fr_FR": "Bombe gluante",
+                "fr_CA": "Bombe gluante"
+            }
+        },
+        "special": {
+            "key": "pitcher",
+            "name": {
+                "ja_JP": "ボムピッチャー",
+                "en_US": "Bomb Launcher",
+                "en_GB": "Bomb Launcher",
+                "es_ES": "Bomb Launcher",
+                "es_MX": "Bomb Launcher",
+                "fr_FR": "Lanceur de bombes",
+                "fr_CA": "Lanceur de bombes"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "promodeler_rg"
+    },
+    {
+        "key": "52gal",
+        "splatnet": 50,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": ".52ガロン",
+            "en_US": ".52 Gal",
+            "en_GB": ".52 Gal",
+            "es_ES": ".52 Gal",
+            "es_MX": ".52 Gal",
+            "fr_FR": "Calibre 2000",
+            "fr_CA": "Calibre 2000"
+        },
+        "sub": {
+            "key": "pointsensor",
+            "name": {
+                "ja_JP": "ポイントセンサー",
+                "en_US": "Point Sensor",
+                "en_GB": "Point Sensor",
+                "es_ES": "Rastreador",
+                "es_MX": "Rastreador",
+                "fr_FR": "Détecteur",
+                "fr_CA": "Détecteur"
+            }
+        },
+        "special": {
+            "key": "sphere",
+            "name": {
+                "ja_JP": "イカスフィア",
+                "en_US": "Baller",
+                "en_GB": "Baller",
+                "es_ES": "Baller",
+                "es_MX": "Baller",
+                "fr_FR": "Chromo-sphère",
+                "fr_CA": "Chromo-sphère"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "52gal"
+    },
+    {
+        "key": "96gal",
+        "splatnet": 80,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": ".96ガロン",
+            "en_US": ".96 Gal",
+            "en_GB": ".96 Gal",
+            "es_ES": ".96 Gal",
+            "es_MX": ".96 Gal",
+            "fr_FR": "Calibre 3000",
+            "fr_CA": "Calibre 3000"
+        },
+        "sub": {
+            "key": "sprinkler",
+            "name": {
+                "ja_JP": "スプリンクラー",
+                "en_US": "Sprinkler",
+                "en_GB": "Sprinkler",
+                "es_ES": "Aspersor",
+                "es_MX": "Aspersor",
+                "fr_FR": "Fontaine",
+                "fr_CA": "Fontaine"
+            }
+        },
+        "special": {
+            "key": "armor",
+            "name": {
+                "ja_JP": "インクアーマー",
+                "en_US": "Ink Armor",
+                "en_GB": "Ink Armor",
+                "es_ES": "Ink Armor",
+                "es_MX": "Ink Armor",
+                "fr_FR": "Armure d'encre",
+                "fr_CA": "Armure d'encre"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "96gal"
+    },
+    {
+        "key": "l3reelgun",
+        "splatnet": 300,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "L3リールガン",
+            "en_US": "L-3 Nozzlenose",
+            "en_GB": "L-3 Nozzlenose",
+            "es_ES": "L-3 Nozzlenose",
+            "es_MX": "L-3 Nozzlenose",
+            "fr_FR": "Arroseur léger",
+            "fr_CA": "Arroseur léger"
+        },
+        "sub": {
+            "key": "curlingbomb",
+            "name": {
+                "ja_JP": "カーリングボム",
+                "en_US": "Curling Bomb",
+                "en_GB": "Curling Bomb",
+                "es_ES": "Bomba deslizante",
+                "es_MX": "Bomba deslizante",
+                "fr_FR": "Bombe curling",
+                "fr_CA": "Bombe curling"
+            }
+        },
+        "special": {
+            "key": "sphere",
+            "name": {
+                "ja_JP": "イカスフィア",
+                "en_US": "Baller",
+                "en_GB": "Baller",
+                "es_ES": "Baller",
+                "es_MX": "Baller",
+                "fr_FR": "Chromo-sphère",
+                "fr_CA": "Chromo-sphère"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "l3reelgun"
+    },
+    {
+        "key": "h3reelgun",
+        "splatnet": 310,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "H3リールガン",
+            "en_US": "H-3 Nozzlenose",
+            "en_GB": "H-3 Nozzlenose",
+            "es_ES": "H-3 Nozzlenose",
+            "es_MX": "H-3 Nozzlenose",
+            "fr_FR": "Arroseur lourd",
+            "fr_CA": "Arroseur lourd"
+        },
+        "sub": {
+            "key": "pointsensor",
+            "name": {
+                "ja_JP": "ポイントセンサー",
+                "en_US": "Point Sensor",
+                "en_GB": "Point Sensor",
+                "es_ES": "Rastreador",
+                "es_MX": "Rastreador",
+                "fr_FR": "Détecteur",
+                "fr_CA": "Détecteur"
+            }
+        },
+        "special": {
+            "key": "missile",
+            "name": {
+                "ja_JP": "マルチミサイル",
+                "en_US": "Tenta Missiles",
+                "en_GB": "Tenta Missiles",
+                "es_ES": "Lanzamisiles",
+                "es_MX": "Lanzamisiles",
+                "fr_FR": "Multi-missile",
+                "fr_CA": "Multi-missile"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "h3reelgun"
+    },
+    {
+        "key": "hotblaster_custom",
+        "splatnet": 211,
+        "type": {
+            "key": "blaster",
+            "name": {
+                "ja_JP": "ブラスター",
+                "en_US": "Blasters",
+                "en_GB": "Blasters",
+                "es_ES": "Devastadors",
+                "es_MX": "Devastadors",
+                "fr_FR": "Éclablaster",
+                "fr_CA": "Éclablaster"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ホットブラスターカスタム",
+            "en_US": "Custom Blaster",
+            "en_GB": "Custom Blaster",
+            "es_ES": "Custom Blaster",
+            "es_MX": "Custom Blaster",
+            "fr_FR": "Éclablaster modifié",
+            "fr_CA": "Éclablasteur modifié"
+        },
+        "sub": {
+            "key": "robotbomb",
+            "name": {
+                "ja_JP": "ロボットボム",
+                "en_US": "Autobomb",
+                "en_GB": "Autobomb",
+                "es_ES": "Autobomb",
+                "es_MX": "Autobomb",
+                "fr_FR": "Bombe robot",
+                "fr_CA": "Bombe robot"
+            }
+        },
+        "special": {
+            "key": "jetpack",
+            "name": {
+                "ja_JP": "ジェットパック",
+                "en_US": "Inkjet",
+                "en_GB": "Inkjet",
+                "es_ES": "Propulsor",
+                "es_MX": "Propulsor",
+                "fr_FR": "Chromo-jet",
+                "fr_CA": "Chromo-jet"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "hotblaster"
+    },
+    {
+        "key": "nova",
+        "splatnet": 200,
+        "type": {
+            "key": "blaster",
+            "name": {
+                "ja_JP": "ブラスター",
+                "en_US": "Blasters",
+                "en_GB": "Blasters",
+                "es_ES": "Devastadors",
+                "es_MX": "Devastadors",
+                "fr_FR": "Éclablaster",
+                "fr_CA": "Éclablaster"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ノヴァブラスター",
+            "en_US": "Luna Blaster",
+            "en_GB": "Luna Blaster",
+            "es_ES": "Luna Blaster",
+            "es_MX": "Luna Blaster",
+            "fr_FR": "Proxiblaster",
+            "fr_CA": "Proxiblasteur"
+        },
+        "sub": {
+            "key": "splashbomb",
+            "name": {
+                "ja_JP": "スプラッシュボム",
+                "en_US": "Splat Bomb",
+                "en_GB": "Splat Bomb",
+                "es_ES": "Bomba básica",
+                "es_MX": "Bomba básica",
+                "fr_FR": "Bombe splash",
+                "fr_CA": "Bombe splash"
+            }
+        },
+        "special": {
+            "key": "sphere",
+            "name": {
+                "ja_JP": "イカスフィア",
+                "en_US": "Baller",
+                "en_GB": "Baller",
+                "es_ES": "Baller",
+                "es_MX": "Baller",
+                "fr_FR": "Chromo-sphère",
+                "fr_CA": "Chromo-sphère"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "nova"
+    },
+    {
+        "key": "rapid",
+        "splatnet": 240,
+        "type": {
+            "key": "blaster",
+            "name": {
+                "ja_JP": "ブラスター",
+                "en_US": "Blasters",
+                "en_GB": "Blasters",
+                "es_ES": "Devastadors",
+                "es_MX": "Devastadors",
+                "fr_FR": "Éclablaster",
+                "fr_CA": "Éclablaster"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ラピッドブラスター",
+            "en_US": "Rapid Blaster",
+            "en_GB": "Rapid Blaster",
+            "es_ES": "Rapid Blaster",
+            "es_MX": "Rapid Blaster",
+            "fr_FR": "Turboblaster",
+            "fr_CA": "Turboblasteur"
+        },
+        "sub": {
+            "key": "trap",
+            "name": {
+                "ja_JP": "トラップ",
+                "en_US": "Ink Mine",
+                "en_GB": "Ink Mine",
+                "es_ES": "Bomba Trampa",
+                "es_MX": "Bomba Trampa",
+                "fr_FR": "Mine",
+                "fr_CA": "Mine"
+            }
+        },
+        "special": {
+            "key": "pitcher",
+            "name": {
+                "ja_JP": "ボムピッチャー",
+                "en_US": "Bomb Launcher",
+                "en_GB": "Bomb Launcher",
+                "es_ES": "Bomb Launcher",
+                "es_MX": "Bomb Launcher",
+                "fr_FR": "Lanceur de bombes",
+                "fr_CA": "Lanceur de bombes"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "rapid"
+    },
+    {
+        "key": "maneuver_collabo",
+        "splatnet": 5011,
+        "type": {
+            "key": "maneuver",
+            "name": {
+                "ja_JP": "マニューバー",
+                "en_US": "Dualies",
+                "en_GB": "Dualies",
+                "es_ES": "Dualies",
+                "es_MX": "Dualies",
+                "fr_FR": "Dualies",
+                "fr_CA": "Dualies"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "スプラマニューバーコラボ",
+            "en_US": "Enperry Splat Dualies",
+            "en_GB": "Enperry Splat Dualies",
+            "es_ES": "Enperry Splat Dualies",
+            "es_MX": "Enperry Splat Dualies",
+            "fr_FR": "Double encreur griffé",
+            "fr_CA": "Double encreur DUX"
+        },
+        "sub": {
+            "key": "curlingbomb",
+            "name": {
+                "ja_JP": "カーリングボム",
+                "en_US": "Curling Bomb",
+                "en_GB": "Curling Bomb",
+                "es_ES": "Bomba deslizante",
+                "es_MX": "Bomba deslizante",
+                "fr_FR": "Bombe curling",
+                "fr_CA": "Bombe curling"
+            }
+        },
+        "special": {
+            "key": "jetpack",
+            "name": {
+                "ja_JP": "ジェットパック",
+                "en_US": "Inkjet",
+                "en_GB": "Inkjet",
+                "es_ES": "Propulsor",
+                "es_MX": "Propulsor",
+                "fr_FR": "Chromo-jet",
+                "fr_CA": "Chromo-jet"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "maneuver"
+    },
+    {
+        "key": "splatroller_collabo",
+        "splatnet": 1011,
+        "type": {
+            "key": "roller",
+            "name": {
+                "ja_JP": "ローラー",
+                "en_US": "Rollers",
+                "en_GB": "Rollers",
+                "es_ES": "Rodillos",
+                "es_MX": "Rodillos",
+                "fr_FR": "Rouleau",
+                "fr_CA": "Rouleau"
+            },
+            "category": {
+                "key": "roller",
+                "name": {
+                    "ja_JP": "ローラー",
+                    "en_US": "Rollers",
+                    "en_GB": "Rollers",
+                    "es_ES": "Rodillos",
+                    "es_MX": "Rodillos",
+                    "fr_FR": "Rouleau",
+                    "fr_CA": "Rouleau"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "スプラローラーコラボ",
+            "en_US": "Krak-On Splat Roller",
+            "en_GB": "Krak-On Splat Roller",
+            "es_ES": "Krak-On Splat Roller",
+            "es_MX": "Krak-On Splat Roller",
+            "fr_FR": "Rouleau griffé",
+            "fr_CA": "Rouleau Krakeurs"
+        },
+        "sub": {
+            "key": "jumpbeacon",
+            "name": {
+                "ja_JP": "ジャンプビーコン",
+                "en_US": "Squid Beakon",
+                "en_GB": "Squid Beakon",
+                "es_ES": "Squid Beakon",
+                "es_MX": "Squid Beakon",
+                "fr_FR": "Balise de saut",
+                "fr_CA": "Balise de saut"
+            }
+        },
+        "special": {
+            "key": "sphere",
+            "name": {
+                "ja_JP": "イカスフィア",
+                "en_US": "Baller",
+                "en_GB": "Baller",
+                "es_ES": "Baller",
+                "es_MX": "Baller",
+                "fr_FR": "Chromo-sphère",
+                "fr_CA": "Chromo-sphère"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "splatroller"
+    },
+    {
+        "key": "variableroller",
+        "splatnet": 1030,
+        "type": {
+            "key": "roller",
+            "name": {
+                "ja_JP": "ローラー",
+                "en_US": "Rollers",
+                "en_GB": "Rollers",
+                "es_ES": "Rodillos",
+                "es_MX": "Rodillos",
+                "fr_FR": "Rouleau",
+                "fr_CA": "Rouleau"
+            },
+            "category": {
+                "key": "roller",
+                "name": {
+                    "ja_JP": "ローラー",
+                    "en_US": "Rollers",
+                    "en_GB": "Rollers",
+                    "es_ES": "Rodillos",
+                    "es_MX": "Rodillos",
+                    "fr_FR": "Rouleau",
+                    "fr_CA": "Rouleau"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ヴァリアブルローラー",
+            "en_US": "Flingza Roller",
+            "en_GB": "Flingza Roller",
+            "es_ES": "Flingza Roller",
+            "es_MX": "Flingza Roller",
+            "fr_FR": "Flexi-rouleau",
+            "fr_CA": "Flexi-rouleau"
+        },
+        "sub": {
+            "key": "splashshield",
+            "name": {
+                "ja_JP": "スプラッシュシールド",
+                "en_US": "Splash Wall",
+                "en_GB": "Splash Wall",
+                "es_ES": "Splash Wall",
+                "es_MX": "Splash Wall",
+                "fr_FR": "Mur d'encre",
+                "fr_CA": "Mur d'encre"
+            }
+        },
+        "special": {
+            "key": "pitcher",
+            "name": {
+                "ja_JP": "ボムピッチャー",
+                "en_US": "Bomb Launcher",
+                "en_GB": "Bomb Launcher",
+                "es_ES": "Bomb Launcher",
+                "es_MX": "Bomb Launcher",
+                "fr_FR": "Lanceur de bombes",
+                "fr_CA": "Lanceur de bombes"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "variableroller"
+    },
+    {
+        "key": "carbon",
+        "splatnet": 1000,
+        "type": {
+            "key": "roller",
+            "name": {
+                "ja_JP": "ローラー",
+                "en_US": "Rollers",
+                "en_GB": "Rollers",
+                "es_ES": "Rodillos",
+                "es_MX": "Rodillos",
+                "fr_FR": "Rouleau",
+                "fr_CA": "Rouleau"
+            },
+            "category": {
+                "key": "roller",
+                "name": {
+                    "ja_JP": "ローラー",
+                    "en_US": "Rollers",
+                    "en_GB": "Rollers",
+                    "es_ES": "Rodillos",
+                    "es_MX": "Rodillos",
+                    "fr_FR": "Rouleau",
+                    "fr_CA": "Rouleau"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "カーボンローラー",
+            "en_US": "Carbon Roller",
+            "en_GB": "Carbon Roller",
+            "es_ES": "Carbon Roller",
+            "es_MX": "Carbon Roller",
+            "fr_FR": "Rouleau carbone",
+            "fr_CA": "Rouleau carbone"
+        },
+        "sub": {
+            "key": "robotbomb",
+            "name": {
+                "ja_JP": "ロボットボム",
+                "en_US": "Autobomb",
+                "en_GB": "Autobomb",
+                "es_ES": "Autobomb",
+                "es_MX": "Autobomb",
+                "fr_FR": "Bombe robot",
+                "fr_CA": "Bombe robot"
+            }
+        },
+        "special": {
+            "key": "amefurashi",
+            "name": {
+                "ja_JP": "アメフラシ",
+                "en_US": "Ink Storm",
+                "en_GB": "Ink Storm",
+                "es_ES": "Atormentador",
+                "es_MX": "Atormentador",
+                "fr_FR": "Pluie d'encre",
+                "fr_CA": "Pluie d'encre"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "carbon"
+    },
+    {
+        "key": "splatcharger_collabo",
+        "splatnet": 2011,
+        "type": {
+            "key": "charger",
+            "name": {
+                "ja_JP": "チャージャー",
+                "en_US": "Chargers",
+                "en_GB": "Chargers",
+                "es_ES": "Cargatintas",
+                "es_MX": "Cargatintas",
+                "fr_FR": "Fusil",
+                "fr_CA": "Fusil"
+            },
+            "category": {
+                "key": "charger",
+                "name": {
+                    "ja_JP": "チャージャー",
+                    "en_US": "Chargers",
+                    "en_GB": "Chargers",
+                    "es_ES": "Cargatintas",
+                    "es_MX": "Cargatintas",
+                    "fr_FR": "Fusil",
+                    "fr_CA": "Fusil"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "スプラチャージャーコラボ",
+            "en_US": "Firefin Splat Charger",
+            "en_GB": "Firefin Splat Charger",
+            "es_ES": "Firefin Splat Charger",
+            "es_MX": "Firefin Splat Charger",
+            "fr_FR": "Firefin Splat Charger",
+            "fr_CA": "Firefin Splat Charger"
+        },
+        "sub": {
+            "key": "splashshield",
+            "name": {
+                "ja_JP": "スプラッシュシールド",
+                "en_US": "Splash Wall",
+                "en_GB": "Splash Wall",
+                "es_ES": "Splash Wall",
+                "es_MX": "Splash Wall",
+                "fr_FR": "Mur d'encre",
+                "fr_CA": "Mur d'encre"
+            }
+        },
+        "special": {
+            "key": "pitcher",
+            "name": {
+                "ja_JP": "ボムピッチャー",
+                "en_US": "Bomb Launcher",
+                "en_GB": "Bomb Launcher",
+                "es_ES": "Bomb Launcher",
+                "es_MX": "Bomb Launcher",
+                "fr_FR": "Lanceur de bombes",
+                "fr_CA": "Lanceur de bombes"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "splatcharger"
+    },
+    {
+        "key": "splatscope_collabo",
+        "splatnet": 2021,
+        "type": {
+            "key": "charger",
+            "name": {
+                "ja_JP": "チャージャー",
+                "en_US": "Chargers",
+                "en_GB": "Chargers",
+                "es_ES": "Cargatintas",
+                "es_MX": "Cargatintas",
+                "fr_FR": "Fusil",
+                "fr_CA": "Fusil"
+            },
+            "category": {
+                "key": "charger",
+                "name": {
+                    "ja_JP": "チャージャー",
+                    "en_US": "Chargers",
+                    "en_GB": "Chargers",
+                    "es_ES": "Cargatintas",
+                    "es_MX": "Cargatintas",
+                    "fr_FR": "Fusil",
+                    "fr_CA": "Fusil"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "スプラスコープコラボ",
+            "en_US": "Firefin Splatterscope",
+            "en_GB": "Firefin Splatterscope",
+            "es_ES": "Firefin Splatterscope",
+            "es_MX": "Firefin Splatterscope",
+            "fr_FR": "Firefin Splatterscope",
+            "fr_CA": "Firefin Splatterscope"
+        },
+        "sub": {
+            "key": "splashshield",
+            "name": {
+                "ja_JP": "スプラッシュシールド",
+                "en_US": "Splash Wall",
+                "en_GB": "Splash Wall",
+                "es_ES": "Splash Wall",
+                "es_MX": "Splash Wall",
+                "fr_FR": "Mur d'encre",
+                "fr_CA": "Mur d'encre"
+            }
+        },
+        "special": {
+            "key": "pitcher",
+            "name": {
+                "ja_JP": "ボムピッチャー",
+                "en_US": "Bomb Launcher",
+                "en_GB": "Bomb Launcher",
+                "es_ES": "Bomb Launcher",
+                "es_MX": "Bomb Launcher",
+                "fr_FR": "Lanceur de bombes",
+                "fr_CA": "Lanceur de bombes"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "splatcharger"
+    },
+    {
+        "key": "liter4k",
+        "splatnet": 2030,
+        "type": {
+            "key": "charger",
+            "name": {
+                "ja_JP": "チャージャー",
+                "en_US": "Chargers",
+                "en_GB": "Chargers",
+                "es_ES": "Cargatintas",
+                "es_MX": "Cargatintas",
+                "fr_FR": "Fusil",
+                "fr_CA": "Fusil"
+            },
+            "category": {
+                "key": "charger",
+                "name": {
+                    "ja_JP": "チャージャー",
+                    "en_US": "Chargers",
+                    "en_GB": "Chargers",
+                    "es_ES": "Cargatintas",
+                    "es_MX": "Cargatintas",
+                    "fr_FR": "Fusil",
+                    "fr_CA": "Fusil"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "リッター4K",
+            "en_US": "E-liter 4K",
+            "en_GB": "E-liter 4K",
+            "es_ES": "E-liter 4K",
+            "es_MX": "E-liter 4K",
+            "fr_FR": "Extraceur +",
+            "fr_CA": "X-traceur +"
+        },
+        "sub": {
+            "key": "trap",
+            "name": {
+                "ja_JP": "トラップ",
+                "en_US": "Ink Mine",
+                "en_GB": "Ink Mine",
+                "es_ES": "Bomba Trampa",
+                "es_MX": "Bomba Trampa",
+                "fr_FR": "Mine",
+                "fr_CA": "Mine"
+            }
+        },
+        "special": {
+            "key": "amefurashi",
+            "name": {
+                "ja_JP": "アメフラシ",
+                "en_US": "Ink Storm",
+                "en_GB": "Ink Storm",
+                "es_ES": "Atormentador",
+                "es_MX": "Atormentador",
+                "fr_FR": "Pluie d'encre",
+                "fr_CA": "Pluie d'encre"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "liter4k"
+    },
+    {
+        "key": "liter4k_scope",
+        "splatnet": 2040,
+        "type": {
+            "key": "charger",
+            "name": {
+                "ja_JP": "チャージャー",
+                "en_US": "Chargers",
+                "en_GB": "Chargers",
+                "es_ES": "Cargatintas",
+                "es_MX": "Cargatintas",
+                "fr_FR": "Fusil",
+                "fr_CA": "Fusil"
+            },
+            "category": {
+                "key": "charger",
+                "name": {
+                    "ja_JP": "チャージャー",
+                    "en_US": "Chargers",
+                    "en_GB": "Chargers",
+                    "es_ES": "Cargatintas",
+                    "es_MX": "Cargatintas",
+                    "fr_FR": "Fusil",
+                    "fr_CA": "Fusil"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "4Kスコープ",
+            "en_US": "E-liter 4K Scope",
+            "en_GB": "E-liter 4K Scope",
+            "es_ES": "E-liter 4K Scope",
+            "es_MX": "E-liter 4K Scope",
+            "fr_FR": "Extraceur + zoom",
+            "fr_CA": "X-traceur + zoom"
+        },
+        "sub": {
+            "key": "trap",
+            "name": {
+                "ja_JP": "トラップ",
+                "en_US": "Ink Mine",
+                "en_GB": "Ink Mine",
+                "es_ES": "Bomba Trampa",
+                "es_MX": "Bomba Trampa",
+                "fr_FR": "Mine",
+                "fr_CA": "Mine"
+            }
+        },
+        "special": {
+            "key": "amefurashi",
+            "name": {
+                "ja_JP": "アメフラシ",
+                "en_US": "Ink Storm",
+                "en_GB": "Ink Storm",
+                "es_ES": "Atormentador",
+                "es_MX": "Atormentador",
+                "fr_FR": "Pluie d'encre",
+                "fr_CA": "Pluie d'encre"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "liter4k"
+    },
+    {
+        "key": "splatspinner",
+        "splatnet": 4000,
+        "type": {
+            "key": "splatling",
+            "name": {
+                "ja_JP": "スピナー",
+                "en_US": "Splatlings",
+                "en_GB": "Splatlings",
+                "es_ES": "Tintralladoras",
+                "es_MX": "Garabateadors",
+                "fr_FR": "Badigeonneur",
+                "fr_CA": "Badigeonneur"
+            },
+            "category": {
+                "key": "splatling",
+                "name": {
+                    "ja_JP": "スピナー",
+                    "en_US": "Splatlings",
+                    "en_GB": "Splatlings",
+                    "es_ES": "Tintralladoras",
+                    "es_MX": "Garabateadors",
+                    "fr_FR": "Badigeonneur",
+                    "fr_CA": "Badigeonneur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "スプラスピナー",
+            "en_US": "Mini Splatling",
+            "en_GB": "Mini Splatling",
+            "es_ES": "Mini Splatling",
+            "es_MX": "Mini Splatling",
+            "fr_FR": "Badigeonneur XS",
+            "fr_CA": "Badigeonneur XP"
+        },
+        "sub": {
+            "key": "quickbomb",
+            "name": {
+                "ja_JP": "クイックボム",
+                "en_US": "Burst Bomb",
+                "en_GB": "Burst Bomb",
+                "es_ES": "Bomba rápida",
+                "es_MX": "Bomba rápida",
+                "fr_FR": "Bombe ballon",
+                "fr_CA": "Bombe ballon"
+            }
+        },
+        "special": {
+            "key": "missile",
+            "name": {
+                "ja_JP": "マルチミサイル",
+                "en_US": "Tenta Missiles",
+                "en_GB": "Tenta Missiles",
+                "es_ES": "Lanzamisiles",
+                "es_MX": "Lanzamisiles",
+                "fr_FR": "Multi-missile",
+                "fr_CA": "Multi-missile"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "splatspinner"
+    },
+    {
+        "key": "hissen",
+        "splatnet": 3010,
+        "type": {
+            "key": "slosher",
+            "name": {
+                "ja_JP": "スロッシャー",
+                "en_US": "Sloshers",
+                "en_GB": "Sloshers",
+                "es_ES": "Derramatics",
+                "es_MX": "Derramatics",
+                "fr_FR": "Seauceur",
+                "fr_CA": "Seauceur"
+            },
+            "category": {
+                "key": "slosher",
+                "name": {
+                    "ja_JP": "スロッシャー",
+                    "en_US": "Sloshers",
+                    "en_GB": "Sloshers",
+                    "es_ES": "Derramatics",
+                    "es_MX": "Derramatics",
+                    "fr_FR": "Seauceur",
+                    "fr_CA": "Seauceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ヒッセン",
+            "en_US": "Tri-Slosher",
+            "en_GB": "Tri-Slosher",
+            "es_ES": "Tri-Slosher",
+            "es_MX": "Tri-Slosher",
+            "fr_FR": "Dépoteur",
+            "fr_CA": "Seauceur trio"
+        },
+        "sub": {
+            "key": "quickbomb",
+            "name": {
+                "ja_JP": "クイックボム",
+                "en_US": "Burst Bomb",
+                "en_GB": "Burst Bomb",
+                "es_ES": "Bomba rápida",
+                "es_MX": "Bomba rápida",
+                "fr_FR": "Bombe ballon",
+                "fr_CA": "Bombe ballon"
+            }
+        },
+        "special": {
+            "key": "armor",
+            "name": {
+                "ja_JP": "インクアーマー",
+                "en_US": "Ink Armor",
+                "en_GB": "Ink Armor",
+                "es_ES": "Ink Armor",
+                "es_MX": "Ink Armor",
+                "fr_FR": "Armure d'encre",
+                "fr_CA": "Armure d'encre"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "hissen"
+    },
+    {
+        "key": "pablo",
+        "splatnet": 1100,
+        "type": {
+            "key": "brush",
+            "name": {
+                "ja_JP": "フデ",
+                "en_US": "Brushes",
+                "en_GB": "Brushes",
+                "es_ES": "Brochas",
+                "es_MX": "Brochas",
+                "fr_FR": "Épinceau",
+                "fr_CA": "Épinceau"
+            },
+            "category": {
+                "key": "roller",
+                "name": {
+                    "ja_JP": "ローラー",
+                    "en_US": "Rollers",
+                    "en_GB": "Rollers",
+                    "es_ES": "Rodillos",
+                    "es_MX": "Rodillos",
+                    "fr_FR": "Rouleau",
+                    "fr_CA": "Rouleau"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "パブロ",
+            "en_US": "Inkbrush",
+            "en_GB": "Inkbrush",
+            "es_ES": "Inkbrush",
+            "es_MX": "Inkbrush",
+            "fr_FR": "Épinceau",
+            "fr_CA": "Épinceau"
+        },
+        "sub": {
+            "key": "splashbomb",
+            "name": {
+                "ja_JP": "スプラッシュボム",
+                "en_US": "Splat Bomb",
+                "en_GB": "Splat Bomb",
+                "es_ES": "Bomba básica",
+                "es_MX": "Bomba básica",
+                "fr_FR": "Bombe splash",
+                "fr_CA": "Bombe splash"
+            }
+        },
+        "special": {
+            "key": "chakuchi",
+            "name": {
+                "ja_JP": "スーパーチャクチ",
+                "en_US": "Splashdown",
+                "en_GB": "Splashdown",
+                "es_ES": "Salto explosivo",
+                "es_MX": "Salto explosivo",
+                "fr_FR": "Choc chromatique",
+                "fr_CA": "Choc chromatique"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "pablo"
+    },
+    {
+        "key": "dualsweeper",
+        "splatnet": 5030,
+        "type": {
+            "key": "maneuver",
+            "name": {
+                "ja_JP": "マニューバー",
+                "en_US": "Dualies",
+                "en_GB": "Dualies",
+                "es_ES": "Dualies",
+                "es_MX": "Dualies",
+                "fr_FR": "Dualies",
+                "fr_CA": "Dualies"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "デュアルスイーパー",
+            "en_US": "Dualie Squelchers",
+            "en_GB": "Dualie Squelchers",
+            "es_ES": "Barredora dual",
+            "es_MX": "Barredora dual",
+            "fr_FR": "Double nettoyeur",
+            "fr_CA": "Double nettoyeur"
+        },
+        "sub": {
+            "key": "pointsensor",
+            "name": {
+                "ja_JP": "ポイントセンサー",
+                "en_US": "Point Sensor",
+                "en_GB": "Point Sensor",
+                "es_ES": "Rastreador",
+                "es_MX": "Rastreador",
+                "fr_FR": "Détecteur",
+                "fr_CA": "Détecteur"
+            }
+        },
+        "special": {
+            "key": "missile",
+            "name": {
+                "ja_JP": "マルチミサイル",
+                "en_US": "Tenta Missiles",
+                "en_GB": "Tenta Missiles",
+                "es_ES": "Lanzamisiles",
+                "es_MX": "Lanzamisiles",
+                "fr_FR": "Multi-missile",
+                "fr_CA": "Multi-missile"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "dualsweeper"
+    },
+    {
+        "key": "bold",
+        "splatnet": 0,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ボールドマーカー",
+            "en_US": "Sploosh-o-matic",
+            "en_GB": "Sploosh-o-matic",
+            "es_ES": "Marcador",
+            "es_MX": "Marcador grueso",
+            "fr_FR": "Marqueur lourd",
+            "fr_CA": "Marqueur lourd"
+        },
+        "sub": {
+            "key": "curlingbomb",
+            "name": {
+                "ja_JP": "カーリングボム",
+                "en_US": "Curling Bomb",
+                "en_GB": "Curling Bomb",
+                "es_ES": "Bomba deslizante",
+                "es_MX": "Bomba deslizante",
+                "fr_FR": "Bombe curling",
+                "fr_CA": "Bombe curling"
+            }
+        },
+        "special": {
+            "key": "chakuchi",
+            "name": {
+                "ja_JP": "スーパーチャクチ",
+                "en_US": "Splashdown",
+                "en_GB": "Splashdown",
+                "es_ES": "Salto explosivo",
+                "es_MX": "Salto explosivo",
+                "fr_FR": "Choc chromatique",
+                "fr_CA": "Choc chromatique"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "bold"
+    },
+    {
+        "key": "heroshooter_replica",
+        "splatnet": 45,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ヒーローシューター レプリカ",
+            "en_US": "Hero Shot Replica",
+            "en_GB": "Hero Shot Replica",
+            "es_ES": "Pistola de Élite (réplica)",
+            "es_MX": "Rociador de élite réplica",
+            "fr_FR": "Lanceur héroïque (réplique)",
+            "fr_CA": "Liquéfi. héroïque (rép.)"
+        },
+        "sub": {
+            "key": "quickbomb",
+            "name": {
+                "ja_JP": "クイックボム",
+                "en_US": "Burst Bomb",
+                "en_GB": "Burst Bomb",
+                "es_ES": "Bomba rápida",
+                "es_MX": "Bomba rápida",
+                "fr_FR": "Bombe ballon",
+                "fr_CA": "Bombe ballon"
+            }
+        },
+        "special": {
+            "key": "chakuchi",
+            "name": {
+                "ja_JP": "スーパーチャクチ",
+                "en_US": "Splashdown",
+                "en_GB": "Splashdown",
+                "es_ES": "Salto explosivo",
+                "es_MX": "Salto explosivo",
+                "fr_FR": "Choc chromatique",
+                "fr_CA": "Choc chromatique"
+            }
+        },
+        "reskin_of": "sshooter",
+        "main_ref": "sshooter"
+    },
+    {
+        "key": "heroblaster_replica",
+        "splatnet": 215,
+        "type": {
+            "key": "blaster",
+            "name": {
+                "ja_JP": "ブラスター",
+                "en_US": "Blasters",
+                "en_GB": "Blasters",
+                "es_ES": "Devastadors",
+                "es_MX": "Devastadors",
+                "fr_FR": "Éclablaster",
+                "fr_CA": "Éclablaster"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ヒーローブラスター レプリカ",
+            "en_US": "Hero Blaster Replica",
+            "en_GB": "Hero Blaster Replica",
+            "es_ES": "Hero Blaster Replica",
+            "es_MX": "Hero Blaster Replica",
+            "fr_FR": "Hero Blaster Replica",
+            "fr_CA": "Hero Blaster Replica"
+        },
+        "sub": {
+            "key": "poisonmist",
+            "name": {
+                "ja_JP": "ポイズンミスト",
+                "en_US": "Toxic Mist",
+                "en_GB": "Toxic Mist",
+                "es_ES": "Toxic Mist",
+                "es_MX": "Toxic Mist",
+                "fr_FR": "Brume toxique",
+                "fr_CA": "Brume toxique"
+            }
+        },
+        "special": {
+            "key": "chakuchi",
+            "name": {
+                "ja_JP": "スーパーチャクチ",
+                "en_US": "Splashdown",
+                "en_GB": "Splashdown",
+                "es_ES": "Salto explosivo",
+                "es_MX": "Salto explosivo",
+                "fr_FR": "Choc chromatique",
+                "fr_CA": "Choc chromatique"
+            }
+        },
+        "reskin_of": "hotblaster",
+        "main_ref": "hotblaster"
+    },
+    {
+        "key": "heromaneuver_replica",
+        "splatnet": 5015,
+        "type": {
+            "key": "maneuver",
+            "name": {
+                "ja_JP": "マニューバー",
+                "en_US": "Dualies",
+                "en_GB": "Dualies",
+                "es_ES": "Dualies",
+                "es_MX": "Dualies",
+                "fr_FR": "Dualies",
+                "fr_CA": "Dualies"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ヒーローマニューバー レプリカ",
+            "en_US": "Hero Dualie Replicas",
+            "en_GB": "Hero Dualie Replicas",
+            "es_ES": "Hero Dualie Replicas",
+            "es_MX": "Hero Dualie Replicas",
+            "fr_FR": "Hero Dualie Replicas",
+            "fr_CA": "Hero Dualie Replicas"
+        },
+        "sub": {
+            "key": "quickbomb",
+            "name": {
+                "ja_JP": "クイックボム",
+                "en_US": "Burst Bomb",
+                "en_GB": "Burst Bomb",
+                "es_ES": "Bomba rápida",
+                "es_MX": "Bomba rápida",
+                "fr_FR": "Bombe ballon",
+                "fr_CA": "Bombe ballon"
+            }
+        },
+        "special": {
+            "key": "missile",
+            "name": {
+                "ja_JP": "マルチミサイル",
+                "en_US": "Tenta Missiles",
+                "en_GB": "Tenta Missiles",
+                "es_ES": "Lanzamisiles",
+                "es_MX": "Lanzamisiles",
+                "fr_FR": "Multi-missile",
+                "fr_CA": "Multi-missile"
+            }
+        },
+        "reskin_of": "maneuver",
+        "main_ref": "maneuver"
+    },
+    {
+        "key": "herocharger_replica",
+        "splatnet": 2015,
+        "type": {
+            "key": "charger",
+            "name": {
+                "ja_JP": "チャージャー",
+                "en_US": "Chargers",
+                "en_GB": "Chargers",
+                "es_ES": "Cargatintas",
+                "es_MX": "Cargatintas",
+                "fr_FR": "Fusil",
+                "fr_CA": "Fusil"
+            },
+            "category": {
+                "key": "charger",
+                "name": {
+                    "ja_JP": "チャージャー",
+                    "en_US": "Chargers",
+                    "en_GB": "Chargers",
+                    "es_ES": "Cargatintas",
+                    "es_MX": "Cargatintas",
+                    "fr_FR": "Fusil",
+                    "fr_CA": "Fusil"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ヒーローチャージャー レプリカ",
+            "en_US": "Hero Charger Replica",
+            "en_GB": "Hero Charger Replica",
+            "es_ES": "Hero Charger Replica",
+            "es_MX": "Hero Charger Replica",
+            "fr_FR": "Conc. héroïque (réplique)",
+            "fr_CA": "Conc. héroïque (rép.)"
+        },
+        "sub": {
+            "key": "splashbomb",
+            "name": {
+                "ja_JP": "スプラッシュボム",
+                "en_US": "Splat Bomb",
+                "en_GB": "Splat Bomb",
+                "es_ES": "Bomba básica",
+                "es_MX": "Bomba básica",
+                "fr_FR": "Bombe splash",
+                "fr_CA": "Bombe splash"
+            }
+        },
+        "special": {
+            "key": "presser",
+            "name": {
+                "ja_JP": "ハイパープレッサー",
+                "en_US": "Sting Ray",
+                "en_GB": "Sting Ray",
+                "es_ES": "Rayo tintódico",
+                "es_MX": "Rayo tintódico",
+                "fr_FR": "Pigmalance",
+                "fr_CA": "Pigmalance"
+            }
+        },
+        "reskin_of": "splatcharger",
+        "main_ref": "splatcharger"
+    },
+    {
+        "key": "heroroller_replica",
+        "splatnet": 1015,
+        "type": {
+            "key": "roller",
+            "name": {
+                "ja_JP": "ローラー",
+                "en_US": "Rollers",
+                "en_GB": "Rollers",
+                "es_ES": "Rodillos",
+                "es_MX": "Rodillos",
+                "fr_FR": "Rouleau",
+                "fr_CA": "Rouleau"
+            },
+            "category": {
+                "key": "roller",
+                "name": {
+                    "ja_JP": "ローラー",
+                    "en_US": "Rollers",
+                    "en_GB": "Rollers",
+                    "es_ES": "Rodillos",
+                    "es_MX": "Rodillos",
+                    "fr_FR": "Rouleau",
+                    "fr_CA": "Rouleau"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ヒーローローラー レプリカ",
+            "en_US": "Hero Roller Replica",
+            "en_GB": "Hero Roller Replica",
+            "es_ES": "Hero Roller Replica",
+            "es_MX": "Hero Roller Replica",
+            "fr_FR": "Rouleau héroïque (réplique)",
+            "fr_CA": "Rouleau héroïque (rép.)"
+        },
+        "sub": {
+            "key": "curlingbomb",
+            "name": {
+                "ja_JP": "カーリングボム",
+                "en_US": "Curling Bomb",
+                "en_GB": "Curling Bomb",
+                "es_ES": "Bomba deslizante",
+                "es_MX": "Bomba deslizante",
+                "fr_FR": "Bombe curling",
+                "fr_CA": "Bombe curling"
+            }
+        },
+        "special": {
+            "key": "chakuchi",
+            "name": {
+                "ja_JP": "スーパーチャクチ",
+                "en_US": "Splashdown",
+                "en_GB": "Splashdown",
+                "es_ES": "Salto explosivo",
+                "es_MX": "Salto explosivo",
+                "fr_FR": "Choc chromatique",
+                "fr_CA": "Choc chromatique"
+            }
+        },
+        "reskin_of": "splatroller",
+        "main_ref": "splatroller"
+    },
+    {
+        "key": "herobrush_replica",
+        "splatnet": 1115,
+        "type": {
+            "key": "brush",
+            "name": {
+                "ja_JP": "フデ",
+                "en_US": "Brushes",
+                "en_GB": "Brushes",
+                "es_ES": "Brochas",
+                "es_MX": "Brochas",
+                "fr_FR": "Épinceau",
+                "fr_CA": "Épinceau"
+            },
+            "category": {
+                "key": "roller",
+                "name": {
+                    "ja_JP": "ローラー",
+                    "en_US": "Rollers",
+                    "en_GB": "Rollers",
+                    "es_ES": "Rodillos",
+                    "es_MX": "Rodillos",
+                    "fr_FR": "Rouleau",
+                    "fr_CA": "Rouleau"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ヒーローブラシ レプリカ",
+            "en_US": "Herobrush Replica",
+            "en_GB": "Herobrush Replica",
+            "es_ES": "Herobrush Replica",
+            "es_MX": "Herobrush Replica",
+            "fr_FR": "Herobrush Replica",
+            "fr_CA": "Herobrush Replica"
+        },
+        "sub": {
+            "key": "robotbomb",
+            "name": {
+                "ja_JP": "ロボットボム",
+                "en_US": "Autobomb",
+                "en_GB": "Autobomb",
+                "es_ES": "Autobomb",
+                "es_MX": "Autobomb",
+                "fr_FR": "Bombe robot",
+                "fr_CA": "Bombe robot"
+            }
+        },
+        "special": {
+            "key": "jetpack",
+            "name": {
+                "ja_JP": "ジェットパック",
+                "en_US": "Inkjet",
+                "en_GB": "Inkjet",
+                "es_ES": "Propulsor",
+                "es_MX": "Propulsor",
+                "fr_FR": "Chromo-jet",
+                "fr_CA": "Chromo-jet"
+            }
+        },
+        "reskin_of": "hokusai",
+        "main_ref": "hokusai"
+    },
+    {
+        "key": "heroslosher_replica",
+        "splatnet": 3005,
+        "type": {
+            "key": "slosher",
+            "name": {
+                "ja_JP": "スロッシャー",
+                "en_US": "Sloshers",
+                "en_GB": "Sloshers",
+                "es_ES": "Derramatics",
+                "es_MX": "Derramatics",
+                "fr_FR": "Seauceur",
+                "fr_CA": "Seauceur"
+            },
+            "category": {
+                "key": "slosher",
+                "name": {
+                    "ja_JP": "スロッシャー",
+                    "en_US": "Sloshers",
+                    "en_GB": "Sloshers",
+                    "es_ES": "Derramatics",
+                    "es_MX": "Derramatics",
+                    "fr_FR": "Seauceur",
+                    "fr_CA": "Seauceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ヒーロースロッシャー レプリカ",
+            "en_US": "Hero Slosher Replica",
+            "en_GB": "Hero Slosher Replica",
+            "es_ES": "Hero Slosher Replica",
+            "es_MX": "Hero Slosher Replica",
+            "fr_FR": "Hero Slosher Replica",
+            "fr_CA": "Hero Slosher Replica"
+        },
+        "sub": {
+            "key": "kyubanbomb",
+            "name": {
+                "ja_JP": "キューバンボム",
+                "en_US": "Suction Bomb",
+                "en_GB": "Suction Bomb",
+                "es_ES": "Bomba ventosa",
+                "es_MX": "Bomba ventosa",
+                "fr_FR": "Bombe gluante",
+                "fr_CA": "Bombe gluante"
+            }
+        },
+        "special": {
+            "key": "missile",
+            "name": {
+                "ja_JP": "マルチミサイル",
+                "en_US": "Tenta Missiles",
+                "en_GB": "Tenta Missiles",
+                "es_ES": "Lanzamisiles",
+                "es_MX": "Lanzamisiles",
+                "fr_FR": "Multi-missile",
+                "fr_CA": "Multi-missile"
+            }
+        },
+        "reskin_of": "bucketslosher",
+        "main_ref": "bucketslosher"
+    },
+    {
+        "key": "herospinner_replica",
+        "splatnet": 4015,
+        "type": {
+            "key": "splatling",
+            "name": {
+                "ja_JP": "スピナー",
+                "en_US": "Splatlings",
+                "en_GB": "Splatlings",
+                "es_ES": "Tintralladoras",
+                "es_MX": "Garabateadors",
+                "fr_FR": "Badigeonneur",
+                "fr_CA": "Badigeonneur"
+            },
+            "category": {
+                "key": "splatling",
+                "name": {
+                    "ja_JP": "スピナー",
+                    "en_US": "Splatlings",
+                    "en_GB": "Splatlings",
+                    "es_ES": "Tintralladoras",
+                    "es_MX": "Garabateadors",
+                    "fr_FR": "Badigeonneur",
+                    "fr_CA": "Badigeonneur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ヒーロースピナー レプリカ",
+            "en_US": "Hero Splatling Replica",
+            "en_GB": "Hero Splatling Replica",
+            "es_ES": "Hero Splatling Replica",
+            "es_MX": "Hero Splatling Replica",
+            "fr_FR": "Hero Splatling Replica",
+            "fr_CA": "Hero Splatling Replica"
+        },
+        "sub": {
+            "key": "sprinkler",
+            "name": {
+                "ja_JP": "スプリンクラー",
+                "en_US": "Sprinkler",
+                "en_GB": "Sprinkler",
+                "es_ES": "Aspersor",
+                "es_MX": "Aspersor",
+                "fr_FR": "Fontaine",
+                "fr_CA": "Fontaine"
+            }
+        },
+        "special": {
+            "key": "presser",
+            "name": {
+                "ja_JP": "ハイパープレッサー",
+                "en_US": "Sting Ray",
+                "en_GB": "Sting Ray",
+                "es_ES": "Rayo tintódico",
+                "es_MX": "Rayo tintódico",
+                "fr_FR": "Pigmalance",
+                "fr_CA": "Pigmalance"
+            }
+        },
+        "reskin_of": "barrelspinner",
+        "main_ref": "barrelspinner"
+    },
+    {
+        "key": "parashelter",
+        "splatnet": 6000,
+        "type": {
+            "key": "brella",
+            "name": {
+                "ja_JP": "シェルター",
+                "en_US": "Brellas",
+                "en_GB": "Brellas",
+                "es_ES": "Brellas",
+                "es_MX": "Brellas",
+                "fr_FR": "Brellas",
+                "fr_CA": "Brellas"
+            },
+            "category": {
+                "key": "brella",
+                "name": {
+                    "ja_JP": "シェルター",
+                    "en_US": "Brellas",
+                    "en_GB": "Brellas",
+                    "es_ES": "Brellas",
+                    "es_MX": "Brellas",
+                    "fr_FR": "Brellas",
+                    "fr_CA": "Brellas"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "パラシェルター",
+            "en_US": "Splat Brella",
+            "en_GB": "Splat Brella",
+            "es_ES": "Paratintas",
+            "es_MX": "Paratintas",
+            "fr_FR": "Splat Brella",
+            "fr_CA": "Splat Brella"
+        },
+        "sub": {
+            "key": "sprinkler",
+            "name": {
+                "ja_JP": "スプリンクラー",
+                "en_US": "Sprinkler",
+                "en_GB": "Sprinkler",
+                "es_ES": "Aspersor",
+                "es_MX": "Aspersor",
+                "fr_FR": "Fontaine",
+                "fr_CA": "Fontaine"
+            }
+        },
+        "special": {
+            "key": "amefurashi",
+            "name": {
+                "ja_JP": "アメフラシ",
+                "en_US": "Ink Storm",
+                "en_GB": "Ink Storm",
+                "es_ES": "Atormentador",
+                "es_MX": "Atormentador",
+                "fr_FR": "Pluie d'encre",
+                "fr_CA": "Pluie d'encre"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "parashelter"
+    },
+    {
+        "key": "heroshelter_replica",
+        "splatnet": 6005,
+        "type": {
+            "key": "brella",
+            "name": {
+                "ja_JP": "シェルター",
+                "en_US": "Brellas",
+                "en_GB": "Brellas",
+                "es_ES": "Brellas",
+                "es_MX": "Brellas",
+                "fr_FR": "Brellas",
+                "fr_CA": "Brellas"
+            },
+            "category": {
+                "key": "brella",
+                "name": {
+                    "ja_JP": "シェルター",
+                    "en_US": "Brellas",
+                    "en_GB": "Brellas",
+                    "es_ES": "Brellas",
+                    "es_MX": "Brellas",
+                    "fr_FR": "Brellas",
+                    "fr_CA": "Brellas"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "ヒーローシェルター レプリカ",
+            "en_US": "Hero Brella Replica",
+            "en_GB": "Hero Brella Replica",
+            "es_ES": "Hero Brella Replica",
+            "es_MX": "Hero Brella Replica",
+            "fr_FR": "Hero Brella Replica",
+            "fr_CA": "Hero Brella Replica"
+        },
+        "sub": {
+            "key": "sprinkler",
+            "name": {
+                "ja_JP": "スプリンクラー",
+                "en_US": "Sprinkler",
+                "en_GB": "Sprinkler",
+                "es_ES": "Aspersor",
+                "es_MX": "Aspersor",
+                "fr_FR": "Fontaine",
+                "fr_CA": "Fontaine"
+            }
+        },
+        "special": {
+            "key": "amefurashi",
+            "name": {
+                "ja_JP": "アメフラシ",
+                "en_US": "Ink Storm",
+                "en_GB": "Ink Storm",
+                "es_ES": "Atormentador",
+                "es_MX": "Atormentador",
+                "fr_FR": "Pluie d'encre",
+                "fr_CA": "Pluie d'encre"
+            }
+        },
+        "reskin_of": "parashelter",
+        "main_ref": "parashelter"
+    },
+    {
+        "key": "squiclean_a",
+        "splatnet": null,
+        "type": {
+            "key": "charger",
+            "name": {
+                "ja_JP": "チャージャー",
+                "en_US": "Chargers",
+                "en_GB": "Chargers",
+                "es_ES": "Cargatintas",
+                "es_MX": "Cargatintas",
+                "fr_FR": "Fusil",
+                "fr_CA": "Fusil"
+            },
+            "category": {
+                "key": "charger",
+                "name": {
+                    "ja_JP": "チャージャー",
+                    "en_US": "Chargers",
+                    "en_GB": "Chargers",
+                    "es_ES": "Cargatintas",
+                    "es_MX": "Cargatintas",
+                    "fr_FR": "Fusil",
+                    "fr_CA": "Fusil"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "スクイックリンα",
+            "en_US": "Classic Squiffer",
+            "en_GB": "Classic Squiffer",
+            "es_ES": "Kalarrapid α",
+            "es_MX": "Delineador X",
+            "fr_FR": "Décap'express Alpha",
+            "fr_CA": "Lignizateur alpha"
+        },
+        "sub": {
+            "key": "pointsensor",
+            "name": {
+                "ja_JP": "ポイントセンサー",
+                "en_US": "Point Sensor",
+                "en_GB": "Point Sensor",
+                "es_ES": "Rastreador",
+                "es_MX": "Rastreador",
+                "fr_FR": "Détecteur",
+                "fr_CA": "Détecteur"
+            }
+        },
+        "special": {
+            "key": "armor",
+            "name": {
+                "ja_JP": "インクアーマー",
+                "en_US": "Ink Armor",
+                "en_GB": "Ink Armor",
+                "es_ES": "Ink Armor",
+                "es_MX": "Ink Armor",
+                "fr_FR": "Armure d'encre",
+                "fr_CA": "Armure d'encre"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "squiclean_a"
+    }
+]

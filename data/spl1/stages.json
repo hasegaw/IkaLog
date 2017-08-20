@@ -1,0 +1,274 @@
+[
+    {
+        "key": "arowana",
+        "name": {
+            "ja_JP": "アロワナモール",
+            "en_US": "Arowana Mall",
+            "en_GB": "Arowana Mall",
+            "es_ES": "Plazuela del Calamar",
+            "es_MX": "Plazuela del Calamar",
+            "fr_FR": "Centre Arowana",
+            "fr_CA": "Centre Arowana"
+        },
+        "area": 2021,
+        "release_at": {
+            "time": 1432738800,
+            "iso8601": "2015-05-27T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "bbass",
+        "name": {
+            "ja_JP": "Bバスパーク",
+            "en_US": "Blackbelly Skatepark",
+            "en_GB": "Blackbelly Skatepark",
+            "es_ES": "Parque Lubina",
+            "es_MX": "Parque Lubina",
+            "fr_FR": "Skatepark Mako",
+            "fr_CA": "Plancho Mako"
+        },
+        "area": 1528,
+        "release_at": {
+            "time": 1432738800,
+            "iso8601": "2015-05-27T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "shionome",
+        "name": {
+            "ja_JP": "シオノメ油田",
+            "en_US": "Saltspray Rig",
+            "en_GB": "Saltspray Rig",
+            "es_ES": "Plataforma Gaviota",
+            "es_MX": "Plataforma Gaviota",
+            "fr_FR": "Station Doucebrise",
+            "fr_CA": "Plate-forme Mouette"
+        },
+        "area": 1900,
+        "release_at": {
+            "time": 1432738800,
+            "iso8601": "2015-05-27T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "dekaline",
+        "name": {
+            "ja_JP": "デカライン高架下",
+            "en_US": "Urchin Underpass",
+            "en_GB": "Urchin Underpass",
+            "es_ES": "Parque Viaducto",
+            "es_MX": "Parque Viaducto",
+            "fr_FR": "Passage Turbot",
+            "fr_CA": "Passage Turbot"
+        },
+        "area": 2465,
+        "release_at": {
+            "time": 1432738800,
+            "iso8601": "2015-05-27T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "hakofugu",
+        "name": {
+            "ja_JP": "ハコフグ倉庫",
+            "en_US": "Walleye Warehouse",
+            "en_GB": "Walleye Warehouse",
+            "es_ES": "Almacén Rodaballo",
+            "es_MX": "Almacén Rodaballo",
+            "fr_FR": "Encrepôt",
+            "fr_CA": "Encrepôt"
+        },
+        "area": 1600,
+        "release_at": {
+            "time": 1432738800,
+            "iso8601": "2015-05-27T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "hokke",
+        "name": {
+            "ja_JP": "ホッケふ頭",
+            "en_US": "Port Mackerel",
+            "en_GB": "Port Mackerel",
+            "es_ES": "Puerto Jurel",
+            "es_MX": "Puerto Jurel",
+            "fr_FR": "Docks Haddock",
+            "fr_CA": "Docks Haddock"
+        },
+        "area": 1854,
+        "release_at": {
+            "time": 1433210400,
+            "iso8601": "2015-06-02T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "mozuku",
+        "name": {
+            "ja_JP": "モズク農園",
+            "en_US": "Kelp Dome",
+            "en_GB": "Kelp Dome",
+            "es_ES": "Jardín botánico",
+            "es_MX": "Jardín botánico",
+            "fr_FR": "Serre Goémon",
+            "fr_CA": "Serre Goémon"
+        },
+        "area": 2125,
+        "release_at": {
+            "time": 1433988000,
+            "iso8601": "2015-06-11T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "negitoro",
+        "name": {
+            "ja_JP": "ネギトロ炭鉱",
+            "en_US": "Bluefin Depot",
+            "en_GB": "Bluefin Depot",
+            "es_ES": "Mina costera",
+            "es_MX": "Mina costera",
+            "fr_FR": "Mine Marine",
+            "fr_CA": "Ruines marines"
+        },
+        "area": 1665,
+        "release_at": {
+            "time": 1434765600,
+            "iso8601": "2015-06-20T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "tachiuo",
+        "name": {
+            "ja_JP": "タチウオパーキング",
+            "en_US": "Moray Towers",
+            "en_GB": "Moray Towers",
+            "es_ES": "Torres Merluza",
+            "es_MX": "Torres Merluza",
+            "fr_FR": "Tours Girelle",
+            "fr_CA": "Tours Girelle"
+        },
+        "area": 1760,
+        "release_at": {
+            "time": 1436580000,
+            "iso8601": "2015-07-11T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "mongara",
+        "name": {
+            "ja_JP": "モンガラキャンプ場",
+            "en_US": "Camp Triggerfish",
+            "en_GB": "Camp Triggerfish",
+            "es_ES": "Campamento Arowana",
+            "es_MX": "Campamento Arowana",
+            "fr_FR": "Hippo-Camping",
+            "fr_CA": "Hippo-Camping"
+        },
+        "area": 2316,
+        "release_at": {
+            "time": 1437789600,
+            "iso8601": "2015-07-25T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "hirame",
+        "name": {
+            "ja_JP": "ヒラメが丘団地",
+            "en_US": "Flounder Heights",
+            "en_GB": "Flounder Heights",
+            "es_ES": "Complejo Medusa",
+            "es_MX": "Complejo Medusa",
+            "fr_FR": "Lotissement Filament",
+            "fr_CA": "Appartements Filament"
+        },
+        "area": 2375,
+        "release_at": {
+            "time": 1440122400,
+            "iso8601": "2015-08-21T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "masaba",
+        "name": {
+            "ja_JP": "マサバ海峡大橋",
+            "en_US": "Hammerhead Bridge",
+            "en_GB": "Hammerhead Bridge",
+            "es_ES": "Puente Salmón",
+            "es_MX": "Puente Salmón",
+            "fr_FR": "Pont Esturgeon",
+            "fr_CA": "Pont Esturgeon"
+        },
+        "area": 2100,
+        "release_at": {
+            "time": 1442541600,
+            "iso8601": "2015-09-18T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "kinmedai",
+        "name": {
+            "ja_JP": "キンメダイ美術館",
+            "en_US": "Museum d'Alfonsino",
+            "en_GB": "Museum d'Alfonsino",
+            "es_ES": "Museo del Pargo",
+            "es_MX": "Museo del Pargo",
+            "fr_FR": "Galeries Guppy",
+            "fr_CA": "Galeries Guppy"
+        },
+        "area": 2443,
+        "release_at": {
+            "time": 1447466400,
+            "iso8601": "2015-11-14T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "mahimahi",
+        "name": {
+            "ja_JP": "マヒマヒリゾート&スパ",
+            "en_US": "Mahi-Mahi Resort",
+            "en_GB": "Mahi-Mahi Resort",
+            "es_ES": "Spa Cala Bacalao",
+            "es_MX": "Spa Cala Bacalao",
+            "fr_FR": "Club Ca$halot",
+            "fr_CA": "Spa C-ta-C"
+        },
+        "area": 1950,
+        "release_at": {
+            "time": 1449194400,
+            "iso8601": "2015-12-04T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "shottsuru",
+        "name": {
+            "ja_JP": "ショッツル鉱山",
+            "en_US": "Piranha Pit",
+            "en_GB": "Piranha Pit",
+            "es_ES": "Cantera Tintorera",
+            "es_MX": "Cantera Tintorera",
+            "fr_FR": "Carrières Caviar",
+            "fr_CA": "Carrières Caviar"
+        },
+        "area": 3127,
+        "release_at": {
+            "time": 1451354400,
+            "iso8601": "2015-12-29T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "anchovy",
+        "name": {
+            "ja_JP": "アンチョビットゲームズ",
+            "en_US": "Ancho-V Games",
+            "en_GB": "Ancho-V Games",
+            "es_ES": "Estudios Esturión",
+            "es_MX": "Estudios Esturión",
+            "fr_FR": "Tentatec Studio",
+            "fr_CA": "Tentatec Studio"
+        },
+        "area": 2293,
+        "release_at": {
+            "time": 1453428000,
+            "iso8601": "2016-01-22T02:00:00+00:00"
+        }
+    }
+]

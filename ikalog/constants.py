@@ -18,6 +18,8 @@
 #  limitations under the License.
 #
 
+from ikalog.utils import statink_json
+
 #  IkaLog Constants
 
 stages = {
@@ -266,11 +268,9 @@ for ability in gear_abilities.keys():
 for brand in gear_brands.keys():
     gear_brands[brand]['id'] = brand
 
-stages_v2 = {}
-import json
-a = json.loads(open('data/v2_stage.json').read())
-for d in a:
-    stages_v2[d['key']] = {
-        'ja': d['name']['ja_JP'],
-        'en': d['name']['en_US'],
-    }
+#
+
+stages_v1 = statink_json.import_stages('data/spl1/stages.json')
+weapons_v1 = statink_json.import_weapons('data/spl1/weapons.json')
+stages_v2 = statink_json.import_stages('data/spl2/stages.json')
+weapons_v2 = statink_json.import_weapons('data/spl2/weapons.json')

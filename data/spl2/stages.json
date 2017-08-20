@@ -1,0 +1,245 @@
+[
+    {
+        "key": "battera",
+        "splatnet": 0,
+        "name": {
+            "ja_JP": "バッテラストリート",
+            "en_US": "The Reef",
+            "en_GB": "The Reef",
+            "es_ES": "Barrio Congrio",
+            "es_MX": "Barrio Congrio",
+            "fr_FR": "Allées salées",
+            "fr_CA": "Allées salées"
+        },
+        "short_name": {
+            "ja_JP": "バッテラ",
+            "en_US": "Reef",
+            "en_GB": "Reef",
+            "es_ES": "Barrio Congrio",
+            "es_MX": "Barrio Congrio",
+            "fr_FR": "Allées salées",
+            "fr_CA": "Allées salées"
+        },
+        "area": 2450,
+        "release_at": {
+            "time": 1490382000,
+            "iso8601": "2017-03-24T19:00:00+00:00"
+        }
+    },
+    {
+        "key": "fujitsubo",
+        "splatnet": 1,
+        "name": {
+            "ja_JP": "フジツボスポーツクラブ",
+            "en_US": "Musselforge Fitness",
+            "en_GB": "Musselforge Fitness",
+            "es_ES": "Gimnasio Mejillón",
+            "es_MX": "Gimnasio Mejillón",
+            "fr_FR": "Gymnase Ancrage",
+            "fr_CA": "Gymnase Ancrage"
+        },
+        "short_name": {
+            "ja_JP": "フジツボ",
+            "en_US": "Fitness",
+            "en_GB": "Fitness",
+            "es_ES": "Gimnasio Mejillón",
+            "es_MX": "Gimnasio Mejillón",
+            "fr_FR": "Gymnase Ancrage",
+            "fr_CA": "Gymnase Ancrage"
+        },
+        "area": 1957,
+        "release_at": {
+            "time": 1490382000,
+            "iso8601": "2017-03-24T19:00:00+00:00"
+        }
+    },
+    {
+        "key": "gangaze",
+        "splatnet": 2,
+        "name": {
+            "ja_JP": "ガンガゼ野外音楽堂",
+            "en_US": "Starfish Mainstage",
+            "en_GB": "Starfish Mainstage",
+            "es_ES": "Auditorio Erizo",
+            "es_MX": "Auditorio Erizo",
+            "fr_FR": "Scène Sirène",
+            "fr_CA": "Scène Sirène"
+        },
+        "short_name": {
+            "ja_JP": "ガンガゼ",
+            "en_US": "Mainstage",
+            "en_GB": "Mainstage",
+            "es_ES": "Auditorio Erizo",
+            "es_MX": "Auditorio Erizo",
+            "fr_FR": "Scène Sirène",
+            "fr_CA": "Scène Sirène"
+        },
+        "area": null,
+        "release_at": {
+            "time": 1500105600,
+            "iso8601": "2017-07-15T08:00:00+00:00"
+        }
+    },
+    {
+        "key": "kombu",
+        "splatnet": 5,
+        "name": {
+            "ja_JP": "コンブトラック",
+            "en_US": "Humpback Pump Track",
+            "en_GB": "Humpback Pump Track",
+            "es_ES": "Tiburódromo",
+            "es_MX": "Tiburódromo",
+            "fr_FR": "Piste Méroule",
+            "fr_CA": "Piste Méroule"
+        },
+        "short_name": {
+            "ja_JP": "コンブ",
+            "en_US": "Track",
+            "en_GB": "Track",
+            "es_ES": "Tiburódromo",
+            "es_MX": "Tiburódromo",
+            "fr_FR": "Piste Méroule",
+            "fr_CA": "Piste Méroule"
+        },
+        "area": null,
+        "release_at": {
+            "time": 1500105600,
+            "iso8601": "2017-07-15T08:00:00+00:00"
+        }
+    },
+    {
+        "key": "ama",
+        "splatnet": 4,
+        "name": {
+            "ja_JP": "海女美術大学",
+            "en_US": "Inkblot Art Academy",
+            "en_GB": "Inkblot Art Academy",
+            "es_ES": "Instituto Coralino",
+            "es_MX": "Instituto Coralino",
+            "fr_FR": "Institut Calam'arts",
+            "fr_CA": "Institut Calm'arts"
+        },
+        "short_name": {
+            "ja_JP": "アマビ",
+            "en_US": "Academy",
+            "en_GB": "Academy",
+            "es_ES": "Instituto Coralino",
+            "es_MX": "Instituto Coralino",
+            "fr_FR": "Institut Calam'arts",
+            "fr_CA": "Institut Calm'arts"
+        },
+        "area": null,
+        "release_at": {
+            "time": 1500105600,
+            "iso8601": "2017-07-15T08:00:00+00:00"
+        }
+    },
+    {
+        "key": "chozame",
+        "splatnet": 3,
+        "name": {
+            "ja_JP": "チョウザメ造船",
+            "en_US": "Sturgeon Shipyard",
+            "en_GB": "Sturgeon Shipyard",
+            "es_ES": "Astillero Beluga",
+            "es_MX": "Astillero Beluga",
+            "fr_FR": "Chantier Narval",
+            "fr_CA": "Chantier Narval"
+        },
+        "short_name": {
+            "ja_JP": "チョウザメ",
+            "en_US": "Shipyard",
+            "en_GB": "Shipyard",
+            "es_ES": "Astillero Beluga",
+            "es_MX": "Astillero Beluga",
+            "fr_FR": "Chantier Narval",
+            "fr_CA": "Chantier Narval"
+        },
+        "area": null,
+        "release_at": {
+            "time": 1500562800,
+            "iso8601": "2017-07-20T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "hokke",
+        "splatnet": 7,
+        "name": {
+            "ja_JP": "ホッケふ頭",
+            "en_US": "Port Mackerel",
+            "en_GB": "Port Mackerel",
+            "es_ES": "Puerto Jurel",
+            "es_MX": "Puerto Jurel",
+            "fr_FR": "Docks Haddock",
+            "fr_CA": "Docks Haddock"
+        },
+        "short_name": {
+            "ja_JP": "ホッケ",
+            "en_US": "Port",
+            "en_GB": "Port",
+            "es_ES": "Puerto Jurel",
+            "es_MX": "Puerto Jurel",
+            "fr_FR": "Docks Haddock",
+            "fr_CA": "Docks Haddock"
+        },
+        "area": null,
+        "release_at": {
+            "time": 1500562800,
+            "iso8601": "2017-07-20T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "tachiuo",
+        "splatnet": 8,
+        "name": {
+            "ja_JP": "タチウオパーキング",
+            "en_US": "Moray Towers",
+            "en_GB": "Moray Towers",
+            "es_ES": "Torres Merluza",
+            "es_MX": "Torres Merluza",
+            "fr_FR": "Tours Girelle",
+            "fr_CA": "Tours Girelle"
+        },
+        "short_name": {
+            "ja_JP": "タチウオ",
+            "en_US": "Towers",
+            "en_GB": "Towers",
+            "es_ES": "Torres Merluza",
+            "es_MX": "Torres Merluza",
+            "fr_FR": "Tours Girelle",
+            "fr_CA": "Tours Girelle"
+        },
+        "area": null,
+        "release_at": {
+            "time": 1500105600,
+            "iso8601": "2017-07-15T08:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery",
+        "splatnet": 9999,
+        "name": {
+            "ja_JP": "ミステリーゾーン",
+            "en_US": "Shifty Station",
+            "en_GB": "Shifty Station",
+            "es_ES": "Área mutante",
+            "es_MX": "Área mutante",
+            "fr_FR": "Plateforme polymorphe",
+            "fr_CA": "Plateforme polymorphe"
+        },
+        "short_name": {
+            "ja_JP": "ミステリー",
+            "en_US": "Shifty",
+            "en_GB": "Shifty",
+            "es_ES": "Área mutante",
+            "es_MX": "Área mutante",
+            "fr_FR": "Plateforme polymorphe",
+            "fr_CA": "Plateforme polymorphe"
+        },
+        "area": null,
+        "release_at": {
+            "time": 1501826400,
+            "iso8601": "2017-08-04T06:00:00+00:00"
+        }
+    }
+]
