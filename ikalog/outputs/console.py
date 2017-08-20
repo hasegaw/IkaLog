@@ -29,6 +29,7 @@ from ikalog.utils import *
 
 _ = Localization.gettext_translation('console', fallback=True).gettext
 
+
 class Console(object):
 
     ##
@@ -37,28 +38,36 @@ class Console(object):
     # @param context   IkaLog context
     #
     def on_game_start(self, context):
-        map = IkaUtils.map2text(context['game']['map'])
+        stage = IkaUtils.map2text(context['game']['map'])
         rule = IkaUtils.rule2text(context['game']['rule'])
-        print(_('Game Start. Stage: %(stage)s, Mode: %(rule)s') % {'rule': rule, 'stage':map})
+        print(_('Game Start. Stage: %(stage)s, Mode: %(rule)s') %
+              {'rule': rule, 'stage': stage})
 
     def on_game_killed(self, context, params):
-        print(_('Splatted an enemy! (%(streak)d streak)') % {'streak' : context['game'].get('kill_streak', 1)})
+        print(_('Splatted an enemy! (%(streak)d streak)') %
+              {'streak': context['game'].get('kill_streak', 1)})
 
     def on_game_chained_kill_combo(self, context):
-        print(_('You chained %(combo)d kill combo(s)!') % {'combo' : context['game'].get('kill_combo', 1)})
+        print(_('You chained %(combo)d kill combo(s)!') %
+              {'combo': context['game'].get('kill_combo', 1)})
 
     def on_game_dead(self, context):
         print(_('You were splatted!'))
 
+    def on_game_special_weapon(self, context):
+        s = '%s, mine == %s' % (
+            context['game']['special_weapon'], context['game']['special_weapon_is_mine'])
+        print(_('Special Weapon Activation: %s' % s))
+
     def on_game_death_reason_identified(self, context):
         s = _('Cause of death: %(cause_of_death)s') % \
-            { 'cause_of_death': context['game']['last_death_reason']}
+            {'cause_of_death': context['game']['last_death_reason']}
         print(s)
 
-    def on_game_go_sign(self, context): # "Go!"
+    def on_game_go_sign(self, context):  # "Go!"
         print(_('Go!'))
 
-    def on_game_finish(self, context): # Finish tape
+    def on_game_finish(self, context):  # Finish tape
         print(_('Game End.'))
 
     # Ranked battle common events
@@ -112,6 +121,17 @@ class Console(object):
         print(_('They lost the tower!'))
 
     ##
+    # Salmon Run events
+    def on_salmonrun_weapon_specified(self, context):
+        print(_('You gotta new weapon!'))
+
+    def on_salmonrun_norma_reached(self, context):
+        print(_('Your team reached the norma of this wave!'))
+
+    def on_salmonrun_result_judge(self, context):
+        print(_('Work result: %s' % context['salmon_run']['result']))
+
+    ##
     # Generate a message for on_game_individual_result.
     # @param self      The Object Pointer.
     # @param context   IkaLog context
@@ -128,14 +148,15 @@ class Console(object):
         me = IkaUtils.getMyEntryFromContext(context)
 
         s = _('Results. Stage: %(stage)s, Mode: %(rule)s, Result: %(result)s') % \
-            {'rule': rule, 'stage':map, 'result': won}
+            {'rule': rule, 'stage': map, 'result': won}
 
         if ('score' in me):
             s = s + ' ' + _('%sp') % (me['score'])
 
         if ('kills' in me) and ('deaths' in me):
             try:
-                s = s + ' ' + _('%dK/%dD') % (int(me['kills']), int(me['deaths']))
+                s = s + ' ' + \
+                    _('%dK/%dD') % (int(me['kills']), int(me['deaths']))
             except ValueError:
                 pass
 
