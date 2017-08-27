@@ -26,17 +26,17 @@ from ikalog.ml.classifier import ImageClassifier
 from ikalog.utils import *
 
 
-class WeaponSpecified(StatefulScene):
+class Spl2SalmonRunWeaponSpecified(StatefulScene):
 
     def reset(self):
-        super(WeaponSpecified, self).reset()
+        super(Spl2SalmonRunWeaponSpecified, self).reset()
 
         self._last_event_msec = - 100 * 1000
         self._cause_of_death_votes = {}
 
     def _state_default(self, context):
-        #        if not self.is_another_scene_matched(context, 'GameTimerIcon'):
-        #            return False
+        if not self.find_scene_object('Spl2SalmonRunSession').matched_in(context, 20 * 1000):
+            return False
 
         frame = context['engine']['frame']
 
@@ -80,8 +80,9 @@ class WeaponSpecified(StatefulScene):
 
     def _init_scene(self, debug=False):
         self._c = ImageClassifier()
-        self._c.load_from_file('spl2.salmon_run.game.weapon_change.dat')
+        self._c.load_from_file(
+            'data/spl2/spl2.salmon_run.game.weapon_change.dat')
 
 
 if __name__ == "__main__":
-    WeaponSpecified.main_func()
+    Spl2SalmonRunWeaponSpecified.main_func()

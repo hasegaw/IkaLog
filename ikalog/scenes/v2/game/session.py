@@ -26,35 +26,79 @@ from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 
 
-class V2GameSession(StatefulScene):
-
+class Spl2GameSession(StatefulScene):
     def reset(self):
-        super(V2GameSession, self).reset()
+        super(Spl2GameSession, self).reset()
+        self._grace_period = 5000
 
-        self._last_event_msec = - 100 * 1000
+    def check_timeout(self, context):
+        if self._state == self._state_default:
+            return False
+
+        grace_period = self._grace_periods[self._state.__name__]
+        timeout = self.matched_in(context, grace_period)
+        return timeout
+
+        self._grace_period = 6000
+
+    def on_game_start(self, context):
+        self._switch_state(self._state_game_start)
+        self._set_matched(context)
 
     def _state_default(self, context):
         in_battle = \
-            self.is_another_scene_matched(context, 'GameTimerIcon') or \
+            self.is_another_scene_matched(context, 'Spl2InGame') or \
             self.is_another_scene_matched(context, 'V2GameSuperjump')
 
         if in_battle:
             self._switch_state(self._state_battle)
+        return in_battle
+
+    def _state_game_start(self, context):
+        in_battle = \
+            self.is_another_scene_matched(context, 'Spl2InGame') or \
+            self.is_another_scene_matched(context, 'V2GameSuperjump')
+
+        if in_battle:
+            self._switch_state(self._state_battle)
+            context['game']['splatoon_edition'] = 'spl2'
+
+        if not in_battle and self.check_timeout(context):
+            self._switch_state(self._state_default)
+
+        return in_battle
 
     def _state_battle(self, context):
         in_battle = \
-            self.is_another_scene_matched(context, 'GameTimerIcon') or \
+            self.is_another_scene_matched(context, 'Spl2InGame') or \
             self.is_another_scene_matched(context, 'V2GameSuperjump')
 
-        if not in_battle:
+        if in_battle:
+            self._set_matched(context)
+
+        if not in_battle and self.check_timeout(context):
+            self._switch_state(self._state_default)
+
+        return in_battle
+
+    def _state_battle_finished(self, context):
+        if self.is_another_scene_matched(context, 'Spl2BattleFinish'):
+            return True
+
+        if self.check_timeout(context):
             self._switch_state(self._state_default)
 
     def _analyze(self, context):
         pass
 
     def _init_scene(self, debug=False):
-        pass
+        self._grace_periods = {
+            '_default': 0,
+            '_state_battle': 6000,
+            '_state_game_start': 20000,
+            '_state_battle_finished': 10000,
+        }
 
 
 if __name__ == "__main__":
-    V2GameSession.main_func()
+    Spl2GameSession.main_func()

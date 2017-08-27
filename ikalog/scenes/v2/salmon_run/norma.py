@@ -26,10 +26,10 @@ from ikalog.ml.classifier import ImageClassifier
 from ikalog.utils import *
 
 
-class SalmonRunNorma(StatefulScene):
+class Spl2SalmonRunNorma(StatefulScene):
 
     def reset(self):
-        super(SalmonRunNorma, self).reset()
+        super(Spl2SalmonRunNorma, self).reset()
 
         self._last_event_msec = - 100 * 1000
         self._cause_of_death_votes = {}
@@ -95,8 +95,8 @@ class SalmonRunNorma(StatefulScene):
 
     def _init_scene(self, debug=False):
         self._c = ImageClassifier()
-        self._c.load_from_file('spl2.salmon_run.game.norma.dat')
+        self._c.load_from_file('data/spl2/spl2.salmon_run.game.norma.dat')
 
 
 if __name__ == "__main__":
-    SalmonRunNorma.main_func()
+    Spl2SalmonRunNorma.main_func()

@@ -45,8 +45,9 @@ def transform_scoreboard(frame):
 
 
 if __name__ == '__main__':
-    img = cv2.imread(
-        '/Users/hasegaw/Dropbox/project_IkaLog/v2/raw_images/ja/result_socreboard.png', 1)
+    import sys
+
+    img = cv2.imread( sys.argv[1], 1)
     print(img.shape)
     r = transform_scoreboard(img)
     cv2.imshow('win', r['win'])

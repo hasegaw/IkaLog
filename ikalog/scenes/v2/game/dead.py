@@ -27,7 +27,7 @@ from ikalog.utils import *
 from ikalog.utils.character_recoginizer import *
 
 
-class V2GameDead(StatefulScene):
+class Spl2GameDead(StatefulScene):
     choordinates = {
         'ja': {'top': 218, 'left': 452},
         'en': {'top': 263, 'left': 432},
@@ -99,14 +99,14 @@ class V2GameDead(StatefulScene):
         return key
 
     def reset(self):
-        super(V2GameDead, self).reset()
+        super(Spl2GameDead, self).reset()
 
         self._last_event_msec = - 100 * 1000
         self._cause_of_death_votes = {}
 
     def _state_default(self, context):
         # pass matching in some scenes.
-        session = self.find_scene_object('V2GameSession')
+        session = self.find_scene_object('Spl2GameSession')
         if session is not None:
             if not (session._state.__name__ in ('_state_battle')):
                 return False
@@ -172,7 +172,7 @@ class V2GameDead(StatefulScene):
 
     def _init_scene(self, debug=False):
         self._c = ImageClassifier()
-        self._c.load_from_file('data/spl2.game_dead.dat')
+        self._c.load_from_file('data/spl2/spl2.game_dead.dat')
 
         # try:
         #    self.deadly_weapon_recoginizer = DeadlyWeaponRecoginizer()
@@ -182,4 +182,4 @@ class V2GameDead(StatefulScene):
 
 
 if __name__ == "__main__":
-    V2GameDead.main_func()
+    Spl2GameDead.main_func()

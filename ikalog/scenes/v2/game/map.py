@@ -28,10 +28,10 @@ from ikalog.utils import *
 from ikalog.ml.classifier import ImageClassifier
 
 
-class V2GameSuperJump(StatefulScene):
+class Spl2GameMap(StatefulScene):
 
     def reset(self):
-        super(V2GameSuperJump, self).reset()
+        super(Spl2GameMap, self).reset()
 
         self._last_event_msec = - 100 * 1000
 
@@ -73,4 +73,4 @@ class V2GameSuperJump(StatefulScene):
 
 
 if __name__ == "__main__":
-    V2GameSuperJump.main_func()
+    Spl2GameMap.main_func()

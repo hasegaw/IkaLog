@@ -27,17 +27,17 @@ from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
 
 
-class V2ResultJudge(StatefulScene):
+class Spl2ResultJudge(StatefulScene):
 
     def reset(self):
-        super(V2ResultJudge, self).reset()
+        super(Spl2ResultJudge, self).reset()
 
         self._last_img_bar_b_i16 = None
         self._last_event_msec = - 100 * 1000
 
     def _state_default(self, context):
         # pass matching in some scenes.
-        session = self.find_scene_object('V2GameSession')
+        session = self.find_scene_object('Spl2GameSession')
         if session is not None:
             if not (session._state.__name__ in ('_state_default', '_state_battle_finish')):
                 return False
@@ -148,8 +148,8 @@ class V2ResultJudge(StatefulScene):
 
     def _init_scene(self, debug=False):
         self._c_judge = ImageClassifier()
-        self._c_judge.load_from_file('data/spl2.result.judge.dat')
+        self._c_judge.load_from_file('data/spl2/spl2.result.judge.dat')
 
 
 if __name__ == "__main__":
-    V2ResultJudge.main_func()
+    Spl2ResultJudge.main_func()

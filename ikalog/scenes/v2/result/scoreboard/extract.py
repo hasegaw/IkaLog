@@ -100,15 +100,15 @@ def extract_players(frame):
 
 if __name__ == '__main__':
     import time
+    import sys
 
-    img = cv2.imread(
-        '/Users/hasegaw/Dropbox/project_IkaLog/v2/raw_images/ja/result_socreboard.png', 1)
+    img = cv2.imread(sys.argv[1], 1)
     r = extract_players(img)
 
     t = time.time()
     i = 0
     for player in r:
-        for k in ['weapon', 'kill', 'death']:
+        for k in ['weapon', 'kill_or_assist', 'special', 'score']:
             cv2.imwrite('scoreboard.player%d.%s.%s.png' %
                         (i, k, t), player['img_%s' % k])
         i = i + 1

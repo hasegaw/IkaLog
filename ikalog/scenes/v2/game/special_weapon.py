@@ -74,7 +74,7 @@ class Spl2GameSpecialWeapon(StatefulScene):
 
     def _state_default(self, context):
         # pass matching in some scenes.
-        session = self.find_scene_object('V2GameSession')
+        session = self.find_scene_object('Spl2GameSession')
         if session is not None:
             if not (session._state.__name__ in ('_state_battle')):
                 return False
@@ -99,7 +99,7 @@ class Spl2GameSpecialWeapon(StatefulScene):
 
     def _state_tracking(self, context):
         # pass matching in some scenes.
-        session = self.find_scene_object('V2GameSession')
+        session = self.find_scene_object('Spl2GameSession')
         if session is not None:
             if not (session._state.__name__ in ('_state_battle')):
                 return False
@@ -141,7 +141,8 @@ class Spl2GameSpecialWeapon(StatefulScene):
         self.write_samples = False
 
         self._c = ImageClassifier(object)
-        self._c.load_from_file('data/spl2.game.special_weapon_activation.dat')
+        self._c.load_from_file(
+            'data/spl2/spl2.game.special_weapon_activation.dat')
 
 
 if __name__ == "__main__":

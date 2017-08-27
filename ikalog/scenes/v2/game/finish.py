@@ -37,15 +37,15 @@ class Spl2GameFinish(Scene):
         if self.matched_in(context, 60 * 1000, attr='_last_event_msec'):
             return False
 
-        #if self.is_another_scene_matched(context, 'GameTimerIcon'):
-        #    return False
-#
-#        if not self.find_scene_object('GameTimerIcon').matched_in(context, 20 * 1000):
-#            return False
+        if not self.find_scene_object('Spl2GameSession').matched_in(context, 20 * 1000):
+            return False
+
+        if self.is_another_scene_matched(context, 'Spl2GameSession'):
+            return False
 
         frame = context['engine']['frame']
 
-        matched =  self._c.predict_frame(frame) >= 0
+        matched = self._c.predict_frame(frame) >= 0
         if not matched:
             return False
 
@@ -62,7 +62,8 @@ class Spl2GameFinish(Scene):
 
     def _init_scene(self, debug=False):
         self._c = ImageClassifier()
-        self._c.load_from_file('data/spl2.game.finish.dat')
-        
+        self._c.load_from_file('data/spl2/spl2.game.finish.dat')
+
+
 if __name__ == "__main__":
     Spl2GameFinish.main_func()

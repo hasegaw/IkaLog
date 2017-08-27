@@ -24,10 +24,10 @@ import cv2
 from ikalog.scenes.stateful_scene import StatefulScene
 
 
-class SalmonRunSession(StatefulScene):
+class Spl2SalmonRunSession(StatefulScene):
 
     def reset(self):
-        super(SalmonRunSession, self).reset()
+        super(Spl2SalmonRunSession, self).reset()
         self._last_event_msec = - 100 * 1000
 
     def _state_default(self, context):
@@ -79,4 +79,4 @@ class SalmonRunSession(StatefulScene):
 
 
 if __name__ == "__main__":
-    SalmonRunSession.main_func()
+    Spl2SalmonRunSession.main_func()

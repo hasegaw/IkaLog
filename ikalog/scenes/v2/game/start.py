@@ -34,10 +34,10 @@ stages = {'ama': True, 'battera': True, 'fujitsubo': True,
 rules = {'nawabari': True, }
 
 
-class V2GameStart(StatefulScene):
+class Spl2GameStart(StatefulScene):
 
     def reset(self):
-        super(V2GameStart, self).reset()
+        super(Spl2GameStart, self).reset()
         self.stage_votes = []
         self.rule_votes = []
 
@@ -79,7 +79,7 @@ class V2GameStart(StatefulScene):
 
     def _state_default(self, context):
         # pass matching in some scenes.
-        session = self.find_scene_object('V2GameSession')
+        session = self.find_scene_object('Spl2GameSession')
         if session is not None:
             if not (session._state.__name__ in ('_state_default')):
                 return False
@@ -156,10 +156,10 @@ class V2GameStart(StatefulScene):
     def _init_scene(self, debug=False):
         self.election_period = 5 * 1000  # msec
         self._c_stage = ImageClassifier()
-        self._c_stage.load_from_file('data/spl2.game_start.stage.dat')
+        self._c_stage.load_from_file('data/spl2/spl2.game_start.stage.dat')
         self._c_rule = ImageClassifier()
-        self._c_rule.load_from_file('data/spl2.game_start.rule.dat')
+        self._c_rule.load_from_file('data/spl2/spl2.game_start.rule.dat')
 
 
 if __name__ == "__main__":
-    V2GameStart.main_func()
+    Spl2GameStart.main_func()

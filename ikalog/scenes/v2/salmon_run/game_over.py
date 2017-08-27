@@ -26,7 +26,7 @@ from ikalog.ml.classifier import ImageClassifier
 from ikalog.utils import *
 
 
-class SalmonRunGameOver(StatefulScene):
+class Spl2SalmonRunGameOver(StatefulScene):
 
     def reset(self):
         super(SalmonRunGameOver, self).reset()
@@ -73,8 +73,8 @@ class SalmonRunGameOver(StatefulScene):
 
     def _init_scene(self, debug=False):
         self._c = ImageClassifier()
-        self._c.load_from_file('spl2.salmon_run.game.over.dat')
+        self._c.load_from_file('data/spl2/spl2.salmon_run.game.over.dat')
 
 
 if __name__ == "__main__":
-    SalmonRunGameOver.main_func()
+    Spl2SalmonRunGameOver.main_func()

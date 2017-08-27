@@ -34,10 +34,10 @@ def get_salmonrun_from_context(context):
     return context['salmon_run']
 
 
-class SalmonRunTimeCounter(StatefulScene):
+class Spl2SalmonRunTimeCounter(StatefulScene):
 
     def reset(self):
-        super(SalmonRunTimeCounter, self).reset()
+        super(Spl2SalmonRunTimeCounter, self).reset()
 
         self._last_event_msec = - 100 * 1000
 
@@ -112,4 +112,4 @@ class SalmonRunTimeCounter(StatefulScene):
 
 
 if __name__ == "__main__":
-    SalmonRunTimeCounter.main_func()
+    Spl2SalmonRunTimeCounter.main_func()

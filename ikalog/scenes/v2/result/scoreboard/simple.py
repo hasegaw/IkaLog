@@ -33,11 +33,9 @@ from ikalog.inputs.filters import OffsetFilter
 from ikalog.utils import *
 
 from ikalog.scenes.v2.result.scoreboard.extract import extract_players
-from ikalog.utils.character_recoginizer.number2 import Number2Classifier
-#from ikalog.utils.ikamatcher1 import IkaMatcher1
 
 
-class ResultScoreboard(StatefulScene):
+class Spl2ResultScoreboard(StatefulScene):
 
     def _read_int(self, img):
         #cv2.imshow('read char', img)
@@ -72,7 +70,7 @@ class ResultScoreboard(StatefulScene):
         return
 
     def reset(self):
-        super(ResultScoreboard, self).reset()
+        super(Spl2ResultScoreboard, self).reset()
 
         self._last_event_msec = - 100 * 1000
         self._match_start_msec = - 100 * 1000
@@ -96,7 +94,7 @@ class ResultScoreboard(StatefulScene):
         img_v_4 = np.array(img_v_3, dtype=np.uint8)
         img_a = cv2.cvtColor(img_v_4, cv2.COLOR_GRAY2BGR)
 
-        cv2.imshow('result', img_a)
+        # cv2.imshow('result', img_a)
 
         matched = self._c_win.predict1(img_a) >= 0
         return matched
@@ -129,6 +127,7 @@ class ResultScoreboard(StatefulScene):
                     score = self._tr.read_char(p['img_score'])
                     p['score'] = re.sub(r'p$', r'', score)
                 except:
+                    # FIXME
                     pass
 
                 p['kill_or_assist'] = self._read_int(p['img_kill_or_assist'])
@@ -182,42 +181,8 @@ class ResultScoreboard(StatefulScene):
         self._tr = TextReader()
 
         self._c_win = ImageClassifier()
-        self._c_win.load_from_file('data/spl2.result.scoreboard_1.dat')
-
-        self.mask_win_hook = IkaMatcher(
-            920, 0, 100, 70,
-            img_file='v2_result_scoreboard.png',
-            threshold=0.90,
-            orig_threshold=0.10,
-            bg_method=matcher.MM_DARK(visibility=(0, 16)),
-            fg_method=matcher.MM_NOT_DARK(visibility=(16, 255)),
-            label='result_scoreboard:WIN',
-            debug=debug,
-        )
-
-        self.mask_win = IkaMatcher(
-            710, 57, 144, 66,
-            img_file='v2_result_scoreboard.png',
-            threshold=0.90,
-            orig_threshold=0.30,
-            bg_method=matcher.MM_DARK(visibility=(0, 16)),
-            fg_method=matcher.MM_NOT_DARK(visibility=(16, 255)),
-            label='result_scoreboard:WIN_STR',
-            debug=debug,
-        )
-
-        self.mask_lose_hook = IkaMatcher(
-            920, 340, 100, 70,
-            img_file='v2_result_scoreboard.png',
-            threshold=0.90,
-            orig_threshold=0.30,
-            bg_method=matcher.MM_DARK(visibility=(0, 16)),
-            fg_method=matcher.MM_NOT_DARK(visibility=(16, 255)),
-            label='result_scoreboard:LOSE',
-            debug=debug,
-        )
-        self.number_recoginizer = Number2Classifier()
+        self._c_win.load_from_file('data/spl2/spl2.result.scoreboard_1.dat')
 
 
 if __name__ == "__main__":
-    ResultScoreboard.main_func()
+    Spl2ResultScoreboard.main_func()

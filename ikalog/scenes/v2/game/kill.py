@@ -31,10 +31,10 @@ from ikalog.utils.character_recoginizer import *
 from ikalog.utils.player_name import normalize_player_name
 
 
-class V2GameKill(Scene):
+class Spl2GameKill(Scene):
 
     def reset(self):
-        super(V2GameKill, self).reset()
+        super(Spl2GameKill, self).reset()
 
         self.last_kills = 0
         self.total_kills = 0
@@ -117,7 +117,7 @@ class V2GameKill(Scene):
 
     def match_no_cache(self, context):
         # pass matching in some scenes.
-        session = self.find_scene_object('V2GameSession')
+        session = self.find_scene_object('Spl2GameSession')
         if session is not None:
             if not (session._state.__name__ in ('_state_battle')):
                 return False
@@ -148,8 +148,8 @@ class V2GameKill(Scene):
 
     def _init_scene(self, debug=False):
         self.classifier_killed = ImageClassifier(object)
-        self.classifier_killed.load_from_file('data/spl2.game_kill.dat')
+        self.classifier_killed.load_from_file('data/kill/spl2.game_kill.dat')
 
 
 if __name__ == "__main__":
-    V2GameKill.main_func()
+    Spl2GameKill.main_func()

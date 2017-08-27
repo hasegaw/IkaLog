@@ -25,6 +25,8 @@ import numpy as np
 from ikalog.scenes.scene import Scene
 from ikalog.utils import *
 
+from ikalog.ml.classifier import ImageClassifier
+
 
 class V2Lobby(Scene):
 
@@ -111,25 +113,21 @@ class V2Lobby(Scene):
     def match_public_lobby(self, context):
         frame = context['engine']['frame']
 
+        # FIXME: Additional checks
+
         # 「ルール」「ステージ」
-        mandatory = self.mask_rule.match(frame) and \
-            self.mask_stage.match(frame)
+        # mandatory = self.mask_rule.match(frame) and \
+        #    self.mask_stage.match(frame)
 
-        if not mandatory:
-            return False
+        # if not mandatory:
+        #    return False
 
-        # マッチング中は下記文字列のうちひとつがあるはず
-        r_pub_matching = self.mask_matching.match(frame)
-        r_pub_matched = self.mask_matched.match(frame)
-        r_fes_matched = self.mask_fes_matched.match(frame)
+        r = self.classifier_matching_status.new_predict_frame(
+            context['engine']['frame'])
 
-        match_count = 0
-        for matched in [r_pub_matching, r_pub_matched, r_fes_matched]:
-            if matched:
-                match_count = match_count + 1
-
-        if match_count != 1:
-            return False
+        r_pub_matching = (r == 0)
+        r_pub_matched = (r == 1)
+        r_fes_matched = False  # not yet
 
         # フェスの場合
         # FIXME: Festa, Matching の組み合わせ
@@ -148,43 +146,13 @@ class V2Lobby(Scene):
 
         return True
 
-    def match_testfire_lobby(self, context):
-        frame = context['engine']['frame']
-
-        # How to use Map?
-        mandatory = self.mask_testfire.match(frame)
-
-        if not mandatory:
-            return False
-
-        r_pub_matching = self.mask_matching.match(frame)
-        r_pub_matched = self.mask_matched.match(frame)
-
-        matched = bool(r_pub_matching) ^ bool(r_pub_matched)
-        if not matched:
-            return False
-
-        context['lobby']['type'] = 'testfire'
-        if r_pub_matching:
-            context['lobby']['state'] = 'matching'
-
-        elif r_pub_matched:
-            context['lobby']['state'] = 'matched'
-
-        return True
-
     def match_any_lobby(self, context):
         if (not 'lobby' in context):
             context['lobby'] = {}
 
-        if self.match_testfire_lobby(context):
-            return True
-
-        return False
-        # not implemented yet
-
         if self.match_public_lobby(context):
             return True
+        return False
 
         if self.match_squad_lobby(context):
             return True
@@ -201,7 +169,7 @@ class V2Lobby(Scene):
         self._last_matched_event_msec = - 100 * 1000
 
     def match_no_cache(self, context):
-        if self.is_another_scene_matched(context, 'GameTimerIcon'):
+        if self.is_another_scene_matched(context, 'Spl2GameSession'):
             return False
 
         frame = context['engine']['frame']
@@ -238,7 +206,11 @@ class V2Lobby(Scene):
             lobby.get('team_members', None),
         ))
 
-    def _init_scene(self, debug=False):
+    def _init_scene(self, debug=True):
+        self.classifier_matching_status = ImageClassifier()
+        self.classifier_matching_status.load_from_file(
+            'spl2.lobby.matching.dat')
+
         self.mask_rule = IkaMatcher(
             72, 269, 90, 25,
             img_file='lobby_public_matched.png',
@@ -451,6 +423,7 @@ class V2Lobby(Scene):
             call_plugins=self._call_plugins,
             debug=debug
         )
+
 
 if __name__ == "__main__":
     V2Lobby.main_func()

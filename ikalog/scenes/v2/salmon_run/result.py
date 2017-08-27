@@ -32,10 +32,10 @@ def get_salmonrun_from_context(context):
     return context['salmon_run']
 
 
-class ResultJudge(StatefulScene):
+class Spl2SalmonRunResultJudge(StatefulScene):
 
     def reset(self):
-        super(ResultJudge, self).reset()
+        super(Spl2SalmonRunResultJudge, self).reset()
 
         self._last_event_msec = - 100 * 1000
 
@@ -83,7 +83,7 @@ class ResultJudge(StatefulScene):
 
     def _init_scene(self, debug=False):
         self._c = ImageClassifier()
-        self._c.load_from_file('spl2.salmon_run.result.judge.dat')
+        self._c.load_from_file('data/spl2/spl2.salmon_run.result.judge.dat')
 
 
 if __name__ == "__main__":
