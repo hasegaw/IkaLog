@@ -3,7 +3,7 @@
 #
 #  IkaLog
 #  ======
-#  Copyright (C) 2016 Takeshi HASEGAWA
+#  Copyright (C) 2017 Takeshi HASEGAWA
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ import uuid
 
 import cv2
 
-from ikalog.constants import fes_rank_titles, stages, rules, weapons, special_weapons
+import ikalog.constants
+from ikalog.constants import fes_rank_titles, rules
 import ikalog.version
 from ikalog.utils import *
 from ikalog.utils.anonymizer import anonymize
@@ -118,6 +119,13 @@ class StatInkCompositor(object):
 
     def composite_stage_and_mode(self, context, payload):
         game = context.get('game', {})
+
+        if game.get('splatoon_edition') == 'spl2':
+            # use splatoon asset.
+            stages = ikalog.constants.stages_v2
+        else:
+            # use Splatoon asset.
+            stages = ikalog.constants.stages_v1
 
         stage = game.get('map')
         if stage in stages.keys():
@@ -235,12 +243,14 @@ class StatInkCompositor(object):
         kills = context['game'].get('kills')
         if kills is not None:
             me['kills'] = kills
-            payload['kill'] = kills
 
         death = context['game'].get('death')
         if death is not None:
             me['death'] = death
-            payload['death'] = death
+
+        kill_or_assist = context['game'].get('kill_or_assist')
+        if kill_or_assist is not None:
+            me['kill_or_assist'] = kill_or_assist
 
         payload['result'] = IkaUtils.getWinLoseText(
             context['game']['won'],
@@ -249,9 +259,10 @@ class StatInkCompositor(object):
             unknown_text=None
         )
 
-        # weapon = me.get('weapon')
-        # if weapon:
-        #     payload['weapon'] = weapon
+        if context.get('game', {}).get('splatoon_edition') != 'spl2':
+            weapon = me.get('weapon')
+            if weapon:
+                payload['weapon'] = weapon
 
         if context['game'].get('is_fes'):
             payload['gender'] = me['gender_en']
@@ -262,6 +273,8 @@ class StatInkCompositor(object):
                 ['int', 'rank_in_team', 'rank_in_team'],
                 ['int', 'kill', 'kills'],
                 ['int', 'death', 'deaths'],
+                ['int', 'death', 'death'],
+                ['int', 'kill_or_assist', 'kill_or_assist'],
                 ['int', 'special', 'special'],
                 ['int', 'level', 'rank'],
                 ['int', 'my_point', 'score'],
@@ -277,14 +290,16 @@ class StatInkCompositor(object):
                     ['int', 'rank_in_team', 'rank_in_team'],
                     ['int', 'kill', 'kills'],
                     ['int', 'death', 'deaths'],
+                    ['int', 'kill_or_assist', 'kill_or_assist'],
                     ['int', 'special', 'special'],
                     ['int', 'level', 'rank'],
                     ['int', 'point', 'score'],
                 ], player, e)
 
-            #weapon = e.get('weapon')
-            # if weapon:
-            #    player['weapon'] = weapon
+            if context.get('game', {}).get('splatoon_edition') != 'spl2':
+                weapon = e.get('weapon')
+                if weapon:
+                    player['weapon'] = weapon
 
             if payload.get('rule') != 'nawabari':
                 if 'udemae_pre' in e:
