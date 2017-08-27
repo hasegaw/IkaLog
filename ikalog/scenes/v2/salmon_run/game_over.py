@@ -29,7 +29,7 @@ from ikalog.utils import *
 class Spl2SalmonRunGameOver(StatefulScene):
 
     def reset(self):
-        super(SalmonRunGameOver, self).reset()
+        super(Spl2SalmonRunGameOver, self).reset()
 
         self._last_event_msec = - 100 * 1000
 

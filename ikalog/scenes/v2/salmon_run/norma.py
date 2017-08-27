@@ -36,8 +36,8 @@ class Spl2SalmonRunNorma(StatefulScene):
 
     def _get_state_from_frame(self, context):
         frame = context['engine']['frame']
-        r = self._c.predict1_multiclass(
-            self._c.extract_rect(context['engine']['frame']))[0][0]
+
+        r = self._c.predict_frame(context['engine']['frame'])
 
         return {0: self._state_norma_not_reached, 1: self._state_norma_reached, -1: self._state_default}.get(r)
 
