@@ -76,14 +76,14 @@ def UploadToStatInk(payload, api_key, url=None, video_id=None,
     error = False
     if req.status == 200: # assume stat.ink v1 API (or error)
         try:
-            statink_response = json.loads(req.data.decode('utf-8'))
+            status = json.loads(req.data.decode('utf-8'))
             error = 'error' in statink_response
             if error:
                 IkaUtils.dprint('%s: API Error occured')
         except:
             error = True
             IkaUtils.dprint('%s: Stat.ink returned non-JSON response')
-            statink_response = {
+            status = {
                 'error': 'Not a JSON response',
             }
     elif req.status == 201: # assume stat.ink v2 API
