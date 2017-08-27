@@ -74,17 +74,22 @@ def UploadToStatInk(payload, api_key, url=None, video_id=None,
     # Error detection
 
     error = False
-    try:
-        statink_response = json.loads(req.data.decode('utf-8'))
-        error = 'error' in statink_response
-        if error:
-            IkaUtils.dprint('%s: API Error occured')
-    except:
-        error = True
-        IkaUtils.dprint('%s: Stat.ink return non-JSON response')
-        statink_response = {
-            'error': 'Not a JSON response',
-        }
+    if req.status == 200: # assume stat.ink v1 API (or error)
+        try:
+            statink_response = json.loads(req.data.decode('utf-8'))
+            error = 'error' in statink_response
+            if error:
+                IkaUtils.dprint('%s: API Error occured')
+        except:
+            error = True
+            IkaUtils.dprint('%s: Stat.ink returned non-JSON response')
+            statink_response = {
+                'error': 'Not a JSON response',
+            }
+    elif req.status == 201: # assume stat.ink v2 API
+        status = { 'battle_url': req.headers.get('Location') }
+        if status['battle_url'] is None:
+            del status['battle_url']
 
     # Debug messages
 
@@ -100,6 +105,5 @@ def UploadToStatInk(payload, api_key, url=None, video_id=None,
             int((time.time() - time_post_start) * 10) / 10,
         )
     )
-    IkaUtils.dprint(statink_response.get('url'))
 
-    return [error, statink_response]
+    return [error, status]
