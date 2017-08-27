@@ -66,6 +66,10 @@ IKALOG_VERSION =  __get_ikalog_version()
 GAME_VERSION = '2.8.0'
 GAME_VERSION_DATE = '2016-06-08_04'
 
+SPL2_GAME_VERSION = '1.0.0'
+GAME_VERSION_DATE = '2017-07-21_01'
+
+
 if __name__ == '__main__':
     print(IKALOG_VERSION)
     print(get_latest_versions())
