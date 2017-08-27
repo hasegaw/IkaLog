@@ -33,6 +33,7 @@ from ikalog.inputs.filters import OffsetFilter
 from ikalog.utils import *
 
 from ikalog.scenes.v2.result.scoreboard.extract import extract_players
+from ikalog.scenes.v2.result.scoreboard.team_colors import extract_team_colors
 
 
 class Spl2ResultScoreboard(StatefulScene):
@@ -141,6 +142,12 @@ class Spl2ResultScoreboard(StatefulScene):
             # won?
             me = list(filter(lambda x: x['myself'], players))[0]
             context['game']['won'] = (me['team'] == 0)
+
+            # team colors
+            team_colors = \
+                extract_team_colors(context, context['engine']['frame'])
+            context['game']['my_team_color'] = team_colors[0]
+            context['game']['counter_team_color'] = team_colors[1]
 
             # for debug....
             context['game']['lobby'] = 'private'
