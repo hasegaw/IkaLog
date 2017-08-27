@@ -84,7 +84,7 @@ class PerCharacter(object):
 class TextReader(object):
     def __init__(self):
         self._c = classifier.ImageClassifier()
-        self._c.load_from_file('spl2.font2.dat')
+        self._c.load_from_file('data/spl2/spl2.font2.dat')
 
     def read_char(self, img, verbose=False, crop_min_per_char=False):
         rect = get_min_and_max(img)
