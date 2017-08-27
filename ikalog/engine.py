@@ -321,9 +321,6 @@ class IkaEngine:
         if frame is None:
             return False
 
-        context['engine']['inGame'] = \
-            self.find_scene_object('GameTimerIcon').match(context)
-
         self.call_plugins('on_frame_read')
 
         for scene in self.scenes:
