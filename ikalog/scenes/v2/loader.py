@@ -43,8 +43,10 @@ from .result.judge import Spl2ResultJudge
 from .result.scoreboard.simple import Spl2ResultScoreboard
 
 from .salmon_run.session import Spl2SalmonRunSession
+from .salmon_run.game_start import Spl2SalmonRunGameStart
 from .salmon_run.weapon_specified import Spl2SalmonRunWeaponSpecified
 from .salmon_run.norma import Spl2SalmonRunNorma
+from .salmon_run.wave_start import Spl2SalmonRunWaveStart
 from .salmon_run.result import Spl2SalmonRunResultJudge
 from .salmon_run.game_over import Spl2SalmonRunGameOver
 from .salmon_run.count import Spl2SalmonRunTimeCounter
@@ -75,12 +77,14 @@ def initialize_scenes(engine):
         # V2PaintTracker(engine),
         # Lobby(engine),
 
-        # Spl2SalmonRunSession(engine),
-        # Spl2SalmonRunWeaponSpecified(engine),
-        # Spl2SalmonRunNorma(engine),
-        # Spl2SalmonRunGameOver(engine),
-        # Spl2SalmonRunTimeCounter(engine),
-        # Spl2SalmonRunResultJudge(engine),
+        Spl2SalmonRunSession(engine),
+        Spl2SalmonRunGameStart(engine),
+        Spl2SalmonRunWeaponSpecified(engine),
+        Spl2SalmonRunNorma(engine),
+        Spl2SalmonRunGameOver(engine),
+        Spl2SalmonRunTimeCounter(engine),
+        Spl2SalmonRunResultJudge(engine),
+        Spl2SalmonRunWaveStart(engine),
 
         BOTWDead(engine),
 
