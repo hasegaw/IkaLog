@@ -122,6 +122,10 @@ class Console(object):
 
     ##
     # Salmon Run events
+
+    def on_salmonrun_game_start(self, context, params):
+        print(_('Salmon Run Start. stage: %s') % params['stage'])
+
     def on_salmonrun_weapon_specified(self, context):
         print(_('You gotta new weapon!'))
 
@@ -129,7 +133,10 @@ class Console(object):
         print(_('Your team reached the norma of this wave!'))
 
     def on_salmonrun_result_judge(self, context):
-        print(_('Work result: %s' % context['salmon_run']['result']))
+        print(_('Work result: %s') % context['salmon_run']['result'])
+
+    def on_salmonrun_wave_start(self, context, params):
+        print(_('Wave %s start...') % params['wave'])
 
     ##
     # Generate a message for on_game_individual_result.
