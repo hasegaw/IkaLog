@@ -138,6 +138,21 @@ class Console(object):
     def on_salmonrun_wave_start(self, context, params):
         print(_('Wave %s start...') % params['wave'])
 
+    def on_salmonrun_egg_captured(self, context, params):
+        print(_('Player %d captured an egg') % params['player'])
+
+    def on_salmonrun_egg_delivered(self, context, params):
+        print(_('Player %d delivered an egg') % params['player'])
+
+    def on_salmonrun_egg_delivered(self, context, params):
+        print(_('Player %d delivered an egg') % params['player'])
+
+    def on_salmonrun_player_dead(self, context, params):
+        print(_('Player %d is now dead') % params['player'])
+
+    def on_salmonrun_player_back(self, context, params):
+        print(_('Player %d is now back') % params['player'])
+
     ##
     # Generate a message for on_game_individual_result.
     # @param self      The Object Pointer.
