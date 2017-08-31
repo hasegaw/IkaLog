@@ -32,6 +32,8 @@ class Spl2SalmonRunPlayerStatus(StatefulScene):
     def reset(self):
         super(Spl2SalmonRunPlayerStatus, self).reset()
 
+        self._last_players = [{}, {}, {}, {}]
+        self._eggs = [0, 0, 0, 0]
         self._last_event_msec = - 100 * 1000
 
     def on_salmonrun_wave_start(self, context, params):
@@ -60,17 +62,16 @@ class Spl2SalmonRunPlayerStatus(StatefulScene):
         return players
 
     def _get_state_from_frame(self, context):
-        last_players = context['game'].get(
-            'salmon_run_players', [{}, {}, {}, {}])
         players = self._extract_player_state(context)
         index = range(4)
 
-        for last_player, player, i in zip(last_players, players, index):
+        for last_player, player, i in zip(self._last_players, players, index):
             last_active = last_player.get('active', player.get('active'))
             last_has_egg = last_player.get('has_egg', player.get('has_egg'))
 
             if player.get('has_egg') != last_has_egg:
                 if last_has_egg:
+                    self._eggs[i] += 1
                     self._call_plugins('on_salmonrun_egg_delivered', params={'player': i})
                 else:
                     self._call_plugins('on_salmonrun_egg_captured', params={'player': i})
@@ -80,7 +81,9 @@ class Spl2SalmonRunPlayerStatus(StatefulScene):
                 else:
                     self._call_plugins('on_salmonrun_player_back', params={'player': i})
 
-        context['game']['salmon_run_players'] = players
+        self._last_players = players
+        context['game']['salmon_run_players'] = self._last_players
+        context['game']['salmon_run_eggs'] = self._eggs
 
     def _state_default(self, context):
         if not self.is_another_scene_matched(context, 'Spl2SalmonRunNorma'):
