@@ -37,6 +37,7 @@ from .game.dead import Spl2GameDead
 from .game.low_ink import Spl2GameLowInk
 from .game.finish import Spl2GameFinish
 from .game.paint_tracker import V2PaintTracker
+from .game.sub_weapon import Spl2GameSubWeapon
 #from .lobby import V2Lobby as Lobby
 
 from .result.judge import Spl2ResultJudge
@@ -76,6 +77,7 @@ def initialize_scenes(engine):
         Spl2GameSpecialMeter(engine),
         Spl2GameSpecialWeapon(engine),
         Spl2GameStart(engine),
+        Spl2GameSubWeapon(engine),
 
         # V2PaintTracker(engine),
         # Lobby(engine),
