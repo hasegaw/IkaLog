@@ -51,6 +51,7 @@ from .salmon_run.player_status import Spl2SalmonRunPlayerStatus
 from .salmon_run.result import Spl2SalmonRunResultJudge
 from .salmon_run.game_over import Spl2SalmonRunGameOver
 from .salmon_run.count import Spl2SalmonRunTimeCounter
+from .salmon_run.mr_grizz import Spl2SalmonRunMrGrizz
 
 
 from ikalog.scenes.blank import Blank
@@ -87,6 +88,7 @@ def initialize_scenes(engine):
         Spl2SalmonRunResultJudge(engine),
         Spl2SalmonRunWaveStart(engine),
         Spl2SalmonRunPlayerStatus(engine),
+        Spl2SalmonRunMrGrizz(engine),
 
         BOTWDead(engine),
 
