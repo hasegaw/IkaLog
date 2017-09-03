@@ -47,8 +47,14 @@ class Spl2GameSession(StatefulScene):
 
     def _state_default(self, context):
         in_battle = \
-            self.is_another_scene_matched(context, 'Spl2InGame') or \
-            self.is_another_scene_matched(context, 'V2GameSuperjump')
+            self.is_another_scene_matched(context, 'Spl2GameMap')
+
+        if not in_battle:
+            if self.is_another_scene_matched(context, 'Spl2InGame'):
+                subweapon_scene = self.find_scene_object('Spl2GameSubWeapon')
+                assert subweapon_scene
+                subweapon= subweapon_scene.match_no_cache(context)
+                in_battle = (subweapon is not None) and not (subweapon.startswith('special_pack'))
 
         if in_battle:
             self._switch_state(self._state_battle)
@@ -57,7 +63,7 @@ class Spl2GameSession(StatefulScene):
     def _state_game_start(self, context):
         in_battle = \
             self.is_another_scene_matched(context, 'Spl2InGame') or \
-            self.is_another_scene_matched(context, 'V2GameSuperjump')
+            self.is_another_scene_matched(context, 'Spl2GameMap')
 
         if in_battle:
             self._switch_state(self._state_battle)
@@ -71,7 +77,7 @@ class Spl2GameSession(StatefulScene):
     def _state_battle(self, context):
         in_battle = \
             self.is_another_scene_matched(context, 'Spl2InGame') or \
-            self.is_another_scene_matched(context, 'V2GameSuperjump')
+            self.is_another_scene_matched(context, 'Spl2GameMap')
 
         if in_battle:
             self._set_matched(context)
@@ -82,7 +88,8 @@ class Spl2GameSession(StatefulScene):
         return in_battle
 
     def _state_battle_finished(self, context):
-        if self.is_another_scene_matched(context, 'Spl2BattleFinish'):
+        if self.is_another_scene_matched(context, 'Spl2GameFinish'):
+            self._set_matched(context)
             return True
 
         if self.check_timeout(context):
