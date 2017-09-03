@@ -138,6 +138,9 @@ class Console(object):
     def on_salmonrun_wave_start(self, context, params):
         print(_('Wave %s start...') % params['wave'])
 
+    def on_salmonrun_wave_finish(self, context, params):
+        print(_('Wave Clear!'))
+
     def on_salmonrun_egg_captured(self, context, params):
         print(_('Player %d captured an egg') % params['player'])
 
@@ -152,6 +155,9 @@ class Console(object):
 
     def on_salmonrun_player_back(self, context, params):
         print(_('Player %d is now back') % params['player'])
+
+    def on_salmonrun_mr_grizz_comment(self, context, params):
+        print(_('Mr.Gizz gave you a comment: %s') % params['text_id'])
 
     ##
     # Generate a message for on_game_individual_result.
