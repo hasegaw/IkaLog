@@ -37,7 +37,15 @@ class Spl2SalmonRunMrGrizz(StatefulScene):
 
     def _state_default(self, context):
         frame = context['engine']['frame']
-        r = self._c_text.predict_frame(context['engine']['frame'])
+
+        img_icon = self._c_icon.extract_rect(frame)
+        img_icon_resized = cv2.resize(img_icon, self._c_icon._resize)
+
+        r_icon = self._c_icon.predict1(img_icon_resized) >= 0
+        if not r_icon:
+            return False
+
+        r = self._c_text.predict_frame(frame)
         if r != -1:
             self._last_message = r
             # Mr.Grizz'scomment
@@ -46,7 +54,9 @@ class Spl2SalmonRunMrGrizz(StatefulScene):
             self._switch_state(self._state_tracking)
 
     def _state_tracking(self, context):
-        r = self._c_text.predict_frame(context['engine']['frame'])
+        frame = context['engine']['frame']
+
+        r = self._c_text.predict_frame(frame)
         if r == self._last_message:
             return True
         if r != self._last_message:
@@ -70,6 +80,8 @@ class Spl2SalmonRunMrGrizz(StatefulScene):
         pass
 
     def _init_scene(self, debug=False):
+        self._c_icon= ImageClassifier()
+        self._c_icon.load_from_file('data/spl2/spl2.salmon_run.mr_grizz_icon.dat')
         self._c_text = ImageClassifier()
         self._c_text.load_from_file('data/spl2/spl2.salmon_run.mr_grizz.dat')
 
