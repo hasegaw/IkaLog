@@ -20,14 +20,24 @@
 
 from ikalog.scenes.scene import Scene
 from ikalog.utils import *
+import re
 
 
 class StatefulScene(Scene):
 
     def _switch_state(self, new_state):
         self._state = new_state
-        IkaUtils.dprint('%s: switching to state %s' %
-                        (self, new_state.__name__))
+
+        if self._disable_state_message:
+            return
+
+        scene_name = str(self)
+        m = re.match(r'<ikalog\.scenes.*\.([a-zA-Z0-9_]+) object at ([a-f0-9]+)', scene_name)
+        if m:
+            scene_name = '<%s>' % (m.group(1))
+
+        IkaUtils.dprint('%s: new state %s' %
+                        (scene_name, new_state.__name__))
 
     def _state_default(self, context):
         raise Exception('Must be overrided')
@@ -39,3 +49,4 @@ class StatefulScene(Scene):
         super(StatefulScene, self).__init__(engine)
 
         self._state = self._state_default
+        self._disable_state_message = False
