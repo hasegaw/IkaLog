@@ -47,6 +47,7 @@ from .salmon_run.game_start import Spl2SalmonRunGameStart
 from .salmon_run.weapon_specified import Spl2SalmonRunWeaponSpecified
 from .salmon_run.norma import Spl2SalmonRunNorma
 from .salmon_run.wave_start import Spl2SalmonRunWaveStart
+from .salmon_run.wave_finish import Spl2SalmonRunWaveFinish
 from .salmon_run.player_status import Spl2SalmonRunPlayerStatus
 from .salmon_run.result import Spl2SalmonRunResultJudge
 from .salmon_run.game_over import Spl2SalmonRunGameOver
@@ -87,6 +88,7 @@ def initialize_scenes(engine):
         Spl2SalmonRunTimeCounter(engine),
         Spl2SalmonRunResultJudge(engine),
         Spl2SalmonRunWaveStart(engine),
+        Spl2SalmonRunWaveFinish(engine),
         Spl2SalmonRunPlayerStatus(engine),
         Spl2SalmonRunMrGrizz(engine),
 
