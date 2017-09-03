@@ -33,12 +33,13 @@ class Spl2GameSubWeapon(Scene):
 
         self._last_event_msec = - 100 * 1000
 
+
     def match_no_cache(self, context):
         # pass matching in some scenes.
         in_game = self.find_scene_object('Spl2InGame')
         if in_game is not None:
             if not in_game.match(context):
-                return False
+                return None
 
         frame = context['engine']['frame']
 
