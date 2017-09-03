@@ -31,7 +31,7 @@ from ikalog.utils.character_recoginizer import *
 
 
 ##
-# Spl2GameSpecialWeapon
+# Spl2GameSpecialWeaponActivation
 #
 # Detects if any special weapons are activated.
 #
@@ -54,11 +54,11 @@ from ikalog.utils.character_recoginizer import *
 #     For SPECIAL_WEAPON_ID, check the array definition of
 #      "special_weapon" array in ikalog/constants.py.
 #
-class Spl2GameSpecialWeapon(StatefulScene):
+class Spl2GameSpecialWeaponActivation(StatefulScene):
 
     # Called per Engine's reset.
     def reset(self):
-        super(Spl2GameSpecialWeapon, self).reset()
+        super(Spl2GameSpecialWeaponActivation, self).reset()
         self.img_last_special = None
 
     def _is_my_special_weapon(self, context, img_special_bgr):
@@ -146,4 +146,4 @@ class Spl2GameSpecialWeapon(StatefulScene):
 
 
 if __name__ == "__main__":
-    Spl2GameSpecialWeapon.main_func()
+    Spl2GameSpecialWeaponActivation.main_func()

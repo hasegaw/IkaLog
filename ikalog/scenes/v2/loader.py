@@ -29,7 +29,7 @@ from .game.special_meter import Spl2GameSpecialMeter
 #from .game.special_gauge.level import V2GameSpecialGaugeLevel as GameSpecialGaugeLevel
 #from .game.special_gauge.sub_and_special import V2GameSubAndSpecial as GameSubAndSpecial
 
-from .game.special_weapon import Spl2GameSpecialWeapon
+from .game.special_weapon_activation import Spl2GameSpecialWeaponActivation
 from .game.map import Spl2GameMap
 from .game.kill import Spl2GameKill
 from ikalog.scenes.game.kill_combo import GameKillCombo
@@ -75,7 +75,7 @@ def initialize_scenes(engine):
         Spl2GameLowInk(engine),
         Spl2GameMap(engine),
         Spl2GameSpecialMeter(engine),
-        Spl2GameSpecialWeapon(engine),
+        Spl2GameSpecialWeaponActivation(engine),
         Spl2GameStart(engine),
         Spl2GameSubWeapon(engine),
 
