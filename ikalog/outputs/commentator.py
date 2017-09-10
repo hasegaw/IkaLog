@@ -305,3 +305,37 @@ class Commentator(object):
 
     def on_game_tower_they_lost(self, context):
         self._read_event('tower_they_lost')
+
+    def on_salmonrun_egg_delivered(self, context, params):
+        self._read_event('salmonrun_egg_delivered')
+
+    def on_salmonrun_game_over(self, context):
+        self._read_event('salmonrun_game_over')
+
+    def on_salmonrun_norma_reached(self, context):
+        self._read_event('salmonrun_norma_reached')
+
+    def on_salmonrun_player_dead(self, context, params):
+        self._read_event('salmonrun_player_dead')
+
+    def on_salmonrun_player_back(self, context, params):
+        self._read_event('salmonrun_player_back')
+
+    def on_salmonrun_wave_start(self, context, params):
+        data = self._get_message('salmonrun_wave_start')
+        data['text'] = data['text'].format(wave=params['wave'])
+        self._read(data)
+
+    def on_salmonrun_wave_finish(self, context):
+        self._read_event('salmonrun_wave_finish')
+
+    def on_salmonrun_game_start(self, context, params):
+        self._read_event('salmonrun_game_start')
+
+    def on_salmonrun_mr_grizz_comment(self, context, params):
+        self._read_event('salmonrun_mr_grizz_comment_%s' % params['text_id'])
+
+    def on_salmonrun_result_judge(self, context):
+        result = context.get('salmon_run', {}).get('result', 'unknown')
+        data = self._get_message('salmonrun_result_judge_%s' % result)
+        self._read(data)
