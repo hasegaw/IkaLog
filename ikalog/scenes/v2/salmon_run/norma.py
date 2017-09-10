@@ -42,6 +42,13 @@ class Spl2SalmonRunNorma(StatefulScene):
         return {0: self._state_norma_not_reached, 1: self._state_norma_reached, -1: self._state_default}.get(r)
 
     def _state_default(self, context):
+        # This scene is used to detect salmon_run games.
+        # Should not be active during Spl2GameSession (any battles)
+        session = self.find_scene_object('Spl2GameSession')
+        if session is not None:
+            if not (session._state.__name__ in ('_state_default')):
+                return False
+
         new_state = self._get_state_from_frame(context)
 
         if new_state == self._state_norma_not_reached:
@@ -84,7 +91,6 @@ class Spl2SalmonRunNorma(StatefulScene):
 
         self._last_event_msec = context['engine']['msec']
         self._switch_state(self._state_default)
-        print('%s: force default state')
         return False
 
     def dump(self, context):
