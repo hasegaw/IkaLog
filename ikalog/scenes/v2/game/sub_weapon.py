@@ -47,7 +47,6 @@ class Spl2GameSubWeapon(Scene):
             return None
 
         subweapon_key = self._c.predict_frame(context['engine']['frame'])
-        print('subweapon_key', subweapon_key)
 
         return subweapon_key
 
