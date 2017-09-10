@@ -70,10 +70,17 @@ class Spl2SalmonRunGameStart(StatefulScene):
 
     def _state_default(self, context):
         # pass matching in some scenes.
-        #session = self.find_scene_object('Spl2GameSession')
-        #if session is not None:
-        #    if not (session._state.__name__ in ('_state_default')):
-        #        return False
+        session = self.find_scene_object('Spl2GameSession')
+        if session is not None:
+            if not (session._state.__name__ in ('_state_default')):
+                return False
+
+        session = self.find_scene_object('Spl2SalmonRunSession')
+        if session is not None:
+            if not (session._state.__name__ in ('_state_default')):
+                return False
+
+
 
         frame = context['engine']['frame']
         if frame is None:
