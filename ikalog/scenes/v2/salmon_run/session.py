@@ -30,38 +30,37 @@ class Spl2SalmonRunSession(StatefulScene):
         super(Spl2SalmonRunSession, self).reset()
         self._last_event_msec = - 100 * 1000
 
-    def _check_subweapon(self, context):
+    def _check_in_work(self, context):
+        if not self.is_another_scene_matched(context, 'Spl2SalmonRunNorma'):
+            return False
+
         subweapon_scene = self.find_scene_object('Spl2GameSubWeapon')
-        if subweapon_scene is None:
-            return True
-
         subweapon_id = subweapon_scene.match_no_cache(context)
-        if subweapon_id is None:
-            return None
 
-        return subweapon_id.startswith('special_pack')
+        # FIXME
+        matched = (subweapon_id is None) or str(subweapon_id).startswith('special_pack')
+        return matched
 
     def _state_default(self, context):
         if self.is_another_scene_matched(context, 'Spl2SalmonRunStage'):
             if self._check_subweapon(context):
                 self._switch_state(self._state_start)
 
-        if self.is_another_scene_matched(context, 'Spl2SalmonRunNorma'):
-            if self._check_subweapon(context):
-                self._switch_state(self._state_in_work)
+        if self._check_in_work(context):
+            self._switch_state(self._state_in_work)
 
         return False
 
     def _state_in_work(self, context):
-        if self.is_another_scene_matched(context, 'Spl2SalmonRunNorma'):
+        if self._check_in_work(context):
+        #if self.is_another_scene_matched(context, 'Spl2SalmonRunNorma'):
             return True
 
         return self.check_timeout(context, msec=15000)
 
     def _state_inter_wave(self, context):
-        if self.is_another_scene_matched(context, 'Spl2SalmonRunNorma'):
-            if self._check_subweapon(context):
-                self._switch_state(self._state_in_work)
+        if self._check_in_work(context):
+            self._switch_state(self._state_in_work)
 
         return self.check_timeout(context, msec=10000)
 
