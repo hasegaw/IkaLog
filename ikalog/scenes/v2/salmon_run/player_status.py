@@ -86,8 +86,15 @@ class Spl2SalmonRunPlayerStatus(StatefulScene):
         context['game']['salmon_run_eggs'] = self._eggs
 
     def _state_default(self, context):
-        if not self.is_another_scene_matched(context, 'Spl2SalmonRunNorma'):
-            return False
+        session = self.find_scene_object('Spl2SalmonRunSession')
+        if session is not None:
+            if not (session._state.__name__ in ('_state_in_work')):
+                return False
+
+        norma_scene = self.find_scene_object('Spl2SalmonRunNorma')
+        if norma_scene is not None:
+            if not (session._state.__name__ in ('_state_in_work')):
+                return False
 
         self._get_state_from_frame(context)
         return True

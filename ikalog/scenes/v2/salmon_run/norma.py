@@ -41,6 +41,13 @@ class Spl2SalmonRunNorma(StatefulScene):
 
         return {0: self._state_norma_not_reached, 1: self._state_norma_reached, -1: self._state_default}.get(r)
 
+    def _check_subweapon(self, context):
+        subweapon_scene = self.find_scene_object('Spl2GameSubWeapon')
+        subweapon_id = subweapon_scene.match_no_cache(context)
+
+        # FIXME
+        matched = (subweapon_id is None) or str(subweapon_id).startswith('special_pack')
+
     def _state_default(self, context):
         # This scene is used to detect salmon_run games.
         # Should not be active during Spl2GameSession (any battles)
@@ -48,6 +55,9 @@ class Spl2SalmonRunNorma(StatefulScene):
         if session is not None:
             if not (session._state.__name__ in ('_state_default')):
                 return False
+
+        if not self._check_subweapon(context):
+            return False
 
         new_state = self._get_state_from_frame(context)
 
