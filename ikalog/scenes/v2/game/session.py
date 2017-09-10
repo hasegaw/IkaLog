@@ -36,38 +36,43 @@ class Spl2GameSession(StatefulScene):
             return False
 
         grace_period = self._grace_periods[self._state.__name__]
-        timeout = self.matched_in(context, grace_period)
+        timeout = not self.matched_in(context, grace_period)
         return timeout
 
         self._grace_period = 6000
+
+    def check_in_battle(self, context):
+        in_battle = \
+            self.is_another_scene_matched(context, 'Spl2GameMap')
+
+        if in_battle:
+            return in_battle
+
+        if self.is_another_scene_matched(context, 'Spl2InGame'):
+            subweapon_scene = self.find_scene_object('Spl2GameSubWeapon')
+            assert subweapon_scene
+            subweapon = subweapon_scene.match_no_cache(context)
+            in_battle = not str(subweapon).startswith('special_pack')
+
+        return in_battle
 
     def on_game_start(self, context):
         self._switch_state(self._state_game_start)
         self._set_matched(context)
 
     def _state_default(self, context):
-        in_battle = \
-            self.is_another_scene_matched(context, 'Spl2GameMap')
-
-        if not in_battle:
-            if self.is_another_scene_matched(context, 'Spl2InGame'):
-                subweapon_scene = self.find_scene_object('Spl2GameSubWeapon')
-                assert subweapon_scene
-                subweapon= subweapon_scene.match_no_cache(context)
-                in_battle = (subweapon is not None) and not (subweapon.startswith('special_pack'))
+        in_battle = self.check_in_battle(context)
 
         if in_battle:
             self._switch_state(self._state_battle)
+
         return in_battle
 
     def _state_game_start(self, context):
-        in_battle = \
-            self.is_another_scene_matched(context, 'Spl2InGame') or \
-            self.is_another_scene_matched(context, 'Spl2GameMap')
+        in_battle = self.check_in_battle(context)
 
         if in_battle:
             self._switch_state(self._state_battle)
-            context['game']['splatoon_edition'] = 'spl2'
 
         if not in_battle and self.check_timeout(context):
             self._switch_state(self._state_default)
@@ -75,14 +80,14 @@ class Spl2GameSession(StatefulScene):
         return in_battle
 
     def _state_battle(self, context):
-        in_battle = \
-            self.is_another_scene_matched(context, 'Spl2InGame') or \
-            self.is_another_scene_matched(context, 'Spl2GameMap')
+        in_battle = self.check_in_battle(context)
 
         if in_battle:
+            context['game']['splatoon_edition'] = 'spl2'
             self._set_matched(context)
 
-        if not in_battle and self.check_timeout(context):
+        timeout = self.check_timeout(context)
+        if (not in_battle) and self.check_timeout(context):
             self._switch_state(self._state_default)
 
         return in_battle
@@ -101,7 +106,7 @@ class Spl2GameSession(StatefulScene):
     def _init_scene(self, debug=False):
         self._grace_periods = {
             '_default': 0,
-            '_state_battle': 6000,
+            '_state_battle': 20000,
             '_state_game_start': 20000,
             '_state_battle_finished': 10000,
         }
