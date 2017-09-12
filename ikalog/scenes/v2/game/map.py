@@ -69,7 +69,7 @@ class Spl2GameMap(StatefulScene):
 
     def _init_scene(self, debug=False):
         self._c_start = ImageClassifier()
-        self._c_start.load_from_file('data/spl2.game_map.dat')
+        self._c_start.load_from_file('data/spl2/spl2.game_map.dat')
 
 
 if __name__ == "__main__":

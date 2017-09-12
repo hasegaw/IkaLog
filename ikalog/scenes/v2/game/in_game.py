@@ -44,7 +44,7 @@ class Spl2InGame(Scene):
 
     def _init_scene(self, debug=False):
         self._c_ingame = ImageClassifier()
-        self._c_ingame.load_from_file('data/spl2.game.in_game.dat')
+        self._c_ingame.load_from_file('data/spl2/spl2.game.in_game.dat')
 
 
 if __name__ == "__main__":
