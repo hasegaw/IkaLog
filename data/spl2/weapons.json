@@ -3274,5 +3274,194 @@
         },
         "reskin_of": null,
         "main_ref": "squiclean_a"
+    },
+    {
+        "key": "prime_collabo",
+        "splatnet": null,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "プライムシューターコラボ",
+            "en_US": "Forge Splattershot Pro",
+            "en_GB": "Forge Splattershot Pro",
+            "es_ES": "Lanzatintas plus B",
+            "es_MX": "Rociador Forima",
+            "fr_FR": "Liquidateur pro griffé",
+            "fr_CA": "Liquéficateur pro Fosia"
+        },
+        "sub": {
+            "key": "kyubanbomb",
+            "name": {
+                "ja_JP": "キューバンボム",
+                "en_US": "Suction Bomb",
+                "en_GB": "Suction Bomb",
+                "es_ES": "Bomba ventosa",
+                "es_MX": "Bomba ventosa",
+                "fr_FR": "Bombe gluante",
+                "fr_CA": "Bombe gluante"
+            }
+        },
+        "special": {
+            "key": "bubble",
+            "name": {
+                "ja_JP": "バブルランチャー",
+                "en_US": "Bubble Blower",
+                "en_GB": "Bubble Blower",
+                "es_ES": "Bubble Blower",
+                "es_MX": "Bubble Blower",
+                "fr_FR": "Lance-bulles",
+                "fr_CA": "Lance-bulles"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "prime"
+    },
+    {
+        "key": "screwslosher",
+        "splatnet": null,
+        "type": {
+            "key": "slosher",
+            "name": {
+                "ja_JP": "スロッシャー",
+                "en_US": "Sloshers",
+                "en_GB": "Sloshers",
+                "es_ES": "Derramatics",
+                "es_MX": "Derramatics",
+                "fr_FR": "Seauceur",
+                "fr_CA": "Seauceur"
+            },
+            "category": {
+                "key": "slosher",
+                "name": {
+                    "ja_JP": "スロッシャー",
+                    "en_US": "Sloshers",
+                    "en_GB": "Sloshers",
+                    "es_ES": "Derramatics",
+                    "es_MX": "Derramatics",
+                    "fr_FR": "Seauceur",
+                    "fr_CA": "Seauceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "スクリュースロッシャー",
+            "en_US": "Sloshing Machine",
+            "en_GB": "Sloshing Machine",
+            "es_ES": "Derramatic centrífugo",
+            "es_MX": "Derramatic centrífugo",
+            "fr_FR": "Encrifugeur",
+            "fr_CA": "Encrifugeur"
+        },
+        "sub": {
+            "key": "robotbomb",
+            "name": {
+                "ja_JP": "ロボットボム",
+                "en_US": "Autobomb",
+                "en_GB": "Autobomb",
+                "es_ES": "Autobomb",
+                "es_MX": "Autobomb",
+                "fr_FR": "Bombe robot",
+                "fr_CA": "Bombe robot"
+            }
+        },
+        "special": {
+            "key": "presser",
+            "name": {
+                "ja_JP": "ハイパープレッサー",
+                "en_US": "Sting Ray",
+                "en_GB": "Sting Ray",
+                "es_ES": "Rayo tintódico",
+                "es_MX": "Rayo tintódico",
+                "fr_FR": "Pigmalance",
+                "fr_CA": "Pigmalance"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "screwslosher"
+    },
+    {
+        "key": "momiji",
+        "splatnet": null,
+        "type": {
+            "key": "shooter",
+            "name": {
+                "ja_JP": "シューター",
+                "en_US": "Shooters",
+                "en_GB": "Shooters",
+                "es_ES": "Lanzatintas",
+                "es_MX": "Rociadors",
+                "fr_FR": "Lanceur",
+                "fr_CA": "Lanceur"
+            },
+            "category": {
+                "key": "shooter",
+                "name": {
+                    "ja_JP": "シューター",
+                    "en_US": "Shooters",
+                    "en_GB": "Shooters",
+                    "es_ES": "Lanzatintas",
+                    "es_MX": "Rociadors",
+                    "fr_FR": "Lanceur",
+                    "fr_CA": "Lanceur"
+                }
+            }
+        },
+        "name": {
+            "ja_JP": "もみじシューター",
+            "en_US": "Custom Splattershot Jr.",
+            "en_GB": "Custom Splattershot Jr.",
+            "es_ES": "Lanzatintas novato B",
+            "es_MX": "Rociador básico adaptado",
+            "fr_FR": "Liquidateur Sr.",
+            "fr_CA": "Liquéficateur ultra modifié"
+        },
+        "sub": {
+            "key": "robotbomb",
+            "name": {
+                "ja_JP": "ロボットボム",
+                "en_US": "Autobomb",
+                "en_GB": "Autobomb",
+                "es_ES": "Autobomb",
+                "es_MX": "Autobomb",
+                "fr_FR": "Bombe robot",
+                "fr_CA": "Bombe robot"
+            }
+        },
+        "special": {
+            "key": "amefurashi",
+            "name": {
+                "ja_JP": "アメフラシ",
+                "en_US": "Ink Storm",
+                "en_GB": "Ink Storm",
+                "es_ES": "Atormentador",
+                "es_MX": "Atormentador",
+                "fr_FR": "Pluie d'encre",
+                "fr_CA": "Pluie d'encre"
+            }
+        },
+        "reskin_of": null,
+        "main_ref": "momiji"
     }
 ]
