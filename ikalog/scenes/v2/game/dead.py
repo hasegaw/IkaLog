@@ -29,13 +29,13 @@ from ikalog.utils.character_recoginizer import *
 
 class Spl2GameDead(StatefulScene):
     choordinates = {
-        'ja': {'top': 218, 'left': 452},
+        'ja': {'top': 234, 'left': 452},
         'en': {'top': 263, 'left': 432},
     }
 
     def recoginize_and_vote_death_reason(self, context):
-        if self.deadly_weapon_recoginizer is None:
-            return False
+        # if self.deadly_weapon_recoginizer is None:
+        #    return False
 
         lang_short = Localization.get_game_languages()[0][0:2]
 
@@ -45,7 +45,7 @@ class Spl2GameDead(StatefulScene):
             c = self.choordinates['en']
 
         img_weapon = context['engine']['frame'][
-            c['top']:c['top'] + 51,
+            c['top']:c['top'] + 35,
             c['left']:c['left'] + 410
         ]
 
@@ -67,6 +67,9 @@ class Spl2GameDead(StatefulScene):
         # Workaround for languages that deadly_weapons is not trained
         if not Localization.get_game_languages()[0] in ['ja', 'en_NA']:
             return
+
+        # We don't have classifiers yet
+        return
 
         img_weapon_b_bgr = cv2.cvtColor(img_weapon_b, cv2.COLOR_GRAY2BGR)
         weapon_id = self.deadly_weapon_recoginizer.match(img_weapon_b_bgr)
@@ -141,7 +144,8 @@ class Spl2GameDead(StatefulScene):
 
         # 画面が続いているならそのまま
         if matched:
-            self.recoginize_and_vote_death_reason(context)
+            if not self.is_another_scene_matched(context, 'Spl2InGame'):
+                self.recoginize_and_vote_death_reason(context)
             return True
 
         # 1000ms 以内の非マッチはチャタリングとみなす
