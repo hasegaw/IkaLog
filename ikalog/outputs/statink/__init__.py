@@ -21,6 +21,7 @@
 import os
 import pprint
 import threading
+import time
 import traceback
 import webbrowser
 
@@ -87,6 +88,25 @@ class StatInkPlugin(StatInkCollector):
 
         compositor = StatInkCompositor(self)
         payload = compositor.composite_payload(context)
+
+        if context['game'].get('splatnet_json', {}).get('uuid', None):
+            t1 = context['game']['splatnet_json'].get('start_at')
+            time_diff = abs(time.time() - t1)
+            IkaUtils.dprint('%s: time diff %s' % (self, time_diff))
+            if time_diff > 360:
+                IkaUtils.dprint('%s: Discarding splatnet2statink data' % self)
+                context['game']['splatnet_json'] = {}
+
+        if context['game'].get('splatnet_json', {}).get('uuid', None):
+            # splatnet2statink data is available - merge the results.
+
+            ikalog_payload = payload
+            payload = context['game']['splatnet_json']
+
+            for key in ['events', 'agent', 'agent_version', 'image_result']: #ikalog_payload.keys():
+                if 1: #not (key in payload):
+                    payload[key] = ikalog_payload[key]
+                    IkaUtils.dprint('%s: key %s merged into splatnet2statink payload: %s' % (self, key, ''))
 
         cond_write_payload = \
             self.config['debug_write_payload_to_file'] or self.payload_file
