@@ -37,6 +37,7 @@ from .game.dead import Spl2GameDead
 from .game.low_ink import Spl2GameLowInk
 from .game.finish import Spl2GameFinish
 from .game.paint_tracker import V2PaintTracker
+from .game.ranked_battle_events import Spl2GameRankedBattleEvents
 from .game.sub_weapon import Spl2GameSubWeapon
 #from .lobby import V2Lobby as Lobby
 
@@ -74,6 +75,7 @@ def initialize_scenes(engine):
         GameKillCombo(engine),
         Spl2GameLowInk(engine),
         Spl2GameMap(engine),
+        Spl2GameRankedBattleEvents(engine),
         Spl2GameSpecialMeter(engine),
         Spl2GameSpecialWeaponActivation(engine),
         Spl2GameStart(engine),
