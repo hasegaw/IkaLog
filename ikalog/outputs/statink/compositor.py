@@ -166,8 +166,8 @@ class StatInkCompositor(object):
     def composite_agent_information(self, context, payload):
         payload['agent'] = 'IkaLog'
         payload['agent_version'] = ikalog.version.IKALOG_VERSION
-        payload['agent_game_version'] = ikalog.version.GAME_VERSION
-        payload['agent_game_version_date'] = ikalog.version.GAME_VERSION_DATE
+        #payload['agent_game_version'] = ikalog.version.GAME_VERSION
+        #payload['agent_game_version_date'] = ikalog.version.GAME_VERSION_DATE
 
     def composite_agent_custom(self, context):
         custom = {}
