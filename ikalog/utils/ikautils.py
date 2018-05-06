@@ -29,7 +29,8 @@ from datetime import datetime
 
 from PIL import Image
 
-from ikalog.constants import stages, rules, gear_abilities, lobby_types
+from ikalog.constants import stages_v2 as stages
+from ikalog.constants import rules, gear_abilities, lobby_types
 # Constants for death_reason2text
 from ikalog.constants import hurtable_objects, oob_reasons, special_weapons, sub_weapons, weapons
 from ikalog.utils.localization import Localization
