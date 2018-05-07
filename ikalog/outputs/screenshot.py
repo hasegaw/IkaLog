@@ -81,6 +81,26 @@ class ScreenshotPlugin(IkaLogPlugin):
 
         self.write_screenshot(context['engine']['frame'], filename=destfile)
 
+    def on_result_judge(self, context):
+        if not self.config['enabled']:
+            return
+
+        timestr = self.generate_timestr(context)
+        destfile = os.path.join(
+            self.config['dest_dir'], 'ikabattle_%s.judge.png' % timestr)
+
+        self.write_screenshot(context['game']['image_judge'], filename=destfile)
+
+    def on_result_map(self, context):
+        if not self.config['enabled']:
+            return
+
+        timestr = self.generate_timestr(context)
+        destfile = os.path.join(
+            self.config['dest_dir'], 'ikabattle_%s.map.png' % timestr)
+
+        self.write_screenshot(context['game']['image_map'], filename=destfile)
+
     def on_initialize_plugin(self, context):
         engine = context['engine']['engine']
         engine.set_service('screenshot_save', self.write_screenshot)
