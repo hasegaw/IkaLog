@@ -182,6 +182,9 @@ class DebugLog(object):
 
     # Result Scenes
 
+    def on_result_map(self, context):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
     def on_result_judge(self, context):
         s = "judge: %s, knockout: %s" % (
             context['game'].get('judge', None), context['game'].get('knockout', None))
