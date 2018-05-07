@@ -42,6 +42,7 @@ from .game.sub_weapon import Spl2GameSubWeapon
 #from .lobby import V2Lobby as Lobby
 
 from .result.judge import Spl2ResultJudge
+from .result.map import Spl2ResultMap
 from .result.scoreboard.simple import Spl2ResultScoreboard
 
 from .salmon_run.session import Spl2SalmonRunSession
@@ -66,6 +67,7 @@ def initialize_scenes(engine):
         Spl2GameSession(engine),
         Spl2InGame(engine),
 
+        Spl2ResultMap(engine),
         Spl2ResultJudge(engine),
         Spl2ResultScoreboard(engine),
 
