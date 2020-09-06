@@ -140,7 +140,14 @@ class MM_COLOR_BY_HUE(ImageFilter):
 
     def _hue_range_to_list(self, r):
         # FIXME: 0, 180をまたぐ場合にふたつに分ける
-        return [r]
+        min, max = r
+        if min < 0 and max < (255-180):
+            min = min + 180
+            max = max + 180
+        elif min > 180 and max > 255:
+            min = min - 180
+            max = max - 180
+        return [(min, max)]
 
     def _run_filter(self, img_bgr=None, img_gray=None):
         assert(img_bgr is not None)
@@ -154,14 +161,14 @@ class MM_COLOR_BY_HUE(ImageFilter):
         vis_max = max(self.visibility_range)
 
         assert(vis_min >= 0)
-        assert(vis_max <= 256)
+        assert(vis_max <= 255)
 
         for hue_range in self._hue_range_to_list(self.hue_range):
-            hue_min = min(self.hue_range)
-            hue_max = max(self.hue_range)
+            hue_min = min(hue_range)
+            hue_max = max(hue_range)
 
             assert(hue_min >= 0)
-            assert(hue_max <= 256)
+            assert(hue_max <= 255)
 
             #print('vis_min %d vis_max %d hue_min %d hue_max %d' % (vis_min, vis_max, hue_min, hue_max))
             img_match_h = cv2.inRange(img_hsv[:, :, 0], hue_min, hue_max)

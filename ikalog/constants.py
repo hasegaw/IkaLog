@@ -46,7 +46,7 @@ rules = {
     'area': {'ja': 'ガチエリア', 'en': 'Splat Zones', },
     'yagura': {'ja': 'ガチヤグラ', 'en': 'Tower Control', },
     'hoko': {'ja': 'ガチホコバトル', 'en': 'Rainmaker', },
-    'asari': {'ja': 'ガチアサリ', 'en': 'Cram Blitz', },
+    'asari': {'ja': 'ガチアサリ', 'en': 'Clam Blitz', },
 }
 
 weapons = {

@@ -1,3 +1,4 @@
+from PIL import ImageFont, ImageDraw, Image
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
@@ -20,6 +21,8 @@
 
 import sys
 import cv2
+import time
+import numpy as np
 
 from ikalog.ml.classifier import ImageClassifier
 from ikalog.utils import *
@@ -33,19 +36,33 @@ class Spl2GameFinish(Scene):
 
         self._last_event_msec = - 100 * 1000
 
+
     def match_no_cache(self, context):
         if self.matched_in(context, 60 * 1000, attr='_last_event_msec'):
             return False
 
-        if not self.find_scene_object('Spl2GameSession').matched_in(context, 20 * 1000):
-            return False
+        # if not self.find_scene_object('Spl2GameSession').matched_in(context, 20 * 1000):
+        #     return False
 
-        if self.is_another_scene_matched(context, 'Spl2GameSession'):
-            return False
+        # if self.is_another_scene_matched(context, 'Spl2GameSession'):
+        #     return False
 
+        self._call_plugins('get_neutral_hue')
         frame = context['engine']['frame']
+        
+        hue = context['game'].get('neutral_color_hue', 135)
+        hue = 14
+        finish_strip_color = matcher.MM_COLOR_BY_HUE(
+            hue=(hue - 10, hue + 10), visibility=(100, 255))(frame)
 
-        matched = self._c.predict_frame(frame) >= 0
+        img_test =  finish_strip_color
+        # cv2.imwrite('finish_test.png', img_test)
+        matched = self._mask.match(img_test)
+
+        matched_predict = self._c.predict_frame(frame) >= 0
+        if matched_predict:
+            pass
+            # print("ML MODEL FOUND THE FINISH FRAME")
         if not matched:
             return False
 
@@ -63,6 +80,17 @@ class Spl2GameFinish(Scene):
     def _init_scene(self, debug=False):
         self._c = ImageClassifier()
         self._c.load_from_file('data/spl2/spl2.game.finish.dat')
+        self._mask = IkaMatcher(
+            0, 0, 1280, 720,
+            img_file='game_finish.png',
+            threshold= 0.9,
+            orig_threshold= 0.05,
+            bg_method=matcher.MM_BLACK(visibility=(0, 215)),
+            fg_method=matcher.MM_WHITE(visibility=(150,255)),
+            label='finish',
+            call_plugins=self._call_plugins,
+            debug=False
+        )
 
 
 if __name__ == "__main__":

@@ -52,6 +52,8 @@ class Spl2ResultJudge(StatefulScene):
             return False
 
         context['game']['judge'] = result
+        context['game']['won'] = result == 'win'
+        print("SETTING WON:", context['game']['won'])
 
         self._switch_state(self._state_tracking)
         return True
@@ -84,9 +86,15 @@ class Spl2ResultJudge(StatefulScene):
     def match_win_or_lose(self, context):
         frame = context['engine']['frame']
 
-        y = self._c_judge.predict_frame(context['engine']['frame'])
-        label = {-1: None, 0: 'win', 1: 'lose'}[y]
-        return label
+        # y = self._c_judge.predict_frame(context['engine']['frame'])
+        # label = {-1: None, 0: 'win', 1: 'lose'}[y]
+        win = self.mask_win.match(frame)
+        if win:
+            return 'win'
+        lose = self.mask_lose.match(frame)
+        if lose:
+            return 'lose'
+        return None
 
     def match_still(self, context):
 
@@ -104,6 +112,7 @@ class Spl2ResultJudge(StatefulScene):
         loss = np.sum(img_diff) / 255
         threshold = img_diff.shape[0] * img_diff.shape[1] * 0.001
 
+        print("JUDGE MATCH STILL", loss, threshold)
         return loss < threshold
 
     def match1(self, context):
@@ -121,8 +130,6 @@ class Spl2ResultJudge(StatefulScene):
         return True
 
     def _analyze(self, context):
-        # FALSE: Not implemented for Splatoon 2 yet
-        return False
 
         win_ko = bool(self.mask_win_ko.match(context['engine']['frame']))
         lose_ko = bool(self.mask_lose_ko.match(context['engine']['frame']))
@@ -138,7 +145,7 @@ class Spl2ResultJudge(StatefulScene):
             return True
 
         # パーセンテージの読み取りは未実装
-        return True
+        return False
 
     def dump(self, context):
         print('%s: matched %s analyzed %s' %
@@ -147,8 +154,56 @@ class Spl2ResultJudge(StatefulScene):
         print('    Knockout: %s' % context['game'].get('knockout', None))
 
     def _init_scene(self, debug=False):
-        self._c_judge = ImageClassifier()
-        self._c_judge.load_from_file('data/spl2/spl2.result.judge.dat')
+        # self._c_judge = ImageClassifier()
+        # self._c_judge.load_from_file('data/spl2/spl2.result.judge.dat')
+
+        self.mask_win = IkaMatcher(
+            29, 40, 213, 42,
+            img_file='v2_result_judge_win.png',
+            threshold=0.9,
+            orig_threshold=0.100,
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
+            label='result_judge/win',
+            call_plugins=self._call_plugins,
+            debug=debug,
+        )
+
+        self.mask_lose = IkaMatcher(
+            27, 46, 190, 40,
+            img_file='v2_result_judge_lose.png',
+            threshold=0.9,
+            orig_threshold=0.100,
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
+            label='result_judge/lose',
+            call_plugins=self._call_plugins,
+            debug=debug,
+        )
+
+        self.mask_win_ko = IkaMatcher(
+            108, 572, 346, 50,
+            img_file='v2_result_judge_win.png',
+            threshold=0.9,
+            orig_threshold=0.100,
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(visibility=(200, 255)),
+            label='result_judge/win_ko',
+            call_plugins=self._call_plugins,
+            debug=debug,
+        )
+
+        self.mask_lose_ko = IkaMatcher(
+            830, 572, 346, 50,
+            img_file='v2_result_judge_lose.png',
+            threshold=0.9,
+            orig_threshold=0.100,
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
+            label='result_judge/lose_ko',
+            call_plugins=self._call_plugins,
+            debug=debug,
+        )
 
 
 if __name__ == "__main__":

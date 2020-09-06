@@ -86,6 +86,15 @@ class TextReader(object):
         self._c = classifier.ImageClassifier()
         self._c.load_from_file('data/spl2/spl2.font2.dat')
 
+    def read_int(self, img, verbose=False, crop_min_per_char=False):
+        val_str, val_int = None, None
+        val_str = self.read_char(img)
+        try:
+            val_int = int(val_str)
+        except:
+            pass
+        return val_int
+
     def read_char(self, img, verbose=False, crop_min_per_char=False):
         rect = get_min_and_max(img)
         if rect is None:
@@ -134,8 +143,8 @@ class TextReader(object):
                 print(y)
                 cv2.waitKey(1000)
 
-            cv2.imwrite('number.%s.%s.png' %
-                        (_l, time.time()), img_char_list[i])
+            # cv2.imwrite('number.%s.%s.png' %
+            #             (_l, time.time()), img_char_list[i])
         # print('result', s)
 
         return s

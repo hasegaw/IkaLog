@@ -222,6 +222,26 @@ class MultiClassIkaMatcher2(object):
         best = sorted(results, key=lambda x: -x[0])[0]
         return best
 
+    def match_best_bg_fg(self, img, debug=None, label=''):
+        if len(self._masks) == 0:
+            return 0.0, 0.0, None
+
+        img_obj = self._masks[0].get_img_object(img)
+
+        results = []
+        for mask in self._masks:
+            fg_matched, fg_ratio, bg_ratio = mask.match_score_internal(
+                img_obj, debug)
+            # print(label, mask._label, bg_ratio, fg_ratio)
+            if fg_matched and fg_ratio - bg_ratio > mask._threshold:
+                results.append([bg_ratio, fg_ratio, mask])
+
+        if len(results) == 0:
+            return 0.0, 0.0, None
+
+        best = sorted(results, key=lambda x: x[0]-x[1])[0]
+        return best
+
 
 def load_kernel():
     global default_kernel

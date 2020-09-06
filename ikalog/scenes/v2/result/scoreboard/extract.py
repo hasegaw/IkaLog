@@ -24,7 +24,7 @@ import numpy as np
 from ikalog.utils.image_filters.filters import MM_COLOR_BY_HUE
 from ikalog.scenes.v2.result.scoreboard.transform import transform_scoreboard
 
-_top_list = [66, 121, 177, 232]
+_top_list = [62, 119, 176, 233]
 
 """
 Arrow Detection
@@ -47,15 +47,16 @@ Entry extraction
 
 
 def extract_entry(img_entry):
-    hh = int(img_entry.shape[0] * 0.52)
+    hh = int(img_entry.shape[0] * 0.55)
     return {
-        'img_selected': img_entry[:, 45:45 + 30, :],
-        'img_player': img_entry[:, 105:105 + 50, :],
-        'img_weapon': img_entry[:, 195: 195 + 45, :],
-        'img_name': img_entry[:, 197: 192 + 200, :],
-        'img_score': img_entry[:, 390:390 + 100, :],
-        'img_kill_or_assist': img_entry[hh:, 515: 515 + 30, :],
-        'img_special': img_entry[hh:, 561: 561 + 30, :],
+        'full': img_entry,
+        'img_selected': img_entry[:, 40:40 + 30, :],
+        'img_player': img_entry[:, 86:86 + 41, :],
+        'img_weapon': img_entry[:, 175: 175 + 45, :],
+        'img_name': img_entry[int(hh/2):int(hh/2)+25, 215: 215 + 150, :],
+        'img_score': img_entry[:, 322:322 + 100, :],
+        'img_kill_or_assist': img_entry[hh:, 459: 459 + 20, :],
+        'img_special': img_entry[hh:, 500: 500 + 20, :],
     }
 
 
@@ -63,7 +64,7 @@ def extract_players_image(img_team):
     players = []
 
     for top in _top_list:
-        img_entry = img_team[top: top + 47, :, :]
+        img_entry = img_team[top: top + 50, :, :]
         e = extract_entry(img_entry)
         players.append(e)
     return players
@@ -108,7 +109,25 @@ if __name__ == '__main__':
     t = time.time()
     i = 0
     for player in r:
-        for k in ['weapon', 'kill_or_assist', 'special', 'score']:
-            cv2.imwrite('scoreboard.player%d.%s.%s.png' %
-                        (i, k, t), player['img_%s' % k])
+        if player['myself']:
+            cv2.imwrite('player%d.full.%s.png' %
+                    (i, t), player['full'])
+            # cv2.imwrite('player%d.name.%s.png' %
+            #         (i, t), player['img_name'])
+        # if i == 0:
+        #     for k in [
+        #         'full',
+        #         'img_selected',
+        #         'img_player',
+        #         'img_weapon',
+        #         'img_name',
+        #         'img_score',
+        #         'img_kill_or_assist',
+        #         'img_special']:
+        #         cv2.imwrite('scoreboard.player%d.%s.png' %
+        #                     (i, k), player[k])
+
+        # for k in ['weapon', 'kill_or_assist', 'special', 'score']:
+        #     cv2.imwrite('scoreboard.player%d.%s.%s.png' %
+        #                 (i, k, t), player['img_%s' % k])
         i = i + 1

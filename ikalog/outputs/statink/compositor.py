@@ -236,21 +236,41 @@ class StatInkCompositor(object):
 
     def composite_result_scoreboard(self, context, payload):
         me = IkaUtils.getMyEntryFromContext(context)
-        if me is None:
-            return
 
-        # Spl2: Use IkaLog-counted values for kill and death counts
-        kills = context['game'].get('kills')
-        if kills is not None:
-            me['kills'] = kills
+        if me is not None:
+            # Spl2: Use IkaLog-counted values for kill and death counts
+            kills = context['game'].get('kills')
+            if kills is not None:
+                me['kills'] = kills
 
-        death = context['game'].get('death')
-        if death is not None:
-            me['death'] = death
+            death = context['game'].get('death')
+            if death is not None:
+                me['death'] = death
 
-        kill_or_assist = context['game'].get('kill_or_assist')
-        if kill_or_assist is not None:
-            me['kill_or_assist'] = kill_or_assist
+            kill_or_assist = context['game'].get('kill_or_assist')
+            if kill_or_assist is not None:
+                me['kill_or_assist'] = kill_or_assist
+
+            if context.get('game', {}).get('splatoon_edition') != 'spl2':
+                weapon = me.get('weapon')
+                if weapon:
+                    payload['weapon'] = weapon
+
+            if context['game'].get('is_fes'):
+                payload['gender'] = me['gender_en']
+                payload['fest_title'] = str(me['prefix_en']).lower()
+
+            _set_values(
+                [  # 'type', 'stat.ink Field', 'IkaLog Field'
+                    ['int', 'rank_in_team', 'rank_in_team'],
+                    ['int', 'kill', 'kills'],
+                    ['int', 'death', 'deaths'],
+                    ['int', 'death', 'death'],
+                    ['int', 'kill_or_assist', 'kill_or_assist'],
+                    ['int', 'special', 'special'],
+                    ['int', 'level', 'rank'],
+                    ['int', 'my_point', 'score'],
+                ], payload, me)
 
         payload['result'] = IkaUtils.getWinLoseText(
             context['game']['won'],
@@ -259,31 +279,13 @@ class StatInkCompositor(object):
             unknown_text=None
         )
 
-        if context.get('game', {}).get('splatoon_edition') != 'spl2':
-            weapon = me.get('weapon')
-            if weapon:
-                payload['weapon'] = weapon
-
-        if context['game'].get('is_fes'):
-            payload['gender'] = me['gender_en']
-            payload['fest_title'] = str(me['prefix_en']).lower()
-
-        _set_values(
-            [  # 'type', 'stat.ink Field', 'IkaLog Field'
-                ['int', 'rank_in_team', 'rank_in_team'],
-                ['int', 'kill', 'kills'],
-                ['int', 'death', 'deaths'],
-                ['int', 'death', 'death'],
-                ['int', 'kill_or_assist', 'kill_or_assist'],
-                ['int', 'special', 'special'],
-                ['int', 'level', 'rank'],
-                ['int', 'my_point', 'score'],
-            ], payload, me)
-
         players = []
-        for e in context['game']['players']:
+        for index, e in enumerate(context['game']['players']):
             player = {}
-            player['team'] = 'my' if (e['team'] == me['team']) else 'his'
+            if me:
+                player['team'] = 'my' if (e['team'] == me['team']) else 'his'
+            else:
+                player['team'] = 'my' if (index < 4) else 'his'
             player['is_me'] = 'yes' if e['me'] else 'no'
             _set_values(
                 [  # 'type', 'stat.ink Field', 'IkaLog Field'

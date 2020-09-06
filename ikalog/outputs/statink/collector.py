@@ -258,9 +258,17 @@ class StatInkCollector(IkaLogPlugin):
         if not self.config['track_objective']:
             return
 
+        if not any(e['type'] == 'ranked_battle_event' for e in self.events):
+            return
+
+        if any(e['type'] == 'finish' for e in self.events):
+            return
+
         event_msec = self._get_offset_msec(context)
 
         if (self.time_last_objective_msec is None) or (event_msec - self.time_last_objective_msec >= 200):
+            if len(self.events) > 0 and self.events[-1]['type'] == 'objective' and self.events[-1]['position'] == context['game']['tower'].get('pos', 0):
+                return
             self._add_event(context, {
                 'type': 'objective',
                 'position': context['game']['tower'].get('pos', 0),

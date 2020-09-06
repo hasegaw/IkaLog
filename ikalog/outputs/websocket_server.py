@@ -57,6 +57,8 @@ class IndexHandler(tornado.web.RequestHandler):
 
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
+    def initialize(self, callback):
+        self.callback = callback
 
     def check_origin(self, origin):
         print('%s: origin %s' % (self, origin))
@@ -67,7 +69,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         websockets.append(self)
 
     def on_message(self, message):
-        pass
+        self.callback(message)
 
     def on_close(self):
         IkaUtils.dprint("%s: Closed" % self)
@@ -221,17 +223,17 @@ class WebSocketServer(object):
     def on_game_individual_result(self, context):
         me = IkaUtils.getMyEntryFromContext(context)
         print(me)
-        self._send_message({
-            'event': 'on_result_detail',
-            'won': context['game'].get('won', None),
-            'rank': me.get('rank', None),
-            'score': me.get('score', None),
-            'udemae': me.get('udemae_pre', None),
-            'kills': me.get('kills', None),
-            'deaths': me.get('deaths', None),
-            'weapon': me.get('weapon', None),
-
-        })
+        if me != None:
+            self._send_message({
+                'event': 'on_result_detail',
+                'won': context['game'].get('won', None),
+                'rank': me.get('rank', None),
+                'score': me.get('score', None),
+                'udemae': me.get('udemae_pre', None),
+                'kills': me.get('kills', None),
+                'deaths': me.get('deaths', None),
+                'weapon': me.get('weapon', None),
+            })
 
     def on_result_udemae(self, context):
         d = context['scenes']['result_udemae']
@@ -302,7 +304,7 @@ class WebSocketServer(object):
         print(websocket_server)
         self.application = tornado.web.Application([
             (r'/', IndexHandler),
-            (r'/ws', WebSocketHandler),
+            (r'/ws', WebSocketHandler, dict(callback=self.on_message)),
         ])
 
         # FIXME: bind_addr
@@ -312,6 +314,16 @@ class WebSocketServer(object):
         IkaUtils.dprint('%s: Started server thread' % self)
         tornado.ioloop.IOLoop.instance().start()
         IkaUtils.dprint('%s: Stopped server thread' % self)
+
+    def on_message(self, raw):
+        try:
+            message = json.loads(raw)
+            if message['type'] == 'set_players' and message['players']:
+                self.players = message['players']
+            if message['type'] == 'set_colors' and message['colors']:
+                self.colors = message['colors']
+        except:
+            pass
 
     def shutdown_server(self):
         tornado.ioloop.IOLoop.instance().stop()
@@ -385,6 +397,12 @@ class WebSocketServer(object):
         self.initialize_server()
         return True
 
+    def get_player_names(self, context):
+        context['game']['player_names'] = self.players
+
+    def get_neutral_hue(self, context):
+        context['game']['neutral_color_hue'] = self.colors['neutral_color_hue']
+
     def on_config_save_to_context(self, context):
         context['config']['websocket_server'] = {
             'Enable': self._enabled,
@@ -417,6 +435,8 @@ class WebSocketServer(object):
         self.panel.SetSizer(self.layout)
 
     def __init__(self, enabled=False, bind_addr='127.0.0.1', port=9090):
+        self.players = []
+        self.colors = {"neutral_color_hue": 135}
         if not _tornado_imported:
             print("モジュール tornado がロードできませんでした。 WebSocket サーバが起動できません。")
             print("インストールするには以下のコマンドを利用してください。\n    pip install tornado\n")

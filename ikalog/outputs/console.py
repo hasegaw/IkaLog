@@ -177,6 +177,9 @@ class Console(object):
 
         s = _('Results. Stage: %(stage)s, Mode: %(rule)s, Result: %(result)s') % \
             {'rule': rule, 'stage': map, 'result': won}
+        
+        if me == None:
+            return s
 
         if ('score' in me):
             s = s + ' ' + _('%sp') % (me['score'])

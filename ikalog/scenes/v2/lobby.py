@@ -110,6 +110,53 @@ class V2Lobby(Scene):
 
         return True
 
+    def match_private_spectator_lobby(self, context):
+        frame = context['engine']['frame']
+
+        mandatory = (self.mask_private_matching_spectator.match(frame) or \
+            self.mask_private_matched_spectator) and \
+            self.mask_private_rule.match(frame) and \
+            self.mask_private_stage.match(frame)
+
+        if not mandatory:
+            return False
+
+        r_matching = self.mask_private_matching_spectator_alpha.match(frame) and \
+            self.mask_private_matching_spectator_bravo.match(frame)
+
+        r_matched = self.mask_private_matched_spectator_alpha.match(frame) and \
+            self.mask_private_matched_spectator_bravo.match(frame)
+
+        # マッチング中かつマッチング完了はありえない
+        if (not (r_matching or r_matched)) or (r_matching and r_matched):
+            return False
+
+        context['lobby']['type'] = 'private'
+
+        if r_matching:
+            context['lobby']['state'] = 'matching'
+
+        else:  # r_matched:
+            context['lobby']['state'] = 'matched'
+
+        # TODO: is spectating?
+
+        filter_yellow = matcher.MM_COLOR_BY_HUE(
+            hue=(32 - 5, 32 + 5), visibility=(230, 255))
+
+        top_list = [572, 621]
+        for n in range(len(top_list)):
+            top = top_list[n]
+            img_ready = frame[top:top + 38, 718:718 + 19]
+            img_ready_yellow = filter_yellow(img_ready)
+
+            spectator_score = np.sum(img_ready_yellow / 255) / 500
+            print("SPEC SCORE", spectator_score)
+            if spectator_score > 1.0:                   
+                context['lobby']['spectator'] = True
+
+        return True
+
     def match_public_lobby(self, context):
         frame = context['engine']['frame']
 
@@ -122,11 +169,11 @@ class V2Lobby(Scene):
         # if not mandatory:
         #    return False
 
-        r = self.classifier_matching_status.new_predict_frame(
-            context['engine']['frame'])
+        # r = self.classifier_matching_status.new_predict_frame(
+        #     context['engine']['frame'])
 
-        r_pub_matching = (r == 0)
-        r_pub_matched = (r == 1)
+        r_pub_matching = self.mask_matching.match(frame)
+        r_pub_matched = self.mask_matched.match(frame)
         r_fes_matched = False  # not yet
 
         # フェスの場合
@@ -137,14 +184,16 @@ class V2Lobby(Scene):
             return True
 
         # パブリックロビー
-        context['lobby']['type'] = 'public'
-        if r_pub_matching:
-            context['lobby']['state'] = 'matching'
+        if r_pub_matching or r_pub_matched:
+            context['lobby']['type'] = 'public'
+            if r_pub_matching:
+                context['lobby']['state'] = 'matching'
 
-        elif r_pub_matched:
-            context['lobby']['state'] = 'matched'
+            elif r_pub_matched:
+                context['lobby']['state'] = 'matched'
 
-        return True
+            return True
+        return False
 
     def match_any_lobby(self, context):
         if (not 'lobby' in context):
@@ -152,13 +201,18 @@ class V2Lobby(Scene):
 
         if self.match_public_lobby(context):
             return True
+
+        if self.match_private_spectator_lobby(context):
+            return True
+
+        if self.match_private_lobby(context):
+            return True
+
         return False
 
         if self.match_squad_lobby(context):
             return True
 
-        if self.match_private_lobby(context):
-            return True
 
         return False
 
@@ -198,82 +252,83 @@ class V2Lobby(Scene):
 
     def dump(self, context):
         lobby = context['lobby']
-        print('%s: matched %s type %s state %s team_members %s' % (
+        print('%s: matched %s type %s spectator %s state %s team_members %s' % (
             self,
             self._matched,
             lobby.get('type', None),
+            lobby.get('spectator', None),
             lobby.get('state', None),
             lobby.get('team_members', None),
         ))
 
-    def _init_scene(self, debug=True):
-        self.classifier_matching_status = ImageClassifier()
-        self.classifier_matching_status.load_from_file(
-            'spl2.lobby.matching.dat')
+    def _init_scene(self, debug=False):
+        # self.classifier_matching_status = ImageClassifier()
+        # self.classifier_matching_status.load_from_file(
+        #     'spl2.lobby.matching.dat')
 
-        self.mask_rule = IkaMatcher(
-            72, 269, 90, 25,
-            img_file='lobby_public_matched.png',
-            threshold=0.90,
-            orig_threshold=0.15,
-            bg_method=matcher.MM_BLACK(),
-            fg_method=matcher.MM_WHITE(),
-            label='Pub/Rule',
-            call_plugins=self._call_plugins,
-            debug=debug
-        )
+        # self.mask_rule = IkaMatcher(
+        #     72, 269, 90, 25,
+        #     img_file='lobby_public_matched.png',
+        #     threshold=0.90,
+        #     orig_threshold=0.15,
+        #     bg_method=matcher.MM_BLACK(),
+        #     fg_method=matcher.MM_WHITE(),
+        #     label='Pub/Rule',
+        #     call_plugins=self._call_plugins,
+        #     debug=debug
+        # )
 
-        self.mask_stage = IkaMatcher(
-            72, 386, 110, 35,
-            img_file='lobby_public_matched.png',
-            threshold=0.90,
-            orig_threshold=0.15,
-            bg_method=matcher.MM_BLACK(),
-            fg_method=matcher.MM_WHITE(),
-            label='Pub/Stage',
-            call_plugins=self._call_plugins,
-            debug=debug
-        )
+        # self.mask_stage = IkaMatcher(
+        #     72, 386, 110, 35,
+        #     img_file='lobby_public_matched.png',
+        #     threshold=0.90,
+        #     orig_threshold=0.15,
+        #     bg_method=matcher.MM_BLACK(),
+        #     fg_method=matcher.MM_WHITE(),
+        #     label='Pub/Stage',
+        #     call_plugins=self._call_plugins,
+        #     debug=debug
+        # )
 
-        self.mask_squad_rule = IkaMatcher(
-            126, 249, 76, 26,
-            img_file='lobby_squad_matching.png',
-            threshold=0.90,
-            orig_threshold=0.15,
-            bg_method=matcher.MM_BLACK(),
-            fg_method=matcher.MM_WHITE(),
-            label='Tag/Rule',
-            call_plugins=self._call_plugins,
-            debug=debug
-        )
+        # self.mask_squad_rule = IkaMatcher(
+        #     126, 249, 76, 26,
+        #     img_file='lobby_squad_matching.png',
+        #     threshold=0.90,
+        #     orig_threshold=0.15,
+        #     bg_method=matcher.MM_BLACK(),
+        #     fg_method=matcher.MM_WHITE(),
+        #     label='Tag/Rule',
+        #     call_plugins=self._call_plugins,
+        #     debug=debug
+        # )
 
-        self.mask_squad_stage = IkaMatcher(
-            156, 360, 94, 36,
-            img_file='lobby_squad_matching.png',
-            threshold=0.90,
-            orig_threshold=0.15,
-            bg_method=matcher.MM_BLACK(),
-            fg_method=matcher.MM_WHITE(),
-            label='Tag/Stage',
-            call_plugins=self._call_plugins,
-            debug=debug
-        )
+        # self.mask_squad_stage = IkaMatcher(
+        #     156, 360, 94, 36,
+        #     img_file='lobby_squad_matching.png',
+        #     threshold=0.90,
+        #     orig_threshold=0.15,
+        #     bg_method=matcher.MM_BLACK(),
+        #     fg_method=matcher.MM_WHITE(),
+        #     label='Tag/Stage',
+        #     call_plugins=self._call_plugins,
+        #     debug=debug
+        # )
 
-        self.mask_testfire = IkaMatcher(
-            218, 84, 195, 32,
-            img_file='v2_lobby_testfire.png',
-            threshold=0.90,
-            orig_threshold=0.30,
-            bg_method=matcher.MM_NOT_WHITE(),
-            fg_method=matcher.MM_WHITE(),
-            label='v2_lobby_testfire',
-            call_plugins=self._call_plugins,
-            debug=debug
-        )
+        # self.mask_testfire = IkaMatcher(
+        #     218, 84, 195, 32,
+        #     img_file='v2_lobby_testfire.png',
+        #     threshold=0.90,
+        #     orig_threshold=0.30,
+        #     bg_method=matcher.MM_NOT_WHITE(),
+        #     fg_method=matcher.MM_WHITE(),
+        #     label='v2_lobby_testfire',
+        #     call_plugins=self._call_plugins,
+        #     debug=debug
+        # )
 
         # 背景：緑、赤、黒　文字：白
         self.mask_matching = IkaMatcher(
-            852, 41, 183, 31,
+            804, 26, 277, 41,
             img_file='v2_lobby_matching.png',
             threshold=0.80,
             orig_threshold=0.30,
@@ -286,10 +341,15 @@ class V2Lobby(Scene):
 
         # 背景：緑、赤、黒　文字：黄色
         self.mask_matched = IkaMatcher(
-            852, 41, 183, 31,
+            804, 26, 277, 41,
             img_file='v2_lobby_matched.png',
-            threshold=0.80,
-            orig_threshold=0.30,
+            # threshold=0.80,
+            # orig_threshold=0.30,
+            # bg_method=matcher.MM_BLACK(),
+            # fg_method=matcher.MM_COLOR_BY_HUE(
+            #     hue=(55 - 5, 55 + 5), visibility=(200, 255)),
+            threshold=0.90,
+            orig_threshold=0.15,
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
@@ -298,53 +358,53 @@ class V2Lobby(Scene):
             debug=debug
         )
 
-        # 背景：暗い赤、黒　文字：黄色
-        self.mask_squad_matched = IkaMatcher(
-            826, 24, 280, 34,
-            img_file='lobby_squad_matched.png',
-            threshold=0.90,
-            orig_threshold=0.50,
-            bg_method=matcher.MM_COLOR_BY_HUE(
-                hue=(150, 180), visibility=(0, 255)),
-            fg_method=matcher.MM_COLOR_BY_HUE(
-                hue=(30 - 5, 30 + 5), visibility=(200, 255)),
-            label='TagMatched',
-            call_plugins=self._call_plugins,
-            debug=debug
-        )
+        # # 背景：暗い赤、黒　文字：黄色
+        # self.mask_squad_matched = IkaMatcher(
+        #     826, 24, 280, 34,
+        #     img_file='lobby_squad_matched.png',
+        #     threshold=0.90,
+        #     orig_threshold=0.50,
+        #     bg_method=matcher.MM_COLOR_BY_HUE(
+        #         hue=(150, 180), visibility=(0, 255)),
+        #     fg_method=matcher.MM_COLOR_BY_HUE(
+        #         hue=(30 - 5, 30 + 5), visibility=(200, 255)),
+        #     label='TagMatched',
+        #     call_plugins=self._call_plugins,
+        #     debug=debug
+        # )
 
-        # 背景：暗い赤、黒　文字：白
-        self.mask_squad_matching = IkaMatcher(
-            826, 24, 280, 34,
-            img_file='lobby_squad_matching.png',
-            threshold=0.90,
-            orig_threshold=0.50,
-            bg_method=matcher.MM_COLOR_BY_HUE(
-                hue=(150, 180), visibility=(0, 255)),
-            fg_method=matcher.MM_WHITE(),
-            label='TagMatching',
-            call_plugins=self._call_plugins,
-            debug=debug
-        )
+        # # 背景：暗い赤、黒　文字：白
+        # self.mask_squad_matching = IkaMatcher(
+        #     826, 24, 280, 34,
+        #     img_file='lobby_squad_matching.png',
+        #     threshold=0.90,
+        #     orig_threshold=0.50,
+        #     bg_method=matcher.MM_COLOR_BY_HUE(
+        #         hue=(150, 180), visibility=(0, 255)),
+        #     fg_method=matcher.MM_WHITE(),
+        #     label='TagMatching',
+        #     call_plugins=self._call_plugins,
+        #     debug=debug
+        # )
 
-        self.mask_fes_matched = IkaMatcher(
-            851, 383, 225, 30,
-            img_file='lobby_festa_matched.png',
-            threshold=0.90,
-            orig_threshold=0.30,
-            bg_method=matcher.MM_BLACK(),
-            fg_method=matcher.MM_COLOR_BY_HUE(
-                hue=(30 - 5, 30 + 5), visibility=(200, 255)),
-            label='FestaMatched',
-            call_plugins=self._call_plugins,
-            debug=debug
-        )
+        # self.mask_fes_matched = IkaMatcher(
+        #     851, 383, 225, 30,
+        #     img_file='lobby_festa_matched.png',
+        #     threshold=0.90,
+        #     orig_threshold=0.30,
+        #     bg_method=matcher.MM_BLACK(),
+        #     fg_method=matcher.MM_COLOR_BY_HUE(
+        #         hue=(30 - 5, 30 + 5), visibility=(200, 255)),
+        #     label='FestaMatched',
+        #     call_plugins=self._call_plugins,
+        #     debug=debug
+        # )
 
         self.mask_private_rule = IkaMatcher(
-            78, 133, 74, 24,
-            img_file='lobby_private_matched.png',
-            threshold=0.90,
-            orig_threshold=0.15,
+            151, 185, 60, 22,
+            img_file='v2_lobby_private_matched.png',
+            threshold=0.80,
+            orig_threshold=0.30,
             bg_method=matcher.MM_BLACK(),
             fg_method=matcher.MM_WHITE(),
             label='lobby/private/matched/rule',
@@ -353,8 +413,8 @@ class V2Lobby(Scene):
         )
 
         self.mask_private_stage = IkaMatcher(
-            78, 272, 93, 24,
-            img_file='lobby_private_matched.png',
+            151, 279, 61, 30,
+            img_file='v2_lobby_private_matched.png',
             threshold=0.80,
             orig_threshold=0.15,
             bg_method=matcher.MM_BLACK(),
@@ -364,47 +424,37 @@ class V2Lobby(Scene):
             debug=debug
         )
 
+        # Waiting for players - Private
         self.mask_private_matching_alpha = IkaMatcher(
-            738, 39, 170, 27,
-            img_file='lobby_private_matching.png',
+            722, 95, 119, 30,
+            img_file='v2_lobby_private_matching.png',
             threshold=0.80,
             orig_threshold=0.15,
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
-            label='lobby/private/matching/alpha',
+            label='lobby/private/matching/a',
             call_plugins=self._call_plugins,
             debug=debug
         )
 
         self.mask_private_matching_bravo = IkaMatcher(
-            738, 384, 160, 26,
-            img_file='lobby_private_matching.png',
+            722, 345, 120, 22,
+            img_file='v2_lobby_private_matching.png',
             threshold=0.80,
             orig_threshold=0.15,
             bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
-            label='lobby/private/matching/alpha',
+            label='lobby/private/matching/b',
             call_plugins=self._call_plugins,
             debug=debug
         )
 
-        self.mask_private_stage = IkaMatcher(
-            78, 272, 93, 24,
-            img_file='lobby_private_matched.png',
+        # BATTLE START - Private
+        self.mask_private_matched_alpha = IkaMatcher(
+            722, 95, 119, 30,
+            img_file='v2_lobby_private_matched.png',
             threshold=0.80,
             orig_threshold=0.15,
-            bg_method=matcher.MM_BLACK(),
-            fg_method=matcher.MM_WHITE(),
-            label='lobby/private/matched/stage',
-            call_plugins=self._call_plugins,
-            debug=debug
-        )
-
-        self.mask_private_matched_alpha = IkaMatcher(
-            737, 36, 240, 30,
-            img_file='lobby_private_matched.png',
-            threshold=0.80,
-            orig_threshold=0.30,
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='lobby/private/matched/a',
@@ -413,10 +463,84 @@ class V2Lobby(Scene):
         )
 
         self.mask_private_matched_bravo = IkaMatcher(
-            737, 380, 240, 30,
-            img_file='lobby_private_matched.png',
+            722, 345, 120, 22,
+            img_file='v2_lobby_private_matched.png',
             threshold=0.80,
-            orig_threshold=0.30,
+            orig_threshold=0.15,
+            fg_method=matcher.MM_COLOR_BY_HUE(
+                hue=(30 - 5, 30 + 5), visibility=(200, 255)),
+            label='lobby/private/match/b',
+            call_plugins=self._call_plugins,
+            debug=debug
+        )
+
+        # Waiting for confirm - With spectator
+        self.mask_private_matching_spectator = IkaMatcher(
+            722, 534, 117, 31,
+            img_file='v2_lobby_private_matching_spectator.png',
+            threshold=0.80,
+            orig_threshold=0.15,
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
+            label='lobby/private/matching_spectator/s',
+            call_plugins=self._call_plugins,
+            debug=debug
+        )
+
+        self.mask_private_matching_spectator_alpha = IkaMatcher(
+            722, 32, 119, 30,
+            img_file='v2_lobby_private_matching_spectator.png',
+            threshold=0.80,
+            orig_threshold=0.15,
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
+            label='lobby/private/matching_spectator/a',
+            call_plugins=self._call_plugins,
+            debug=debug
+        )
+
+        self.mask_private_matching_spectator_bravo = IkaMatcher(
+            722, 283, 120, 22,
+            img_file='v2_lobby_private_matching_spectator.png',
+            threshold=0.80,
+            orig_threshold=0.15,
+            bg_method=matcher.MM_NOT_WHITE(),
+            fg_method=matcher.MM_WHITE(),
+            label='lobby/private/matching_spectator/b',
+            call_plugins=self._call_plugins,
+            debug=debug
+        )
+
+        # BATTLE START - with spectator
+        self.mask_private_matched_spectator = IkaMatcher(
+            722, 534, 142, 25,
+            img_file='v2_lobby_private_matched.png',
+            threshold=0.80,
+            orig_threshold=0.15,
+            fg_method=matcher.MM_COLOR_BY_HUE(
+                hue=(30 - 5, 30 + 5), visibility=(200, 255)),
+            label='lobby/private/matched_spectator/s',
+            call_plugins=self._call_plugins,
+            debug=debug
+        )
+
+        self.mask_private_matched_spectator_alpha = IkaMatcher(
+            722, 29, 142, 25,
+            img_file='v2_lobby_private_matched.png',
+            threshold=0.80,
+            orig_threshold=0.15,
+            fg_method=matcher.MM_COLOR_BY_HUE(
+                hue=(30 - 5, 30 + 5), visibility=(200, 255)),
+            label='lobby/private/matched_spectator/a',
+            call_plugins=self._call_plugins,
+            debug=debug
+        )
+
+        self.mask_private_matched_spectator_bravo = IkaMatcher(
+            722, 283, 142, 25,
+            img_file='v2_lobby_private_matched_spectator.png',
+            threshold=0.80,
+            orig_threshold=0.15,
             fg_method=matcher.MM_COLOR_BY_HUE(
                 hue=(30 - 5, 30 + 5), visibility=(200, 255)),
             label='lobby/private/match/b',

@@ -21,6 +21,7 @@ import sys
 
 import cv2
 import numpy as np
+import copy
 
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
@@ -66,6 +67,25 @@ class Spl2GameStart(StatefulScene):
 
     def _detect_stage_and_rule(self, context):
         frame = context['engine']['frame']
+
+        # mask white areas to black
+        start_white = cv2.inRange(frame, (240, 240, 240), (255, 255, 255))
+
+        img_test = copy.deepcopy(frame)
+        img_test[start_white > 0] = (0, 0, 0)
+
+        if not self._mask_start.match(img_test):
+            return None, None
+        
+        (_, rule_match) = self._rule_masks.match_best(frame)
+        if rule_match == None:
+            rule = None
+        else:
+            rule = rule_match._label.replace('start/mode/', '')
+            print("MATCHED", rule)
+        stage = None
+
+        return stage, rule
 
         stage = self._c_stage.predict_frame(context['engine']['frame'])
         rule = self._c_rule.predict_frame(context['engine']['frame'])
@@ -125,8 +145,10 @@ class Spl2GameStart(StatefulScene):
         if not self.matched_in(context, 20000, attr='_last_event_msec'):
             context['game']['map'] = self.elect(context, self.stage_votes)
             context['game']['rule'] = self.elect(context, self.rule_votes)
+            print(self.rule_votes)
 
             if not context['game']['start_time']:
+                print("SETTING FALLBACK START TIME")
                 # start_time should be initialized in GameGoSign.
                 # This is a fallback in case GameGoSign was skipped.
                 context['game']['start_time'] = IkaUtils.getTime(context)
@@ -159,6 +181,60 @@ class Spl2GameStart(StatefulScene):
         self._c_stage.load_from_file('data/spl2/spl2.game_start.stage.dat')
         self._c_rule = ImageClassifier()
         self._c_rule.load_from_file('data/spl2/spl2.game_start.rule.dat')
+
+        self._mask_start = IkaMatcher(
+            458, 103, 369, 338,
+            img_file='v2_start_mode.png',
+            threshold= 0.8,
+            orig_threshold= 0.1,
+            bg_method=matcher.MM_DARK(visibility=(20, 255)),
+            fg_method=matcher.MM_BLACK(),
+            label='start/mode',
+            call_plugins=self._call_plugins,
+            debug=False
+        )
+
+
+        self._rule_masks = MultiClassIkaMatcher()
+        self._rule_masks.add_mask(
+            IkaMatcher(
+                470, 222, 343, 131,
+                img_file='v2_mode_rainmaker.png',
+                threshold= 0.9,
+                orig_threshold= 0.1,
+                bg_method=matcher.MM_BLACK(visibility=(0, 215)),
+                fg_method=matcher.MM_WHITE(visibility=(150,255)),
+                label='start/mode/hoko',
+                call_plugins=self._call_plugins,
+                debug=False
+            )
+        )
+        self._rule_masks.add_mask(
+            IkaMatcher(
+                470, 222, 343, 131,
+                img_file='v2_mode_splatzone.png',
+                threshold= 0.9,
+                orig_threshold= 0.1,
+                bg_method=matcher.MM_BLACK(visibility=(0, 215)),
+                fg_method=matcher.MM_WHITE(visibility=(150,255)),
+                label='start/mode/area',
+                call_plugins=self._call_plugins,
+                debug=False
+            )
+        )
+        self._rule_masks.add_mask(
+            IkaMatcher(
+                470, 222, 343, 131,
+                img_file='v2_mode_tower_control.png',
+                threshold= 0.9,
+                orig_threshold= 0.1,
+                bg_method=matcher.MM_BLACK(visibility=(0, 215)),
+                fg_method=matcher.MM_WHITE(visibility=(150,255)),
+                label='start/mode/yagura',
+                call_plugins=self._call_plugins,
+                debug=False
+            )
+        )
 
 
 if __name__ == "__main__":

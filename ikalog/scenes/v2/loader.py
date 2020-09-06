@@ -18,9 +18,10 @@
 #  limitations under the License.
 #
 
+from ikalog.scenes.v2.game.splatzone_tracker import SplatzoneTracker
 from .game.in_game import Spl2InGame
 from .game.session import Spl2GameSession
-#from .game.timer_icon import GameTimerIcon
+from .game.timer_icon import GameTimerIcon
 from .game.start import Spl2GameStart
 
 from .game.special_meter import Spl2GameSpecialMeter
@@ -37,8 +38,12 @@ from .game.dead import Spl2GameDead
 from .game.low_ink import Spl2GameLowInk
 from .game.finish import Spl2GameFinish
 from .game.paint_tracker import V2PaintTracker
+from .game.objective_tracker import ObjectiveTracker
+from .game.splatzone_tracker import SplatzoneTracker
 from .game.ranked_battle_events import Spl2GameRankedBattleEvents
 from .game.sub_weapon import Spl2GameSubWeapon
+from .game.go_sign import GameGoSign
+from .game.inklings.simple import Spl2GameInklings
 #from .lobby import V2Lobby as Lobby
 
 from .result.judge import Spl2ResultJudge
@@ -58,6 +63,7 @@ from .salmon_run.count import Spl2SalmonRunTimeCounter
 from .salmon_run.mr_grizz import Spl2SalmonRunMrGrizz
 
 
+from ikalog.scenes.lobby import Lobby
 from ikalog.scenes.blank import Blank
 from ikalog.scenes.botw.dead import BOTWDead
 
@@ -71,34 +77,41 @@ def initialize_scenes(engine):
         Spl2ResultJudge(engine),
         Spl2ResultScoreboard(engine),
 
+        GameGoSign(engine),
         Spl2GameDead(engine),
         Spl2GameFinish(engine),
         Spl2GameKill(engine),
         GameKillCombo(engine),
-        Spl2GameLowInk(engine),
+        # Spl2GameLowInk(engine),
         Spl2GameMap(engine),
         Spl2GameRankedBattleEvents(engine),
         Spl2GameSpecialMeter(engine),
         Spl2GameSpecialWeaponActivation(engine),
         Spl2GameStart(engine),
         Spl2GameSubWeapon(engine),
+        ObjectiveTracker(engine),
+        SplatzoneTracker(engine),
+        GameTimerIcon(engine),
+        Spl2GameInklings(engine),
 
         # V2PaintTracker(engine),
-        # Lobby(engine),
+        Lobby(engine),
 
-        Spl2SalmonRunSession(engine),
-        Spl2SalmonRunGameStart(engine),
-        Spl2SalmonRunWeaponSpecified(engine),
-        Spl2SalmonRunNorma(engine),
-        Spl2SalmonRunGameOver(engine),
-        Spl2SalmonRunTimeCounter(engine),
-        Spl2SalmonRunResultJudge(engine),
-        Spl2SalmonRunWaveStart(engine),
-        Spl2SalmonRunWaveFinish(engine),
-        Spl2SalmonRunPlayerStatus(engine),
-        Spl2SalmonRunMrGrizz(engine),
+        # Spl2SalmonRunSession(engine),
+        # Spl2SalmonRunGameStart(engine),
+        # Spl2SalmonRunWeaponSpecified(engine),
+        # Spl2SalmonRunNorma(engine),
+        # Spl2SalmonRunGameOver(engine),
+        # Spl2SalmonRunTimeCounter(engine),
+        # Spl2SalmonRunResultJudge(engine),
+        # Spl2SalmonRunWaveStart(engine),
+        # Spl2SalmonRunWaveFinish(engine),
+        # Spl2SalmonRunPlayerStatus(engine),
+        # Spl2SalmonRunMrGrizz(engine),
 
-        BOTWDead(engine),
+        # BOTWDead(engine),
+
+        # Blank(engine),
 
         Blank(engine),
     ]

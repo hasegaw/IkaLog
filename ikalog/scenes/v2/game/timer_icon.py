@@ -24,7 +24,7 @@ import sys
 import cv2
 import numpy as np
 
-from ikalog.scenes.scene import Scene
+from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.ml.text_reader import TextReader
 from ikalog.utils import *
 
@@ -47,12 +47,12 @@ y3 = 16 + 72
 
 
 class TimerReader(object):
-    _p_threshold = 0.9
+    _p_threshold = 0.7
     time_regexp = re.compile('(\d+):(\d+)')
 
     def _read_time(self, img):
-        if self._debug:
-            cv2.imwrite('time.png', img)
+        # if self._debug:
+        cv2.imwrite('time.png', img)
 
         img = cv2.resize(img, (img.shape[1] * 2, img.shape[0] * 2))
 
@@ -73,6 +73,9 @@ class TimerReader(object):
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
         timestr = self._read_time(img)
 
+        if not timestr:
+            return False
+
         result = re.match(self.time_regexp, timestr)
         if not result:
             return False
@@ -91,16 +94,16 @@ class TimerReader(object):
 
         img_timer_black = matcher.MM_BLACK()(img_timestr)
         img_timer_white = matcher.MM_WHITE()(img_timestr)
-        img_timer_yellow = matcher.MM_COLOR_BY_HUE(
-            hue=(27 - 5, 27 + 5), visibility=(100, 255))(img_timestr)
+        # img_timer_yellow = matcher.MM_COLOR_BY_HUE(
+        #     hue=(27 - 5, 27 + 5), visibility=(100, 255))(img_timestr)
 
-        img_test = img_timer_black | img_timer_white | img_timer_yellow
+        img_test = img_timer_black | img_timer_white # | img_timer_yellow
         orig_hist = cv2.calcHist([img_test], [0], None, [2], [0, 256])
         self._p = (orig_hist[1] / (orig_hist[0] + orig_hist[1]))
 
         time_valid = False
-        if self._p > self._p_threshold:
-            time_valid = self.read_time(img_timer_black)
+        if True or self._p > self._p_threshold:
+            time_valid = self.read_time(255 - img_timer_black)
 
         return time_valid
         # return self.read_time(255 - img_timer_black)
@@ -114,14 +117,46 @@ class TimerReader(object):
         return self._time_remaining
 
 
-class GameTimerIcon(Scene):
+class GameTimerIcon(StatefulScene):
 
     def reset(self):
         super(GameTimerIcon, self).reset()
 
         self._last_event_msec = - 100 * 1000
 
-    def match_no_cache(self, context):
+
+    def _state_default(self, context):
+        session = self.find_scene_object('Spl2GameSession')
+        if session is not None:
+            is_start = session._state.__name__ in ('_state_game_start', 'Spl2GameSession')
+            if not (is_start):
+                return False
+        matched = self.check_match(context)
+
+        if matched:
+            self._switch_state(self._state_tracking)
+
+    def _state_tracking(self, context):
+        frame = context['engine']['frame']
+
+        session = self.find_scene_object('Spl2GameSession')
+        if session is not None:
+            has_started = session._state.__name__ in ('_state_game_start', 'Spl2GameSession')
+            if not has_started:
+                return False
+
+        matched = self.check_match(context)
+        escaped = not self.matched_in(context, 1000)
+
+        if escaped:
+            self._switch_state(self._state_default)
+        if matched:
+            if self._mask_overtime.match(frame):
+                self._overtime = True
+        
+        return matched
+
+    def check_match(self, context):
         frame = context['engine']['frame']
 
         for mask in self._masks:
@@ -130,14 +165,12 @@ class GameTimerIcon(Scene):
             if not matched:
                 return False
 
-        # TODO: check for overtime
-        if self._mask_overtime.match(frame):
-            self._overtime = True
-            return True
-
-        if not self._timer_reader.match(frame):
-            return False
+        # if not self._timer_reader.match(frame):
+        #     return False
         
+
+        # print("TIMER VS GAME", 300 - self._timer_reader.get_time(), context['engine'].get('msec'), context['game'].get('start_offset_msec'), context['engine'].get('msec') - context['game'].get('start_offset_msec'))
+
         return True
 
     def _analyze(self, context):
@@ -146,10 +179,10 @@ class GameTimerIcon(Scene):
     def dump(self, context):
         super(GameTimerIcon, self).dump(context)
         print('--------')
-        print(self._overtime)
-        print(self._timer_reader.get_time())
+        # print(self._overtime)
+        # print(self._timer_reader.get_time())
 
-    def _init_scene(self, debug=True):
+    def _init_scene(self, debug=False):
         self._overtime = False
         self._masks = [
             IkaMatcher(
@@ -185,7 +218,7 @@ class GameTimerIcon(Scene):
                 label='timer_overtime',
                 debug=debug,
             )
-        self._timer_reader = TimerReader(debug=debug)
+        # self._timer_reader = TimerReader(debug=debug)
 
 
 
