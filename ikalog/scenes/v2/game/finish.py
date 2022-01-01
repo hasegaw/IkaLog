@@ -50,14 +50,13 @@ class Spl2GameFinish(Scene):
         self._call_plugins('get_neutral_hue')
         frame = context['engine']['frame']
         
-        hue = context['game'].get('neutral_color_hue', 135)
-        hue = 14
-        finish_strip_color = matcher.MM_COLOR_BY_HUE(
+        # TODO: Alecat: remove colour based dependency
+        # Find the areas of the image that match the neutral colour and compare them with the mask
+        hue = context['game'].get('neutral_color_hue', 152/2)
+        finish_strip_by_color = matcher.MM_COLOR_BY_HUE(
             hue=(hue - 10, hue + 10), visibility=(100, 255))(frame)
 
-        img_test =  finish_strip_color
-        # cv2.imwrite('finish_test.png', img_test)
-        matched = self._mask.match(img_test)
+        matched = self._mask.match(finish_strip_by_color)
 
         matched_predict = self._c.predict_frame(frame) >= 0
         if matched_predict:
@@ -86,12 +85,11 @@ class Spl2GameFinish(Scene):
             threshold= 0.9,
             orig_threshold= 0.05,
             bg_method=matcher.MM_BLACK(visibility=(0, 215)),
-            fg_method=matcher.MM_WHITE(visibility=(150,255)),
+            fg_method=matcher.MM_NOT_BLACK(),
             label='finish',
             call_plugins=self._call_plugins,
             debug=False
         )
-
 
 if __name__ == "__main__":
     Spl2GameFinish.main_func()

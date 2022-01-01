@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 import sys
+import time
 
 import cv2
 import numpy as np
@@ -82,7 +83,6 @@ class Spl2GameStart(StatefulScene):
             rule = None
         else:
             rule = rule_match._label.replace('start/mode/', '')
-            print("MATCHED", rule)
         stage = None
 
         return stage, rule
@@ -139,27 +139,61 @@ class Spl2GameStart(StatefulScene):
 
         # 1000ms 以内の非マッチはチャタリングとみなす
         if not matched and self.matched_in(context, 1000):
+            # Check for white screen
+            if np.mean(frame) > 250:
+                self._elect(context)
+                self._team1_color_votes = []
+                self._team2_color_votes = []
+                self._switch_state(self._team_colors)
             return False
 
         # それ以上マッチングしなかった場合 -> シーンを抜けている
         if not self.matched_in(context, 20000, attr='_last_event_msec'):
-            context['game']['map'] = self.elect(context, self.stage_votes)
-            context['game']['rule'] = self.elect(context, self.rule_votes)
-            print(self.rule_votes)
-
-            if not context['game']['start_time']:
-                print("SETTING FALLBACK START TIME")
-                # start_time should be initialized in GameGoSign.
-                # This is a fallback in case GameGoSign was skipped.
-                context['game']['start_time'] = IkaUtils.getTime(context)
-                context['game']['start_offset_msec'] = \
-                    context['engine']['msec']
-
-            self._call_plugins('on_game_start')
-            self._last_event_msec = context['engine']['msec']
+            self._elect(context)
 
         self._switch_state(self._state_default)
         return False
+
+    def _elect(self, context):
+        context['game']['map'] = self.elect(context, self.stage_votes)
+        context['game']['rule'] = self.elect(context, self.rule_votes)
+
+        if not context['game']['start_time']:
+            print("SETTING FALLBACK START TIME")
+            # start_time should be initialized in GameGoSign.
+            # This is a fallback in case GameGoSign was skipped.
+            context['game']['start_time'] = IkaUtils.getTime(context)
+            context['game']['start_offset_msec'] = \
+                context['engine']['msec']
+
+        self._call_plugins('on_game_start')
+        self._last_event_msec = context['engine']['msec']
+
+
+    def _find_colors(self, color_array):
+        color_array = color_array[3:41]
+        # Create an image with two rows.
+        # Assuming the same spawn animation time, the team colors should be split across the two rows.
+        color_map = np.reshape(color_array, (2, -1, 3))
+        cv2.imwrite("pimg/color_map_%s.png" % time.time(), color_map)
+
+    def _team_colors(self, context):
+        if self.is_another_scene_matched(context, 'GameGoSign'):
+            self._find_colors(self._team1_color_votes)
+            self._find_colors(self._team2_color_votes)
+            self._switch_state(self._state_default)
+            return False
+
+        # Find team color 1 in 679, 656 position
+        team1_spawn_color = context['engine']['frame'][656][679]
+        if (np.mean(team1_spawn_color)) < 250:
+            self._team1_color_votes.append(team1_spawn_color)
+        # Find team color 2 in 563, 669 position
+        team2_spawn_color = context['engine']['frame'][669][563]
+        if (np.mean(team2_spawn_color)) < 250:
+            self._team2_color_votes.append(team2_spawn_color)
+
+        return True
 
     def _analyze(self, context):
         pass
@@ -186,7 +220,7 @@ class Spl2GameStart(StatefulScene):
             458, 103, 369, 338,
             img_file='v2_start_mode.png',
             threshold= 0.8,
-            orig_threshold= 0.1,
+            orig_threshold= 0.12,
             bg_method=matcher.MM_DARK(visibility=(20, 255)),
             fg_method=matcher.MM_BLACK(),
             label='start/mode',
@@ -231,6 +265,19 @@ class Spl2GameStart(StatefulScene):
                 bg_method=matcher.MM_BLACK(visibility=(0, 215)),
                 fg_method=matcher.MM_WHITE(visibility=(150,255)),
                 label='start/mode/yagura',
+                call_plugins=self._call_plugins,
+                debug=False
+            )
+        )
+        self._rule_masks.add_mask(
+            IkaMatcher(
+                470, 222, 343, 131,
+                img_file='v2_mode_cramblitz.png',
+                threshold= 0.9,
+                orig_threshold= 0.1,
+                bg_method=matcher.MM_BLACK(visibility=(0, 215)),
+                fg_method=matcher.MM_WHITE(visibility=(150,255)),
+                label='start/mode/cramblitz',
                 call_plugins=self._call_plugins,
                 debug=False
             )

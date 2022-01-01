@@ -135,6 +135,14 @@ class GameTimerIcon(StatefulScene):
 
         if matched:
             self._switch_state(self._state_tracking)
+            # Set the team colors on first match
+            # TODO Alecat - decide on this method vs team_color detection in start.py
+            frame = context['engine']['frame']
+            if 'game' in context and 'team_color_rgb' not in context['game']:
+                context['game']['team_color_rgb'] = [
+                    (int(frame[68][565][2]), int(frame[68][565][1]), int(frame[68][565][0])),
+                    (int(frame[68][730][2]), int(frame[68][730][1]), int(frame[68][730][0])),
+                ]
 
     def _state_tracking(self, context):
         frame = context['engine']['frame']
@@ -184,6 +192,17 @@ class GameTimerIcon(StatefulScene):
 
     def _init_scene(self, debug=False):
         self._overtime = False
+
+        self.perfect_mask = IkaMatcher(
+            589, y0, 109, y3 - y0,
+            img_file='v2_game_timer_icon.png',
+            threshold=0.95,
+            orig_threshold=1.0,
+            bg_method=matcher.MM_DARK(),
+            fg_method=matcher.MM_BLACK(),
+            label='timer_icon_top',
+            debug=debug,
+        )
         self._masks = [
             IkaMatcher(
                 589, y0, 109, y1 - y0,

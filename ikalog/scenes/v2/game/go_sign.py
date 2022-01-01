@@ -68,10 +68,10 @@ class GameGoSign(Scene):
         self.mask_go_sign = IkaMatcher(
             384, 130, 478, 207,
             img_file='v2_game_go_sign.png',
-            threshold=0.90,
-            orig_threshold=0.5,
+            threshold=0.95,
+            orig_threshold=0.05 ,
             label='GO!',
-            bg_method=matcher.MM_WHITE(sat=(32, 255), visibility=(0, 210)),
+            bg_method=matcher.MM_NOT_WHITE(),
             fg_method=matcher.MM_WHITE(),
             call_plugins=self._call_plugins,
             debug=False,

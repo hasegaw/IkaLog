@@ -205,7 +205,7 @@ class Spl2GameRankedBattleEvents(StatefulScene):
 
         mask_we_lost = IkaMatcher(
             448, 184, 384, 48,
-            img_file='v2_towercontrol_we_lost.png', # same!
+            img_file='v2_splatzone_we_lost.png', # same!
             threshold=0.9,
             orig_threshold=0.1,
             label='splatzone/we_lost',
@@ -229,7 +229,7 @@ class Spl2GameRankedBattleEvents(StatefulScene):
 
         mask_they_lost = IkaMatcher(
             448, 184, 384, 48,
-            img_file='v2_towercontrol_they_lost.png', # same!
+            img_file='v2_splatzone_they_lost.png', # same!
             threshold=0.9,
             orig_threshold=0.1,
             label='splatzone/they_lost',

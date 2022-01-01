@@ -103,6 +103,7 @@ class Spl2GameInklings(StatefulScene):
         self._last_event_msec = - 100 * 1000
         self._match_start_msec = - 100 * 1000
         self._last_bitmap = None
+        self._last_bitmap_special = None
 
         self._last_frame = None
         self._diff_pixels = []
@@ -140,16 +141,21 @@ class Spl2GameInklings(StatefulScene):
             self._switch_state(self._state_default)
 
         if matched:
-            players = extract_players(frame)
+            players = extract_players(frame, context)
             team1 = players[0:4]
             team2 = players[4:8]
 
             team1_alive = [1 if e.get('alive') else 0 for e in team1 if e is not None]
             team2_alive = [1 if e.get('alive') else 0 for e in team2 if e is not None]
 
+            team1_special = [1 if e.get('special') else 0 for e in team1 if e is not None]
+            team2_special = [1 if e.get('special') else 0 for e in team2 if e is not None]
+
             context['game']['inkling_state'] = [
                 team1_alive,
-                team2_alive
+                team2_alive,
+                team1_special,
+                team2_special
             ]
 
             bitmap = self._list2bitmap(team1_alive, team2_alive)
@@ -158,9 +164,16 @@ class Spl2GameInklings(StatefulScene):
                 self._last_bitmap = bitmap
                 IkaUtils.add_event(
                     context, 'inklings', context['game']['inkling_state'])
-                for i, p in enumerate(players):
-                    cv2.imwrite("pimg/p%s/%s.png" % (i, time.time()), p['img_weapon'])
-                    cv2.imwrite("pimg/p%s/full_%s.png" % (i, time.time()), p['full'])
+                # for i, p in enumerate(players):
+                #     cv2.imwrite("pimg/p%s/%s.png" % (i, time.time()), p['img_weapon'])
+                #     cv2.imwrite("pimg/p%s/full_%s.png" % (i, time.time()), p['full'])
+
+            bitmap_special = self._list2bitmap(team1_special, team2_special)
+            if self._last_bitmap_special != bitmap_special:
+                self._call_plugins('on_game_special_state_update')
+                self._last_bitmap_special = bitmap_special
+                IkaUtils.add_event(
+                    context, 'inklings', context['game']['inkling_state'])
 
         return matched
 

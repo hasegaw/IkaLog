@@ -193,6 +193,19 @@ class StatInkCollector(IkaLogPlugin):
                 'his_team': context['game']['inkling_state'][1],
             })
 
+    def on_game_special_state_update(self, context):
+        if not self.config['track_inklings']:
+            return
+
+        offset = self._get_offset_msec(context)
+        # Ignore events for the start of the match, eg when the map view is being accessed.
+        if offset and offset > 8:
+            self._add_event(context, {
+                'type': 'special_inklings',
+                'my_team': context['game']['inkling_state'][2],
+                'his_team': context['game']['inkling_state'][3],
+            })
+
     def on_game_game_status_update(self, context, params):
         self._add_event(context, {
             'type': 'game_status',

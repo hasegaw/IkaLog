@@ -159,6 +159,10 @@ def _init_outputs(opts):
         args = _replace_vars(output_args['Hue'], vars)
         OutputPlugins.append(outputs.Hue(**args))
 
+    if 'WLED' in output_plugins:
+        args = _replace_vars(output_args['WLED'], vars)
+        OutputPlugins.append(outputs.WLED(**args))
+
     # JSON: JSONログファイルを出力します。
     if ('JSON' in output_plugins) or opts.get('output_json'):
         if opts.get('output_json'):

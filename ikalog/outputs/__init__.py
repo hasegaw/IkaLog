@@ -24,6 +24,7 @@ from .debug import DebugLog
 from .description import Description
 from .fluentd import Fluentd
 from .hue import Hue
+from .wled import WLED
 from .webserver.server import RESTAPIServer
 from .printjson import JSON
 from .preview import Screen

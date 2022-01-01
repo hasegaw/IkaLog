@@ -191,7 +191,6 @@ class Spl2ResultScoreboard(StatefulScene):
                 p['kill_or_assist'] = self._read_int(p['img_kill_or_assist'])
                 p['special'] = self._read_int(p['img_special'])
                 
-                cv2.imwrite('player-%s.png' % index, p['img_name'])
                 p['name'] = self._matches_name(p['img_name'], 0 if index < 4 else 1, index)
 
                 # backward compatibility
