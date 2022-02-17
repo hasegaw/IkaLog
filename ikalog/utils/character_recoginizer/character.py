@@ -24,6 +24,10 @@ import pickle
 
 from ikalog.utils.character_recoginizer import *
 
+# vertical_trim_policy
+PER_CHARACTER = 1
+PER_LINE = 2
+
 
 class PerCharacter(object):
 
@@ -33,25 +37,29 @@ class PerCharacter(object):
         x_start = None
         last_x = None
 
+        if self.debug:
+            print(img_hist_x)
+
         for x in range(len(img_hist_x)):
             if in_char:
-                if img_hist_x[x] > 0:
+                if img_hist_x[x] > self.threshold:
                     continue
                 else:
-                    char = (x_start, x - 1)
+                    char = (x_start, x)
                     if char[1] - char[0] > 2:
-                        chars.append((x_start, x - 1))
+                        chars.append((x_start, x))
                     in_char = False
             else:
-                if img_hist_x[x] > 0:
+                if img_hist_x[x] > self.threshold:
                     x_start = x
                     in_char = True
                 else:
                     continue
-
         return chars
 
-    def __init__(self):
+    def __init__(self, threshold=0):
+        self.threshold = threshold
+        self.debug = False
         pass
 
 
@@ -167,18 +175,27 @@ class CharacterRecoginizer(object):
         char_tuples = self.x_cutter.cut(img_chars, img_chars1_hist_x)
 
         characters = []
-        img_chars = np.sum(img_chars[:, :], axis=1)  # 行毎の検出dot数
-        img_char_extract_y = np.extract(
-            img_chars > 0, array0to1280[0:len(img_chars)])
+        if self.vertical_trim_policy == PER_LINE:
+            img_chars_hist = np.sum(img_chars[:, :], axis=1)  # 行毎の検出dot数
+            img_char_extract_y = np.extract(
+                img_chars_hist > 0, array0to1280[0:len(img_chars_hist)])
 
-        if len(img_char_extract_y) > 1:
-            y1 = np.amin(img_char_extract_y)
-            y2 = np.amax(img_char_extract_y) + 1
+        for t in char_tuples:
+            if self.vertical_trim_policy == PER_CHARACTER:
+                img_char = img_chars[:, t[0]: t[1]]
+                img_char_hist = np.sum(
+                    img_char[:, :], axis=1)  # 文字単位で行毎の検出dot数
+                img_char_extract_y = np.extract(
+                    img_char_hist > 0, array0to1280[0:len(img_char_hist)])
+
+            y1 = y2 = 0
+            if len(img_char_extract_y) > 1:
+                y1 = np.amin(img_char_extract_y)
+                y2 = np.amax(img_char_extract_y) + 1
 
             if (y2 - y1) > 2:  # 最低高さ4ドットなければサンプルとして認識しない
-                for t in char_tuples:
-                    img_char_final = img[y1:y2, t[0]: t[1]]
-                    characters.append(img_char_final)
+                img_char_final = img[y1:y2, t[0]: t[1]]
+                characters.append(img_char_final)
 
         return characters
 
@@ -232,7 +249,7 @@ class CharacterRecoginizer(object):
         retval, results, neigh_resp, dists = self.model.findNearest(sample, k)
 
         # 学習データを集めたいときなど
-        if 0:
+        if self.training_mode:
             import time
             cv2.imwrite('training/numbers/%s.%s.png' %
                         (retval, time.time()), img)
@@ -274,6 +291,8 @@ class CharacterRecoginizer(object):
 
     def __init__(self):
         self.trained = False
+        self.training_mode = False
+        self.vertical_trim_policy = PER_LINE
 
         # ToDo: フェスタイトルのように長さが決まっている場合は固定長で切り出す
         # 一文字単位で認識する場合はヒストグラムから文字の位置リストを作る
