@@ -167,10 +167,18 @@ class IkaEngine:
 
         t = self.capture.get_current_timestamp()
         context['engine']['msec'] = t
-        context['engine']['frame'] = frame
-        context['engine']['preview'] = copy.deepcopy(frame)
         context['game']['offset_msec'] = IkaUtils.get_game_offset_msec(context)
 
+        if frame.shape[0] == 720:
+            context['engine']['frame'] = frame
+        elif frame.shape[0] == 1080:
+            context['engine']['frame_hd'] = frame
+            context['engine']['frame'] = cv2.resize(frame, (1280, 720))
+        else:
+            self.dprint('Unexpected resolution %s' % str(frame.shape))
+            return None, None
+
+        context['engine']['preview'] = copy.deepcopy(context['engine']['frame'])
         self.call_plugins('on_debug_read_next_frame')
 
         return frame, t

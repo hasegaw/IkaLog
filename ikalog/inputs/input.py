@@ -307,8 +307,8 @@ class VideoInput(object):
     # Constructor.
     #
     def __init__(self):
-        self.output_geometry = (720, 1280)
-        self.effective_lines = 720
+        self.output_geometry = (1080, 1920)
+        self.effective_lines = 1080
         self.lock = threading.Lock()
 
         self.is_realtime = True
