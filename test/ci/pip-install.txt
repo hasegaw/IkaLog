@@ -1,5 +1,4 @@
 slackweb
-fluent-logger
 requests-oauthlib
 urllib3
 u-msgpack-python
@@ -10,3 +9,4 @@ py
 pyyaml
 certifi
 pytest
+blend_modes

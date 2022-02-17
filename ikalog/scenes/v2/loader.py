@@ -37,7 +37,7 @@ from ikalog.scenes.game.kill_combo import GameKillCombo
 from .game.dead import Spl2GameDead
 from .game.low_ink import Spl2GameLowInk
 from .game.finish import Spl2GameFinish
-from .game.paint_tracker import V2PaintTracker
+# from .game.paint_tracker import V2PaintTracker
 from .game.objective_tracker import ObjectiveTracker
 from .game.splatzone_tracker import SplatzoneTracker
 from .game.ranked_battle_events import Spl2GameRankedBattleEvents
@@ -65,7 +65,6 @@ from .salmon_run.mr_grizz import Spl2SalmonRunMrGrizz
 
 from ikalog.scenes.lobby import Lobby
 from ikalog.scenes.blank import Blank
-from ikalog.scenes.botw.dead import BOTWDead
 
 
 def initialize_scenes(engine):
@@ -108,8 +107,6 @@ def initialize_scenes(engine):
         # Spl2SalmonRunWaveFinish(engine),
         # Spl2SalmonRunPlayerStatus(engine),
         # Spl2SalmonRunMrGrizz(engine),
-
-        # BOTWDead(engine),
 
         # Blank(engine),
 

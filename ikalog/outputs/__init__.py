@@ -22,7 +22,6 @@ from .console import Console
 from .csv import CSV
 from .debug import DebugLog
 from .description import Description
-from .fluentd import Fluentd
 from .hue import Hue
 from .wled import WLED
 from .webserver.server import RESTAPIServer
@@ -32,7 +31,6 @@ from .preview_detected import PreviewDetected
 from .screenshot import Screenshot
 from .slack import Slack
 from .statink import StatInk
-from .switcher import Switcher
 from .twitter import Twitter
 from .videorecorder import OBS
 from .weapon_training import WeaponTraining

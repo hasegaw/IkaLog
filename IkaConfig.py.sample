@@ -126,16 +126,6 @@ OUTPUT_ARGS['Console'] = {}
 OUTPUT_PLUGINS.append('CSV')
 OUTPUT_ARGS['CSV'] = {'csv_filename': 'ika.csv'}
 
-# Fluentd: Forward to Fluentd.
-#
-# OUTPUT_PLUGINS.append('Fluentd')
-OUTPUT_ARGS['Fluentd'] = {
-    'host': '127.0.0.1',
-    'port': 24224,
-    'username': '＜8ヨ',
-    'tag': 'ikalog'
-}
-
 # OUTPUT_PLUGINS.append('Hue')
 OUTPUT_ARGS['Hue'] = {'host': '192.168.0.1', 'user': 'newdeveloper'}
 
