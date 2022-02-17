@@ -18,8 +18,6 @@
 #  limitations under the License.
 #
 
-import wx
-
 from ikalog.outputs import Screenshot as Screenshot
 
 #from ikalog.utils.localization import Localization
@@ -74,23 +72,6 @@ class IkaUIScreenshot(Screenshot):
 
     def on_config_apply(self, context):
         self.apply_ui()
-
-    def on_option_tab_create(self, notebook):
-        self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.panel_name = _('Screenshot')
-        self.layout = wx.BoxSizer(wx.VERTICAL)
-        self.panel.SetSizer(self.layout)
-        self.checkResultDetailEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, _('Save screenshots of game results'))
-        self.editDir = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
-
-        self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, _('Folder to save screenshots')))
-        self.layout.Add(self.editDir, flag=wx.EXPAND)
-        self.layout.Add(self.checkResultDetailEnable)
-
-        self.panel.SetSizer(self.layout)
-
 
     def on_initialize_plugin(self, context):
 #

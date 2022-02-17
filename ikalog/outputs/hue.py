@@ -24,13 +24,6 @@ import math
 from ikalog.utils import *
 
 
-
-# Needed in GUI mode
-try:
-    import wx
-except:
-    pass
-
 # IkaOutput_Hue: "Cameleon" Phillips Hue Lights.
 #
 
@@ -94,26 +87,6 @@ class Hue(object):
     def on_config_apply(self, context):
         self.apply_ui()
 
-    def on_option_tab_create(self, notebook):
-        self.panel = wx.Panel(notebook, wx.ID_ANY, size=(640, 360))
-        self.panel_name = 'Hue'
-        self.layout = wx.BoxSizer(wx.VERTICAL)
-        self.panel.SetSizer(self.layout)
-        self.checkEnable = wx.CheckBox(self.panel, wx.ID_ANY, u'Hue と連携')
-        self.editHueHost = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
-        self.editHueUsername = wx.TextCtrl(self.panel, wx.ID_ANY, u'hoge')
-
-        try:
-            layout = wx.GridSizer(2, 2)
-        except:
-            layout = wx.GridSizer(2)
-
-        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ホスト'))
-        layout.Add(self.editHueHost)
-        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, u'ユーザ'))
-        layout.Add(self.editHueUsername)
-        self.layout.Add(self.checkEnable)
-        self.layout.Add(layout)
 
     # enhance_color and rgb2xy is imported from:
     # https://gist.githubusercontent.com/error454/6b94c46d1f7512ffe5ee/raw/73b190ce256c3d8dd540cc34e6dae43848cbce4c/gistfile1.py

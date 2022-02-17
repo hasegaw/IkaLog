@@ -20,11 +20,6 @@
 
 from ikalog.utils import *
 
-# Needed in GUI mode
-try:
-    import wx
-except:
-    pass
 
 _ = Localization.gettext_translation('slack', fallback=True).gettext
 
@@ -96,26 +91,6 @@ class Slack(object):
     def on_config_apply(self, context):
         self.apply_ui()
 
-    def on_option_tab_create(self, notebook):
-        self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.panel_name = _('Slack')
-        self.layout = wx.BoxSizer(wx.VERTICAL)
-
-        self.checkEnable = wx.CheckBox(
-            self.panel, wx.ID_ANY, _('Post game results to a Slack channel'))
-        self.editURL = wx.TextCtrl(self.panel, wx.ID_ANY, u'http:')
-        self.editBotName = wx.TextCtrl(self.panel, wx.ID_ANY, _('IkaLog bot'))
-
-        layout = wx.BoxSizer(wx.HORIZONTAL)
-        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Bot Name')))
-        layout.Add(self.editBotName, flag=wx.EXPAND)
-        self.layout.Add(self.checkEnable)
-        self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY, _('Incoming WebHook API URL')))
-        self.layout.Add(self.editURL, flag=wx.EXPAND)
-        self.layout.Add(layout, flag=wx.EXPAND)
-
-        self.panel.SetSizer(self.layout)
 
     ##
     # Post a bot message to slack.

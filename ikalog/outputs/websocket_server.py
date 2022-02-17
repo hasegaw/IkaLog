@@ -24,11 +24,6 @@ import sys
 import threading
 import time
 
-# Needed in GUI mode
-try:
-    import wx
-except:
-    pass
 
 try:
     import tornado.ioloop
@@ -411,28 +406,6 @@ class WebSocketServer(object):
 
     def on_config_apply(self, context):
         self.apply_ui()
-
-    def on_option_tab_create(self, notebook):
-        self.panel = wx.Panel(notebook, wx.ID_ANY)
-        self.panel_name = _('WebSocket Server')
-        self.layout = wx.BoxSizer(wx.VERTICAL)
-
-        self.check_enable = wx.CheckBox(
-            self.panel, wx.ID_ANY, _('Enable WebSocket Server'))
-        self.edit_port = wx.TextCtrl(self.panel, wx.ID_ANY, 'port')
-
-        layout = wx.GridSizer(2)
-        layout.Add(wx.StaticText(self.panel, wx.ID_ANY, _('Listen port')))
-        layout.Add(self.edit_port)
-
-        self.layout.Add(self.check_enable)
-        self.layout.Add(wx.StaticText(
-            self.panel, wx.ID_ANY,
-            _('WARNING: The server is accessible by anyone.'),
-        ))
-        self.layout.Add(layout, flag=wx.EXPAND)
-
-        self.panel.SetSizer(self.layout)
 
     def __init__(self, enabled=False, bind_addr='127.0.0.1', port=9090):
         self.players = []
