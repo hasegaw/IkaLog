@@ -42,6 +42,10 @@ class Console(object):
         rule = IkaUtils.rule2text(context['game']['rule'])
         print(_('Game Start. Stage: %(stage)s, Mode: %(rule)s') %
               {'rule': rule, 'stage': stage})
+        power = context['game'].get('gachi_power')
+        if power:
+            print(_('Power estimated: %d') % power)
+
 
     def on_game_killed(self, context, params):
         print(_('Splatted an enemy! (%(streak)d streak)') %

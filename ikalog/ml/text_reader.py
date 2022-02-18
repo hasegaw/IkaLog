@@ -135,7 +135,8 @@ class TextReader(object):
                 s = "%s%s" % (s, self._c._labels[y])
                 _l = str(y)
             else:
-                print('%d 文字目が読めない' % i)
+                if verbose:
+                    print('%d 文字目が読めない' % i)
                 _l = 'confused'
                 # return None
 

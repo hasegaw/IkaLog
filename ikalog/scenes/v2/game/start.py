@@ -30,6 +30,7 @@ from ikalog.utils import *
 from ikalog.utils.ikamatcher2.matcher import MultiClassIkaMatcher2 as MultiClassIkaMatcher
 
 from ikalog.ml.classifier import ImageClassifier
+from ikalog.ml.text_reader import TextReader
 
 stages = {'ama': True, 'battera': True, 'fujitsubo': True,
           'gangaze': True, 'combu': True, 'tachiuo': True}
@@ -42,6 +43,7 @@ class Spl2GameStart(StatefulScene):
         super(Spl2GameStart, self).reset()
         self.stage_votes = []
         self.rule_votes = []
+        self.power_votes = []
 
         self._last_event_msec = - 100 * 1000
         self._last_run_msec = - 100 * 1000
@@ -97,6 +99,19 @@ class Spl2GameStart(StatefulScene):
 
         return stage, rule
 
+    def _read_power_estimation(self, context):
+        frame = context['engine']['frame']
+        img_power_bgr = frame[652:652+45, 88:88+100, :]
+        img_power_gray = matcher.MM_WHITE()(img_power_bgr)
+        try:
+            n = self._tr.read_int(img_power_gray)
+            assert n > 500
+            assert n < 5000
+            self.power_votes.append((context['engine']['msec'],str(n)))
+        except:
+            pass
+
+
     def _state_default(self, context):
         # pass matching in some scenes.
         session = self.find_scene_object('Spl2GameSession')
@@ -133,6 +148,7 @@ class Spl2GameStart(StatefulScene):
 
         # 画面が続いているならそのまま
         if matched:
+            self._read_power_estimation(context)
             self.stage_votes.append((context['engine']['msec'], stage))
             self.rule_votes.append((context['engine']['msec'], rule))
             return True
@@ -157,6 +173,10 @@ class Spl2GameStart(StatefulScene):
     def _elect(self, context):
         context['game']['map'] = self.elect(context, self.stage_votes)
         context['game']['rule'] = self.elect(context, self.rule_votes)
+        if context['game']['rule'] in ('area', 'yagura', 'hoko', 'asari'):
+            power = self.elect(context, self.power_votes)
+            if power:
+                context['game']['gachi_power'] = int(power)
 
         if not context['game']['start_time']:
             print("SETTING FALLBACK START TIME")
@@ -283,6 +303,7 @@ class Spl2GameStart(StatefulScene):
             )
         )
 
+        self._tr = TextReader()
 
 if __name__ == "__main__":
     Spl2GameStart.main_func()
