@@ -24,6 +24,25 @@ import numpy as np
 
 from ikalog.utils.character_recoginizer import *
 from ikalog.utils import *
+from ikalog.constants import weapons_v2
+
+
+# TODO: handle additional cause of death defined in weapons_v2 dict.
+
+
+def filename2id(filename, id_keys):
+    # Accept these filename formats:
+    # h3reelgun.[xxx.xxx.]png
+    # h3reelgun[.xxx]/xxx.[xxx.]png
+
+    dirname = os.path.basename(os.path.dirname(filename).split('.')[0])
+    basename = os.path.basename(filename).split('.')[0]
+
+    if dirname in id_keys:
+        return dirname
+    if basename in id_keys:
+        return basename
+    raise KeyError
 
 
 class DeadlyWeaponRecoginizer(CharacterRecoginizer):
@@ -158,20 +177,25 @@ class DeadlyWeaponRecoginizer(CharacterRecoginizer):
             self.train()
             return
 
+
+        for weapons_id in weapons_v2.keys():
+            dirname = 'training/deadly_weapons/%s/%s.%s' %  (lang, weapons_id, weapons_v2[weapons_id]['name']['ja_JP'])
+            if not os.path.exists(dirname):
+                os.mkdir(dirname)
+
         samples_path = 'training/deadly_weapons/%s' % lang
         IkaUtils.dprint('Building %s from %s' % (model_name, samples_path))
         data = []
 
         for file in self._find_png_files(samples_path):
-            s = os.path.basename(file).split('.')
-            if len(s) != 3:
+            weapon_name = None
+            if os.path.splitext(file)[1] != '.png':
                 continue
-            if s[2] != 'png':
-                continue
-            weapon_name = s[0]
-            num = s[1]
+            try:
+                weapon_name = filename2id(file, weapons_v2)
+            except KeyError:
+                print('KeyError %s' % file)
 
-            print(file)
             img = cv2.imread(file)
             img_normalized = self._normalize(img)
 
@@ -194,6 +218,7 @@ if __name__ == "__main__":
     # 引数で PNG ファイルを渡されている場合は、それに対して
     # 認識処理を行う
 
+    last_class = None
     list = []
     for file in sys.argv[1:]:
         img = cv2.imread(file)
@@ -207,4 +232,7 @@ if __name__ == "__main__":
         list.append(t)
 
     for t in sorted(list):
+        if last_class != t[0]:
+            last_class = t[0]
+            print("<h3>%s</h3>" % last_class)
         print('<!-- %s --><img src=%s>' % (t[0], t[1]))
