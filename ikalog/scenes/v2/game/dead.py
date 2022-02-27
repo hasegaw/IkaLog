@@ -29,14 +29,11 @@ from ikalog.utils.character_recoginizer import *
 
 class Spl2GameDead(StatefulScene):
     choordinates = {
-        'ja': {'top': 234, 'left': 452},
+        'ja': {'top': 238, 'left': 485, 'width': 309, 'height': 31},
         'en': {'top': 263, 'left': 432},
     }
 
     def recoginize_and_vote_death_reason(self, context):
-        # if self.deadly_weapon_recoginizer is None:
-        #    return False
-
         lang_short = Localization.get_game_languages()[0][0:2]
 
         try:
@@ -44,10 +41,23 @@ class Spl2GameDead(StatefulScene):
         except KeyError:
             c = self.choordinates['en']
 
+        if 0:
+            cv2.rectangle(context['engine']['preview'],
+                pt1=(c['left'], c['top']),
+                pt2=(c['left'] + c['width'], c['top'] + c['height']),
+                color=(0, 0, 255),
+                thickness=2,
+                lineType=cv2.LINE_4,
+                shift=0)
+
         img_weapon = context['engine']['frame'][
-            c['top']:c['top'] + 35,
-            c['left']:c['left'] + 410
+            c['top']:c['top'] + c['height'],
+            c['left']:c['left'] +c['width']
         ]
+
+        if 0:
+            cv2.imshow("img_weapon", img_weapon)
+            cv2.waitKey(1)
 
         img_weapon_gray = cv2.cvtColor(img_weapon, cv2.COLOR_BGR2GRAY)
         img_weapon_hsv = cv2.cvtColor(img_weapon, cv2.COLOR_BGR2HSV)
@@ -56,8 +66,12 @@ class Spl2GameDead(StatefulScene):
         ret, img_weapon_b = cv2.threshold(
             img_weapon_gray, 220, 255, cv2.THRESH_BINARY)
 
+        white_pixels = int(np.sum(img_weapon_b) / 255)
+        if z < white_pixels:
+            return
+
         # (覚) 学習用に保存しておくのはこのデータ。 Change to 1 for training.
-        if 0:  # (self.time_last_write + 5000 < context['engine']['msec']):
+        if 1:  # (self.time_last_write + 5000 < context['engine']['msec']):
             import time
             filename = os.path.join(  # training/ directory must already exist
                 'training', '_deadly_weapons.%s.png' % time.time())
@@ -68,11 +82,24 @@ class Spl2GameDead(StatefulScene):
         if not Localization.get_game_languages()[0] in ['ja', 'en_NA']:
             return
 
-        # We don't have classifiers yet
-        return
+        if self.deadly_weapon_recoginizer is None:
+            return False
 
         img_weapon_b_bgr = cv2.cvtColor(img_weapon_b, cv2.COLOR_GRAY2BGR)
         weapon_id = self.deadly_weapon_recoginizer.match(img_weapon_b_bgr)
+
+        if 0:
+            cv2.rectangle(context['engine']['preview'],
+                pt1=(c['left'], c['top']),
+                pt2=(c['left'] + c['width'], c['top'] + c['height']),
+                color=(0, 255, 0),
+                thickness=2,
+                lineType=cv2.LINE_4,
+                shift=0)
+
+
+        if weapon_id == 'unknown':
+            return
 
         # 投票する(あとでまとめて開票)
         votes = self._cause_of_death_votes
@@ -122,7 +149,8 @@ class Spl2GameDead(StatefulScene):
         # if not matched and self.matched_in(context, 1000):
         #    return False
 
-        matched = self._c.predict_frame(context['engine']['frame']) >= 0
+        # matched = self._c.predict_frame(context['engine']['frame']) >= 0
+        matched = self.mask_dead.match(context['engine']['frame'])
 
         if matched:
             context['game']['dead'] = True
@@ -140,12 +168,19 @@ class Spl2GameDead(StatefulScene):
         if frame is None:
             return False
 
-        matched = self._c.predict_frame(context['engine']['frame']) >= 0
+        # matched = self._c.predict_frame(context['engine']['frame']) >= 0
+        matched = self.mask_dead.match(context['engine']['frame'])
+
+
+        cv2.putText(context['engine']['preview'], text='dead/%s' % matched, org=(1000,600), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1.0, color=(0,255,0), thickness=2, lineType=cv2.LINE_4)
+
+        if matched:
+            self.recoginize_and_vote_death_reason(context)
+
 
         # 画面が続いているならそのまま
         if matched:
-            if not self.is_another_scene_matched(context, 'Spl2InGame'):
-                self.recoginize_and_vote_death_reason(context)
+            # if not self.is_another_scene_matched(context, 'Spl2InGame'):
             return True
 
         # 1000ms 以内の非マッチはチャタリングとみなす
@@ -154,10 +189,10 @@ class Spl2GameDead(StatefulScene):
 
         # それ以上マッチングしなかった場合 -> シーンを抜けている
         if not self.matched_in(context, 5 * 1000, attr='_last_event_msec'):
-            # self.count_death_reason_votes(context)
+            self.count_death_reason_votes(context)
 
-            # if 'last_death_reason' in context['game']:
-            #    self._call_plugins('on_game_death_reason_identified')
+            if 'last_death_reason' in context['game']:
+                self._call_plugins('on_game_death_reason_identified')
 
             self._call_plugins('on_game_respawn')
 
@@ -175,13 +210,24 @@ class Spl2GameDead(StatefulScene):
         pass
 
     def _init_scene(self, debug=False):
+        self.mask_dead = IkaMatcher(
+            1092, 648, 96, 26,
+            img_file='v2_game_dead.png',
+            threshold=0.80,
+            orig_threshold=0.40,
+            bg_method=matcher.MM_WHITE(sat=(0, 255), visibility=(0, 48)),
+            fg_method=matcher.MM_WHITE(visibility=(192, 255)),
+            label='dead',
+            call_plugins=self._call_plugins,
+            debug=debug,
+        )
+
         self._c = ImageClassifier()
         self._c.load_from_file('data/spl2/spl2.game_dead.dat')
 
-        # try:
-        #    self.deadly_weapon_recoginizer = DeadlyWeaponRecoginizer()
-        # except:
-        if 1:
+        try:
+            self.deadly_weapon_recoginizer = DeadlyWeaponRecoginizer()
+        except:
             self.deadly_weapon_recoginizer = None
 
 
