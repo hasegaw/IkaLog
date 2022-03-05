@@ -254,6 +254,9 @@ def _init_outputs(opts):
         args = _replace_vars(output_args['Splatnet2statink'], vars)
         OutputPlugins.append(outputs.Splatnet2statink(**args))
 
+    if 'Say' in output_plugins:
+        args = _replace_vars(output_args['Say'], vars)
+        OutputPlugins.append(outputs.Say(**args))
     return OutputPlugins
 
 
