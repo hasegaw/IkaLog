@@ -58,7 +58,7 @@ class Console(object):
     def on_game_dead(self, context):
         print(_('You were splatted!'))
 
-    def on_game_special_weapon(self, context):
+    def on_game_special_weapon(self, context, params):
         s = '%s, mine == %s' % (
             context['game']['special_weapon'], context['game']['special_weapon_is_mine'])
         print(_('Special Weapon Activation: %s' % s))
