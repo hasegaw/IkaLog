@@ -41,7 +41,7 @@ class Spl2GameDead(StatefulScene):
         except KeyError:
             c = self.choordinates['en']
 
-        if 0:
+        if self.preview:
             cv2.rectangle(context['engine']['preview'],
                 pt1=(c['left'], c['top']),
                 pt2=(c['left'] + c['width'], c['top'] + c['height']),
@@ -55,23 +55,25 @@ class Spl2GameDead(StatefulScene):
             c['left']:c['left'] +c['width']
         ]
 
-        if 0:
-            cv2.imshow("img_weapon", img_weapon)
-            cv2.waitKey(1)
-
         img_weapon_gray = cv2.cvtColor(img_weapon, cv2.COLOR_BGR2GRAY)
         img_weapon_hsv = cv2.cvtColor(img_weapon, cv2.COLOR_BGR2HSV)
+
+        # 色が混じっている場合はマップを開いているなどしている可能性が高い
+        img_weapon_colored = np.average(img_weapon_hsv[:, :, 1].reshape(-1)) > 60
+        if img_weapon_colored:
+            return
 
         img_weapon_gray[img_weapon_hsv[:, :, 1] > 32] = 0
         ret, img_weapon_b = cv2.threshold(
             img_weapon_gray, 220, 255, cv2.THRESH_BINARY)
 
+        # 白ピクセルが極端に低い場合は除外
         white_pixels = int(np.sum(img_weapon_b) / 255)
-        if z < white_pixels:
+        if white_pixels < 30:
             return
 
         # (覚) 学習用に保存しておくのはこのデータ。 Change to 1 for training.
-        if 1:  # (self.time_last_write + 5000 < context['engine']['msec']):
+        if self.train:  # (self.time_last_write + 5000 < context['engine']['msec']):
             import time
             filename = os.path.join(  # training/ directory must already exist
                 'training', '_deadly_weapons.%s.png' % time.time())
@@ -88,7 +90,7 @@ class Spl2GameDead(StatefulScene):
         img_weapon_b_bgr = cv2.cvtColor(img_weapon_b, cv2.COLOR_GRAY2BGR)
         weapon_id = self.deadly_weapon_recoginizer.match(img_weapon_b_bgr)
 
-        if 0:
+        if self.preview:
             cv2.rectangle(context['engine']['preview'],
                 pt1=(c['left'], c['top']),
                 pt2=(c['left'] + c['width'], c['top'] + c['height']),
@@ -149,7 +151,6 @@ class Spl2GameDead(StatefulScene):
         # if not matched and self.matched_in(context, 1000):
         #    return False
 
-        # matched = self._c.predict_frame(context['engine']['frame']) >= 0
         matched = self.mask_dead.match(context['engine']['frame'])
 
         if matched:
@@ -168,11 +169,10 @@ class Spl2GameDead(StatefulScene):
         if frame is None:
             return False
 
-        # matched = self._c.predict_frame(context['engine']['frame']) >= 0
         matched = self.mask_dead.match(context['engine']['frame'])
 
-
-        cv2.putText(context['engine']['preview'], text='dead/%s' % matched, org=(1000,600), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1.0, color=(0,255,0), thickness=2, lineType=cv2.LINE_4)
+        if self.preview:
+            cv2.putText(context['engine']['preview'], text='dead/%s' % matched, org=(1000,600), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1.0, color=(0,255,0), thickness=2, lineType=cv2.LINE_4)
 
         if matched:
             self.recoginize_and_vote_death_reason(context)
@@ -209,7 +209,9 @@ class Spl2GameDead(StatefulScene):
     def _analyze(self, context):
         pass
 
-    def _init_scene(self, debug=False):
+    def _init_scene(self, debug=False, train=False, preview=False):
+        self.train = train
+        self.preview = preview
         self.mask_dead = IkaMatcher(
             1092, 648, 96, 26,
             img_file='v2_game_dead.png',
@@ -221,9 +223,6 @@ class Spl2GameDead(StatefulScene):
             call_plugins=self._call_plugins,
             debug=debug,
         )
-
-        self._c = ImageClassifier()
-        self._c.load_from_file('data/spl2/spl2.game_dead.dat')
 
         try:
             self.deadly_weapon_recoginizer = DeadlyWeaponRecoginizer()

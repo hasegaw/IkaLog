@@ -24,10 +24,7 @@ import numpy as np
 
 from ikalog.utils.character_recoginizer import *
 from ikalog.utils import *
-from ikalog.constants import weapons_v2
-
-
-# TODO: handle additional cause of death defined in weapons_v2 dict.
+from ikalog.constants import cause_of_death_v2
 
 
 def filename2id(filename, id_keys):
@@ -178,8 +175,8 @@ class DeadlyWeaponRecoginizer(CharacterRecoginizer):
             return
 
 
-        for weapons_id in weapons_v2.keys():
-            dirname = 'training/deadly_weapons/%s/%s.%s' %  (lang, weapons_id, weapons_v2[weapons_id]['name']['ja_JP'])
+        for weapons_id in cause_of_death_v2.keys():
+            dirname = 'training/deadly_weapons/%s/%s.%s' %  (lang, weapons_id, cause_of_death_v2[weapons_id]['name']['ja_JP'])
             if not os.path.exists(dirname):
                 os.mkdir(dirname)
 
@@ -192,7 +189,7 @@ class DeadlyWeaponRecoginizer(CharacterRecoginizer):
             if os.path.splitext(file)[1] != '.png':
                 continue
             try:
-                weapon_name = filename2id(file, weapons_v2)
+                weapon_name = filename2id(file, cause_of_death_v2)
             except KeyError:
                 print('KeyError %s' % file)
 
@@ -226,8 +223,7 @@ if __name__ == "__main__":
             continue
         cv2.imshow('input', img)
 
-        r = obj.match(img)
-
+        r = obj.match(img) or 'None'
         t = (r, file)
         list.append(t)
 
