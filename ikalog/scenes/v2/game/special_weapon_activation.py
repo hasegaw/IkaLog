@@ -90,9 +90,12 @@ class Spl2GameSpecialWeaponActivation(StatefulScene):
             return False
 
         context['game']['special_weapon'] = special_weapon_id
-        context['game']['special_weapon_is_mine'] = \
-            self._is_my_special_weapon(context, img_special_bgr)
-        self._call_plugins('on_game_special_weapon')
+        mine = self._is_my_special_weapon(context, img_special_bgr)
+        context['game']['special_weapon_is_mine'] = mine
+        self._call_plugins('on_game_special_weapon', {
+            'special_weapon': special_weapon_id,
+            'is_my_special_weapon': mine
+        })
 
         self._switch_state(self._state_tracking)
         return True
