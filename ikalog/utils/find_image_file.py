@@ -30,5 +30,5 @@ def find_image_file(img_file=None, languages=None):
             (self, img_file))
         return f
 
-    raise Exception('Could not find image file %s (lang %s)' % (img_file, lang))
+    raise FileNotFoundError('Could not find image file %s (lang %s)' % (img_file, lang))
 
