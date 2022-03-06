@@ -19,6 +19,7 @@
 #
 import sys
 import time
+import traceback
 
 import cv2
 import numpy as np
@@ -26,15 +27,11 @@ import copy
 
 from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.utils import *
-#from ikalog.constants import stages, rules
+from ikalog.constants import stages_v2, modes_v2
 from ikalog.utils.ikamatcher2.matcher import MultiClassIkaMatcher2 as MultiClassIkaMatcher
 
 from ikalog.ml.classifier import ImageClassifier
 from ikalog.ml.text_reader import TextReader
-
-stages = {'ama': True, 'battera': True, 'fujitsubo': True,
-          'gangaze': True, 'combu': True, 'tachiuo': True}
-rules = {'nawabari': True, }
 
 
 class Spl2GameStart(StatefulScene):
@@ -79,25 +76,19 @@ class Spl2GameStart(StatefulScene):
 
         if not self._mask_start.match(img_test):
             return None, None
-        
-        (_, rule_match) = self._rule_masks.match_best(frame)
-        if rule_match == None:
-            rule = None
-        else:
-            rule = rule_match._label.replace('start/mode/', '')
+
+        best_stage = self._stage_masks.match_best(frame)
+        best_rule = self._rule_masks.match_best(frame)
+
+        stage, rule = None, None
+        if best_stage[1] is not None:
+            stage = best_stage[1].id_
+        if best_rule[1] is not None:
+            rule = best_rule[1].id_
         stage = None
 
         return stage, rule
 
-        stage = self._c_stage.predict_frame(context['engine']['frame'])
-        rule = self._c_rule.predict_frame(context['engine']['frame'])
-
-        if stage == -1:
-            stage = None
-        if rule == -1:
-            rule = None
-
-        return stage, rule
 
     def _read_power_estimation(self, context):
         frame = context['engine']['frame']
@@ -173,6 +164,7 @@ class Spl2GameStart(StatefulScene):
     def _elect(self, context):
         context['game']['map'] = self.elect(context, self.stage_votes)
         context['game']['rule'] = self.elect(context, self.rule_votes)
+
         if context['game']['rule'] in ('area', 'yagura', 'hoko', 'asari'):
             power = self.elect(context, self.power_votes)
             if power:
@@ -231,10 +223,14 @@ class Spl2GameStart(StatefulScene):
 
     def _init_scene(self, debug=False):
         self.election_period = 5 * 1000  # msec
-        self._c_stage = ImageClassifier()
-        self._c_stage.load_from_file('data/spl2/spl2.game_start.stage.dat')
-        self._c_rule = ImageClassifier()
-        self._c_rule.load_from_file('data/spl2/spl2.game_start.rule.dat')
+
+        self.mapname_left = 1010
+        self.mapname_width = 246
+        self.mapname_top = 580
+        self.mapname_height = 40
+
+        self._rule_masks = MultiClassIkaMatcher()
+        self._stage_masks = MultiClassIkaMatcher()
 
         self._mask_start = IkaMatcher(
             458, 103, 369, 338,
@@ -248,60 +244,45 @@ class Spl2GameStart(StatefulScene):
             debug=False
         )
 
+        for rule_id in modes_v2.keys():
+            try:
+                rule = IkaMatcher(
+                    470, 222, 343, 131,
+                    img_file='v2_mode_%s.png' % rule_id,
+                    threshold=0.95,
+                    orig_threshold=0.30,
+                    bg_method=matcher.MM_BLACK(visibility=(0, 215)),
+                    fg_method=matcher.MM_WHITE(visibility=(150,255)),
+                    label='rule:%s' % rule_id,
+                    call_plugins=self._call_plugins,
+                    debug=debug,
+                )
+                setattr(rule, 'id_', rule_id)
+                self._rule_masks.add_mask(rule)
+                print("Loaded %s" % rule_id)
 
-        self._rule_masks = MultiClassIkaMatcher()
-        self._rule_masks.add_mask(
-            IkaMatcher(
-                470, 222, 343, 131,
-                img_file='v2_mode_rainmaker.png',
-                threshold= 0.9,
-                orig_threshold= 0.1,
-                bg_method=matcher.MM_BLACK(visibility=(0, 215)),
-                fg_method=matcher.MM_WHITE(visibility=(150,255)),
-                label='start/mode/hoko',
-                call_plugins=self._call_plugins,
-                debug=False
-            )
-        )
-        self._rule_masks.add_mask(
-            IkaMatcher(
-                470, 222, 343, 131,
-                img_file='v2_mode_splatzone.png',
-                threshold= 0.9,
-                orig_threshold= 0.1,
-                bg_method=matcher.MM_BLACK(visibility=(0, 215)),
-                fg_method=matcher.MM_WHITE(visibility=(150,255)),
-                label='start/mode/area',
-                call_plugins=self._call_plugins,
-                debug=False
-            )
-        )
-        self._rule_masks.add_mask(
-            IkaMatcher(
-                470, 222, 343, 131,
-                img_file='v2_mode_tower_control.png',
-                threshold= 0.9,
-                orig_threshold= 0.1,
-                bg_method=matcher.MM_BLACK(visibility=(0, 215)),
-                fg_method=matcher.MM_WHITE(visibility=(150,255)),
-                label='start/mode/yagura',
-                call_plugins=self._call_plugins,
-                debug=False
-            )
-        )
-        self._rule_masks.add_mask(
-            IkaMatcher(
-                470, 222, 343, 131,
-                img_file='v2_mode_cramblitz.png',
-                threshold= 0.9,
-                orig_threshold= 0.1,
-                bg_method=matcher.MM_BLACK(visibility=(0, 215)),
-                fg_method=matcher.MM_WHITE(visibility=(150,255)),
-                label='start/mode/cramblitz',
-                call_plugins=self._call_plugins,
-                debug=False
-            )
-        )
+            except FileNotFoundError:
+                print("Failed to load %s" % rule_id)
+
+        for stage_id in stages_v2.keys():
+            try:
+                stage = IkaMatcher(
+                    self.mapname_left, self.mapname_top, self.mapname_width, self.mapname_height,
+                    img_file='v2_stage_%s.png' % stage_id,
+                    threshold=0.95,
+                    orig_threshold=0.30,
+                    bg_method=matcher.MM_NOT_WHITE(),
+                    fg_method=matcher.MM_WHITE(),
+                    label='stage:%s' % stage_id,
+                    call_plugins=self._call_plugins,
+                    debug=debug,
+                )
+                setattr(stage, 'id_', stage_id)
+                self._stage_masks.add_mask(stage)
+                print("Loaded %s" % stage_id)
+
+            except FileNotFoundError:
+                print("Failed to load %s" % stage_id)
 
         self._tr = TextReader()
 

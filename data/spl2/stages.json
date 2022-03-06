@@ -3,22 +3,34 @@
         "key": "battera",
         "splatnet": 0,
         "name": {
-            "ja_JP": "バッテラストリート",
-            "en_US": "The Reef",
+            "de_DE": "Korallenviertel",
             "en_GB": "The Reef",
+            "en_US": "The Reef",
             "es_ES": "Barrio Congrio",
             "es_MX": "Barrio Congrio",
+            "fr_CA": "Allées salées",
             "fr_FR": "Allées salées",
-            "fr_CA": "Allées salées"
+            "it_IT": "Rione Storione",
+            "ja_JP": "バッテラストリート",
+            "nl_NL": "Sushistraat",
+            "ru_RU": "Риф",
+            "zh_CN": "寿司街",
+            "zh_TW": "壽司街"
         },
         "short_name": {
-            "ja_JP": "バッテラ",
-            "en_US": "Reef",
+            "de_DE": "Korallenviertel",
             "en_GB": "Reef",
+            "en_US": "Reef",
             "es_ES": "Barrio Congrio",
             "es_MX": "Barrio Congrio",
+            "fr_CA": "Allées salées",
             "fr_FR": "Allées salées",
-            "fr_CA": "Allées salées"
+            "it_IT": "Rione Storione",
+            "ja_JP": "バッテラ",
+            "nl_NL": "Sushistraat",
+            "ru_RU": "Риф",
+            "zh_CN": "寿司街",
+            "zh_TW": "壽司街"
         },
         "area": 2450,
         "release_at": {
@@ -30,22 +42,34 @@
         "key": "fujitsubo",
         "splatnet": 1,
         "name": {
-            "ja_JP": "フジツボスポーツクラブ",
-            "en_US": "Musselforge Fitness",
+            "de_DE": "Molluskelbude",
             "en_GB": "Musselforge Fitness",
+            "en_US": "Musselforge Fitness",
             "es_ES": "Gimnasio Mejillón",
             "es_MX": "Gimnasio Mejillón",
+            "fr_CA": "Gymnase Ancrage",
             "fr_FR": "Gymnase Ancrage",
-            "fr_CA": "Gymnase Ancrage"
+            "it_IT": "Centro polpisportivo",
+            "ja_JP": "フジツボスポーツクラブ",
+            "nl_NL": "Vinvis Fitness",
+            "ru_RU": "Спортзал «Кревед!»",
+            "zh_CN": "藤壶健身房",
+            "zh_TW": "藤壺健身房"
         },
         "short_name": {
-            "ja_JP": "フジツボ",
-            "en_US": "Fitness",
+            "de_DE": "Molluskelbude",
             "en_GB": "Fitness",
+            "en_US": "Fitness",
             "es_ES": "Gimnasio Mejillón",
             "es_MX": "Gimnasio Mejillón",
+            "fr_CA": "Gymnase Ancrage",
             "fr_FR": "Gymnase Ancrage",
-            "fr_CA": "Gymnase Ancrage"
+            "it_IT": "Centro polpisportivo",
+            "ja_JP": "フジツボ",
+            "nl_NL": "Vinvis Fitness",
+            "ru_RU": "Спортзал «Кревед!»",
+            "zh_CN": "健身房",
+            "zh_TW": "健身房"
         },
         "area": 1957,
         "release_at": {
@@ -57,24 +81,36 @@
         "key": "gangaze",
         "splatnet": 2,
         "name": {
-            "ja_JP": "ガンガゼ野外音楽堂",
-            "en_US": "Starfish Mainstage",
+            "de_DE": "Seeigel-Rockbühne",
             "en_GB": "Starfish Mainstage",
+            "en_US": "Starfish Mainstage",
             "es_ES": "Auditorio Erizo",
             "es_MX": "Auditorio Erizo",
+            "fr_CA": "Scène Sirène",
             "fr_FR": "Scène Sirène",
-            "fr_CA": "Scène Sirène"
+            "it_IT": "Palco Plancton",
+            "ja_JP": "ガンガゼ野外音楽堂",
+            "nl_NL": "Zeesterrenstage",
+            "ru_RU": "КЗ «Иглокожий»",
+            "zh_CN": "海胆开放音乐台",
+            "zh_TW": "海膽開放音樂臺"
         },
         "short_name": {
-            "ja_JP": "ガンガゼ",
-            "en_US": "Mainstage",
+            "de_DE": "Seeigel-Rockbühne",
             "en_GB": "Mainstage",
+            "en_US": "Mainstage",
             "es_ES": "Auditorio Erizo",
             "es_MX": "Auditorio Erizo",
+            "fr_CA": "Scène Sirène",
             "fr_FR": "Scène Sirène",
-            "fr_CA": "Scène Sirène"
+            "it_IT": "Palco Plancton",
+            "ja_JP": "ガンガゼ",
+            "nl_NL": "Zeesterrenstage",
+            "ru_RU": "КЗ «Иглокожий»",
+            "zh_CN": "音乐台",
+            "zh_TW": "音樂臺"
         },
-        "area": null,
+        "area": 2140,
         "release_at": {
             "time": 1500105600,
             "iso8601": "2017-07-15T08:00:00+00:00"
@@ -84,24 +120,36 @@
         "key": "kombu",
         "splatnet": 5,
         "name": {
-            "ja_JP": "コンブトラック",
-            "en_US": "Humpback Pump Track",
+            "de_DE": "Buckelwal-Piste",
             "en_GB": "Humpback Pump Track",
+            "en_US": "Humpback Pump Track",
             "es_ES": "Tiburódromo",
             "es_MX": "Tiburódromo",
+            "fr_CA": "Piste Méroule",
             "fr_FR": "Piste Méroule",
-            "fr_CA": "Piste Méroule"
+            "it_IT": "Tintodromo Montecarpa",
+            "ja_JP": "コンブトラック",
+            "nl_NL": "Lekkerbektrack",
+            "ru_RU": "Велозал «9-й вал»",
+            "zh_CN": "昆布赛道",
+            "zh_TW": "昆布賽道"
         },
         "short_name": {
-            "ja_JP": "コンブ",
-            "en_US": "Track",
+            "de_DE": "Buckelwal-Piste",
             "en_GB": "Track",
+            "en_US": "Track",
             "es_ES": "Tiburódromo",
             "es_MX": "Tiburódromo",
+            "fr_CA": "Piste Méroule",
             "fr_FR": "Piste Méroule",
-            "fr_CA": "Piste Méroule"
+            "it_IT": "Tintodromo Montecarpa",
+            "ja_JP": "コンブ",
+            "nl_NL": "Lekkerbektrack",
+            "ru_RU": "Велозал «9-й вал»",
+            "zh_CN": "赛道",
+            "zh_TW": "賽道"
         },
-        "area": null,
+        "area": 2259,
         "release_at": {
             "time": 1500105600,
             "iso8601": "2017-07-15T08:00:00+00:00"
@@ -111,24 +159,36 @@
         "key": "ama",
         "splatnet": 4,
         "name": {
-            "ja_JP": "海女美術大学",
-            "en_US": "Inkblot Art Academy",
+            "de_DE": "Perlmutt-Akademie",
             "en_GB": "Inkblot Art Academy",
+            "en_US": "Inkblot Art Academy",
             "es_ES": "Instituto Coralino",
             "es_MX": "Instituto Coralino",
+            "fr_CA": "Institut Calm'arts",
             "fr_FR": "Institut Calam'arts",
-            "fr_CA": "Institut Calm'arts"
+            "it_IT": "Campus Hippocampus",
+            "ja_JP": "海女美術大学",
+            "nl_NL": "Koraalcampus",
+            "ru_RU": "Академия «Лепота»",
+            "zh_CN": "海女美术大学",
+            "zh_TW": "海女美術大學"
         },
         "short_name": {
-            "ja_JP": "アマビ",
-            "en_US": "Academy",
+            "de_DE": "Perlmutt-Akademie",
             "en_GB": "Academy",
+            "en_US": "Academy",
             "es_ES": "Instituto Coralino",
             "es_MX": "Instituto Coralino",
+            "fr_CA": "Institut Calm'arts",
             "fr_FR": "Institut Calam'arts",
-            "fr_CA": "Institut Calm'arts"
+            "it_IT": "Campus Hippocampus",
+            "ja_JP": "アマビ",
+            "nl_NL": "Koraalcampus",
+            "ru_RU": "Академия «Лепота»",
+            "zh_CN": "大学",
+            "zh_TW": "大學"
         },
-        "area": null,
+        "area": 2465,
         "release_at": {
             "time": 1500105600,
             "iso8601": "2017-07-15T08:00:00+00:00"
@@ -138,24 +198,36 @@
         "key": "chozame",
         "splatnet": 3,
         "name": {
-            "ja_JP": "チョウザメ造船",
-            "en_US": "Sturgeon Shipyard",
+            "de_DE": "Störwerft",
             "en_GB": "Sturgeon Shipyard",
+            "en_US": "Sturgeon Shipyard",
             "es_ES": "Astillero Beluga",
             "es_MX": "Astillero Beluga",
+            "fr_CA": "Chantier Narval",
             "fr_FR": "Chantier Narval",
-            "fr_CA": "Chantier Narval"
+            "it_IT": "Cantiere Pinnenere",
+            "ja_JP": "チョウザメ造船",
+            "nl_NL": "Walruswerf",
+            "ru_RU": "Осетровые верфи",
+            "zh_CN": "鲟鱼造船厂",
+            "zh_TW": "鱘魚造船廠"
         },
         "short_name": {
-            "ja_JP": "チョウザメ",
-            "en_US": "Shipyard",
+            "de_DE": "Störwerft",
             "en_GB": "Shipyard",
+            "en_US": "Shipyard",
             "es_ES": "Astillero Beluga",
             "es_MX": "Astillero Beluga",
+            "fr_CA": "Chantier Narval",
             "fr_FR": "Chantier Narval",
-            "fr_CA": "Chantier Narval"
+            "it_IT": "Cantiere Pinnenere",
+            "ja_JP": "チョウザメ",
+            "nl_NL": "Walruswerf",
+            "ru_RU": "Осетровые верфи",
+            "zh_CN": "造船厂",
+            "zh_TW": "造船廠"
         },
-        "area": null,
+        "area": 2355,
         "release_at": {
             "time": 1500562800,
             "iso8601": "2017-07-20T15:00:00+00:00"
@@ -165,24 +237,36 @@
         "key": "hokke",
         "splatnet": 7,
         "name": {
-            "ja_JP": "ホッケふ頭",
-            "en_US": "Port Mackerel",
+            "de_DE": "Heilbutt-Hafen",
             "en_GB": "Port Mackerel",
+            "en_US": "Port Mackerel",
             "es_ES": "Puerto Jurel",
             "es_MX": "Puerto Jurel",
+            "fr_CA": "Docks Haddock",
             "fr_FR": "Docks Haddock",
-            "fr_CA": "Docks Haddock"
+            "it_IT": "Porto Polpo",
+            "ja_JP": "ホッケふ頭",
+            "nl_NL": "Hamerhaaihaven",
+            "ru_RU": "Порт «Корюшка»",
+            "zh_CN": "远东多线鱼码头",
+            "zh_TW": "遠東多線魚碼頭"
         },
         "short_name": {
-            "ja_JP": "ホッケ",
-            "en_US": "Port",
+            "de_DE": "Heilbutt-Hafen",
             "en_GB": "Port",
+            "en_US": "Port",
             "es_ES": "Puerto Jurel",
             "es_MX": "Puerto Jurel",
+            "fr_CA": "Docks Haddock",
             "fr_FR": "Docks Haddock",
-            "fr_CA": "Docks Haddock"
+            "it_IT": "Porto Polpo",
+            "ja_JP": "ホッケ",
+            "nl_NL": "Hamerhaaihaven",
+            "ru_RU": "Порт «Корюшка»",
+            "zh_CN": "码头",
+            "zh_TW": "碼頭"
         },
-        "area": null,
+        "area": 2455,
         "release_at": {
             "time": 1500562800,
             "iso8601": "2017-07-20T15:00:00+00:00"
@@ -192,24 +276,36 @@
         "key": "tachiuo",
         "splatnet": 8,
         "name": {
-            "ja_JP": "タチウオパーキング",
-            "en_US": "Moray Towers",
+            "de_DE": "Muränentürme",
             "en_GB": "Moray Towers",
+            "en_US": "Moray Towers",
             "es_ES": "Torres Merluza",
             "es_MX": "Torres Merluza",
+            "fr_CA": "Tours Girelle",
             "fr_FR": "Tours Girelle",
-            "fr_CA": "Tours Girelle"
+            "it_IT": "Torri cittadine",
+            "ja_JP": "タチウオパーキング",
+            "nl_NL": "Tonijntorens",
+            "ru_RU": "Муренские башни",
+            "zh_CN": "带鱼停车场",
+            "zh_TW": "帶魚停車場"
         },
         "short_name": {
-            "ja_JP": "タチウオ",
-            "en_US": "Towers",
+            "de_DE": "Muränentürme",
             "en_GB": "Towers",
+            "en_US": "Towers",
             "es_ES": "Torres Merluza",
             "es_MX": "Torres Merluza",
+            "fr_CA": "Tours Girelle",
             "fr_FR": "Tours Girelle",
-            "fr_CA": "Tours Girelle"
+            "it_IT": "Torri cittadine",
+            "ja_JP": "タチウオ",
+            "nl_NL": "Tonijntorens",
+            "ru_RU": "Муренские башни",
+            "zh_CN": "停车场",
+            "zh_TW": "停車場"
         },
-        "area": null,
+        "area": 2215,
         "release_at": {
             "time": 1500105600,
             "iso8601": "2017-07-15T08:00:00+00:00"
@@ -219,27 +315,1560 @@
         "key": "mystery",
         "splatnet": 9999,
         "name": {
-            "ja_JP": "ミステリーゾーン",
-            "en_US": "Shifty Station",
+            "de_DE": "Wandelzone",
             "en_GB": "Shifty Station",
+            "en_US": "Shifty Station",
             "es_ES": "Área mutante",
             "es_MX": "Área mutante",
+            "fr_CA": "Plate-forme polymorphe",
             "fr_FR": "Plateforme polymorphe",
-            "fr_CA": "Plateforme polymorphe"
+            "it_IT": "Zona mista",
+            "ja_JP": "ミステリーゾーン",
+            "nl_NL": "Wisselwereld",
+            "ru_RU": "Транстанция",
+            "zh_CN": "移动站",
+            "zh_TW": "移動站"
         },
         "short_name": {
-            "ja_JP": "ミステリー",
-            "en_US": "Shifty",
+            "de_DE": "Wandelzone",
             "en_GB": "Shifty",
+            "en_US": "Shifty",
             "es_ES": "Área mutante",
             "es_MX": "Área mutante",
+            "fr_CA": "Plateforme polymorphe",
             "fr_FR": "Plateforme polymorphe",
-            "fr_CA": "Plateforme polymorphe"
+            "it_IT": "Zona mista",
+            "ja_JP": "ミステリー",
+            "nl_NL": "Wisselwereld",
+            "ru_RU": "Транстанция",
+            "zh_CN": "移动站",
+            "zh_TW": "移動站"
         },
         "area": null,
         "release_at": {
             "time": 1501826400,
             "iso8601": "2017-08-04T06:00:00+00:00"
+        }
+    },
+    {
+        "key": "manta",
+        "splatnet": 6,
+        "name": {
+            "de_DE": "Manta Maria",
+            "en_GB": "Manta Maria",
+            "en_US": "Manta Maria",
+            "es_ES": "Corbeta Corvina",
+            "es_MX": "Corbeta Corvina",
+            "fr_CA": "Manta Maria",
+            "fr_FR": "Manta Maria",
+            "it_IT": "Manta Maria",
+            "ja_JP": "マンタマリア号",
+            "nl_NL": "Klipvisklipper",
+            "ru_RU": "«Манта-Мария»",
+            "zh_CN": "蝙蝠玛丽号",
+            "zh_TW": "蝙蝠瑪麗號"
+        },
+        "short_name": {
+            "de_DE": "Manta Maria",
+            "en_GB": "Manta",
+            "en_US": "Manta",
+            "es_ES": "Corbeta Corvina",
+            "es_MX": "Corbeta Corvina",
+            "fr_CA": "Manta",
+            "fr_FR": "Manta",
+            "it_IT": "Manta Maria",
+            "ja_JP": "マンタ",
+            "nl_NL": "Klipvisklipper",
+            "ru_RU": "Манта Мария",
+            "zh_CN": "蝙蝠号",
+            "zh_TW": "蝙蝠號"
+        },
+        "area": 2355,
+        "release_at": {
+            "time": 1503673200,
+            "iso8601": "2017-08-25T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "mozuku",
+        "splatnet": 10,
+        "name": {
+            "de_DE": "Tümmlerkuppel",
+            "en_GB": "Kelp Dome",
+            "en_US": "Kelp Dome",
+            "es_ES": "Jardín botánico",
+            "es_MX": "Jardín botánico",
+            "fr_CA": "Serre Goémon",
+            "fr_FR": "Serre Goémon",
+            "it_IT": "Serra di alghe",
+            "ja_JP": "モズク農園",
+            "nl_NL": "Kelpwierkas",
+            "ru_RU": "Ферма ламинарии",
+            "zh_CN": "海云种植园",
+            "zh_TW": "海雲種植園"
+        },
+        "short_name": {
+            "de_DE": "Tümmlerkuppel",
+            "en_GB": "Dome",
+            "en_US": "Dome",
+            "es_ES": "Jardín botánico",
+            "es_MX": "Jardín botánico",
+            "fr_CA": "Serre Goémon",
+            "fr_FR": "Serre Goémon",
+            "it_IT": "Serra di alghe",
+            "ja_JP": "モズク",
+            "nl_NL": "Kelpwierkas",
+            "ru_RU": "Ферма ламинарии",
+            "zh_CN": "种植园",
+            "zh_TW": "種植園"
+        },
+        "area": 2315,
+        "release_at": {
+            "time": 1505527200,
+            "iso8601": "2017-09-16T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "engawa",
+        "splatnet": 9,
+        "name": {
+            "de_DE": "Grätenkanal",
+            "en_GB": "Snapper Canal",
+            "en_US": "Snapper Canal",
+            "es_ES": "Canal Cormorán",
+            "es_MX": "Canal Cormorán",
+            "fr_CA": "Canalmar",
+            "fr_FR": "Canalamar",
+            "it_IT": "Canale Cannolicchio",
+            "ja_JP": "エンガワ河川敷",
+            "nl_NL": "Moeraalkanaal",
+            "ru_RU": "Подмостовье",
+            "zh_CN": "比目鱼河岸",
+            "zh_TW": "比目魚河岸"
+        },
+        "short_name": {
+            "de_DE": "Grätenkanal",
+            "en_GB": "Canal",
+            "en_US": "Canal",
+            "es_ES": "Canal Cormorán",
+            "es_MX": "Canal Cormorán",
+            "fr_CA": "Canalamar",
+            "fr_FR": "Canalamar",
+            "it_IT": "Canale Cannolicchio",
+            "ja_JP": "エンガワ",
+            "nl_NL": "Moeraalkanaal",
+            "ru_RU": "Подмостовье",
+            "zh_CN": "河岸",
+            "zh_TW": "河岸"
+        },
+        "area": 2250,
+        "release_at": {
+            "time": 1507298400,
+            "iso8601": "2017-10-06T14:00:00+00:00"
+        }
+    },
+    {
+        "key": "bbass",
+        "splatnet": 11,
+        "name": {
+            "de_DE": "Punkasius-Skatepark",
+            "en_GB": "Blackbelly Skatepark",
+            "en_US": "Blackbelly Skatepark",
+            "es_ES": "Parque Lubina",
+            "es_MX": "Parque Lubina",
+            "fr_CA": "Plancho Mako",
+            "fr_FR": "Skatepark Mako",
+            "it_IT": "Pista Polposkate",
+            "ja_JP": "Bバスパーク",
+            "nl_NL": "Snoekduik-skatepark",
+            "ru_RU": "Скейт-парк «Скат»",
+            "zh_CN": "石斑鱼滑板公园",
+            "zh_TW": "石斑魚滑板公園"
+        },
+        "short_name": {
+            "de_DE": "Skatepark",
+            "en_GB": "Skatepark",
+            "en_US": "Skatepark",
+            "es_ES": "Parque Lubina",
+            "es_MX": "Parque Lubina",
+            "fr_CA": "Plancho Mako",
+            "fr_FR": "Skatepark Mako",
+            "it_IT": "Pista Polposkate",
+            "ja_JP": "Bバス",
+            "nl_NL": "Snoekduik-skatepark",
+            "ru_RU": "Скейт-парк «Скат»",
+            "zh_CN": "滑板公园",
+            "zh_TW": "滑板公園"
+        },
+        "area": 1947,
+        "release_at": {
+            "time": 1509156000,
+            "iso8601": "2017-10-28T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "zatou",
+        "splatnet": 13,
+        "name": {
+            "de_DE": "Cetacea-Markt",
+            "en_GB": "MakoMart",
+            "en_US": "MakoMart",
+            "es_ES": "Ultramarinos Orca",
+            "es_MX": "Ultramarinos Orca",
+            "fr_CA": "Supermarché Cétacé",
+            "fr_FR": "Supermarché Cétacé",
+            "it_IT": "Mercatotano",
+            "ja_JP": "ザトウマーケット",
+            "nl_NL": "Bultrugbazaar",
+            "ru_RU": "«Горбуша-Маркет»",
+            "zh_CN": "座头鲸市场",
+            "zh_TW": "座頭鯨市場"
+        },
+        "short_name": {
+            "de_DE": "Cetacea-Markt",
+            "en_GB": "Mart",
+            "en_US": "Mart",
+            "es_ES": "Ultramarinos Orca",
+            "es_MX": "Ultramarinos Orca",
+            "fr_CA": "Supermarché Cétacé",
+            "fr_FR": "Supermarché Cétacé",
+            "it_IT": "Mercatotano",
+            "ja_JP": "ザトウ",
+            "nl_NL": "Bultrugbazaar",
+            "ru_RU": "Горбуша-Маркет",
+            "zh_CN": "市场",
+            "zh_TW": "市場"
+        },
+        "area": 2166,
+        "release_at": {
+            "time": 1511575200,
+            "iso8601": "2017-11-25T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "arowana",
+        "splatnet": 15,
+        "name": {
+            "de_DE": "Arowana-Center",
+            "en_GB": "Arowana Mall",
+            "en_US": "Arowana Mall",
+            "es_ES": "Plazuela del Calamar",
+            "es_MX": "Plazuela del Calamar",
+            "fr_CA": "Centre Arowana",
+            "fr_FR": "Centre Arowana",
+            "it_IT": "Centro commerciale",
+            "ja_JP": "アロワナモール",
+            "nl_NL": "Piranha Plaza",
+            "ru_RU": "ТЦ «Аравана»",
+            "zh_CN": "金龙鱼商场",
+            "zh_TW": "金龍魚商場"
+        },
+        "short_name": {
+            "de_DE": "Arowana Center",
+            "en_GB": "Mall",
+            "en_US": "Mall",
+            "es_ES": "Plazuela del Calamar",
+            "es_MX": "Plazuela del Calamar",
+            "fr_CA": "Centre Arowana",
+            "fr_FR": "Centre Arowana",
+            "it_IT": "Centro Commerciale",
+            "ja_JP": "アロワナ",
+            "nl_NL": "Winkelcentrum",
+            "ru_RU": "ТЦ «Аравана»",
+            "zh_CN": "商场",
+            "zh_TW": "商場"
+        },
+        "area": 2391,
+        "release_at": {
+            "time": 1517536800,
+            "iso8601": "2018-02-02T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "hakofugu",
+        "splatnet": 14,
+        "name": {
+            "de_DE": "Kofferfisch-Lager",
+            "en_GB": "Walleye Warehouse",
+            "en_US": "Walleye Warehouse",
+            "es_ES": "Almacén Rodaballo",
+            "es_MX": "Almacén Rodaballo",
+            "fr_CA": "Encrepôt",
+            "fr_FR": "Encrepôt",
+            "it_IT": "Magazzino",
+            "ja_JP": "ハコフグ倉庫",
+            "nl_NL": "Zeeleeuwloods",
+            "ru_RU": "Инкрабсклад",
+            "zh_CN": "箱鲀仓库",
+            "zh_TW": "箱魨倉庫"
+        },
+        "short_name": {
+            "de_DE": "Kofferfisch-Lager",
+            "en_GB": "Warehouse",
+            "en_US": "Warehouse",
+            "es_ES": "Almacén Rodaballo",
+            "es_MX": "Almacén Rodaballo",
+            "fr_CA": "Encrepôt",
+            "fr_FR": "Encrepôt",
+            "it_IT": "Magazzino",
+            "ja_JP": "ハコフグ",
+            "nl_NL": "Warehouse",
+            "ru_RU": "Warehouse",
+            "zh_CN": "仓库",
+            "zh_TW": "倉庫"
+        },
+        "area": 1632,
+        "release_at": {
+            "time": 1513303200,
+            "iso8601": "2017-12-15T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "devon",
+        "splatnet": 12,
+        "name": {
+            "de_DE": "Abyssal-Museum",
+            "en_GB": "Shellendorf Institute",
+            "en_US": "Shellendorf Institute",
+            "es_ES": "Galería Raspa",
+            "es_MX": "Galería Raspa",
+            "fr_CA": "Galerie des abysses",
+            "fr_FR": "Galerie des abysses",
+            "it_IT": "Museo paleontonnologico",
+            "ja_JP": "デボン海洋博物館",
+            "nl_NL": "Vistorisch museum",
+            "ru_RU": "Музей «Мезозой»",
+            "zh_CN": "海洋博物馆",
+            "zh_TW": "海洋博物館"
+        },
+        "short_name": {
+            "de_DE": "Abyssal-Museum",
+            "en_GB": "Institute",
+            "en_US": "Institute",
+            "es_ES": "Galería Raspa",
+            "es_MX": "Galería Raspa",
+            "fr_CA": "La Galerie des Abysses",
+            "fr_FR": "La Galerie des Abysses",
+            "it_IT": "Il Museo paleontonnologico",
+            "ja_JP": "デボン",
+            "nl_NL": "Vistorisch museum",
+            "ru_RU": "музей «Мезозой»",
+            "zh_CN": "海博馆",
+            "zh_TW": "海博館"
+        },
+        "area": 2052,
+        "release_at": {
+            "time": 1515722400,
+            "iso8601": "2018-01-12T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "ajifry",
+        "splatnet": 18,
+        "name": {
+            "de_DE": "Backfisch-Stadion",
+            "en_GB": "Goby Arena",
+            "en_US": "Goby Arena",
+            "es_ES": "Estadio Ajolote",
+            "es_MX": "Estadio Ajolote",
+            "fr_CA": "Stade Bernique",
+            "fr_FR": "Stade Bernique",
+            "it_IT": "Arena Sardina",
+            "ja_JP": "アジフライスタジアム",
+            "nl_NL": "Planktonstadion",
+            "ru_RU": "Арена «Лужа»",
+            "zh_CN": "炸鲭鱼体育馆",
+            "zh_TW": "炸鯖魚體育館"
+        },
+        "short_name": {
+            "de_DE": "Backfisch-Stadion",
+            "en_GB": "Arena",
+            "en_US": "Arena",
+            "es_ES": "Estadio Ajolote",
+            "es_MX": "Estadio Ajolote",
+            "fr_CA": "Stade Bernique",
+            "fr_FR": "Stade Bernique",
+            "it_IT": "Arena Sardina",
+            "ja_JP": "アジフライ",
+            "nl_NL": "Planktonstadion",
+            "ru_RU": "Арена «Лужа»",
+            "zh_CN": "体育馆",
+            "zh_TW": "體育館"
+        },
+        "area": 2221,
+        "release_at": {
+            "time": 1519956000,
+            "iso8601": "2018-03-02T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "shottsuru",
+        "splatnet": 17,
+        "name": {
+            "de_DE": "Steinköhler-Grube",
+            "en_GB": "Piranha Pit",
+            "en_US": "Piranha Pit",
+            "es_ES": "Cantera Tintorera",
+            "es_MX": "Cantera Tintorera",
+            "fr_CA": "Carrières Caviar",
+            "fr_FR": "Carrière Caviar",
+            "it_IT": "Miniera d'Orata",
+            "ja_JP": "ショッツル鉱山",
+            "nl_NL": "Grondelgroeve",
+            "ru_RU": "Пираньев карьер",
+            "zh_CN": "鱼酱矿山",
+            "zh_TW": "魚醬礦山"
+        },
+        "short_name": {
+            "de_DE": "Steinköhler-Grube",
+            "en_GB": "Pit",
+            "en_US": "Pit",
+            "es_ES": "Cantera Tintorera",
+            "es_MX": "Cantera Tintorera",
+            "fr_CA": "Carrières Caviar",
+            "fr_FR": "Carrières Caviar",
+            "it_IT": "Miniera d'Orata",
+            "ja_JP": "ショッツル",
+            "nl_NL": "Grondelgroeve",
+            "ru_RU": "Пираньев карьер",
+            "zh_CN": "矿山",
+            "zh_TW": "礦山"
+        },
+        "area": 3081,
+        "release_at": {
+            "time": 1522461600,
+            "iso8601": "2018-03-31T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "mongara",
+        "splatnet": 16,
+        "name": {
+            "de_DE": "Camp Schützenfisch",
+            "en_GB": "Camp Triggerfish",
+            "en_US": "Camp Triggerfish",
+            "es_ES": "Campamento Arowana",
+            "es_MX": "Campamento Arowana",
+            "fr_CA": "Hippo-Camping",
+            "fr_FR": "Hippo-Camping",
+            "it_IT": "Campeggio Totan",
+            "ja_JP": "モンガラキャンプ場",
+            "nl_NL": "Kamp Karper",
+            "ru_RU": "База «Спинорог»",
+            "zh_CN": "鳞鲀野营地",
+            "zh_TW": "鱗魨野營地"
+        },
+        "short_name": {
+            "de_DE": "Camp Schützenfisch",
+            "en_GB": "Camp",
+            "en_US": "Camp",
+            "es_ES": "Campamento Arowana",
+            "es_MX": "Campamento Arowana",
+            "fr_CA": "Hippo-Camping",
+            "fr_FR": "Hippo-Camping",
+            "it_IT": "Campeggio Totan",
+            "ja_JP": "モンガラ",
+            "nl_NL": "Kamp Karper",
+            "ru_RU": "База «Спинорог»",
+            "zh_CN": "野营地",
+            "zh_TW": "野營地"
+        },
+        "area": 2338,
+        "release_at": {
+            "time": 1524621600,
+            "iso8601": "2018-04-25T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "sumeshi",
+        "splatnet": 20,
+        "name": {
+            "de_DE": "Flunder-Funpark",
+            "en_GB": "Wahoo World",
+            "en_US": "Wahoo World",
+            "es_ES": "Pirañalandia",
+            "es_MX": "Pirañalandia",
+            "fr_CA": "Parc Carapince",
+            "fr_FR": "Parc Carapince",
+            "it_IT": "Soglioland",
+            "ja_JP": "スメーシーワールド",
+            "nl_NL": "Waterwonderland",
+            "ru_RU": "Луна-парк «Язь»",
+            "zh_CN": "醋饭游乐园",
+            "zh_TW": "醋飯遊樂園"
+        },
+        "short_name": {
+            "de_DE": "Flunder-Funpark",
+            "en_GB": "World",
+            "en_US": "World",
+            "es_ES": "Pirañalandia",
+            "es_MX": "Pirañalandia",
+            "fr_CA": "Parc Carapince",
+            "fr_FR": "Parc Carapince",
+            "it_IT": "Soglioland",
+            "ja_JP": "スメーシー",
+            "nl_NL": "Waterwonderland",
+            "ru_RU": "Луна-парк «Язь»",
+            "zh_CN": "游乐园",
+            "zh_TW": "遊樂園"
+        },
+        "area": 2858,
+        "release_at": {
+            "time": 1527811200,
+            "iso8601": "2018-06-01T00:00:00+00:00"
+        }
+    },
+    {
+        "key": "otoro",
+        "splatnet": 19,
+        "name": {
+            "de_DE": "Hotel Neothun",
+            "en_GB": "New Albacore Hotel",
+            "en_US": "New Albacore Hotel",
+            "es_ES": "Gran Hotel Caviar",
+            "es_MX": "Gran Hotel Caviar",
+            "fr_CA": "Hôtel Atoll",
+            "fr_FR": "Hôtel Atoll",
+            "it_IT": "Hotel Tellina",
+            "ja_JP": "ホテルニューオートロ",
+            "nl_NL": "Hotel de Keizersvis",
+            "ru_RU": "Отель «Прибой»",
+            "zh_CN": "新金枪鱼肚酒店",
+            "zh_TW": "新金槍魚肚酒店"
+        },
+        "short_name": {
+            "de_DE": "Hotel Neothun",
+            "en_GB": "Hotel",
+            "en_US": "Hotel",
+            "es_ES": "Gran Hotel Caviar",
+            "es_MX": "Gran Hotel Caviar",
+            "fr_CA": "Hôtel Atoll",
+            "fr_FR": "Hôtel Atoll",
+            "it_IT": "Hotel Tellina",
+            "ja_JP": "オートロ",
+            "nl_NL": "Hotel de Keizersvis",
+            "ru_RU": "Отель «Прибой»",
+            "zh_CN": "酒店",
+            "zh_TW": "酒店"
+        },
+        "area": 2405,
+        "release_at": {
+            "time": 1530403200,
+            "iso8601": "2018-07-01T00:00:00+00:00"
+        }
+    },
+    {
+        "key": "anchovy",
+        "splatnet": 21,
+        "name": {
+            "de_DE": "Anchobit Games HQ",
+            "en_GB": "Ancho-V Games",
+            "en_US": "Ancho-V Games",
+            "es_ES": "Estudios Esturión",
+            "es_MX": "Estudios Esturión",
+            "fr_CA": "Tentatec Studio",
+            "fr_FR": "Tentatec Studio",
+            "it_IT": "Acciugames",
+            "ja_JP": "アンチョビットゲームズ",
+            "nl_NL": "Ansjobit-gamestudio",
+            "ru_RU": "«Гуппи-Геймдев»",
+            "zh_CN": "凤尾鱼游戏公司",
+            "zh_TW": "鳳尾魚遊戲公司"
+        },
+        "short_name": {
+            "de_DE": "Anchobit Games HQ",
+            "en_GB": "Games",
+            "en_US": "Games",
+            "es_ES": "Estudios Esturión",
+            "es_MX": "Estudios Esturión",
+            "fr_CA": "Tentatec Studio",
+            "fr_FR": "Tentatec Studio",
+            "it_IT": "AcciuGames",
+            "ja_JP": "アンチョビ",
+            "nl_NL": "Ansjobit-gamestudio",
+            "ru_RU": "Гуппи-Геймдев",
+            "zh_CN": "游戏公司",
+            "zh_TW": "遊戲公司"
+        },
+        "area": 2642,
+        "release_at": {
+            "time": 1533081600,
+            "iso8601": "2018-08-01T00:00:00+00:00"
+        }
+    },
+    {
+        "key": "mutsugoro",
+        "splatnet": 22,
+        "name": {
+            "de_DE": "Grundel-Pavillon",
+            "en_GB": "Skipper Pavilion",
+            "en_US": "Skipper Pavilion",
+            "es_ES": "Puerta del Gobio",
+            "es_MX": "Puerta del Gobio",
+            "fr_CA": "Lagune aux gobies",
+            "fr_FR": "Lagune aux gobies",
+            "it_IT": "Padiglione Capitone",
+            "ja_JP": "ムツゴ楼",
+            "nl_NL": "Palingpaviljoen",
+            "ru_RU": "Парк «Во Сток!»",
+            "zh_CN": "背眼虾虎楼",
+            "zh_TW": "背眼蝦虎樓"
+        },
+        "short_name": {
+            "de_DE": "Grundel-Pavillon",
+            "en_GB": "Pavilion",
+            "en_US": "Pavilion",
+            "es_ES": "Puerta del Gobio",
+            "es_MX": "Puerta del Gobio",
+            "fr_CA": "Lagune aux gobies",
+            "fr_FR": "Lagune aux gobies",
+            "it_IT": "Padiglione Capitone",
+            "ja_JP": "ムツゴ楼",
+            "nl_NL": "Palingpaviljoen",
+            "ru_RU": "Парк «Во Сток»",
+            "zh_CN": "楼",
+            "zh_TW": "樓"
+        },
+        "area": 2439,
+        "release_at": {
+            "time": 1538532000,
+            "iso8601": "2018-10-03T02:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_01",
+        "splatnet": 101,
+        "name": {
+            "de_DE": "Hin und Her",
+            "en_GB": "Wayslide Cool",
+            "en_US": "Wayslide Cool",
+            "es_ES": "Cerro deslizante",
+            "es_MX": "Cerro deslizante",
+            "fr_CA": "Tendres réminiscences",
+            "fr_FR": "Tendres réminiscences",
+            "it_IT": "Scivolate nostalgiche",
+            "ja_JP": "追憶のスライド",
+            "nl_NL": "Retourvloer",
+            "ru_RU": "Слайд-шоу",
+            "zh_CN": "酷炫滑动地板",
+            "zh_TW": "酷炫滑動地板"
+        },
+        "short_name": {
+            "de_DE": "Shifty 1",
+            "en_GB": "Shifty 1",
+            "en_US": "Shifty 1",
+            "es_ES": "Shifty 1",
+            "es_MX": "Shifty 1",
+            "fr_CA": "Shifty 1",
+            "fr_FR": "Shifty 1",
+            "it_IT": "Shifty 1",
+            "ja_JP": "スライド",
+            "nl_NL": "Shifty 1",
+            "ru_RU": "Shifty 1",
+            "zh_CN": "移动站1号",
+            "zh_TW": "移動站1號"
+        },
+        "area": 2011,
+        "release_at": {
+            "time": 1501826400,
+            "iso8601": "2017-08-04T06:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_02",
+        "splatnet": 102,
+        "name": {
+            "de_DE": "Auf und Ab",
+            "en_GB": "The Secret of S.P.L.A.T.",
+            "en_US": "The Secret of S.P.L.A.T.",
+            "es_ES": "Paseo vertical",
+            "es_MX": "Paseo vertical",
+            "fr_CA": "Invincible vertige",
+            "fr_FR": "Invincible vertige",
+            "it_IT": "Incontro in collina",
+            "ja_JP": "約束の丘で会いましょう",
+            "nl_NL": "Ups en downs",
+            "ru_RU": "Блок-полигон",
+            "zh_CN": "喷涂大秘密",
+            "zh_TW": "噴塗大祕密"
+        },
+        "short_name": {
+            "de_DE": "Shifty 2",
+            "en_GB": "Shifty 2",
+            "en_US": "Shifty 2",
+            "es_ES": "Shifty 2",
+            "es_MX": "Shifty 2",
+            "fr_CA": "Shifty 2",
+            "fr_FR": "Shifty 2",
+            "it_IT": "Shifty 2",
+            "ja_JP": "約束の丘",
+            "nl_NL": "Shifty 2",
+            "ru_RU": "Shifty 2",
+            "zh_CN": "移动站2号",
+            "zh_TW": "移動站2號"
+        },
+        "area": 1885,
+        "release_at": {
+            "time": 1504324800,
+            "iso8601": "2017-09-02T04:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_03",
+        "splatnet": 103,
+        "name": {
+            "de_DE": "Schwammschwarm",
+            "en_GB": "Goosponge",
+            "en_US": "Goosponge",
+            "es_ES": "Cuartel Esponja",
+            "es_MX": "Cuartel Esponja",
+            "fr_CA": "Jeu spongieux",
+            "fr_FR": "Jeu spongieux",
+            "it_IT": "Spugne spumeggianti",
+            "ja_JP": "ハンサムなスポンジ",
+            "nl_NL": "Sponzensprookje",
+            "ru_RU": "Губкозал",
+            "zh_CN": "海绵",
+            "zh_TW": "海綿"
+        },
+        "short_name": {
+            "de_DE": "Shifty 3",
+            "en_GB": "Shifty 3",
+            "en_US": "Shifty 3",
+            "es_ES": "Shifty 3",
+            "es_MX": "Shifty 3",
+            "fr_CA": "Shifty 3",
+            "fr_FR": "Shifty 3",
+            "it_IT": "Shifty 3",
+            "ja_JP": "スポンジ ",
+            "nl_NL": "Shifty 3",
+            "ru_RU": "Shifty 3",
+            "zh_CN": "移动站3号",
+            "zh_TW": "移動站3號"
+        },
+        "area": 1900,
+        "release_at": {
+            "time": 1504936800,
+            "iso8601": "2017-09-09T06:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_04",
+        "splatnet": 100,
+        "name": {
+            "de_DE": "Drehtür-Dilemma",
+            "en_GB": "Windmill House on the Pearlie",
+            "en_US": "Windmill House on the Pearlie",
+            "es_ES": "Espacio turbulento",
+            "es_MX": "Espacio turbulento",
+            "fr_CA": "Délicieux tournis",
+            "fr_FR": "Délicieux tournis",
+            "it_IT": "Mulini mulinanti",
+            "ja_JP": "ウィンドミル・キス",
+            "nl_NL": "Malle molens",
+            "ru_RU": "Турникетотрон",
+            "zh_CN": "珀哩的风车房",
+            "zh_TW": "珀哩的風車房"
+        },
+        "short_name": {
+            "de_DE": "Shifty 4",
+            "en_GB": "Shifty 4",
+            "en_US": "Shifty 4",
+            "es_ES": "Shifty 4",
+            "es_MX": "Shifty 4",
+            "fr_CA": "Shifty 4",
+            "fr_FR": "Shifty 4",
+            "it_IT": "Shifty 4",
+            "ja_JP": "ウィンドミル",
+            "nl_NL": "Shifty 4",
+            "ru_RU": "Shifty 4",
+            "zh_CN": "移动站4号",
+            "zh_TW": "移動站4號"
+        },
+        "area": 2061,
+        "release_at": {
+            "time": 1507953600,
+            "iso8601": "2017-10-14T04:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_05",
+        "splatnet": 107,
+        "name": {
+            "de_DE": "Bürsten-Ballett",
+            "en_GB": "Fancy Spew",
+            "en_US": "Fancy Spew",
+            "es_ES": "Travesía embadurnada",
+            "es_MX": "Travesía embadurnada",
+            "fr_CA": "Malicieuses tartineuses",
+            "fr_FR": "Malicieuses tartineuses",
+            "it_IT": "Tribù degli spargitori",
+            "ja_JP": "バーの一族",
+            "nl_NL": "Inktsmeerder-idylle",
+            "ru_RU": "Заливщик-парк",
+            "zh_CN": "华丽刷地",
+            "zh_TW": "華麗刷地"
+        },
+        "short_name": {
+            "de_DE": "Shifty 5",
+            "en_GB": "Shifty 5",
+            "en_US": "Shifty 5",
+            "es_ES": "Shifty 5",
+            "es_MX": "Shifty 5",
+            "fr_CA": "Shifty 5",
+            "fr_FR": "Shifty 5",
+            "it_IT": "Shifty 5",
+            "ja_JP": "バー",
+            "nl_NL": "Shifty 5",
+            "ru_RU": "Shifty 5",
+            "zh_CN": "移动站5号",
+            "zh_TW": "移動站5號"
+        },
+        "area": 2455,
+        "release_at": {
+            "time": 1512799200,
+            "iso8601": "2017-12-09T06:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_06",
+        "splatnet": 106,
+        "name": {
+            "de_DE": "Transparente Gefühle",
+            "en_GB": "Zone of Glass",
+            "en_US": "Zone of Glass",
+            "es_ES": "Cañada transparente",
+            "es_MX": "Cañada transparente",
+            "fr_CA": "Trouble transparence",
+            "fr_FR": "Trouble transparence",
+            "it_IT": "Strategie trasparenti",
+            "ja_JP": "トランスペアレント・ボーイ",
+            "nl_NL": "Door en door doorzichtig",
+            "ru_RU": "Прозрачный ринг",
+            "zh_CN": "玻璃区",
+            "zh_TW": "玻璃區"
+        },
+        "short_name": {
+            "de_DE": "Shifty 6",
+            "en_GB": "Shifty 6",
+            "en_US": "Shifty 6",
+            "es_ES": "Shifty 6",
+            "es_MX": "Shifty 6",
+            "fr_CA": "Shifty 6",
+            "fr_FR": "Shifty 6",
+            "it_IT": "Shifty 6",
+            "ja_JP": "透明",
+            "nl_NL": "Shifty 6",
+            "ru_RU": "Shifty 6",
+            "zh_CN": "移动站6号",
+            "zh_TW": "移動站6號"
+        },
+        "area": 2027,
+        "release_at": {
+            "time": 1515816000,
+            "iso8601": "2018-01-13T04:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_07",
+        "splatnet": 105,
+        "name": {
+            "de_DE": "Kanonen-Rendezvous",
+            "en_GB": "Cannon Fire Pearl",
+            "en_US": "Cannon Fire Pearl",
+            "es_ES": "Senda cañonera",
+            "es_MX": "Senda cañonera",
+            "fr_CA": "Détonant tête-à-tête",
+            "fr_FR": "Détonant tête-à-tête",
+            "it_IT": "Tonante testa a testa",
+            "ja_JP": "ヒメちゃんのキャノン",
+            "nl_NL": "Inktkanon-ongein",
+            "ru_RU": "Жем-батарея",
+            "zh_CN": "珍珠放大炮",
+            "zh_TW": "珍珠放大炮"
+        },
+        "short_name": {
+            "de_DE": "Shifty 7",
+            "en_GB": "Shifty 7",
+            "en_US": "Shifty 7",
+            "es_ES": "Shifty 7",
+            "es_MX": "Shifty 7",
+            "fr_CA": "Shifty 7",
+            "fr_FR": "Shifty 7",
+            "it_IT": "Shifty 7",
+            "ja_JP": "キャノン",
+            "nl_NL": "Shifty 7",
+            "ru_RU": "Shifty 7",
+            "zh_CN": "移动站7号",
+            "zh_TW": "移動站7號"
+        },
+        "area": 2390,
+        "release_at": {
+            "time": 1517637600,
+            "iso8601": "2018-02-03T06:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_08",
+        "splatnet": 110,
+        "name": {
+            "de_DE": "Eingesperrte Liebe",
+            "en_GB": "The Bunker Games",
+            "en_US": "The Bunker Games",
+            "es_ES": "Tierra aislante",
+            "es_MX": "Tierra aislante",
+            "fr_CA": "Étreinte mortelle",
+            "fr_FR": "Étreinte mortelle",
+            "it_IT": "Accesso limitato",
+            "ja_JP": "トジトジ",
+            "nl_NL": "Buitensluitingstijd",
+            "ru_RU": "Сепараторий",
+            "zh_CN": "密室大逃生",
+            "zh_TW": "密室大逃生"
+        },
+        "short_name": {
+            "de_DE": "Shifty 8",
+            "en_GB": "Shifty 8",
+            "en_US": "Shifty 8",
+            "es_ES": "Shifty 8",
+            "es_MX": "Shifty 8",
+            "fr_CA": "Shifty 8",
+            "fr_FR": "Shifty 8",
+            "it_IT": "Shifty 8",
+            "ja_JP": "ドジドジ",
+            "nl_NL": "Shifty 8",
+            "ru_RU": "Shifty 8",
+            "zh_CN": "移动站8号",
+            "zh_TW": "移動站8號"
+        },
+        "area": 2770,
+        "release_at": {
+            "time": 1520056800,
+            "iso8601": "2018-03-03T06:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_09",
+        "splatnet": 108,
+        "name": {
+            "de_DE": "Am Zug",
+            "en_GB": "Grapplink Girl",
+            "en_US": "Grapplink Girl",
+            "es_ES": "Pista Pescante",
+            "es_MX": "Pista Pescante",
+            "fr_CA": "Grappins galopins",
+            "fr_FR": "Grappins galopins",
+            "it_IT": "Calamarampini rampanti",
+            "ja_JP": "イタズラなヒキヨセ",
+            "nl_NL": "Zweefankeravontuur",
+            "ru_RU": "Крюколет-арена",
+            "zh_CN": "抓勾女孩",
+            "zh_TW": "抓勾女孩"
+        },
+        "short_name": {
+            "de_DE": "Shifty 9",
+            "en_GB": "Shifty 9",
+            "en_US": "Shifty 9",
+            "es_ES": "Shifty 9",
+            "es_MX": "Shifty 9",
+            "fr_CA": "Shifty 9",
+            "fr_FR": "Shifty 9",
+            "it_IT": "Shifty 9",
+            "ja_JP": "ヒキヨセ",
+            "nl_NL": "Shifty 9",
+            "ru_RU": "Shifty 9",
+            "zh_CN": "移动站9号",
+            "zh_TW": "移動站9號"
+        },
+        "area": 2199,
+        "release_at": {
+            "time": 1521871200,
+            "iso8601": "2018-03-24T06:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_10",
+        "splatnet": 109,
+        "name": {
+            "de_DE": "Rhythmusgefühl",
+            "en_GB": "Zappy Longshocking",
+            "en_US": "Zappy Longshocking",
+            "es_ES": "Enclave Giruptor",
+            "es_MX": "Enclave Giruptor",
+            "fr_CA": "Tournoyants émois",
+            "fr_FR": "Tournoyants émois",
+            "it_IT": "A ritmo di interruotori",
+            "ja_JP": "あしたはデンデン",
+            "nl_NL": "Inktschakelaarinvasie",
+            "ru_RU": "Осьмишень-отдел",
+            "zh_CN": "拨浪鼓惊魂",
+            "zh_TW": "撥浪鼓驚魂"
+        },
+        "short_name": {
+            "de_DE": "Shifty 10",
+            "en_GB": "Shifty 10",
+            "en_US": "Shifty 10",
+            "es_ES": "Shifty 10",
+            "es_MX": "Shifty 10",
+            "fr_CA": "Shifty 10",
+            "fr_FR": "Shifty 10",
+            "it_IT": "Shifty 10",
+            "ja_JP": "デンデン",
+            "nl_NL": "Shifty 10",
+            "ru_RU": "Shifty 10",
+            "zh_CN": "移动站10号",
+            "zh_TW": "移動站10號"
+        },
+        "area": 2185,
+        "release_at": {
+            "time": 1524290400,
+            "iso8601": "2018-04-21T06:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_11",
+        "splatnet": 111,
+        "name": {
+            "de_DE": "Balance des Herzens",
+            "en_GB": "A Swiftly Tilting Balance",
+            "en_US": "A Swiftly Tilting Balance",
+            "es_ES": "Calleja del Equilibrio",
+            "es_MX": "Calleja del Equilibrio",
+            "fr_CA": "Dangereux penchants",
+            "fr_FR": "Dangereux penchants",
+            "it_IT": "Equilibri liquidi",
+            "ja_JP": "天秤ラヴァーズ",
+            "nl_NL": "Romantisch evenwicht",
+            "ru_RU": "Взвес-центр",
+            "zh_CN": "平衡嬗变",
+            "zh_TW": "平衡嬗變"
+        },
+        "short_name": {
+            "de_DE": "Shifty 11",
+            "en_GB": "Shifty 11",
+            "en_US": "Shifty 11",
+            "es_ES": "Shifty 11",
+            "es_MX": "Shifty 11",
+            "fr_CA": "Shifty 11",
+            "fr_FR": "Shifty 11",
+            "it_IT": "Shifty 11",
+            "ja_JP": "天秤",
+            "nl_NL": "Shifty 11",
+            "ru_RU": "Shifty 11",
+            "zh_CN": "移动站11号",
+            "zh_TW": "移動站11號"
+        },
+        "area": 2300,
+        "release_at": {
+            "time": 1526702400,
+            "iso8601": "2018-05-19T04:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_12",
+        "splatnet": 113,
+        "name": {
+            "de_DE": "Tentakelwarnung",
+            "en_GB": "Sweet Valley Tentacles",
+            "en_US": "Sweet Valley Tentacles",
+            "es_ES": "Territorio tentacular",
+            "es_MX": "Territorio tentacular",
+            "fr_CA": "Tentacules et tentation",
+            "fr_FR": "Tentacules et tentation",
+            "it_IT": "Ostacoli tentacoli",
+            "ja_JP": "たこあし注意報!",
+            "nl_NL": "Tentakelspektakel",
+            "ru_RU": "Тенткаль-комплекс",
+            "zh_CN": "甜蜜触角谷",
+            "zh_TW": "甜蜜觸角谷"
+        },
+        "short_name": {
+            "de_DE": "Shifty 12",
+            "en_GB": "Shifty 12",
+            "en_US": "Shifty 12",
+            "es_ES": "Shifty 12",
+            "es_MX": "Shifty 12",
+            "fr_CA": "Shifty 12",
+            "fr_FR": "Shifty 12",
+            "it_IT": "Shifty 12",
+            "ja_JP": "たこあし",
+            "nl_NL": "Shifty 12",
+            "ru_RU": "Shifty 12",
+            "zh_CN": "移动站12号",
+            "zh_TW": "移動站12號"
+        },
+        "area": 2593,
+        "release_at": {
+            "time": 1532145600,
+            "iso8601": "2018-07-21T04:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_13",
+        "splatnet": 112,
+        "name": {
+            "de_DE": "Schalterfärberei",
+            "en_GB": "The Switches",
+            "en_US": "The Switches",
+            "es_ES": "Promontorio alternante",
+            "es_MX": "Promontorio alternante",
+            "fr_CA": "Interrupteurs du cœur",
+            "fr_FR": "Interrupteurs du cœur",
+            "it_IT": "Porte di supporto",
+            "ja_JP": "ヌリとスイッチの吐息",
+            "nl_NL": "Schakelaargevaar",
+            "ru_RU": "Переключарий",
+            "zh_CN": "开关大集合",
+            "zh_TW": "開關大集合"
+        },
+        "short_name": {
+            "de_DE": "Shifty 13",
+            "en_GB": "Shifty 13",
+            "en_US": "Shifty 13",
+            "es_ES": "Shifty 13",
+            "es_MX": "Shifty 13",
+            "fr_CA": "Shifty 13",
+            "fr_FR": "Shifty 13",
+            "it_IT": "Shifty 13",
+            "ja_JP": "スイッチ",
+            "nl_NL": "Shifty 13",
+            "ru_RU": "Shifty 13",
+            "zh_CN": "移动站13号",
+            "zh_TW": "移動站13號"
+        },
+        "area": 2360,
+        "release_at": {
+            "time": 1534572000,
+            "iso8601": "2018-08-18T06:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_14",
+        "splatnet": 114,
+        "name": {
+            "de_DE": "Sprungfeld-Poesie",
+            "en_GB": "The Bouncey Twins",
+            "en_US": "The Bouncey Twins",
+            "es_ES": "Región de rebotes",
+            "es_MX": "Región de rebotes",
+            "fr_CA": "Attirance en altitude",
+            "fr_FR": "Attirance en altitude",
+            "it_IT": "Trama trampolpina",
+            "ja_JP": "ジャンプマットの詩",
+            "nl_NL": "Luchtbedliaison",
+            "ru_RU": "Матрас-плац",
+            "zh_CN": "孪生蹦床",
+            "zh_TW": "孿生蹦牀"
+        },
+        "short_name": {
+            "de_DE": "Shifty 14",
+            "en_GB": "Shifty 14",
+            "en_US": "Shifty 14",
+            "es_ES": "Shifty 14",
+            "es_MX": "Shifty 14",
+            "fr_CA": "Shifty 14",
+            "fr_FR": "Shifty 14",
+            "it_IT": "Shifty 14",
+            "ja_JP": "マット",
+            "nl_NL": "Shifty 14",
+            "ru_RU": "Shifty 14",
+            "zh_CN": "移动站14号",
+            "zh_TW": "移動站14號"
+        },
+        "area": 1783,
+        "release_at": {
+            "time": 1537588800,
+            "iso8601": "2018-09-22T04:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_15",
+        "splatnet": 115,
+        "name": {
+            "de_DE": "Surfschiene ins Herz",
+            "en_GB": "Railway Chillin'",
+            "en_US": "Railway Chillin'",
+            "es_ES": "País del Raíl",
+            "es_MX": "País del Riel",
+            "fr_CA": "Sur le fil du destin",
+            "fr_FR": "Sur le fil du destin",
+            "it_IT": "Sparotaie spassose",
+            "ja_JP": "キミのハートにライド・オン!",
+            "nl_NL": "Surfrailpassie",
+            "ru_RU": "Красконвейер-ярд",
+            "zh_CN": "爽快轨道",
+            "zh_TW": "爽快軌道"
+        },
+        "short_name": {
+            "de_DE": "Shifty 15",
+            "en_GB": "Shifty 15",
+            "en_US": "Shifty 15",
+            "es_ES": "Shifty 15",
+            "es_MX": "Shifty 15",
+            "fr_CA": "Shifty 15",
+            "fr_FR": "Shifty 15",
+            "it_IT": "Shifty 15",
+            "ja_JP": "ライドオン",
+            "nl_NL": "Shifty 15",
+            "ru_RU": "Shifty 15",
+            "zh_CN": "移动站15号",
+            "zh_TW": "移動站15號"
+        },
+        "area": 2188,
+        "release_at": {
+            "time": 1539936000,
+            "iso8601": "2018-10-19T08:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_16",
+        "splatnet": 116,
+        "name": {
+            "de_DE": "Fontänenfest",
+            "en_GB": "Gusher Towns",
+            "en_US": "Gusher Towns",
+            "es_ES": "Camino Surtidor",
+            "es_MX": "Camino Surtidor",
+            "fr_CA": "Impétueux torrents",
+            "fr_FR": "Impétueux torrents",
+            "it_IT": "Geyser effervescenti",
+            "ja_JP": "カンケツセンのばら",
+            "nl_NL": "Geisergekte",
+            "ru_RU": "Гейзер-плаза",
+            "zh_CN": "泉涌之城",
+            "zh_TW": "泉湧之城"
+        },
+        "short_name": {
+            "de_DE": "Shifty 16",
+            "en_GB": "Shifty 16",
+            "en_US": "Shifty 16",
+            "es_ES": "Shifty 16",
+            "es_MX": "Shifty 16",
+            "fr_CA": "Shifty 16",
+            "fr_FR": "Shifty 16",
+            "it_IT": "Shifty 16",
+            "ja_JP": "間欠泉",
+            "nl_NL": "Shifty 16",
+            "ru_RU": "Shifty 16",
+            "zh_CN": "移动站16号",
+            "zh_TW": "移動站16號"
+        },
+        "area": 2297,
+        "release_at": {
+            "time": 1541829600,
+            "iso8601": "2018-11-10T06:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_17",
+        "splatnet": 117,
+        "name": {
+            "de_DE": "Verschleuderte Liebe",
+            "en_GB": "The Maze Dasher",
+            "en_US": "The Maze Dasher",
+            "es_ES": "Cantón acelerado",
+            "es_MX": "Cantón acelerado",
+            "fr_CA": "Convoyeur et convoitise",
+            "fr_FR": "Convoyeur et convoitise",
+            "it_IT": "Romantiche turborampe",
+            "ja_JP": "恋はダッシュ×3",
+            "nl_NL": "Springbandspanning",
+            "ru_RU": "Треколетомат",
+            "zh_CN": "迷宫冲刺",
+            "zh_TW": "迷宮衝刺"
+        },
+        "short_name": {
+            "de_DE": "Shifty 17",
+            "en_GB": "Shifty 17",
+            "en_US": "Shifty 17",
+            "es_ES": "Shifty 17",
+            "es_MX": "Shifty 17",
+            "fr_CA": "Shifty 17",
+            "fr_FR": "Shifty 17",
+            "it_IT": "Shifty 17",
+            "ja_JP": "ダッシュ",
+            "nl_NL": "Shifty 17",
+            "ru_RU": "Shifty 17",
+            "zh_CN": "移动站17号",
+            "zh_TW": "移動站17號"
+        },
+        "area": 2327,
+        "release_at": {
+            "time": 1544846400,
+            "iso8601": "2018-12-15T04:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_18",
+        "splatnet": 118,
+        "name": {
+            "de_DE": "Flut der Gefühle",
+            "en_GB": "Flooders in the Attic",
+            "en_US": "Flooders in the Attic",
+            "es_ES": "Vía Tintapisonadora",
+            "es_MX": "Vía Tintapisonadora",
+            "fr_CA": "Passion sous pression",
+            "fr_FR": "Passion sous pression",
+            "it_IT": "Verniciatori lunatici",
+            "ja_JP": "ドーザームーン",
+            "nl_NL": "Dolle Douchers",
+            "ru_RU": "Роболей-зона",
+            "zh_CN": "阁楼的泄洪机",
+            "zh_TW": "閣樓的泄洪機"
+        },
+        "short_name": {
+            "de_DE": "Shifty 18",
+            "en_GB": "Shifty 18",
+            "en_US": "Shifty 18",
+            "es_ES": "Shifty 18",
+            "es_MX": "Shifty 18",
+            "fr_CA": "Shifty 18",
+            "fr_FR": "Shifty 18",
+            "it_IT": "Shifty 18",
+            "ja_JP": "ドーザー",
+            "nl_NL": "Shifty 18",
+            "ru_RU": "Shifty 18",
+            "zh_CN": "移动站18号",
+            "zh_TW": "移動站18號"
+        },
+        "area": 2254,
+        "release_at": {
+            "time": 1546588800,
+            "iso8601": "2019-01-04T08:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_19",
+        "splatnet": 119,
+        "name": {
+            "de_DE": "Schnellfeuerliebe",
+            "en_GB": "The Splat in Our Zones",
+            "en_US": "The Splat in Our Zones",
+            "es_ES": "Cancha de pintado",
+            "es_MX": "Cancha de pintado",
+            "fr_CA": "Conquêtes en cascade",
+            "fr_FR": "Conquêtes en cascade",
+            "it_IT": "Canestri splat",
+            "ja_JP": "クイックバスケット",
+            "nl_NL": "Spetterzonesport",
+            "ru_RU": "Контроль-конструкт",
+            "zh_CN": "涂在我区",
+            "zh_TW": "塗在我區"
+        },
+        "short_name": {
+            "de_DE": "Shifty 19",
+            "en_GB": "Shifty 19",
+            "en_US": "Shifty 19",
+            "es_ES": "Shifty 19",
+            "es_MX": "Shifty 19",
+            "fr_CA": "Shifty 19",
+            "fr_FR": "Shifty 19",
+            "it_IT": "Shifty 19",
+            "ja_JP": "バスケット",
+            "nl_NL": "Shifty 19",
+            "ru_RU": "Shifty 19",
+            "zh_CN": "移动站19号",
+            "zh_TW": "移動站19號"
+        },
+        "area": 2583,
+        "release_at": {
+            "time": 1549087200,
+            "iso8601": "2019-02-02T06:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_20",
+        "splatnet": 120,
+        "name": {
+            "de_DE": "Burschikose Bürsten",
+            "en_GB": "The Ink is Spreading",
+            "en_US": "The Ink is Spreading",
+            "es_ES": "Recinto embadurnador",
+            "es_MX": "Recinto embadurnador",
+            "fr_CA": "Traîtresses tartineuses",
+            "fr_FR": "Traîtresses tartineuses",
+            "it_IT": "Spargitori sparsi",
+            "ja_JP": "ヌリヌリトゥナイト",
+            "nl_NL": "Inktsmeerderinfiltratie",
+            "ru_RU": "Заливщик-манеж",
+            "zh_CN": "墨迹乱飞",
+            "zh_TW": "墨跡亂飛"
+        },
+        "short_name": {
+            "de_DE": "Shifty 20",
+            "en_GB": "Shifty 20",
+            "en_US": "Shifty 20",
+            "es_ES": "Shifty 20",
+            "es_MX": "Shifty 20",
+            "fr_CA": "Shifty 20",
+            "fr_FR": "Shifty 20",
+            "it_IT": "Shifty 20",
+            "ja_JP": "ヌリヌリ",
+            "nl_NL": "Shifty 20",
+            "ru_RU": "Shifty 20",
+            "zh_CN": "移动站20号",
+            "zh_TW": "移動站20號"
+        },
+        "area": 2259,
+        "release_at": {
+            "time": 1552708800,
+            "iso8601": "2019-03-16T04:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_21",
+        "splatnet": 121,
+        "name": {
+            "de_DE": "Gegen den Strom",
+            "en_GB": "Bridge to Tentaswitchia",
+            "en_US": "Bridge to Tentaswitchia",
+            "es_ES": "Zona unidireccional",
+            "es_MX": "Zona unidireccional",
+            "fr_CA": "Ode à l'éphémère",
+            "fr_FR": "Ode à l'éphémère",
+            "it_IT": "Pannello sfuggente",
+            "ja_JP": "ビッグ゠パネルが止まらない",
+            "nl_NL": "Paneelpower",
+            "ru_RU": "Панель-сектор",
+            "zh_CN": "通往章鱼机关之桥",
+            "zh_TW": "通往章魚機關之橋"
+        },
+        "short_name": {
+            "de_DE": "Shifty 21",
+            "en_GB": "Shifty 21",
+            "en_US": "Shifty 21",
+            "es_ES": "Shifty 21",
+            "es_MX": "Shifty 21",
+            "fr_CA": "Shifty 21",
+            "fr_FR": "Shifty 21",
+            "it_IT": "Shifty 21",
+            "ja_JP": "ビッグパネル",
+            "nl_NL": "Shifty 21",
+            "ru_RU": "Shifty 21",
+            "zh_CN": "移动站21号",
+            "zh_TW": "移動站21號"
+        },
+        "area": 2832,
+        "release_at": {
+            "time": 1555660800,
+            "iso8601": "2019-04-19T08:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_22",
+        "splatnet": 122,
+        "name": {
+            "de_DE": "Rollonium-Rückkehr",
+            "en_GB": "The Chronicles of Rolonium",
+            "en_US": "The Chronicles of Rolonium",
+            "es_ES": "Depósito Rolonio",
+            "es_MX": "Depósito Rolonio",
+            "fr_CA": "Bouquet de roulonium",
+            "fr_FR": "Bouquet de roulonium",
+            "it_IT": "Ricordi rullonici",
+            "ja_JP": "思い出コロガリウム",
+            "nl_NL": "Roloniumromance",
+            "ru_RU": "Химоролл-корт",
+            "zh_CN": "飞卷编年史",
+            "zh_TW": "飛卷編年史"
+        },
+        "short_name": {
+            "de_DE": "Shifty 22",
+            "en_GB": "Shifty 22",
+            "en_US": "Shifty 22",
+            "es_ES": "Shifty 22",
+            "es_MX": "Shifty 22",
+            "fr_CA": "Shifty 22",
+            "fr_FR": "Shifty 22",
+            "it_IT": "Shifty 22",
+            "ja_JP": "コロガリウム",
+            "nl_NL": "Shifty 22",
+            "ru_RU": "Shifty 22",
+            "zh_CN": "移动站22号",
+            "zh_TW": "移動站22號"
+        },
+        "area": 2059,
+        "release_at": {
+            "time": 1557554400,
+            "iso8601": "2019-05-11T06:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_23",
+        "splatnet": 123,
+        "name": {
+            "de_DE": "Schnalzbandbalz",
+            "en_GB": "Furler in the Ashes",
+            "en_US": "Furler in the Ashes",
+            "es_ES": "Ronda serpenteante",
+            "es_MX": "Ronda serpenteante",
+            "fr_CA": "Valse des sans-gênes",
+            "fr_FR": "Valse des sans-gênes",
+            "it_IT": "Srotoloni srotolanti",
+            "ja_JP": "ピロピロなんかじゃない",
+            "nl_NL": "Inkttoetertoer",
+            "ru_RU": "Дорожкодром",
+            "zh_CN": "尘埃中的卷毯",
+            "zh_TW": "塵埃中的卷毯"
+        },
+        "short_name": {
+            "de_DE": "Shifty 23",
+            "en_GB": "Shifty 23",
+            "en_US": "Shifty 23",
+            "es_ES": "Shifty 23",
+            "es_MX": "Shifty 23",
+            "fr_CA": "Shifty 23",
+            "fr_FR": "Shifty 23",
+            "it_IT": "Shifty 23",
+            "ja_JP": "ピロピロ",
+            "nl_NL": "Shifty 23",
+            "ru_RU": "Shifty 23",
+            "zh_CN": "移动站23号",
+            "zh_TW": "移動站23號"
+        },
+        "area": 2373,
+        "release_at": {
+            "time": 1560571200,
+            "iso8601": "2019-06-15T04:00:00+00:00"
+        }
+    },
+    {
+        "key": "mystery_24",
+        "splatnet": 124,
+        "name": {
+            "de_DE": "Ewige Freundschaft",
+            "en_GB": "MC.Princess Diaries",
+            "en_US": "MC.Princess Diaries",
+            "es_ES": "Área definitiva",
+            "es_MX": "Área definitiva",
+            "fr_CA": "Éternelle amitié",
+            "fr_FR": "Éternelle amitié",
+            "it_IT": "Grande amicizia",
+            "ja_JP": "DEAR SENPAI",
+            "nl_NL": "Eeuwige vriendschap",
+            "ru_RU": "Жемчик-холл",
+            "zh_CN": "主持人日记公主",
+            "zh_TW": "主持人日記公主"
+        },
+        "short_name": {
+            "de_DE": "Shifty 24",
+            "en_GB": "Shifty 24",
+            "en_US": "Shifty 24",
+            "es_ES": "Shifty 24",
+            "es_MX": "Shifty 24",
+            "fr_CA": "Shifty 24",
+            "fr_FR": "Shifty 24",
+            "it_IT": "Shifty 24",
+            "ja_JP": "センパイ",
+            "nl_NL": "Shifty 24",
+            "ru_RU": "Shifty 24",
+            "zh_CN": "移动站24号",
+            "zh_TW": "移動站24號"
+        },
+        "area": 2743,
+        "release_at": {
+            "time": 1563537600,
+            "iso8601": "2019-07-19T12:00:00+00:00"
         }
     }
 ]
