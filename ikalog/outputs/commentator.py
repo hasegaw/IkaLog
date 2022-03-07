@@ -201,12 +201,12 @@ class Commentator(object):
     def on_game_special_gauge_charged(self, context):
         self._read_event('special_charged')
 
-    def on_game_special_weapon(self, context):
-        special_weapon = context['game'].get('special_weapon', None)
+    def on_game_special_weapon(self, context, params={}):
+        special_weapon = params['special_weapon']
         if special_weapon not in special_weapons.keys():
             return
 
-        my_event = context['game'].get('special_weapon_is_mine', False)
+        my_event = params['me']
         data = self._get_message(
             'my_special_weapon' if my_event else 'mate_special_weapon'
         )

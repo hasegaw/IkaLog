@@ -249,17 +249,17 @@ class StatInkCollector(IkaLogPlugin):
                 'type': 'special_charged',
             })
 
-    def on_game_special_weapon(self, context):
+    def on_game_special_weapon(self, context, params={}):
         if not self.config['track_special_weapon']:
             return
 
-        special_weapon = context['game'].get('special_weapon', None)
+        special_weapon = params['special_weapon']
         if not (special_weapon in special_weapons.keys()):
             IkaUtils.dprint('%s: special_weapon %s is invalid.' %
                             (self, special_weapon))
             return
 
-        event_msec = self._get_offset_msec(context)
+        event_msec = params['start_time']
         if event_msec:
             self._add_event(context, {
                 'type': 'special_weapon',

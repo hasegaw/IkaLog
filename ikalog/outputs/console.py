@@ -60,7 +60,7 @@ class Console(object):
 
     def on_game_special_weapon(self, context, params):
         s = '%s, mine == %s' % (
-            context['game']['special_weapon'], context['game']['special_weapon_is_mine'])
+            params['special_weapon'], params['me'])
         print(_('Special Weapon Activation: %s' % s))
 
     def on_game_death_reason_identified(self, context):

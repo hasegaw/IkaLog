@@ -177,24 +177,28 @@ v1_special_weapons = {
     'tornado': {'ja': 'トルネード', 'en':  'Inkstrike', },
 }
 
-special_weapons = {
+special_weapons_v2 = {
     # v2
     'amefurashi': {'ja_JP': 'アメフラシ', 'en': 'Ink Storm', },
-    'missiles': {'ja_JP': 'マルチミサイル', 'en': 'Tenta Missiles', },
-    'stingray': {'ja_JP': 'ハイパープレッサー', 'en': 'Sting Ray', },
-#    'presser': {'ja_JP': 'ハイパープレッサー', 'en': 'Sting Ray', },
+    'missile': {'ja_JP': 'マルチミサイル', 'en': 'Tenta Missiles', },
+    'presser': {'ja_JP': 'ハイパープレッサー', 'en': 'Sting Ray', },
     'inkjet': {'ja_JP': 'ジェットパック', 'en': 'Inkjet', },
-    'splashdown': {'ja_JP': 'スーパーチャクチ', 'en': 'Splashdown', },
     'chakuchi': {'ja_JP': 'スーパーチャクチ', 'en': 'Splashdown', },
     'armor': {'ja_JP': 'インクアーマー', 'en': 'Ink Armor', },
-    'inkstorm': {'ja_JP': 'アメフラシ', 'en': 'Ink Storm', },
-    'baller': {'ja_JP': 'イカスフィア', 'en': 'Baller', },
-    'blower': {'ja_JP': 'バブルランチャー',  'en': 'Bubble Blower', },
-    'booyah': {'ja_JP': 'ナイスダマ', 'en': 'Booyah Bomb', },
-    'stamp': {'ja_JP': 'ウルトラハンコ', 'en': 'Ultra Stamp', },
+    'sphere': {'ja_JP': 'イカスフィア', 'en': 'Baller', },
+    'bubble': {'ja_JP': 'バブルランチャー',  'en': 'Bubble Blower', },
+    'booyahbomb': {'ja_JP': 'ナイスダマ', 'en': 'Booyah Bomb', },
+    'ultrahanko': {'ja_JP': 'ウルトラハンコ', 'en': 'Ultra Stamp', },
+
+    'quickbomb_pitcher': {'ja_JP': 'クイックボクピッチャー', 'en': 'Quick Bomb Pitcher', },
+    'kyubanbomb_pitcher': {'ja_JP': 'キューバンボムビッチャー', 'en': 'Suction Bomb Pitcher', },
+    'robotbomb_pitcher': {'ja_JP': 'ロボットボムピッチャー', 'en': 'Robot Bomb Pitcher', },
+    'curlingbomb_pitcher': {'ja_JP': 'カーリングボムピッチャー', 'en': 'Curling Bomb Pitcher', },
     # 3パターンある
     #'launcher': {'ja': 'スプラッシュボムピッチャー', 'en': 'Bomb Launcher', },
 }
+special_weapons = special_weapons_v2
+
 
 deadly_special_weapons = ['daioika', 'megaphone', 'supershot', 'tornado', ]
 
