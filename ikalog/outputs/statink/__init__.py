@@ -86,8 +86,8 @@ class StatInkPlugin(StatInkCollector):
         if not cond:
             return False
 
-        compositor = StatInkCompositor(self)
-        payload = compositor.composite_payload(context)
+        composer = StatInkComposer(self)
+        payload = composer.compose_payload(context)
 
         if context['game'].get('splatnet_json', {}).get('uuid', None):
             t1 = context['game']['splatnet_json'].get('start_at')

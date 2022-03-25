@@ -82,13 +82,13 @@ def _validate_time(t):
     return time.mktime(datetime.date(2014, 1, 1).timetuple()) <= t
 
 
-class StatInkCompositor(object):
+class StatInkComposer(object):
 
     @staticmethod
     def dprint(s):
         IkaUtils.dprint(s)
 
-    def composite_lobby(self, context, payload):
+    def compose_lobby(self, context, payload):
         lobby = context.get('lobby', {})
         lobby_type = lobby.get('type')
 
@@ -117,7 +117,7 @@ class StatInkCompositor(object):
             return False
         return True
 
-    def composite_stage_and_mode(self, context, payload):
+    def compose_stage_and_mode(self, context, payload):
         game = context.get('game', {})
 
         if game.get('splatoon_edition') == 'spl2':
@@ -135,7 +135,7 @@ class StatInkCompositor(object):
         if rule in rules.keys():
             payload['rule'] = rule
 
-    def composite_kill_death(self, context, payload):
+    def compose_kill_death(self, context, payload):
         game = context.get('game', {})
 
         cause_of_death = game.get('death_reasons', {})
@@ -149,7 +149,7 @@ class StatInkCompositor(object):
         if game.get('max_kill_streak') is not None:
             payload['max_kill_streak'] = int(game['max_kill_streak'])
 
-    def composite_team_colors(self, context, payload):
+    def compose_team_colors(self, context, payload):
         game = context.get('game')
         if ('my_team_color' in game):
             payload['my_team_color'] = {
@@ -163,13 +163,13 @@ class StatInkCompositor(object):
                 'rgb': game['counter_team_color']['rgb'],
             }
 
-    def composite_agent_information(self, context, payload):
+    def compose_agent_information(self, context, payload):
         payload['agent'] = 'IkaLog'
         payload['agent_version'] = ikalog.version.IKALOG_VERSION
         #payload['agent_game_version'] = ikalog.version.GAME_VERSION
         #payload['agent_game_version_date'] = ikalog.version.GAME_VERSION_DATE
 
-    def composite_agent_custom(self, context):
+    def compose_agent_custom(self, context):
         custom = {}
 
         if 'exceptions_log' in context['engine']:
@@ -182,7 +182,7 @@ class StatInkCompositor(object):
 
         return json.dumps(custom, separators=(',', ':'))
 
-    def composite_agent_variables(self, context):
+    def compose_agent_variables(self, context):
         variables = {}
 
         variables['input_class'] = \
@@ -206,7 +206,7 @@ class StatInkCompositor(object):
 
         return variables
 
-    def _composite_result_judge_turf(self, context, payload):
+    def _compose_result_judge_turf(self, context, payload):
         if not (payload.get('rule') in ['nawabari']):
             return
 
@@ -217,7 +217,7 @@ class StatInkCompositor(object):
         payload['my_team_final_percent'] = scores[0]
         payload['his_team_final_percent'] = scores[1]
 
-    def _composite_result_judge_ranked(self, context, payload):
+    def _compose_result_judge_ranked(self, context, payload):
         if payload.get('rule', None) in ['area', 'yagura', 'hoko']:
             scores = context['game'].get('ranked_scores', None)
             print('ranked scores = %s' % scores)
@@ -230,11 +230,11 @@ class StatInkCompositor(object):
             payload['my_team_final_point'] = scores[0]
             payload['his_team_final_point'] = scores[1]
 
-    def composite_result_judge(self, context, payload):
-        self._composite_result_judge_turf(context, payload)
-        self._composite_result_judge_ranked(context, payload)
+    def compose_result_judge(self, context, payload):
+        self._compose_result_judge_turf(context, payload)
+        self._compose_result_judge_ranked(context, payload)
 
-    def composite_result_scoreboard(self, context, payload):
+    def compose_result_scoreboard(self, context, payload):
         me = IkaUtils.getMyEntryFromContext(context)
 
         if me is not None:
@@ -311,7 +311,7 @@ class StatInkCompositor(object):
 
         payload['players'] = players
 
-    def composite_result_gears(self, context, payload):
+    def compose_result_gears(self, context, payload):
         if ('result_gears' in context['scenes']) and ('gears' in context['scenes']['result_gears']):
             try:
                 gears_list = []
@@ -361,7 +361,7 @@ class StatInkCompositor(object):
                 ['int', 'cash_after', 'cash'],
             ], payload, result_gears)
 
-    def composite_result_udemae(self, context, payload):
+    def compose_result_udemae(self, context, payload):
         if payload.get('rule') == 'nawabari':
             return True
 
@@ -376,7 +376,7 @@ class StatInkCompositor(object):
         if knockout in [True, False]:
             payload['knock_out'] = {True: 'yes', False: 'no'}[knockout]
 
-    def composite_result_splatfest(self, context, payload):
+    def compose_result_splatfest(self, context, payload):
 
         if payload.get('lobby', None) == 'fest':
             _set_values(
@@ -397,7 +397,7 @@ class StatInkCompositor(object):
 
                 payload['fest_title_after'] = current_title.lower()
 
-    def composite_screenshots(self, payload):
+    def compose_screenshots(self, payload):
         if self._parent is None:
             return
 
@@ -421,7 +421,7 @@ class StatInkCompositor(object):
         else:
             dprint('img_gear is empty.')
 
-    def composite_payload(self, context):
+    def compose_payload(self, context):
         payload = {
             'uuid': uuid.uuid1().hex,
         }
@@ -439,17 +439,17 @@ class StatInkCompositor(object):
             except:
                 pass
 
-        self.composite_lobby(context, payload)
-        self.composite_stage_and_mode(context, payload)
-        self.composite_kill_death(context, payload)
-        self.composite_result_judge(context, payload)
-        self.composite_result_scoreboard(context, payload)
-        self.composite_result_gears(context, payload)
-        self.composite_result_udemae(context, payload)
-        self.composite_result_splatfest(context, payload)
+        self.compose_lobby(context, payload)
+        self.compose_stage_and_mode(context, payload)
+        self.compose_kill_death(context, payload)
+        self.compose_result_judge(context, payload)
+        self.compose_result_scoreboard(context, payload)
+        self.compose_result_gears(context, payload)
+        self.compose_result_udemae(context, payload)
+        self.compose_result_splatfest(context, payload)
 
-        self.composite_team_colors(context, payload)
-        self.composite_screenshots(payload)
+        self.compose_team_colors(context, payload)
+        self.compose_screenshots(payload)
 
         # Video URL
         if isinstance(self._parent.video_id, str) and (self._parent.video_id != ''):
@@ -462,9 +462,9 @@ class StatInkCompositor(object):
 
         # Agent Information
 
-        self.composite_agent_information(context, payload)
-        payload['agent_variables'] = self.composite_agent_variables(context)
-        payload['agent_custom'] = self.composite_agent_custom(context)
+        self.compose_agent_information(context, payload)
+        payload['agent_variables'] = self.compose_agent_variables(context)
+        payload['agent_custom'] = self.compose_agent_custom(context)
 
         _remove_none_keyvalues(payload)
 
@@ -490,7 +490,7 @@ if __name__ == '__main__':
     context['lobby'] = {'type': 'private'}
     print('---end context---')
     payload = {}
-    compo = StatInkCompositor(None)
+    compo = StatInkComposer(None)
 
-    payload = compo.composite_payload(context)
+    payload = compo.compose_payload(context)
     print(payload)
