@@ -160,7 +160,12 @@ OUTPUT_ARGS['Slack'] = {
 #   track_splatzone  ガチエリアの時系列情報を送信する
 #   track_objective  ヤグラ／ホコの時系列情報を送信する
 #   track_inklings   インクリング生死の時系列情報を送信する
+#
 #   video_id         関連ページとするYoutubeのvideoid コマンドラインから --video_id で指定可能
+#   payload_file     送信ペイロードをローカルに保存したい場合に指定
+#
+#   enable_s2s       splatnet2statink を用いて Nintendo Switch Online のデータをマージする
+#   s2s_path         splatnet2statink.py のインストール先ディレクトリ
 #
 # OUTPUT_PLUGINS.append('StatInk')
 OUTPUT_ARGS['StatInk'] = {
@@ -173,6 +178,9 @@ OUTPUT_ARGS['StatInk'] = {
     'track_inklings': False,
     'video_id': None,
     'payload_file': None,
+
+    'enable_s2s': False,
+    's2s_path': '/path/to/splatnet2statink_directory/'
 }
 
 # Twitter: Twitter Integration
