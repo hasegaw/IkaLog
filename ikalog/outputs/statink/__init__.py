@@ -20,6 +20,7 @@
 
 import os
 import pprint
+import sys
 import threading
 import time
 import traceback
@@ -29,11 +30,15 @@ import umsgpack
 
 from datetime import datetime
 from ikalog.outputs.statink.collector import StatInkCollector
-from ikalog.outputs.statink.compositor import StatInkCompositor
+from ikalog.outputs.statink.composer import StatInkComposer
 from ikalog.utils.statink_uploader import UploadToStatInk
 from ikalog.utils import *
 
 _ = Localization.gettext_translation('statink', fallback=True).gettext
+
+# s2s functions
+load_json_func = None
+prepare_battle_result_func = None
 
 
 class StatInkPlugin(StatInkCollector):
@@ -54,9 +59,12 @@ class StatInkPlugin(StatInkCollector):
         config['anon_all'] = False
         config['anon_others'] = False
 
+        config['enable_s2s'] = False
+        config['s2s_path'] = None
+
     def on_validate_configuration(self, config):
         boolean_params = ['enabled', 'write_payload_to_file', 'show_response', 'track_inklings',
-                          'track_special_gauge', 'track_special_weapon', 'track_objective', 'track_splatzone']
+                          'track_special_gauge', 'track_special_weapon', 'track_objective', 'track_splatzone', 'enable_s2s']
         for param in boolean_params:
             assert config.get(param) in [True, False, None]
 
@@ -68,6 +76,7 @@ class StatInkPlugin(StatInkCollector):
         config = self.config
         for k in new_config:
             config[k] = new_config[k]
+        self._s2s_prepare()
 
     def close_game_session_handler(self, context):
         """
@@ -78,35 +87,33 @@ class StatInkPlugin(StatInkCollector):
             # This plugin is not active.
             return False
 
+        s2s_result = _s2s_get_latest_battle(self)  # Nintendo battle format
+        s2s_result_valid = True
+        try:
+            battle_number = result.get('battle_number')
+        except ValueError:
+            s2s_result_valid = False
+
+        if s2s_result_valid and self._s2s_last_battle_number_i:
+            cond_bn = battle_number > self._s2s_last_battle_number_i
+            cond_time = True
+            s2s_result_valid = cond_bn and cond_time
+
         cond = \
             (context['game'].get('map', None) != None) or \
             (context['game'].get('rule', None) != None) or \
             (context['game'].get('won', None) != None)
 
-        if not cond:
+        if (not cond) and (not s2s_result_valid):
             return False
 
         composer = StatInkComposer(self)
         payload = composer.compose_payload(context)
 
-        if context['game'].get('splatnet_json', {}).get('uuid', None):
-            t1 = context['game']['splatnet_json'].get('start_at')
-            time_diff = abs(time.time() - t1)
-            IkaUtils.dprint('%s: time diff %s' % (self, time_diff))
-            if time_diff > 360:
-                IkaUtils.dprint('%s: Discarding splatnet2statink data' % self)
-                context['game']['splatnet_json'] = {}
-
-        if context['game'].get('splatnet_json', {}).get('uuid', None):
-            # splatnet2statink data is available - merge the results.
-
-            ikalog_payload = payload
-            payload = context['game']['splatnet_json']
-
-            for key in ['events', 'agent', 'agent_version', 'image_result']: #ikalog_payload.keys():
-                if 1: #not (key in payload):
-                    payload[key] = ikalog_payload[key]
-                    IkaUtils.dprint('%s: key %s merged into splatnet2statink payload: %s' % (self, key, ''))
+        if s2s_result_valid:
+            s2s_payload = prepare_battle_result(
+                0, [result], s_flag=False, sendgears=True)
+            payload.update(s2s_payload)  # s2s result is priority
 
         cond_write_payload = \
             self.config['debug_write_payload_to_file'] or self.payload_file
@@ -116,6 +123,57 @@ class StatInkPlugin(StatInkCollector):
             self.write_payload_to_file(payload, filename=payload_file)
 
         self.post_payload(context, payload)
+
+    def _s2s_prepare(self):
+        """
+        Import splatnet2statink if needed.
+        """
+        if not self.config['enable_s2s']:
+            IkaUtils.dprint(
+                '%s: splatnet2statink intergration is not configured.' % (self))
+
+        s2s_fullpath = os.path.join(
+            self.config['s2s_path'], 'splatnet2statink.py')
+        if not os.path.exists(s2s_fullpath):
+            IkaUtils.dprint('%s: %s not found' % s2s_fullpath)
+
+        # try importing
+        sys.path.append(self.config['s2s_path'])
+        ikalog_pwd = os.getcwd()
+        try:
+            os.chdir(self.config['s2s_path'])
+            from splatnet2statink import prepare_battle_result, load_json
+            global _prepare_battle_result_func
+            global _load_json_func
+            _prepare_battle_result_func = prepare_battle_result
+            _load_json_func = load_json
+            IkaUtils.dprint('%s: imported splatnet2statink' % (self))
+
+        except:
+            IkaUtils.dprint('%s: failed to import splatnet2statink' % (self))
+            IkaUtils.dprint(
+                '%s: splatnet2statink integration disabled' % (self))
+            self.config['enable_s2s'] = False
+            # FIXME: traceback
+            # passthrough
+
+        #result = self._s2s_get_latest_battle()
+        #s2s_payload = prepare_battle_result(0, [result], s_flag=False, sendgears=True)
+        # print(s2s_payload)
+
+        os.chdir(ikalog_pwd)
+        return self.config['enable_s2s']
+
+    def _s2s_get_latest_battle(self):
+        # Run splatnet2statink
+        json_dict = _load_json_func(True)
+
+        if json_dict.get('code') == 'AUTHENTICATION_ERROR':  # Not tested yet
+            gen_new_cookie('auth')
+            json_dict = _load_json_func(True)
+
+        results = json_dict['results']
+        return results[0]
 
     def write_response_to_file(self, r_header, r_body, basename=None):
         if basename is None:
@@ -227,6 +285,9 @@ class StatInkPlugin(StatInkCollector):
     def __init__(self):
         super(StatInkPlugin, self).__init__()
 
+        self._s2s_last_battle_number_i = None
+        self._s2s_last_check_time = None
+
 
 class StatInk(StatInkPlugin):
     """
@@ -238,7 +299,8 @@ class StatInk(StatInkPlugin):
                  track_special_gauge=False, track_special_weapon=False,
                  anon_all=False, anon_others=False,
                  debug=False, dry_run=False, url='https://stat.ink',
-                 video_id=None, payload_file=None):
+                 video_id=None, payload_file=None,
+                 enable_s2s=False, s2s_path=None):
         super(StatInk, self).__init__()
 
         config = self.config
@@ -255,6 +317,9 @@ class StatInk(StatInkPlugin):
         config['track_splatzone'] = track_splatzone
         config['anon_all'] = anon_all
         config['anon_others'] = anon_others
+        config['enable_s2s'] = enable_s2s
+        config['s2s_path'] = s2s_path
+        self._s2s_prepare()
 
         self.video_id = video_id
         self.payload_file = payload_file
