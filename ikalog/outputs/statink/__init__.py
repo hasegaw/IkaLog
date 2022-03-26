@@ -78,6 +78,22 @@ class StatInkPlugin(StatInkCollector):
             config[k] = new_config[k]
         self._s2s_prepare()
 
+    def _is_realtime_session(self, context):
+        engine = context.get('engine', {}).get('engine')
+        if engine is None:
+            return False
+
+        try:
+            input_source = engine.capture
+            is_recorded = input_source.cap_recorded_video
+        except:
+            IkaUtils.dprint(
+                '%s: failed to determine pre-recorded or realtime.' % self)
+            IkaUtils.dprint(traceback.format_exc())
+            return False
+
+        return not is_recorded
+
     def close_game_session_handler(self, context):
         """
         Callback from StatInkLogger
@@ -87,17 +103,7 @@ class StatInkPlugin(StatInkCollector):
             # This plugin is not active.
             return False
 
-        s2s_result = _s2s_get_latest_battle(self)  # Nintendo battle format
-        s2s_result_valid = True
-        try:
-            battle_number = result.get('battle_number')
-        except ValueError:
-            s2s_result_valid = False
-
-        if s2s_result_valid and self._s2s_last_battle_number_i:
-            cond_bn = battle_number > self._s2s_last_battle_number_i
-            cond_time = True
-            s2s_result_valid = cond_bn and cond_time
+        s2s_payload = self._s2s_get_latest_battle_for_this_session(context)
 
         cond = \
             (context['game'].get('map', None) != None) or \
@@ -110,10 +116,15 @@ class StatInkPlugin(StatInkCollector):
         composer = StatInkComposer(self)
         payload = composer.compose_payload(context)
 
-        if s2s_result_valid:
-            s2s_payload = prepare_battle_result(
-                0, [result], s_flag=False, sendgears=True)
-            payload.update(s2s_payload)  # s2s result is priority
+        payload.update(s2s_payload)  # s2s result is priority
+
+        composer.compose_agent_information(context, payload)
+        #payload['agent_variables'] = composer.compose_agent_variables(context)
+        #payload['agent_custom'] = composer.compose_agent_custom(context)
+
+        # Don't let stat.ink use this data for statstics.
+        # We are still in development
+        payload['automated'] = False
 
         cond_write_payload = \
             self.config['debug_write_payload_to_file'] or self.payload_file
@@ -154,7 +165,7 @@ class StatInkPlugin(StatInkCollector):
             IkaUtils.dprint(
                 '%s: splatnet2statink integration disabled' % (self))
             self.config['enable_s2s'] = False
-            # FIXME: traceback
+            IkaUtils.dprint(traceback.format_exc())
             # passthrough
 
         #result = self._s2s_get_latest_battle()
@@ -174,6 +185,49 @@ class StatInkPlugin(StatInkCollector):
 
         results = json_dict['results']
         return results[0]
+
+    def _s2s_get_latest_battle_for_this_session(self, context):
+        if not self.config['enable_s2s']:
+            IkaUtils.dprint("%s: s2s: not enabled" % self)
+            return {}
+
+        cond_realtime = self._is_realtime_session(context)
+        if not cond_realtime:
+            IkaUtils.dprint("%s: s2s: input source is not realtime" % self)
+            return {}
+        IkaUtils.dprint("%s: s2s: is_realtime_session check ok" % self)
+
+        # Fetch the last battle result and check for its time
+        s2s_result = self._s2s_get_latest_battle()  # Returns nintendo format
+        s2s_battle_number = s2s_result.get('battle_number')
+
+        # battle_number check
+        if self._s2s_last_battle_number_i is not None:
+            if self._s2s_last_battle_number_i >= s2s_battle_number:
+                IkaUtils.dprint("%s: s2s: battle_number is not updated" % self)
+                return {}
+            IkaUtils.dprint("%s: s2s: battle_number check ok" % self)
+
+        # Convert to stat.ink format for convinience. (no images & gears)
+        s2s_payload = _prepare_battle_result_func(
+            0, [s2s_result], s_flag=True, sendgears=False)
+        # time when the battle finished
+        s2s_result_time = s2s_payload.get('end_at', 0)
+        unixtime = int(time.time())
+        diff = abs(unixtime - s2s_result_time)
+        IkaUtils.dprint("%s: s2b_battle_time %d current_time %d diff %d" %
+                        (self, s2s_result_time, unixtime, diff))
+        # valid if the battle is updated in last 120 seconds
+        cond_time = (diff < 120)
+        if not cond_time:
+            IkaUtils.dprint("%s: s2s: the battle is old" % self)
+            return {}
+
+        # Download image
+        s2s_payload = _prepare_battle_result_func(
+            0, [s2s_result], s_flag=False, sendgears=True)
+        IkaUtils.dprint("%s: s2s: payload from splatnet2statink set." % self)
+        return s2s_payload
 
     def write_response_to_file(self, r_header, r_body, basename=None):
         if basename is None:

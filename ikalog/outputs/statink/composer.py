@@ -460,12 +460,6 @@ class StatInkComposer(object):
         if len(self._parent.events) > 0:
             payload['events'] = list(self._parent.events)
 
-        # Agent Information
-
-        self.compose_agent_information(context, payload)
-        payload['agent_variables'] = self.compose_agent_variables(context)
-        payload['agent_custom'] = self.compose_agent_custom(context)
-
         _remove_none_keyvalues(payload)
 
         return payload
