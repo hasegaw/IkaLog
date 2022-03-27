@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 
+import json
 import os
 import pprint
 import sys
@@ -125,6 +126,11 @@ class StatInkPlugin(StatInkCollector):
         # Don't let stat.ink use this data for statstics.
         # We are still in development
         payload['automated'] = False
+        payload['events'] = self.events
+
+        # super verbose logging for development
+        if 0:
+            self.write_payload_to_json_file(payload)
 
         cond_write_payload = \
             self.config['debug_write_payload_to_file'] or self.payload_file
@@ -263,6 +269,20 @@ class StatInkPlugin(StatInkCollector):
             IkaUtils.dprint('%s: Failed to write msgpack file' % self)
             IkaUtils.dprint(traceback.format_exc())
 
+    def write_payload_to_json_file(self, payload, filename=None):
+        if filename is None:
+            t = datetime.now().strftime("%Y%m%d_%H%M")
+            filename = os.path.join('/tmp', 'statink_%s.json' % t)
+
+        try:
+            f = open(filename, 'w')
+            f.write(self.payload2json(payload))
+            f.close()
+        except:
+            IkaUtils.dprint('%s: Failed to write json file' % self)
+            IkaUtils.dprint(traceback.format_exc())
+
+
     def _post_payload_worker(self, context, payload, api_key,
                              call_plugins_later_func=None):
         url_statink_v2_battle = '%s/api/v2/battle' % self.config[
@@ -324,15 +344,18 @@ class StatInkPlugin(StatInkCollector):
             args=(copied_context, payload, api_key, call_plugins_later_func))
         thread.start()
 
-    def print_payload(self, payload):
+    def payload2json(self, payload):
         payload = payload.copy()
-
         for k in ['image_result', 'image_judge', 'image_gear']:
             if k in payload:
                 payload[k] = '(PNG Data)'
 
-        if 'events' in payload:
-            payload['events'] = '(Events)'
+        #if 'events' in payload:
+        #    payload['events'] = '(Events)'
+        return json.dumps(payload, indent=4, ensure_ascii=False)
+
+    def print_payload(self, payload):
+        payload_json = payload2json(payload)
 
         pprint.pprint(payload)
 
