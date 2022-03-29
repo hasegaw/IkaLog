@@ -38,9 +38,6 @@ from ikalog.utils import *
 _ = Localization.gettext_translation('statink', fallback=True).gettext
 
 # s2s functions
-load_json_func = None
-prepare_battle_result_func = None
-
 
 class StatInkPlugin(StatInkCollector):
 
@@ -159,11 +156,13 @@ class StatInkPlugin(StatInkCollector):
         ikalog_pwd = os.getcwd()
         try:
             os.chdir(self.config['s2s_path'])
-            from splatnet2statink import prepare_battle_result, load_json
+            from splatnet2statink import prepare_battle_result, load_json, gen_new_cookie
             global _prepare_battle_result_func
             global _load_json_func
+            global _gen_new_cookie_func
             _prepare_battle_result_func = prepare_battle_result
             _load_json_func = load_json
+            _gen_new_cookie_func = gen_new_cookie
             IkaUtils.dprint('%s: imported splatnet2statink' % (self))
 
         except:
@@ -174,11 +173,12 @@ class StatInkPlugin(StatInkCollector):
             IkaUtils.dprint(traceback.format_exc())
             # passthrough
 
-        #result = self._s2s_get_latest_battle()
+        os.chdir(ikalog_pwd)
+
+        result = self._s2s_get_latest_battle()
         #s2s_payload = prepare_battle_result(0, [result], s_flag=False, sendgears=True)
         # print(s2s_payload)
 
-        os.chdir(ikalog_pwd)
         return self.config['enable_s2s']
 
     def _s2s_get_latest_battle(self):
@@ -186,7 +186,7 @@ class StatInkPlugin(StatInkCollector):
         json_dict = _load_json_func(True)
 
         if json_dict.get('code') == 'AUTHENTICATION_ERROR':  # Not tested yet
-            gen_new_cookie('auth')
+            _gen_new_cookie_func('auth')
             json_dict = _load_json_func(True)
 
         results = json_dict['results']
