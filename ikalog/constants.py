@@ -231,405 +231,182 @@ hurtable_objects_v2 = {
 }
 
 additional_cause_of_death_v2 = {
-     "amefurashi": {
-            "key": "amefurashi",
-            "name": {
-                "de_DE": "Tintenschauer",
-                "en_GB": "Ink Storm",
-                "en_US": "Ink Storm",
-                "es_ES": "Atormentador",
-                "es_MX": "Atormentador",
-                "fr_CA": "Pluie d'encre",
-                "fr_FR": "Pluie d'encre",
-                "it_IT": "Pioggia di colore",
-                "ja_JP": "アメフラシ",
-                "nl_NL": "Spetterbui",
-                "ru_RU": "Туча краски",
-                "zh_CN": "墨雨",
-                "zh_TW": "墨雨"
-            },
-        },
-        "chakuchi": {
-            "key": "chakuchi",
-            "name": {
-                "de_DE": "Tintenschock",
-                "en_GB": "Splashdown",
-                "en_US": "Splashdown",
-                "es_ES": "Salto explosivo",
-                "es_MX": "Clavado",
-                "fr_CA": "Choc chromatique",
-                "fr_FR": "Choc chromatique",
-                "it_IT": "Vernischianto",
-                "ja_JP": "スーパーチャクチ",
-                "nl_NL": "Superlanding",
-                "ru_RU": "Мегаплюх",
-                "zh_CN": "砸地",
-                "zh_TW": "砸地"
-            }
-        },
-        "missile": {
-            "key": "missile",
-            "name": {
-                "de_DE": "Schwarmraketen",
-                "en_GB": "Tenta Missiles",
-                "en_US": "Tenta Missiles",
-                "es_ES": "Lanzamisiles",
-                "es_MX": "Lanzamisiles",
-                "fr_CA": "Multi-missile",
-                "fr_FR": "Multi-missile",
-                "it_IT": "Lanciarazzi",
-                "ja_JP": "マルチミサイル",
-                "nl_NL": "Spetterraketten",
-                "ru_RU": "Каракатница",
-                "zh_CN": "跟踪导弹",
-                "zh_TW": "跟蹤導彈"
-            }
-        },
-        "nicedama": {
-            "key": "nicedama",
-            "name": {
-                "de_DE": "Booyah Bomb",
-                "en_GB": "Booyah Bomb",
-                "en_US": "Booyah Bomb",
-                "es_ES": "Booyah Bomb",
-                "es_MX": "Booyah Bomb",
-                "fr_CA": "Booyah Bomb",
-                "fr_FR": "Booyah Bomb",
-                "it_IT": "Booyah Bomb",
-                "ja_JP": "ナイスダマ",
-                "nl_NL": "Booyah Bomb",
-                "ru_RU": "Booyah Bomb",
-                "zh_CN": "好厉害弹",
-                "zh_TW": "好厲害彈"
-            }
-        },
-        "sprinkler": {
-            "key": "sprinkler",
-            "name": {
-                "de_DE": "Sprinkler",
-                "en_GB": "Sprinkler",
-                "en_US": "Sprinkler",
-                "es_ES": "Aspersor",
-                "es_MX": "Aspersor",
-                "fr_CA": "Gicleur",
-                "fr_FR": "Fontaine",
-                "it_IT": "Spruzzatore",
-                "ja_JP": "スプリンクラー",
-                "nl_NL": "Inktsprinkler",
-                "ru_RU": "Распылятор",
-                "zh_CN": "花洒",
-                "zh_TW": "花灑"
-            }
-        },
-        "sphere": {
-            "key": "sphere",
-            "name": {
-                "de_DE": "Sepisphäre",
-                "en_GB": "Baller",
-                "en_US": "Baller",
-                "es_ES": "Esfera tintera",
-                "es_MX": "Esfera tintera",
-                "fr_CA": "Chromo-sphère",
-                "fr_FR": "Chromo-sphère",
-                "it_IT": "Cromosfera",
-                "ja_JP": "イカスフィア",
-                "nl_NL": "Barstbubbel",
-                "ru_RU": "Шарокат",
-                "zh_CN": "仓鼠球",
-                "zh_TW": "倉鼠球"
-            }
-        },
-        "sphere_splash": {
-            "key": "sphere_splash",
-            "name": { # FIXME
-                "de_DE": "Sepisphäre",
-                "en_GB": "Baller",
-                "en_US": "Baller",
-                "es_ES": "Esfera tintera",
-                "es_MX": "Esfera tintera",
-                "fr_CA": "Chromo-sphère",
-                "fr_FR": "Chromo-sphère",
-                "it_IT": "Cromosfera",
-                "ja_JP": "イカスフィアの爆発",
-                "nl_NL": "Barstbubbel",
-                "ru_RU": "Шарокат",
-                "zh_CN": "仓鼠球",
-                "zh_TW": "倉鼠球"
-            }
-        },
-        "presser": { # FIXME
-            "key": "presser",
-            "name": {
-                "de_DE": "Hochdruckverunreiniger",
-                "en_GB": "Sting Ray",
-                "en_US": "Sting Ray",
-                "es_ES": "Rayo tintódico",
-                "es_MX": "Rayo tintódico",
-                "fr_CA": "Pigmalance",
-                "fr_FR": "Pigmalance",
-                "it_IT": "Baccalaser",
-                "ja_JP": "ハイパープレッサー",
-                "nl_NL": "Magistraal",
-                "ru_RU": "Струятор",
-                "zh_CN": "水枪",
-                "zh_TW": "水槍"
-            }
-        },
-        "jetpack": {
-            "key": "jetpack",
-            "name": {
-                "de_DE": "Tintendüser",
-                "en_GB": "Inkjet",
-                "en_US": "Inkjet",
-                "es_ES": "Propulsor",
-                "es_MX": "Propulsor",
-                "fr_CA": "Chromo-jet",
-                "fr_FR": "Chromo-jet",
-                "it_IT": "Jet splat",
-                "ja_JP": "ジェットパック",
-                "nl_NL": "Inktjet",
-                "ru_RU": "Красколет",
-                "zh_CN": "喷墨背包",
-                "zh_TW": "噴墨揹包"
-            }
-        },
-        "ultrahanko": {
-            "key": "ultrahanko",
-            "name": {
-                "de_DE": "Ultra-Stempel",
-                "en_GB": "Ultra Stamp",
-                "en_US": "Ultra Stamp",
-                "es_ES": "Ultraselladora",
-                "es_MX": "Ultraselladora",
-                "fr_CA": "Ultra-tamponneur",
-                "fr_FR": "Ultra-tamponneur",
-                "it_IT": "Mega timbro",
-                "ja_JP": "ウルトラハンコ",
-                "nl_NL": "Ultrastempel",
-                "ru_RU": "Припечать",
-                "zh_CN": "超级邮戳",
-                "zh_TW": "超級郵戳"
-            }
-        },
-        "bubble": {
-            "key": "bubble",
-            "name": {
-                "de_DE": "Blubberwerfer",
-                "en_GB": "Bubble Blower",
-                "en_US": "Bubble Blower",
-                "es_ES": "Lanzapompas",
-                "es_MX": "Lanzaburbujas",
-                "fr_CA": "Lance-bulles",
-                "fr_FR": "Lance-bulles",
-                "it_IT": "Soffiabolle",
-                "ja_JP": "バブルランチャー",
-                "nl_NL": "Bellenblazer",
-                "ru_RU": "Пузырятор",
-                "zh_CN": "泡泡机",
-                "zh_TW": "泡泡機"
-            }
-        },
-        "quickbomb": {
-            "key": "quickbomb",
-            "name": {
-                "de_DE": "Insta-Bombe",
-                "en_GB": "Burst Bomb",
-                "en_US": "Burst Bomb",
-                "es_ES": "Bomba rápida",
-                "es_MX": "Globo entintado",
-                "fr_CA": "Bombe ballon",
-                "fr_FR": "Bombe ballon",
-                "it_IT": "Granata",
-                "ja_JP": "クイックボム",
-                "nl_NL": "Ballonbom",
-                "ru_RU": "Разрывная бомба",
-                "zh_CN": "水球",
-                "zh_TW": "水球"
-            }
-        },
-        "splashbomb": {
-            "key": "splashbomb",
-            "name": {
-                "de_DE": "Klecks-Bombe",
-                "en_GB": "Splat Bomb",
-                "en_US": "Splat Bomb",
-                "es_ES": "Bomba básica",
-                "es_MX": "Plasbomba",
-                "fr_CA": "Bombe splash",
-                "fr_FR": "Bombe splash",
-                "it_IT": "Bomba splash",
-                "ja_JP": "スプラッシュボム",
-                "nl_NL": "Klodderbom",
-                "ru_RU": "Брызгающая бомба",
-                "zh_CN": "三角雷",
-                "zh_TW": "三角雷"
-            }
-        },
-        "tansanbomb": {
-            "key": "tansanbomb",
-            "name": {
-                "de_DE": "Sprudel-Bombe",
-                "en_GB": "Fizzy Bomb",
-                "en_US": "Fizzy Bomb",
-                "es_ES": "Bomba carbónica",
-                "es_MX": "Bomba carbónica",
-                "fr_CA": "Bombe soda",
-                "fr_FR": "Bombe soda",
-                "it_IT": "Bomba a gassosa",
-                "ja_JP": "タンサンボム",
-                "nl_NL": "Bomblikje",
-                "ru_RU": "Содовая бомба",
-                "zh_CN": "碳酸炸弹",
-                "zh_TW": "碳酸炸彈"
-            }
-        },
-
-        "curlingbomb": {
-            "key": "curlingbomb",
-            "name": {
-                "de_DE": "Curling-Bombe",
-                "en_GB": "Curling Bomb",
-                "en_US": "Curling Bomb",
-                "es_ES": "Bomba deslizante",
-                "es_MX": "Bomba deslizante",
-                "fr_CA": "Bombe curling",
-                "fr_FR": "Bombe curling",
-                "it_IT": "Bomba curling",
-                "ja_JP": "カーリングボム",
-                "nl_NL": "Curlingbom",
-                "ru_RU": "Керлинг-бомба",
-                "zh_CN": "冰壶",
-                "zh_TW": "冰壺"
-            }
-        },
-        "kyubanbomb": {
-            "key": "kyubanbomb",
-            "name": {
-                "de_DE": "Haftbombe",
-                "en_GB": "Suction Bomb",
-                "en_US": "Suction Bomb",
-                "es_ES": "Bomba ventosa",
-                "es_MX": "Bomba pegajosa",
-                "fr_CA": "Bombe gluante",
-                "fr_FR": "Bombe gluante",
-                "it_IT": "Appiccibomba",
-                "ja_JP": "キューバンボム",
-                "nl_NL": "Kleefbom",
-                "ru_RU": "Бомба на присоске",
-                "zh_CN": "粘弹",
-                "zh_TW": "粘彈"
-            }
-        },
-        "robotbomb": {
-            "key": "robotbomb",
-            "name": {
-                "de_DE": "Robo-Bombe",
-                "en_GB": "Autobomb",
-                "en_US": "Autobomb",
-                "es_ES": "Robobomba",
-                "es_MX": "Robobomba",
-                "fr_CA": "Bombe robot",
-                "fr_FR": "Bombe robot",
-                "it_IT": "Robo-bomba",
-                "ja_JP": "ロボットボム",
-                "nl_NL": "Robobom",
-                "ru_RU": "Робобомба",
-                "zh_CN": "小鸡炸弹",
-                "zh_TW": "小雞炸彈"
-            }
-        },
-
-        "splashshield": {
-            "name": {
-                "de_DE": "Tintenwall",
-                "en_GB": "Splash Wall",
-                "en_US": "Splash Wall",
-                "es_ES": "Telón de tinta",
-                "es_MX": "Barricada",
-                "fr_CA": "Mur d'encre",
-                "fr_FR": "Mur d'encre",
-                "it_IT": "Muro di colore",
-                "ja_JP": "スプラッシュシールド",
-                "nl_NL": "Inktgordijn",
-                "ru_RU": "Чернильный занавес",
-                "zh_CN": "雨帘",
-                "zh_TW": "雨簾"
-            }
-        },
-        "torpedo": {
-            "key": "torpedo",
-            "name": {
-                "de_DE": "Torpedo",
-                "en_GB": "Torpedo",
-                "en_US": "Torpedo",
-                "es_ES": "Torpedo",
-                "es_MX": "Torpedo",
-                "fr_CA": "Torpedo",
-                "fr_FR": "Torpedo",
-                "it_IT": "Torpedo",
-                "ja_JP": "トーピード",
-                "nl_NL": "Torpedo",
-                "ru_RU": "Torpedo",
-                "zh_CN": "鱼雷",
-                "zh_TW": "魚雷"
-            }
-        },
-        "trap": {
-            "key": "trap",
-            "name": {
-                "de_DE": "Tintenmine",
-                "en_GB": "Ink Mine",
-                "en_US": "Ink Mine",
-                "es_ES": "Bomba trampa",
-                "es_MX": "Mina de tinta",
-                "fr_CA": "Mine d'encre",
-                "fr_FR": "Mine",
-                "it_IT": "Mina",
-                "ja_JP": "トラップ",
-                "nl_NL": "Inktmijn",
-                "ru_RU": "Мина",
-                "zh_CN": "地雷",
-                "zh_TW": "地雷"
-            }
-        },
-
-        "hoko_shot": {
-            "key": "hoko_shot",
-            "name": {
-                "de_DE": "Rainmaker Shot",
-                "en_GB": "Rainmaker Shot",
-                "en_US": "Rainmaker Shot",
-                "es_ES": "Rainmaker Shot",
-                "es_MX": "Rainmaker Shot",
-                "fr_CA": "Rainmaker Shot",
-                "fr_FR": "Rainmaker Shot",
-                "it_IT": "Rainmaker Shot",
-                "ja_JP": "ホコショット",
-                "nl_NL": "Rainmaker Shot",
-                "ru_RU": "Rainmaker Shot",
-                "zh_CN": "Rainmaker Shot",
-                "zh_TW": "Rainmaker Shot"
-            }
-        },
-        "hoko_barrier": {
-            "key": "hoko_barrier",
-            "name": {
-                "de_DE": "Rainmaker Barrier",
-                "en_GB": "Rainmaker Barrier",
-                "en_US": "Rainmaker Barrier",
-                "es_ES": "Rainmaker Barrier",
-                "es_MX": "Rainmaker Barrier",
-                "fr_CA": "Rainmaker Barrier",
-                "fr_FR": "Rainmaker Barrier",
-                "it_IT": "Rainmaker Barrier",
-                "ja_JP": "ガチホコのバリア",
-                "nl_NL": "Rainmaker Barrier",
-                "ru_RU": "Rainmaker Barrier",
-                "zh_CN": "Rainmaker Barrier",
-                "zh_TW": "Rainmaker Barrier"
-            }
-        },
+    'amefurashi': {
+        'key': 'amefurashi',
+        'name': {
+            'ja_JP': 'アメフラシ',
+            'en_US': 'Ink Storm'
+        }
+    },
+    'bubble': {
+        'key': 'bubble',
+        'name': {
+            'ja_JP': 'バブルランチャー',
+            'en_US': 'Bubble Blower'
+        }
+    },
+    'chakuchi': {
+        'key': 'chakuchi',
+        'name': {
+            'ja_JP': 'スーパーチャクチ',
+            'en_US': 'Splashdown'
+        }
+    },
+    'jetpack': {
+        'key': 'jetpack',
+        'name': {
+            'ja_JP': 'ジェットパック',
+            'en_US': 'Inkjet'
+        }
+    },
+    'jetpack_exhaust': {
+        'key': 'jetpack_exhaust',
+        'name': {
+            'ja_JP': 'ジェットパックのジェット',
+            'en_US': 'Inkjet Exhaust'
+        }
+    },
+    'missile': {
+        'key': 'missile',
+        'name': {
+            'ja_JP': 'マルチミサイル',
+            'en_US': 'Tenta Missiles'
+        }
+    },
+    'presser': {
+        'key': 'presser',
+        'name': {
+            'ja_JP': 'ハイパープレッサー',
+            'en_US': 'Sting Ray'
+        }
+    },
+    'sphere': {
+        'key': 'sphere',
+        'name': {
+            'ja_JP': 'イカスフィア',
+            'en_US': 'Baller'
+        }
+    },
+    'sphere_splash': {
+        'key': 'sphere_splash',
+        'name': {
+            'ja_JP': 'イカスフィアの爆発',
+            'en_US': 'Baller Inksplosion'
+        }
+    },
+    'curlingbomb': {
+        'key': 'curlingbomb',
+        'name': {
+            'ja_JP': 'カーリングボム',
+            'en_US': 'Curling Bomb'
+        }
+    },
+    'kyubanbomb': {
+        'key': 'kyubanbomb',
+        'name': {
+            'ja_JP': 'キューバンボム',
+            'en_US': 'Suction Bomb'
+        }
+    },
+    'quickbomb': {
+        'key': 'quickbomb',
+        'name': {
+            'ja_JP': 'クイックボム',
+            'en_US': 'Burst Bomb'
+        }
+    },
+    'robotbomb': {
+        'key': 'robotbomb',
+        'name': {
+            'ja_JP': 'ロボットボム',
+            'en_US': 'Autobomb'
+        }
+    },
+    'splashbomb': {
+        'key': 'splashbomb',
+        'name': {
+            'ja_JP': 'スプラッシュボム',
+            'en_US': 'Splat Bomb'
+        }
+    },
+    'splashshield': {
+        'key': 'splashshield',
+        'name': {
+            'ja_JP': 'スプラッシュシールド',
+            'en_US': 'Splash Wall'
+        }
+    },
+    'sprinkler': {
+        'key': 'sprinkler',
+        'name': {
+            'ja_JP': 'スプリンクラー',
+            'en_US': 'Sprinkler'
+        }
+    },
+    'trap': {
+        'key': 'trap',
+        'name': {
+            'ja_JP': 'トラップ',
+            'en_US': 'Ink Mine'
+        }
+    },
+    'hoko_barrier': {
+        'key': 'hoko_barrier',
+        'name': {
+            'ja_JP': 'ガチホコバリア',
+            'en_US': 'Rainmaker Shield'
+        }
+    },
+    'hoko_inksplode': {
+        'key': 'hoko_inksplode',
+        'name': {
+            'ja_JP': 'ガチホコ爆発',
+            'en_US': 'Rainmaker Inksplosion'
+        }
+    },
+    'hoko_shot': {
+        'key': 'hoko_shot',
+        'name': {
+            'ja_JP': 'ガチホコショット',
+            'en_US': 'Rainmaker Shot'
+        }
+    },
+    'cannon': {
+        'key': 'cannon',
+        'name': {
+            'ja_JP': 'キャノン',
+            'en_US': 'Cannon'
+        }
+    },
+    'iidabomb': {
+        'key': 'iidabomb',
+        'name': {
+            'ja_JP': 'イイダボム',
+            'en_US': 'Hyperbomb'
+        }
+    },
+    'korogarium': {
+        'key': 'korogarium',
+        'name': {
+            'ja_JP': 'コロガリウム',
+            'en_US': 'Rolonium'
+        }
+    },
+    'piropiro': {
+        'key': 'piropiro',
+        'name': {
+            'ja_JP': 'ピロピロ',
+            'en_US': 'Inkfurler'
+        }
+    },
+    'senpaicannon': {
+        'key': 'senpaicannon',
+        'name': {
+            'ja_JP': 'センパイキャノン',
+            'en_US': 'Princess Cannon'
+        }
     }
+}
 oob_reasons = {
     'oob': {'ja': '場外', 'en': 'Out of Bounds', },
     'fall': {'ja': '転落', 'en': 'Fall', },
