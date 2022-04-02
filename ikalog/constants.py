@@ -399,6 +399,13 @@ additional_cause_of_death_v2 = {
             'en_US': 'Inkfurler'
         }
     },
+    'propeller': {
+        'key': 'propeller',
+        'name': {
+            'ja_JP': 'プロペラからのインク',
+            'en_US': 'Ink from a propeller',
+        },
+    },
     'senpaicannon': {
         'key': 'senpaicannon',
         'name': {
